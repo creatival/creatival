@@ -15,4 +15,9 @@ public class MainController {
 	public String sungmin() {
 		return "sungmin";
 	}
+
+	@GetMapping("/teamzang")
+	public String teamzang() {
+		return "teamzang";
+	}
 }
