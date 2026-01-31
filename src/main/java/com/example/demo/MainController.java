@@ -13,7 +13,7 @@ public class MainController {
 	
 	@GetMapping("/sungmin") 
 	public String sungmin() {
-		return "sungmin";
+		return "index";
 	}
 
 	@GetMapping("/teamzang")
