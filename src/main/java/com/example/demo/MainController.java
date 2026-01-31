@@ -11,8 +11,14 @@ public class MainController {
 		return "index";
 	}
 	
+<<<<<<< HEAD
 	@GetMapping("/seungjae")
 	public String seungjae() {
 		return "seungjae";
+=======
+	@GetMapping("/teamzang")
+	public String teamzang() {
+		return "teamzang";
+>>>>>>> branch 'develop' of https://github.com/creatival/creatival.git
 	}
 }
