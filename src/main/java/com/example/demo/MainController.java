@@ -11,6 +11,16 @@ public class MainController {
 		return "index";
 	}
 	
+	@GetMapping("/novel_list")
+	public String novel_list() {
+		return "novel_list";
+	}
+	
+	@GetMapping("/novel_detail")
+	public String novel_detail() {
+		return "novel_detail";
+	}
+	
 	@GetMapping("/sungmin") 
 	public String sungmin() {
 		return "index";
