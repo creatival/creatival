@@ -21,6 +21,11 @@ public class MainController {
 		return "novel_detail";
 	}
 	
+	@GetMapping("/mypage")
+	public String mypage() {
+		return "mypage";
+	}
+	
 	@GetMapping("/sungmin") 
 	public String sungmin() {
 		return "index";

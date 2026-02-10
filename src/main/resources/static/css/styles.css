@@ -279,6 +279,8 @@ sup {
 a {
     color: var(--bs-link-color);
     text-decoration: underline;
+	text-decoration: none;
+	    color: inherit;
 }
 
 a:hover {
