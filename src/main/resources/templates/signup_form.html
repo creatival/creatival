@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<title>Document</title>
+</head>
+<body>
+	<div class="container mt-5" style="max-width: 500px;">
+	    <h2 class="mb-4 text-center">회원가입</h2>
+
+	    <form method="post" th:action="@{/user/signUp}" enctype="multipart/form-data" th:object="${signUpRequest}">
+			<div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}" th:fragment="formErrorsFragment">
+					<div th:each="err : ${#fields.allErrors()}">[[${err}]]</div>
+			</div>
+	        <!-- 아이디 -->
+	        <div class="mb-3">
+	            <label class="form-label">아이디</label>
+	            <input type="text" class="form-control" th:field="*{username}" required>
+	        </div>
+
+	        <!-- 이메일 -->
+	        <div class="mb-3">
+	            <label class="form-label">이메일</label>
+	            <input type="email" class="form-control" th:field="*{email}" required>
+	        </div>
+
+	        <!-- 비밀번호 -->
+	        <div class="mb-3">
+	            <label class="form-label">비밀번호</label>
+	            <input type="password" class="form-control" th:field="*{password}" required>
+	        </div>
+
+	        <!-- 비밀번호 확인 -->
+	        <div class="mb-3">
+	            <label class="form-label">비밀번호 확인</label>
+	            <input type="password" th:field="*{password2}" class="form-control" required>
+	        </div>
+
+	        <!-- 닉네임 -->
+	        <div class="mb-3">
+	            <label class="form-label">닉네임</label>
+	            <input type="text" th:field="*{displayName}" class="form-control" required>
+	        </div>
+
+	        <!-- 프로필 이미지 -->
+	        <div class="mb-3">
+	            <label class="form-label">프로필 이미지</label>
+	            <input type="file" th:field="*{profileImg}" class="form-control">
+	        </div>
+
+	        <!-- 자기소개 -->
+	        <div class="mb-3">
+	            <label class="form-label">자기소개</label>
+	            <textarea th:field="*{description}" class="form-control" rows="4"></textarea>
+	        </div>
+
+	        <!-- 크리에이터 여부 -->
+	        <div class="form-check mb-4">
+	            <input class="form-check-input" type="checkbox" th:field="*{creator}" id="isCreator">
+	            <label class="form-check-label" for="isCreator">
+	                크리에이터로 활동할게요
+	            </label>
+	        </div>
+
+	        <!-- 버튼 -->
+	        <button type="submit" class="btn btn-primary w-100">
+	            회원가입
+	        </button>
+	    </form>
+	</div>
+</body>
+</html>
