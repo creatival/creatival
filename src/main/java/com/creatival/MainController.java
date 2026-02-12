@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.creatival;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +23,7 @@ public class MainController {
 	
 	@GetMapping("/mypage")
 	public String mypage() {
-		return "mypage";
+		return "mypage_home";
 	}
 	
 	@GetMapping("/sungmin") 
