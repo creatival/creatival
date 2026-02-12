@@ -23,7 +23,7 @@ public class MainController {
 	
 	@GetMapping("/mypage")
 	public String mypage() {
-		return "mypage";
+		return "mypage_home";
 	}
 	
 	@GetMapping("/sungmin") 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8" />
@@ -8,6 +8,7 @@
 
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="css/styles.css" rel="stylesheet" />
 </head>
 
@@ -48,7 +49,7 @@
             <div class="rounded-circle bg-secondary mx-auto mb-3"
                  style="width:120px; height:120px;"></div>
 
-            <h5>닉네임(아이디)</h5>
+            <h5 th:text="|${user.displayName} (${user.username})|">닉네임(아이디)</h5>
 			<div class="d-flex justify-content-center gap-2 mb-3">
 			        <span class="badge rounded-pill bg-primary">#태그1</span>
 			        <span class="badge rounded-pill bg-primary">#태그2</span>
@@ -69,7 +70,49 @@
                 <a href="#">팀</a>
                 <a href="#">프로젝트</a>
             </div>
+			
 			<hr class="footer-line">
+			<div class="row justify-content-center">
+						        <div class="col-md-6">
+						            <div class="card shadow">
+						                <div class="card-header bg-primary text-white">
+						                    <h4 class="mb-0">내 정보 확인</h4>
+						                </div>
+						                <div class="card-body">
+						                    <table class="table">
+						                        <tr>
+						                            <th class="table-light">이메일</th>
+						                            <td th:text="${user.email}">user@example.com</td>
+						                        </tr>
+						                        <tr th:if="${user.createdAt}">
+						                            <th class="table-light">가입일</th>
+						                            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-02-12</td>
+						                        </tr>
+						                        <tr th:if="${user.description}">
+						                            <th class="table-light">설명</th>
+						                            <td th:text="${user.description}">설명</td>
+						                        </tr>
+						                        <tr th:if="${user.role}">
+						                            <th class="table-light">역할</th>
+						                            <td th:text="${user.role}">역할</td>
+						                        </tr>
+						                        <tr>
+						                            <th class="table-light">창작자?</th>
+						                            <td th:text="${user.isCreator ? '예' : '아니요'}">창작자 여부</td>
+						                        </tr>
+						                        <tr>
+						                            <th class="table-light">창작자 인증 여부</th>
+						                            <td th:text="${user.isVerification ? '예' : '아니요'}">창작자 인증 여부</td>
+						                        </tr>
+						                    </table>
+						                    
+						                    <div class="text-center mt-4">
+						                        <a th:href="@{/}" class="btn btn-secondary">홈으로</a>
+						                        </div>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
         </div>
     </main>
 	

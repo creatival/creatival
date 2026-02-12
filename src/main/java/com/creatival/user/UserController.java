@@ -1,5 +1,7 @@
 package com.creatival.user;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -52,6 +54,14 @@ public class UserController {
 	@GetMapping("/login")
 	public String login_form() {
 		return "login_form";
+	}
+	
+	@GetMapping("/myPage")
+	public String myPage(Model model, Principal principal) {
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		model.addAttribute("user", UserDTO.ProfileResponse.from(user));
+		return "mypage_home";
 	}
 	
 }

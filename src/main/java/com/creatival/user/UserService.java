@@ -5,6 +5,7 @@ import java.net.Authenticator.RequestorType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,21 @@ public class UserService {
 	private static final String UPLOAD_DIR = "src/main/resources/static/images/user";
 	
 	//String username, String email, String password, String displayname,String description, boolean isCreator
+	
+	public Users getUserByUsername(String username) {
+		Optional<Users> user = userRepository.findByUsername(username);
+		if(user.isPresent()) {
+			return user.get();
+		}
+		return null;
+	}
+	public Users getUserByEmail(String email) {
+		Optional<Users> user = userRepository.findByEmail(email);
+		if(user.isPresent()) {
+			return user.get();
+		}
+		return null;
+	}
 	
 	public UserDTO.ProfileResponse create(UserDTO.SignUpRequest signUpRequest) throws IOException {
 		

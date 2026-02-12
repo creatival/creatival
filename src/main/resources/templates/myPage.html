@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">내 정보 확인</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th class="table-light" style="width: 30%;">사용자 ID</th>
+                            <td th:text="${user.username}">arist6034</td>
+                        </tr>
+                        <tr>
+                            <th class="table-light">이메일</th>
+                            <td th:text="${user.email}">user@example.com</td>
+                        </tr>
+                        <tr th:if="${user.createdAt}">
+                            <th class="table-light">가입일</th>
+                            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-02-12</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="text-center mt-4">
+                        <a th:href="@{/}" class="btn btn-secondary">홈으로</a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
