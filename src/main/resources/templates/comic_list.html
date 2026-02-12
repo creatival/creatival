@@ -1,0 +1,235 @@
+<html layout:decorate="~{layout}">
+<head>
+    <style>
+        .comic-card-img {
+            height: 300px;
+            object-fit: cover; /* 이미지가 비율을 유지하며 꽉 차게 */
+        }
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+    </style>
+</head>
+
+<div class="container" layout:fragment="content">
+    
+	<div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
+	    <div>
+	        <h2 class="fw-bold">추천 만화</h2>
+	        <p class="text-muted mb-0">이번 주 가장 인기 있는 작품들을 만나보세요.</p>
+	    </div>
+
+	    <div class="d-flex gap-2">
+	        <a th:href="@{/comic_write}" class="btn btn-dark px-4 shadow-sm">
+	        	</i> 작품 등록
+	        </a>
+	        
+	        <div class="btn-group" role="group">
+	            <button type="button" class="btn btn-outline-dark active">전체</button>
+	            <button type="button" class="btn btn-outline-dark">연재중</button>
+	            <button type="button" class="btn btn-outline-dark">완결</button>
+	        </div>
+	    </div>
+	</div>
+
+    <div class="container pb-5 px-0">
+        
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+            
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
+                    <span class="position-absolute top-0 start-0 badge bg-danger m-2">UP</span>
+                    
+                    <a th:href="@{/comic_detail}">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">나 혼자 레벨업</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">장성락</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#판타지 #액션</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
+                    <span class="position-absolute top-0 start-0 badge bg-primary m-2">NEW</span>
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">전지적 독자 시점</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">UMI/슬리피</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#현대판타지</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">화산귀환</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">LICO</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#무협 #개그</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">외모지상주의</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">박태준</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#학원 #드라마</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">신의 탑</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">SIU</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#판타지</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">호랑이 형님</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">이상규</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#판타지 #시대극</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">작가명</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">작가명</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">작가명</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">작가명</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">작가명</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+                            <span class="text-muted small text-truncate">작가명</span>
+                        </div>
+                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
+                    </div>
+                </div>
+            </div>
+
+        </div> </div> <nav aria-label="Page navigation example" class="mb-5">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">5</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</html>

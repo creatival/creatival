@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -8,47 +7,18 @@
 
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="css/styles.css" rel="stylesheet" />
 </head>
 
 <body class="d-flex flex-column">
-
-    <!-- NAV -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container px-5">
-            <a class="navbar-brand" href="index.html">
-                <img src="images/creatival_logoV5-Photoroom.png" style="width:200px;">
-            </a>
-
-            <div class="container mt-4">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="search">
-                    <button class="btn">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn">
-                    <i class="bi bi-bell fs-5"></i>
-                </button>
-
-                <button class="btn dropdown-toggle" data-bs-toggle="dropdown">
-                    <img src="https://dummyimage.com/32x32/ced4da/6c757d"
-                         class="rounded-circle" width="32" height="32">
-                </button>
-            </div>
-        </div>
-    </nav>
-
     <main class="flex-grow-1" style="min-height: 80vh;">
         <div class="container text-center py-5">
 
             <div class="rounded-circle bg-secondary mx-auto mb-3"
                  style="width:120px; height:120px;"></div>
 
-            <h5>닉네임(아이디)</h5>
+            <h5 th:text="|${user.displayName} (${user.username})|">닉네임(아이디)</h5>
 			<div class="d-flex justify-content-center gap-2 mb-3">
 			        <span class="badge rounded-pill bg-primary">#태그1</span>
 			        <span class="badge rounded-pill bg-primary">#태그2</span>
@@ -65,11 +35,53 @@
 
             <div class="d-flex justify-content-center gap-4">
                 <a href="#">홈</a>
-                <a href="#">내 계시물</a>
+                <a href="#">내 게시물</a>
                 <a href="#">팀</a>
                 <a href="#">프로젝트</a>
             </div>
+			
 			<hr class="footer-line">
+			<div class="row justify-content-center">
+						        <div class="col-md-6">
+						            <div class="card shadow">
+						                <div class="card-header bg-primary text-white">
+						                    <h4 class="mb-0">내 정보 확인</h4>
+						                </div>
+						                <div class="card-body">
+						                    <table class="table">
+						                        <tr>
+						                            <th class="table-light">이메일</th>
+						                            <td th:text="${user.email}">user@example.com</td>
+						                        </tr>
+						                        <tr th:if="${user.createdAt}">
+						                            <th class="table-light">가입일</th>
+						                            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-02-12</td>
+						                        </tr>
+						                        <tr th:if="${user.description}">
+						                            <th class="table-light">설명</th>
+						                            <td th:text="${user.description}">설명</td>
+						                        </tr>
+						                        <tr th:if="${user.role}">
+						                            <th class="table-light">역할</th>
+						                            <td th:text="${user.role}">역할</td>
+						                        </tr>
+						                        <tr>
+						                            <th class="table-light">창작자?</th>
+						                            <td th:text="${user.isCreator ? '예' : '아니요'}">창작자 여부</td>
+						                        </tr>
+						                        <tr>
+						                            <th class="table-light">창작자 인증 여부</th>
+						                            <td th:text="${user.isVerification ? '예' : '아니요'}">창작자 인증 여부</td>
+						                        </tr>
+						                    </table>
+						                    
+						                    <div class="text-center mt-4">
+						                        <a th:href="@{/}" class="btn btn-secondary">홈으로</a>
+						                        </div>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
         </div>
     </main>
 	
@@ -164,3 +176,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+>>>>>>> branch 'develop' of https://github.com/creatival/creatival.git

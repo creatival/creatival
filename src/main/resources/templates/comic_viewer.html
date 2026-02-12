@@ -1,0 +1,74 @@
+<html layout:decorate="~{layout}">
+<head>
+    <style>
+        /* 웹툰 뷰어 컨테이너: 이미지 사이의 흰 줄(gap) 제거가 핵심 */
+        .toon-viewer img {
+            display: block; /* 인라인 속성 제거로 하단 여백 삭제 */
+            width: 100%;    /* 컨테이너 꽉 차게 */
+            height: auto;   /* 비율 유지 */
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 모바일에서는 꽉 차게, PC에서는 적당한 너비로 */
+        .toon-container {
+            max-width: 800px; /* PC에서 너무 크지 않게 제한 (네이버 웹툰 등은 690px~800px 사용) */
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05); /* 살짝 그림자 */
+        }
+    </style>
+</head>
+
+<div layout:fragment="content">
+
+    <div class="mt-5"></div>
+
+    <div class="container-fluid p-0"> <div class="toon-container">
+            
+            <div class="p-4 text-center border-bottom">
+                <h2 class="fw-bold">12화. 각성하는 힘</h2>
+                <p class="text-muted mb-0">작가 홍길동 | 2026.02.12</p>
+            </div>
+
+            <div class="toon-viewer">
+                <img src="images/pic.png" alt="만화컷1" loading="lazy">
+                <img src="images/pic.png" alt="만화컷2" loading="lazy">
+                <img src="images/pic.png" alt="만화컷3" loading="lazy">
+                <img src="images/pic.png" alt="만화컷4" loading="lazy">
+                <img src="images/pic.png" alt="만화컷5" loading="lazy">
+                </div>
+
+            <div class="p-4 bg-light border-top text-center">
+                <h5 class="fw-bold mb-3">작가의 말</h5>
+                <p class="text-secondary small">
+                    이번 화도 재미있게 봐주셔서 감사합니다.<br>
+                    다음 화는 휴재 없이 진행됩니다!
+                </p>
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-4 mt-2">
+                    <i class="bi bi-heart-fill"></i> 좋아요
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="#" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-chevron-left"></i> 이전화
+                    </a>
+                    <a th:href="@{/comic_detail}" class="btn btn-outline-dark px-4">목록</a>
+                    <a href="#" class="btn btn-primary px-4 text-white">
+                        다음화 <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</html>

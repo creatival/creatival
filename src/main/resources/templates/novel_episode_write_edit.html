@@ -1,5 +1,6 @@
-<html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -12,61 +13,69 @@
 
 <body class="d-flex flex-column">
 
-    
+    <!-- NAV -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container px-5">
+            <a class="navbar-brand" href="index.html">
+                <img src="images/creatival_logoV5-Photoroom.png" style="width:200px;">
+            </a>
 
-<!-- 소설 뷰어 -->
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-
-            <h2 class="fw-bold">1화. 달빛을 먹는 도시</h2>
-            <p class="text-muted">작가 홍길동 | 2026.02.11</p>
-            <hr>
-
-            <div class="fs-5 lh-lg text-break mt-4" style="white-space: pre-line;">
-				도시의 밤은 항상 밝았다.
-						가로등도, 간판도, 사람들의 휴대폰 화면도 꺼지지 않았다.
-						그래서 아무도 몰랐다.
-						하늘의 달이 점점 작아지고 있다는 걸.
-						고등학생 윤하는 어느 날 옥상에서 그걸 발견했다.
-						달이 어제보다 조금 얇아 보였다. 기분 탓이라 생각했지만, 다음 날은 더 작았다.
-						“달이 줄어들고 있어.”
-						친구 민재는 웃었다.
-						“야, 네가 잠을 안 자서 그래.”
-						하지만 윤하는 확신했다. 도시가 너무 밝아서, 사람들이 밤을 잊어서, 달빛이 설 자리를 잃고 있다는 걸.
-						그날 밤, 윤하는 모든 불을 껐다.
-						방 안의 전등도, 컴퓨터도, 휴대폰도.
-						처음엔 무서웠다.
-						도시는 늘 밝았으니까.
-						하지만 창밖으로 조용히 달빛이 들어오기 시작했다.
-						아주 약하지만, 분명히 빛났다.
-						다음 날, 윤하는 학교에서 작은 캠페인을 시작했다.
-						“하루에 10분만 불을 꺼주세요.”
-						처음엔 아무도 관심 없었다.
-						하지만 시험 기간이 끝난 어느 날, 학교 전체가 10분 동안 불을 껐다.
-						그리고 그날 밤, 달은 아주 조금 더 둥글어졌다.
-						사람들은 그제야 깨달았다.
-						밤은 없애야 할 시간이 아니라, 지켜야 할 시간이라는 걸.
-						그 후로 도시는 매주 한 번, 10분씩 어두워졌다.
-						그리고 달은 다시 천천히 차오르기 시작했다.
-						윤하는 옥상에서 미소 지었다.
-						“미안해, 우리가 너무 밝았지?”
-						달은 대답 대신, 조용히 빛났다.
+            <div class="container mt-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="search">
+                    <button class="btn">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
             </div>
 
-            <hr class="mt-5">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn">
+                    <i class="bi bi-bell fs-5"></i>
+                </button>
 
-            <div class="d-flex justify-content-between mb-5">
-                <a href="#" class="btn btn-outline-secondary">이전화</a>
-                <a href="#" class="btn btn-outline-dark">목록</a>
-                <a href="#" class="btn btn-outline-secondary">다음화</a>
+                <button class="btn dropdown-toggle" data-bs-toggle="dropdown">
+                    <img src="https://dummyimage.com/32x32/ced4da/6c757d"
+                         class="rounded-circle" width="32" height="32">
+                </button>
             </div>
-
         </div>
-    </div>
-</div>
-<!-- ✅ 소설 끝 -->
+    </nav>
 
+	<div class="container mt-5 mb-5 d-flex justify-content-center">
+	  <div class="col-lg-6">
+
+	    <div class="card shadow-sm border-0">
+	      <div class="card-body p-4 p-lg-5">
+
+	        <div class="mb-4 text-center">
+	          <h3 class="fw-bold"> 회차 수정</h3>
+	          <p class="text-muted mb-0">당신의 이야기를 이어가세요</p>
+	        </div>
+
+	        <form>
+	          <div class="mb-4">
+	            <label class="form-label fw-semibold">회차 제목</label>
+	            <input type="text" class="form-control form-control-lg">
+	          </div>
+
+	          <div class="mb-4">
+	            <label class="form-label fw-semibold">내용</label>
+	            <textarea class="form-control fs-5 lh-lg"
+	                      rows="15"></textarea>
+	          </div>
+
+	          <div class="d-flex justify-content-between">
+	            <a href="#" class="btn btn-outline-secondary">목록으로</a>
+	            <button type="button" class="btn btn-dark">등록하기</button>
+	          </div>
+	        </form>
+
+	      </div>
+	    </div>
+
+	  </div>
+	</div>
 
 <!-- FOOTER -->
 <footer class="footer">
