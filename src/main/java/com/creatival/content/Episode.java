@@ -38,6 +38,7 @@ public class Episode {
 	private String novelContent;
 	
 	boolean isFree=true;
+	boolean isDeleted=false;
 	
 	@Lob
 	private String note;
