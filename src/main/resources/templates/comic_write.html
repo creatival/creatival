@@ -1,0 +1,162 @@
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
+<head>
+    <style>
+        /* 만화 등록용 추가 스타일 */
+        .day-check-group .form-check-input:checked {
+            background-color: #000;
+            border-color: #000;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column">
+
+    <div class="container mt-5 mb-5 d-flex justify-content-center">
+      <div class="col-lg-8">
+
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4 p-lg-5">
+
+            <div class="mb-4 text-center">
+              <h3 class="fw-bold">새 만화 등록</h3>
+              <p class="text-muted mb-0">새로운 시각적 경험을 독자들에게 선사하세요</p>
+            </div>
+
+            <form>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold">만화 제목</label>
+                <input type="text" class="form-control form-control-lg" placeholder="작품명을 입력해주세요.">
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold">작가 정보</label>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="글 작가">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="그림 작가">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="원작 (있는 경우)">
+                    </div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold">작품 소개</label>
+                <textarea class="form-control" rows="4" placeholder="작품의 시놉시스를 입력해주세요."></textarea>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold d-block mb-2">연재 요일</label>
+                <div class="d-flex justify-content-between day-check-group bg-light p-3 rounded">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="mon">
+                        <label class="form-check-label" for="mon">월</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="tue">
+                        <label class="form-check-label" for="tue">화</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="wed">
+                        <label class="form-check-label" for="wed">수</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="thu">
+                        <label class="form-check-label" for="thu">목</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="fri">
+                        <label class="form-check-label" for="fri">금</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="sat">
+                        <label class="form-check-label" for="sat">토</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="sun">
+                        <label class="form-check-label" for="sun">일</label>
+                    </div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold d-block mb-2">장르 선택</label>
+                <div class="row">
+                  <div class="col-md-3 col-6 mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="action">
+                      <label class="form-check-label" for="action">액션</label>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6 mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="gag">
+                      <label class="form-check-label" for="gag">개그</label>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6 mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="drama">
+                      <label class="form-check-label" for="drama">드라마</label>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6 mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="fantasy">
+                      <label class="form-check-label" for="fantasy">판타지</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold d-block">이용 등급</label>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="age" id="all" checked>
+                  <label class="form-check-label" for="all">전체 이용가</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="age" id="12">
+                  <label class="form-check-label" for="12">12세 이용가</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="age" id="15">
+                  <label class="form-check-label" for="15">15세 이용가</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="age" id="19">
+                  <label class="form-check-label" for="19">19세 이용가</label>
+                </div>
+              </div>
+
+              <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">메인 썸네일 (300x300)</label>
+                    <input class="form-control" type="file">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">배경 배너 이미지 (옵션)</label>
+                    <input class="form-control" type="file">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-5">
+                <a href="#" class="btn btn-outline-secondary px-4">취소</a>
+                <button type="button" class="btn btn-dark px-5">작품 등록</button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+</body>
+</div>
+</html>

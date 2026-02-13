@@ -1,37 +1,71 @@
-
 <html layout:decorate="~{layout}">
 <div class="container" layout:fragment="content">
+	<!-- Header-->
+	        <header class=>
+	            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+	                <div class="carousel-indicators">
+	                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
+	                        class="active" aria-current="true" aria-label="Slide 1"></button>
+	                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+	                        aria-label="Slide 2"></button>
+	                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+	                        aria-label="Slide 3"></button>
+	                </div>
+	                <div class="carousel-inner">
+	                    <div class="carousel-item active">
+	                        <img src="images/pic.png" class="d-block w-100" alt="..." style="height: 500px;">
+	                    </div>
+	                    <div class="carousel-item">
+	                        <img src="images/pic.png" class="d-block w-100" alt="..." style="height: 500px;">
+	                    </div>
+	                    <div class="carousel-item">
+	                        <img src="images/pic.png" class="d-block w-100" alt="..." style="height: 500px;">
+	                    </div>
+	                </div>
+	                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+	                    data-bs-slide="prev">
+	                    <img src="/images/left.png" alt="이전" class="carousel-btn-img">
+	                    <span class="visually-hidden">left</span>
+	                </button>
+	                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+	                    data-bs-slide="next">
+	                    <img src="/images/next.png" alt="다음" class="carousel-btn-img">
+	                    <span class="visually-hidden">Next</span>
+	                </button>
+
+	            </div>
+	        </header>
         <!-- CATEGORY -->
         <section class="py-4">
             <div class="container">
                 <div class="row text-center g-3 justify-content-center">
                     <div class="col-4 col-md-2">
-                        <a href="">
+                        <a th:href="@{/Illustration_list}">
                             <div class="bg-light rounded py-4"><img src="images/paint.png" alt="" style="width: 100px;" /></div>
                         </a>
                     </div>
                     <div class="col-4 col-md-2">
-                        <a href="">
+                        <a th:href="@{/comic_list}">
                             <div class="bg-light rounded py-4"><img src="images/comic.png" alt="" style="width: 100px;" /></div>
                         </a>
                     </div>
                     <div class="col-4 col-md-2">
-                        <a href="">
+                        <a th:href="@{/Illustration_list}">
                             <div class="bg-light rounded py-4"><img src="images/sing.png" alt="" style="width: 100px;" /></div>
                         </a>
                     </div>
                     <div class="col-4 col-md-2">
-                        <a href="">
+                        <a th:href="@{/Illustration_list}">
                             <div class="bg-light rounded py-4"><img src="images/yutu.png" alt="" style="width: 100px;" /></div>
                         </a>
                     </div>
                     <div class="col-4 col-md-2">
-                        <a href="">
+                        <a th:href="@{/novel_list}">
                             <div class="bg-light rounded py-4"><img src="images/git.png" alt="" style="width: 100px;" /></div>
                         </a>
                     </div>
                     <div class="col-4 col-md-2">
-                        <a href="">
+                        <a th:href="@{/Illustration_list}">
                             <div class="bg-light rounded py-4"><img src="images/folder.png" alt="" style="width: 100px;" /></div>
                         </a>
                     </div>
@@ -503,7 +537,6 @@
 
         </div>
     </footer>
-   
 </body>
 
 </html>

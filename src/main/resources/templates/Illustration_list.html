@@ -1,0 +1,163 @@
+<html layout:decorate="~{layout}">
+<head>
+    <style>
+        /* 일러스트 전용 추가 스타일 */
+        .illust-card-img {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* 일러스트는 정사각형 비율이 깔끔합니다 */
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+        .illust-hover:hover {
+            transform: scale(1.02);
+            transition: all 0.3s ease-in-out;
+        }
+        .artist-profile {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            margin-right: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .stat-icon {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<div class="container" layout:fragment="content">
+    
+	<div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
+	    <div>
+	        <h2 class="fw-bold">갤러리</h2>
+	        <p class="text-muted mb-0">멋진 일러스트와 원화를 감상해보세요.</p>
+	    </div>
+	    
+	    <div class="d-flex gap-2">
+	        <a th:href="@{/Illustration_write}" class="btn btn-dark px-4">
+	            작품 등록
+	        </a>
+	        
+	        <div class="btn-group" role="group">
+	            <button type="button" class="btn btn-outline-dark active">인기순</button>
+	            <button type="button" class="btn btn-outline-dark">최신순</button>
+	            <button type="button" class="btn btn-outline-dark">팔로잉</button>
+	        </div>
+	    </div>
+	</div>
+
+    <div class="container pb-5 px-0">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+            
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 illust-hover position-relative">
+                    <button class="btn btn-sm position-absolute top-0 end-0 m-2 text-white" style="background: rgba(0,0,0,0.3); border-radius: 50%;">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                    
+                    <a th:href="@{/Illustration_detail}">
+                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
+                    </a>
+                    <div class="card-body p-3">
+                        <h6 class="card-title fw-bold text-truncate mb-2">빛의 인도자</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-truncate">
+                                <div class="artist-profile"></div>
+                                <span class="small text-muted">아트마스터</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
+                            <span><i class="bi bi-eye"></i> 1.2k</span>
+                            <span><i class="bi bi-heart-fill text-danger"></i> 450</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 illust-hover position-relative">
+                    <button class="btn btn-sm position-absolute top-0 end-0 m-2 text-white" style="background: rgba(0,0,0,0.3); border-radius: 50%;">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                    <a th:href="@{/Illustration_detail}">
+                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
+                    </a>
+                    <div class="card-body p-3">
+                        <h6 class="card-title fw-bold text-truncate mb-2">여름날의 추억</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-truncate">
+                                <div class="artist-profile"></div>
+                                <span class="small text-muted">SummerRain</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
+                            <span><i class="bi bi-eye"></i> 850</span>
+                            <span><i class="bi bi-heart-fill text-danger"></i> 120</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 illust-hover">
+                    <a th:href="@{/Illustration_detail}">
+                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
+                    </a>
+                    <div class="card-body p-3">
+                        <h6 class="card-title fw-bold text-truncate mb-2">도시 야경 원화</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-truncate">
+                                <div class="artist-profile"></div>
+                                <span class="small text-muted">CityVibe</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
+                            <span><i class="bi bi-eye"></i> 3.4k</span>
+                            <span><i class="bi bi-heart-fill text-danger"></i> 890</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 illust-hover">
+                    <a th:href="@{/Illustration_detail}">
+                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
+                    </a>
+                    <div class="card-body p-3">
+                        <h6 class="card-title fw-bold text-truncate mb-2">캐릭터 컨셉 아트</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-truncate">
+                                <div class="artist-profile"></div>
+                                <span class="small text-muted">Concept_J</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
+                            <span><i class="bi bi-eye"></i> 520</span>
+                            <span><i class="bi bi-heart-fill text-danger"></i> 64</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            </div> 
+    </div> 
+
+    <nav aria-label="Page navigation" class="mb-5">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">이전</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</html>
