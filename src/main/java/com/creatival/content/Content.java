@@ -6,9 +6,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.UniqueElements;
 
-import com.creatival.content.Enum.OnwerType;
+import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.Enum.Visibility;
+import com.creatival.user.UserDTO;
 import com.creatival.user.Users;
+import com.creatival.user.userRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,11 +23,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @Entity
 public class Content {
 	@Id
@@ -45,13 +49,16 @@ public class Content {
 //	private Project project; 
 	
 	@Enumerated(EnumType.STRING)
-	private OnwerType onwerType;
+	private OwnerType onwerType;
 	
 	@Column(nullable = false)
 	private String type;
 	
 	@Column(nullable = false)
 	private String title;
+	
+	@Column(nullable = false)
+	private String description;
 	
 	private String ThumbanilImgUrl;
 	
@@ -61,6 +68,7 @@ public class Content {
 	private boolean isAllowComment;
 	private boolean isFanWork;
 	
+	@Builder.Default
 	@Column(nullable = false)
 	private Long viewCount=0L;
 	

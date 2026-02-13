@@ -28,7 +28,6 @@ public class UserController {
 	
 	@PostMapping("/signUp")
 	public String signUp(@Valid UserDTO.SignUpRequest signUpRequest ,BindingResult bindingResult) {
-		System.out.println(signUpRequest.getDisplayName());
 		if(bindingResult.hasErrors()) {
 			System.out.println("오류 발생");
 			return "signup_form";

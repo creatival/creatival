@@ -4,10 +4,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.creatival.content.Content;
 import java.util.List;
+import java.util.Optional;
+
 import com.creatival.user.Users;
 
 
 public interface ContentRepository extends JpaRepository<Content, Long> {
+	Optional<Content> findById(Long id);
+	
 	List<Content> findByUser(Users user);
 //	List<Content> findByTeam(Team team);
 //	List<Content> findByProject(Project project);

@@ -1,6 +1,6 @@
 package com.creatival.content.Enum;
 
-public enum OnwerType {
+public enum OwnerType {
 	USER,
 	TEAM
 }

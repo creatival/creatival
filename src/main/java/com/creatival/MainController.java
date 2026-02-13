@@ -11,10 +11,7 @@ public class MainController {
 		return "index";
 	}
 	
-	@GetMapping("/novel_list")
-	public String novel_list() {
-		return "novel_list";
-	}
+	
 	
 	@GetMapping("/novel_detail")
 	public String novel_detail() {
@@ -26,10 +23,7 @@ public class MainController {
 		return "novel_viewer";
 	}
 	
-	@GetMapping("/novel_write")
-	public String novel_write() {
-		return "novel_write";
-	}
+	
 	
 	@GetMapping("/novel_edit")
 	public String novel_edit() {
