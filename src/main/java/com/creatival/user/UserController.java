@@ -6,11 +6,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.creatival.user.DTO.RequestSignUp;
+import com.creatival.user.DTO.ResponseProfile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +25,12 @@ public class UserController {
 	private final UserService userService;
 	
 	@GetMapping("/signUp")
-	public String signup(UserDTO.SignUpRequest signUpRequest) {
+	public String signup(@ModelAttribute("signUpRequest") RequestSignUp signUpRequest) {
 		return "signup_form";
 	}
 	
 	@PostMapping("/signUp")
-	public String signUp(@Valid UserDTO.SignUpRequest signUpRequest ,BindingResult bindingResult) {
+	public String signUp(@Valid RequestSignUp signUpRequest ,BindingResult bindingResult) {
 		if(bindingResult.hasErrors()) {
 			System.out.println("오류 발생");
 			return "signup_form";
@@ -59,7 +62,7 @@ public class UserController {
 	public String myPage(Model model, Principal principal) {
 		Users user = userService.getUserByUsername(principal.getName());
 		
-		model.addAttribute("user", UserDTO.ProfileResponse.from(user));
+		model.addAttribute("user", ResponseProfile.from(user));
 		return "mypage_home";
 	}
 	

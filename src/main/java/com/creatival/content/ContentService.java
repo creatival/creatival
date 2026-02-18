@@ -6,8 +6,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.creatival.content.DTO.CreateNovelDTO;
+import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.SeriesRepository;
 import com.creatival.user.Users;
@@ -22,8 +29,9 @@ public class ContentService {
 	private final SeriesRepository seriesRepository;
 	private static final String UPLOAD_DIR = "src/main/resources/static/images/Thumbnail";
 	
+	// 소설 라인 // 
 	@Transactional
-	public void createCotentNovel(ContentCreateDTO.createNovelDTO createNovelDTO, Users user) throws IOException {
+	public void createCotentNovel(CreateNovelDTO createNovelDTO, Users user) throws IOException {
 		
 		String imgurl = null;
 		
@@ -32,7 +40,7 @@ public class ContentService {
 			Path filePath = Paths.get(UPLOAD_DIR, fileName);
 			Files.createDirectories(filePath.getParent());
 			Files.write(filePath, createNovelDTO.getThumbnailFile().getBytes());
-			imgurl = "/img/user/"+fileName;
+			imgurl = "/images/Thumbnail/"+fileName;
 		}
 		
 		Content content = Content.builder()
@@ -41,10 +49,10 @@ public class ContentService {
 				.user(user)
 				.visibility(createNovelDTO.getVisibility())
 				.onwerType(createNovelDTO.getOwnerType())
-				.type("NOVEL")
+				.type(ContentType.NOVEL)
 				.isAllowComment(createNovelDTO.isAllowComment())
 				.isFanWork(createNovelDTO.isFanWork())
-				.ThumbanilImgUrl(imgurl)
+				.ThumbnailImgUrl(imgurl)
 				.build();
 		if(content.isFanWork() && createNovelDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createNovelDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
@@ -58,4 +66,13 @@ public class ContentService {
 				.build();
 		seriesRepository.save(series);
 	}
+	
+	public Page<ResponseNovelList> getNovelList(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findAll(pageable);
+		
+		return contents.map(content -> ResponseNovelList.from(content, content.getSeries()));
+	}
+	
+	// 소설 라인 // 
 }

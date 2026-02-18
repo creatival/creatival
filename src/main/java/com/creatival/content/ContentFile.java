@@ -3,7 +3,6 @@ package com.creatival.content;
 
 import java.time.LocalDateTime;
 
-import com.creatival.user.UserDTO;
 import com.creatival.user.userRole;
 
 import jakarta.persistence.Column;
@@ -14,15 +13,24 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 @Entity
 public class ContentFile {
+	
+	public ContentFile() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

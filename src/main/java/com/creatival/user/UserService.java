@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.creatival.user.DTO.RequestSignUp;
+import com.creatival.user.DTO.ResponseProfile;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -38,7 +41,7 @@ public class UserService {
 		return null;
 	}
 	
-	public UserDTO.ProfileResponse create(UserDTO.SignUpRequest signUpRequest) throws IOException {
+	public ResponseProfile create(RequestSignUp signUpRequest) throws IOException {
 		
 		System.out.println(signUpRequest.getUsername());
 		if(userRepository.findByUsername(signUpRequest.getUsername()).isPresent()) {
@@ -61,11 +64,21 @@ public class UserService {
 			profileImgUrl = "/img/user/"+fileName;
 		}
 		
-		Users user = signUpRequest.toEntity(passwordEncoder.encode(signUpRequest.getPassword()),profileImgUrl);
+		
+		
+		Users user = new Users(
+				signUpRequest.getUsername(),
+				signUpRequest.getDisplayName(),
+				signUpRequest.getEmail(),
+				passwordEncoder.encode(signUpRequest.getPassword()),
+				signUpRequest.isCreator()
+		);
+		user.setProfileImgUrl(profileImgUrl);
+		user.setDescription(signUpRequest.getDescription());
 
 		
 		userRepository.save(user);
 		System.out.println("저장됨");
-		return UserDTO.ProfileResponse.from(user);
+		return ResponseProfile.from(user);
 	}
 }

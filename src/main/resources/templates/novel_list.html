@@ -39,236 +39,36 @@
 	</main>
 	<!--list -->
 	<div class="container pb-5">
-		<div class="mt-5 container">
-			<div class="row row-cols-6 g-3">
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a th:href="@{/novel_detail}"><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
+	    <div class="mt-5 container">
+	        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 g-3">
+	            
+	            <div class="col" th:each="novel : ${paging}">
+	                <div class="card h-100 shadow-sm rounded border-0">
+	                    <a th:href="@{|/novel/detail/${novel.id}|}">
+	                        <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" 
+	                             class="card-img-top" 
+	                             alt="thumbnail"
+	                             style="height: 300px; object-fit: cover;">
+	                    </a>
+	                    
+	                    <div class="card-body">
+	                        <h6 class="card-title text-truncate">
+	                            <span th:if="${novel.end}" class="badge bg-danger me-1" style="font-size: 0.7rem;">완결</span>
+	                            <span th:text="${novel.title}">제목</span>
+	                        </h6>
+	                        
+	                        <div class="d-flex align-items-center fs-7">
+	                            <a class="card-text mb-0 text-decoration-none text-muted" 
+	                               th:text="${novel.displayname}">작가이름</a>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	            
+	        </div>
+	    </div>
 
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="mt-5 container">
-			<div class="row row-cols-6 g-3">
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..." style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..." style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..." style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="mt-5 container">
-			<div class="row row-cols-6 g-3">
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><img src="images/pic.png" class="card-img-top" alt="..." style="height: 300px;"></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="card h-100 shadow-sm rounded">
-						<a href=""><a href=""><img src="images/pic.png" class="card-img-top" alt="..."
-									style="height: 300px;"></a></a>
-						<div class="card-body">
-							<h6 class="card-title">제목</h6>
-							<div class="d-flex align-items-center fs-7">
-								<a class="card-text mb-0 ">작가이름</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	    </div>
 
 	<nav aria-label="Page navigation example">
 		<ul class="pagination justify-content-center">

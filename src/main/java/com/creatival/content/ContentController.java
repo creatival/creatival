@@ -2,12 +2,17 @@ package com.creatival.content;
 
 import java.security.Principal;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.creatival.content.DTO.CreateNovelDTO;
+import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -22,17 +27,19 @@ public class ContentController {
 	private final UserService userService;
 	
 	@GetMapping("/novel_list")
-	public String novel_list() {
+	public String novel_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		Page<ResponseNovelList> paging = contentService.getNovelList(page);
+		model.addAttribute("paging", paging);
 		return "novel_list";
 	}
 	
 	@GetMapping("/novel_write")
-	public String novel_write(ContentCreateDTO.createNovelDTO createNovelDTO) {
+	public String novel_write(CreateNovelDTO createNovelDTO) {
 		return "novel_write";
 	}
 	
 	@PostMapping("/novel_write")
-	public String novel_wrtie(@Valid ContentCreateDTO.createNovelDTO createNovelDTO, BindingResult bindingResult, Principal principal) {
+	public String novel_wrtie(@Valid CreateNovelDTO createNovelDTO, BindingResult bindingResult, Principal principal) {
 		if(bindingResult.hasErrors()) {
 			System.out.println("오류 발생");
 			return "novel_write";

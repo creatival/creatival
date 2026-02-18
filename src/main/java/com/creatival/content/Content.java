@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.UniqueElements;
 
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.Enum.Visibility;
-import com.creatival.user.UserDTO;
+import com.creatival.content.Enum.ContentType;
 import com.creatival.user.Users;
 import com.creatival.user.userRole;
 
@@ -23,15 +23,25 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 @Entity
 public class Content {
+	
+	protected Content() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,8 +61,9 @@ public class Content {
 	@Enumerated(EnumType.STRING)
 	private OwnerType onwerType;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String type;
+	private ContentType type;
 	
 	@Column(nullable = false)
 	private String title;
@@ -60,7 +71,7 @@ public class Content {
 	@Column(nullable = false)
 	private String description;
 	
-	private String ThumbanilImgUrl;
+	private String ThumbnailImgUrl;
 	
 	@Column(nullable = false)
 	private Visibility visibility;
@@ -83,5 +94,8 @@ public class Content {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "original_content_id")
 	private Content originalContent;
+	
+	@OneToOne(mappedBy = "content")
+	private Series series;
 	
 }
