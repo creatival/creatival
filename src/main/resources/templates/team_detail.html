@@ -1,0 +1,116 @@
+<html layout:decorate="~{layout}">
+<div class="container my-5" layout:fragment="content">
+    
+    <div class="row mb-5 pb-4 border-bottom align-items-end">
+        <div class="col-md-8">
+            <span class="badge bg-primary mb-2">모집 중</span>
+            <h1 class="fw-bold display-5">다양한 게임</h1>
+            <p class="text-muted mb-0">
+                <i class="bi bi-calendar-check"></i> 시작일: 2026.02.12 | 
+                <i class="bi bi-folder"></i> 카테고리: 게임 개발
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <button class="btn btn-outline-secondary me-2"><i class="bi bi-heart"></i> 1.2k</button>
+            <button class="btn btn-primary px-4">팀 참여 신청</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <img src="images/pic.png" class="img-fluid rounded shadow-sm mb-5" alt="프로젝트 대표 이미지" style="width: 100%; height: 400px; object-fit: cover;">
+
+            <section class="mb-5">
+                <h4 class="fw-bold mb-4 border-bottom pb-2">팀 소개</h4>
+                <div class="lh-lg text-secondary">
+                    <p>이 프로젝트는 고전적인 플랫폼 게임의 재미를 현대적으로 재해석하는 것을 목표로 합니다. 현재 기본적인 물리 엔진과 캐릭터 컨트롤러가 구현된 상태이며, 함께 맵 디자인과 아트워크를 완성해나갈 팀원을 찾고 있습니다.</p>
+                    <ul>
+                        <li>사용 엔진: Unity 2026</li>
+                        <li>주요 목표: 5개 스테이지 및 보스전 구현</li>
+                        <li>모집 기간: 상시 모집</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+                    <h4 class="fw-bold mb-0">프로젝트</h4>
+					<a th:href="@{/team_project_list}">전체 보기</a>
+                </div>
+                
+                <div class="list-group list-group-flush shadow-sm rounded border">
+                    <a th:href="@{/team_project_detail}" class="list-group-item list-group-item-action py-3">
+                        <div class="d-flex align-items-center">
+                            <img src="images/pic.png" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;" alt="썸네일">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-bold">1dasb</h6>
+                                <span class="text-muted small">2026.02.12</span>
+                            </div>
+                            <div class="text-end text-muted small d-none d-md-block">
+                                <span><i class="bi bi-heart"></i> 1.2k</span>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action py-3">
+                        <div class="d-flex align-items-center">
+                            <img src="images/pic.png" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;" alt="썸네일">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-bold">vmfhwprxm</h6>
+                                <span class="text-muted small">2026.02.05</span>
+                            </div>
+                            <div class="text-end text-muted small d-none d-md-block">
+                                <span><i class="bi bi-heart"></i> 1.1k</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">팀 정보</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://dummyimage.com/40x40/ced4da/6c757d" class="rounded-circle me-3" alt="팀 로고">
+                        <div>
+                            <h6 class="mb-0 fw-bold">Team Creatival</h6>
+                            <small class="text-muted">설립일: 2025.10.01</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">참여중인 팀원</h5>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0 border-0 d-flex align-items-center">
+                            <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3" alt="프로필">
+                            <div>
+                                <p class="mb-0 fw-bold small">김철수 (팀장)</p>
+                                <small class="text-muted">메인 개발자</small>
+								<button>추방</button>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0 border-0 d-flex align-items-center">
+                            <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3" alt="프로필">
+                            <div>
+                                <p class="mb-0 fw-bold small">이영희</p>
+                                <small class="text-muted">일러스트레이터</small>
+								<button>추방</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-light border py-3 text-start px-3">
+                    <i class="bi bi-share me-2"></i> 프로젝트 공유하기
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

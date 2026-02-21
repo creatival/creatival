@@ -1,0 +1,169 @@
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
+<head>
+    <style>
+        /* 이미지 업로드 드롭존 스타일 */
+        .upload-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .upload-zone:hover {
+            border-color: #000;
+            background-color: #f1f3f5;
+        }
+        .upload-icon {
+            font-size: 3rem;
+            color: #adb5bd;
+        }
+        .tag-input-wrapper {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .tag-badge {
+            background-color: #e9ecef;
+            padding: 2px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        .tag-badge .btn-close {
+            font-size: 0.6rem;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column">
+
+    <div class="container mt-5 mb-5 d-flex justify-content-center">
+      <div class="col-lg-8">
+
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4 p-lg-5">
+
+            <div class="mb-4 text-center">
+              <h3 class="fw-bold">표지</h3>
+            </div>
+
+            <form>
+				<div class="mb-4">
+				    <label class="form-label fw-semibold">표지 업로드</label>
+				    <div class="upload-zone" id="dropZone">
+				        <input type="file" class="d-none" id="illustFile" accept="image/*">
+				        
+				        <div id="uploadPlaceholder">
+				            <i class="bi bi-cloud-arrow-up upload-icon"></i>
+				            <p class="mt-2 mb-1 fw-bold">클릭하거나 파일을 여기로 끌어다 놓으세요</p>
+				            <p class="text-muted small">PNG, JPG, GIF (최대 20MB)</p>
+				        </div>
+
+				        <div id="imagePreview" class="d-none">
+				            <img src="" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 400px;">
+				            <p class="mt-3 small text-primary text-decoration-underline">이미지 교체하기</p>
+				        </div>
+				    </div>
+				</div>
+
+				<script>
+				    const dropZone = document.getElementById('dropZone');
+				    const fileInput = document.getElementById('illustFile');
+				    const preview = document.getElementById('imagePreview');
+				    const placeholder = document.getElementById('uploadPlaceholder');
+				    const previewImg = preview.querySelector('img');
+
+				    // 1. 클릭하면 파일 선택창 띄우기
+				    dropZone.addEventListener('click', () => fileInput.click());
+
+				    // 2. 파일이 선택되었을 때 처리
+				    fileInput.addEventListener('change', function() {
+				        handleFiles(this.files);
+				    });
+
+				    // 3. 드래그 앤 드롭 기능
+				    dropZone.addEventListener('dragover', (e) => {
+				        e.preventDefault();
+				        dropZone.style.borderColor = "#000"; // 드래그 중일 때 테두리 강조
+				    });
+
+				    dropZone.addEventListener('dragleave', () => {
+				        dropZone.style.borderColor = "#dee2e6";
+				    });
+
+				    dropZone.addEventListener('drop', (e) => {
+				        e.preventDefault();
+				        dropZone.style.borderColor = "#dee2e6";
+				        const files = e.dataTransfer.files;
+				        handleFiles(files);
+				    });
+
+				    // 파일을 읽어서 미리보기에 표시하는 함수
+				    function handleFiles(files) {
+				        if (files.length > 0) {
+				            const file = files[0];
+				            
+				            // 이미지 파일인지 확인
+				            if (file.type.startsWith('image/')) {
+				                const reader = new FileReader();
+				                
+				                reader.onload = function(e) {
+				                    previewImg.src = e.target.result; // 이미지 경로 설정
+				                    placeholder.classList.add('d-none'); // 메시지 숨김
+				                    preview.classList.remove('d-none'); // 미리보기 표시
+				                }
+				                
+				                reader.readAsDataURL(file);
+				            } else {
+				                alert('이미지 파일만 업로드 가능합니다!');
+				            }
+				        }
+				    }
+				</script>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold">프로젝트 이름</label>
+                <input type="text" class="form-control" placeholder="수정할 프로젝트의 이름을 넣어주세요.">
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold">프로젝트 설명</label>
+                <textarea class="form-control" rows="3" placeholder="수정할 내용을 넣어주세요."></textarea>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold">태그</label>
+                <div class="tag-input-wrapper mb-2">
+                    <span class="tag-badge">#게임 <button type="button" class="btn-close"></button></span>
+                    <span class="tag-badge">#스피키 네르지 마세요 <button type="button" class="btn-close"></button></span>
+                    <input type="text" class="form-control border-0 p-0 ps-2" style="width: auto; flex-grow: 1;" placeholder="태그 입력 후 Enter">
+                </div>
+                <small class="text-muted">쉼표(,) 또는 엔터로 구분하여 입력해주세요.</small>
+              </div>
+
+
+              <div class="d-flex justify-content-between mt-5">
+                <a href="#" class="btn btn-outline-secondary px-4">취소</a>
+				<button type="button" class="btn btn-primary px-5 text-white fw-bold">수정하기</button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+</body>
+</div>
+</html>
