@@ -60,7 +60,7 @@ public class ResponseNovelList {
 				.thumbnailUrl(content.getThumbnailImgUrl())
 				.fanWork(content.isFanWork())
 				.createdAt(content.getCreatedAt())
-				.end(series != null ? series.isEnd() : false)
+				.end(series != null ? series.isEnd() : true)
 				.build();
 	}
 }

@@ -1,0 +1,25 @@
+package com.creatival;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+@Component
+public class FileUtil {
+	private final String rootPath = "C:/creatival_file";
+	
+	public String saveImage(MultipartFile img, String category) throws IOException {
+		String imgUrl=null;
+		String fileName = UUID.randomUUID().toString()+"_"+ img.getOriginalFilename();
+		Path filePath = Paths.get(rootPath+"/images/"+category, fileName);
+		Files.createDirectories(filePath.getParent());
+		Files.write(filePath, img.getBytes());
+		imgUrl = "/images/user/"+fileName;
+		return imgUrl;
+	}
+}

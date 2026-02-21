@@ -1,179 +1,110 @@
 <html layout:decorate="~{layout}">
 <div class="container" layout:fragment="content">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Creatival</title>
-
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="css/styles.css" rel="stylesheet" />
-</head>
-
-<body class="d-flex flex-column">
     <main class="flex-grow-1" style="min-height: 80vh;">
         <div class="container text-center py-5">
-
-            <div class="rounded-circle bg-secondary mx-auto mb-3"
-                 style="width:120px; height:120px;"></div>
+            <div class="position-relative mx-auto mb-3" style="width:120px; height:120px; cursor: pointer;" 
+                 data-bs-toggle="modal" data-bs-target="#imageUpdateModal" title="클릭하여 이미지 변경">
+                <img th:src="${user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/120x120/ced4da/6c757d'}"
+                     class="rounded-circle border shadow-sm" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="position-absolute bottom-0 end-0 bg-white rounded-circle border p-1" style="width: 32px; height: 32px;">
+                    <i class="bi bi-camera-fill text-primary"></i>
+                </div>
+            </div>
 
             <h5 th:text="|${user.displayName} (${user.username})|">닉네임(아이디)</h5>
-			<div class="d-flex justify-content-center gap-2 mb-3">
-			        <span class="badge rounded-pill bg-primary">#태그1</span>
-			        <span class="badge rounded-pill bg-primary">#태그2</span>
-			        <span class="badge rounded-pill bg-primary">#태그3</span>
-			    </div>
+            
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <span class="badge rounded-pill bg-primary">#태그1</span>
+                <span class="badge rounded-pill bg-primary">#태그2</span>
+                <span class="badge rounded-pill bg-primary">#태그3</span>
+            </div>
 
-			    <p class="text-muted mb-4" style="max-width: 400px; margin: 0 auto;">
-			        자기소개 들어갈 공간
-			    </p>
+            <p class="text-muted mb-4" style="max-width: 400px; margin: 0 auto;" 
+               th:text="${user.description != null ? user.description : '나를 표현하는 한 줄 소개를 적어보세요.'}">
+                자기소개 들어갈 공간
+            </p>
 
             <div class="mb-4">
-                <button class="btn btn-primary btn-sm rounded-pill">프로필 편집</button>
+                <a th:href="@{/user/edit}" class="btn btn-primary btn-sm rounded-pill px-3">프로필 편집</a>
+                <a th:href="@{/user/delete}" class="btn btn-outline-danger btn-sm rounded-pill px-3">프로필 비활성화</a>
             </div>
 
-            <div class="d-flex justify-content-center gap-4">
-                <a href="#">홈</a>
-                <a href="#">내 게시물</a>
-                <a href="#">팀</a>
-                <a href="#">프로젝트</a>
+            <div class="d-flex justify-content-center gap-4 mb-5">
+                <a href="#" class="text-decoration-none text-dark fw-bold">홈</a>
+                <a href="#" class="text-decoration-none text-muted">내 게시물</a>
+                <a href="#" class="text-decoration-none text-muted">팀</a>
+                <a href="#" class="text-decoration-none text-muted">프로젝트</a>
             </div>
-			
-			<hr class="footer-line">
-			<div class="row justify-content-center">
-						        <div class="col-md-6">
-						            <div class="card shadow">
-						                <div class="card-header bg-primary text-white">
-						                    <h4 class="mb-0">내 정보 확인</h4>
-						                </div>
-						                <div class="card-body">
-						                    <table class="table">
-						                        <tr>
-						                            <th class="table-light">이메일</th>
-						                            <td th:text="${user.email}">user@example.com</td>
-						                        </tr>
-						                        <tr th:if="${user.createdAt}">
-						                            <th class="table-light">가입일</th>
-						                            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-02-12</td>
-						                        </tr>
-						                        <tr th:if="${user.description}">
-						                            <th class="table-light">설명</th>
-						                            <td th:text="${user.description}">설명</td>
-						                        </tr>
-						                        <tr th:if="${user.role}">
-						                            <th class="table-light">역할</th>
-						                            <td th:text="${user.role}">역할</td>
-						                        </tr>
-						                        <tr>
-						                            <th class="table-light">창작자?</th>
-						                            <td th:text="${user.isCreator ? '예' : '아니요'}">창작자 여부</td>
-						                        </tr>
-						                        <tr>
-						                            <th class="table-light">창작자 인증 여부</th>
-						                            <td th:text="${user.isVerification ? '예' : '아니요'}">창작자 인증 여부</td>
-						                        </tr>
-						                    </table>
-						                    
-						                    <div class="text-center mt-4">
-						                        <a th:href="@{/}" class="btn btn-secondary">홈으로</a>
-						                        </div>
-						                </div>
-						            </div>
-						        </div>
-						    </div>
+            
+            <hr class="footer-line">
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h5 class="mb-0 fw-bold">내 정보 확인</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <tbody class="text-start">
+                                    <tr>
+                                        <th class="ps-4 table-light" style="width: 35%;">이메일</th>
+                                        <td class="ps-4" th:text="${user.email}">user@example.com</td>
+                                    </tr>
+                                    <tr th:if="${user.createdAt}">
+                                        <th class="ps-4 table-light">가입일</th>
+                                        <td class="ps-4" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-02-12</td>
+                                    </tr>
+                                    <tr th:if="${user.description}">
+                                        <th class="ps-4 table-light">설명</th>
+                                        <td class="ps-4" th:text="${user.description}">설명 내용</td>
+                                    </tr>
+                                    <tr th:if="${user.role}">
+                                        <th class="ps-4 table-light">역할</th>
+                                        <td class="ps-4" th:text="${user.role}">역할</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="ps-4 table-light">창작자 여부</th>
+                                        <td class="ps-4" th:text="${user.isCreator ? '예' : '아니요'}">예/아니요</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="ps-4 table-light">창작자 인증 여부</th>
+                                        <td class="ps-4" th:text="${user.isVerification ? '예' : '아니요'}">예/아니요</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a th:href="@{/}" class="btn btn-secondary px-4">홈으로 돌아가기</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
-	
-	<!-- FOOTER -->
-	<footer class="footer">
-	    <div class="container py-5">
-
-	        <!-- 상단 footer 영역 -->
-	        <div class="row text-white mb-4">
-	            <div class="col-md">
-	                <h4 style="font-weight: 700;">footer 내용</h4>
-	                <ul class="list-unstyled">
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                </ul>
-	            </div>
-
-	            <div class="col-md">
-	                <h4 style="font-weight: 700;">footer 내용</h4>
-	                <ul class="list-unstyled">
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                </ul>
-	            </div>
-
-	            <div class="col-md">
-	                <h4 style="font-weight: 700;">footer 내용</h4>
-	                <ul class="list-unstyled">
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                </ul>
-	            </div>
-
-	            <div class="col-md">
-	                <h4 style="font-weight: 700;">footer 내용</h4>
-	                <ul class="list-unstyled">
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                </ul>
-	            </div>
-
-	            <div class="col-md">
-	                <h4 style="font-weight: 700;">footer 내용</h4>
-	                <ul class="list-unstyled">
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                    <li>footer 내용</li>
-	                </ul>
-	            </div>
-
-
-	        </div>
-
-	        <!-- 구분선 -->
-	        <hr class="footer-line">
-
-	        <!-- 하단 footer -->
-	        <div class="row align-items-center text-white footer-bottom">
-	            <div class="col-md-4 d-flex justify-content-center">
-	                <div class="me-5">이용 약관</div>
-	                <div class="ms-5">개인 정보 보호 정책</div>
-	            </div>
-
-
-	            <div class="col-md-4 text-center">
-	                © 2026 creatival All rights reserved.
-	            </div>
-
-	            <div class="col-md-4 d-flex justify-content-end">
-	                <img src="images/creatival-Photoroom.png" alt="" width="168">
+	<div class="modal fade" id="imageUpdateModal" tabindex="-1" aria-hidden="true">
+	        <div class="modal-dialog modal-dialog-centered">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <h5 class="modal-title">프로필 이미지 변경</h5>
+	                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	                </div>
+	                <form th:action="@{/user/updateProfileImg}" method="post" enctype="multipart/form-data">
+	                    <div class="modal-body text-center">
+	                        <img id="imagePreview" src="https://dummyimage.com/150x150/ced4da/6c757d" class="rounded-circle mb-3 border" width="150" height="150" style="object-fit: cover;">
+	                        <input class="form-control" type="file" id="profileImageInput" name="profileImg" accept="image/*" required>
+	                    </div>
+	                    <div class="modal-footer">
+	                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+	                        <button type="submit" class="btn btn-primary">변경하기</button>
+	                    </div>
+	                </form>
 	            </div>
 	        </div>
-
-
 	    </div>
-	</footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    
+    <footer class="footer bg-dark text-white mt-5">
+        </footer>
+</div>
 </html>
->>>>>>> branch 'develop' of https://github.com/creatival/creatival.git

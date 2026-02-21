@@ -2,9 +2,9 @@
 <div class="container" layout:fragment="content">
 <body>
 	<div class="container mt-5" style="max-width: 500px;">
-	    <h2 class="mb-4 text-center">회원가입</h2>
+	    <h2 class="mb-4 text-center">정보 수정</h2>
 
-	    <form method="post" th:action="@{/user/signUp}" enctype="multipart/form-data" th:object="${signUpRequest}">
+	    <form method="post" th:action="@{/user/edit}" enctype="multipart/form-data" th:object="${profile}">
 			<div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}" th:fragment="formErrorsFragment">
 					<div th:each="err : ${#fields.allErrors()}">[[${err}]]</div>
 			</div>
@@ -18,13 +18,13 @@
 	        <!-- 비밀번호 -->
 	        <div class="mb-3">
 	            <label class="form-label">비밀번호</label>
-	            <input type="password" class="form-control" th:field="*{password}" required>
+	            <input type="password" class="form-control" name="password" required>
 	        </div>
 
 	        <!-- 비밀번호 확인 -->
 	        <div class="mb-3">
 	            <label class="form-label">비밀번호 확인</label>
-	            <input type="password" th:field="*{password2}" class="form-control" required>
+	            <input type="password" name="password2" class="form-control" required>
 	        </div>
 
 	        <!-- 닉네임 -->
@@ -33,16 +33,10 @@
 	            <input type="text" th:field="*{displayName}" class="form-control" required>
 	        </div>
 
-	        <!-- 프로필 이미지 -->
-	        <div class="mb-3">
-	            <label class="form-label">프로필 이미지</label>
-	            <input type="file" th:field="*{profileImg}" class="form-control">
-	        </div>
-
 	        <!-- 자기소개 -->
 	        <div class="mb-3">
 	            <label class="form-label">자기소개</label>
-	            <textarea th:field="*{description}" class="form-control" rows="4"></textarea>
+	            <textarea th:field="*{description}" class="form-control" rows="4" ></textarea>
 	        </div>
 
 	        <!-- 크리에이터 여부 -->
@@ -55,7 +49,7 @@
 
 	        <!-- 버튼 -->
 	        <button type="submit" class="btn btn-primary w-100">
-	            회원가입
+	            정보수정
 	        </button>
 	    </form>
 	</div>

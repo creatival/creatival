@@ -64,6 +64,11 @@ public class Users {
 	@CreationTimestamp
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
+	
+	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+	private boolean isDeleted = false;
+	
+	private LocalDateTime deletedAt;
 
 	public Users(String username, String displayName, String email, String password, boolean isCreator) {
 		super();

@@ -15,7 +15,7 @@ import com.creatival.content.Enum.ContentType;
 
 
 public interface ContentRepository extends JpaRepository<Content, Long> {
-	Optional<Content>	 findById(Long id);
+	Optional<Content> findById(Long id);
 	
 	List<Content> findByUser(Users user);
 //	List<Content> findByTeam(Team team);

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.creatival.content.DTO.CreateNovelDTO;
+import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
@@ -72,6 +73,10 @@ public class ContentService {
 		Page<Content> contents = contentRepository.findAll(pageable);
 		
 		return contents.map(content -> ResponseNovelList.from(content, content.getSeries()));
+	}
+	
+	public Content getNovel(Long id) {
+		return contentRepository.findById(id).get();
 	}
 	
 	// 소설 라인 // 

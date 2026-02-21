@@ -44,7 +44,7 @@
 	            
 	            <div class="col" th:each="novel : ${paging}">
 	                <div class="card h-100 shadow-sm rounded border-0">
-	                    <a th:href="@{|/novel/detail/${novel.id}|}">
+	                    <a th:href="@{|/content/novel_detail/${novel.id}|}">
 	                        <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" 
 	                             class="card-img-top" 
 	                             alt="thumbnail"

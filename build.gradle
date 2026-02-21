@@ -57,6 +57,8 @@ dependencies {
 	// Source: https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-springsecurity6
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	
+	// Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

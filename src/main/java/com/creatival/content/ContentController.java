@@ -7,11 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.creatival.content.DTO.CreateNovelDTO;
+import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -58,5 +60,13 @@ public class ContentController {
 	    }
 		
 		
+	}
+	
+	@GetMapping("/novel_detail/{id}")
+	public String novel_detail(Model model, @PathVariable("id") Long id) {
+		Content content = contentService.getNovel(id);
+		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
+		model.addAttribute("novel", novelDetail);
+		return "novel_detail";
 	}
 }
