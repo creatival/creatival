@@ -143,4 +143,14 @@ public class MainController {
 	public String team_project_file_upload() {
 		return "team_project_file_upload";
 	}
+	
+	@GetMapping("/video_list")
+	public String video_list() {
+		return "video_list";
+	}
+	
+	@GetMapping("/video_write")
+	public String video_write() {
+		return "video_write";
+	}
 }
