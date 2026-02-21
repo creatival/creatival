@@ -1,0 +1,161 @@
+
+<!--나중에 꼭 팀 ID 넣는거 추가하기 지금은 기능이 없어서 안 됨-->
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
+    <div class="container mt-5 mb-5 d-flex justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-lg-5">
+
+                    <div class="mb-4 text-center">
+                        <h3 class="fw-bold">새 소설 등록</h3>
+                        <p class="text-muted mb-0">당신의 새로운 이야기를 시작하세요</p>
+                    </div>
+					
+
+                    <form th:action="@{/content/novel_write}" method="post" enctype="multipart/form-data" th:object="${createNovelDTO}">
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						<div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}" th:fragment="formErrorsFragment">
+																<div th:each="err : ${#fields.allErrors()}">[[${err}]]</div>
+														</div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">소설 제목</label>
+                            <input type="text" th:field="*{title}" class="form-control form-control-lg" placeholder="작품의 제목을 입력하세요" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">작품 소개</label>
+                            <textarea th:field="*{description}" class="form-control" rows="5" placeholder="작품에 대한 간단한 소개를 작성해주세요."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-semibold d-block">연재 상태</label>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{end}"
+									       value="false"
+									       id="status-ing">
+                                    <label class="form-check-label" for="status-ing">연재 중</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{end}"
+									       value="true"
+									       id="status-end">
+                                    <label class="form-check-label" for="status-end">완결</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-semibold d-block">공개 범위</label>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{visibility}"
+									       value="PUBLIC"
+									       id="vis-public">
+                                    <label class="form-check-label" for="vis-public">공개</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{visibility}"
+									       value="PRIVATE"
+									       id="vis-private">
+                                    <label class="form-check-label" for="vis-private">비공개</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold d-block">댓글 허용 여부</label>
+                            <div class="form-check form-check-inline">
+								<input class="form-check-input"
+								       type="radio"
+								       th:field="*{allowComment}"
+								       value="true"
+								       id="comment-ok">
+                                <label class="form-check-label" for="comment-ok">허용</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+								<input class="form-check-input"
+								       type="radio"
+								       th:field="*{allowComment}"
+								       value="false"
+								       id="comment-no">
+                                <label class="form-check-label" for="comment-no">금지</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">표지 이미지 (썸네일)</label>
+							<input class="form-control"
+							       type="file"
+							       th:field="*{thumbnailFile}"
+							       accept="image/*">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-semibold d-block">팬 창작입니까?</label>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{fanWork}"
+									       value="true"
+									       id="fan-yes">
+                                    <label class="form-check-label" for="fan-yes">예</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{fanWork}"
+									       value="false"
+									       id="fan-no">
+                                    <label class="form-check-label" for="fan-no">아니요</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-semibold d-block">소유자 유형</label>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{ownerType}"
+									       value="USER"
+									       id="owner-user">
+                                    <label class="form-check-label" for="owner-user">본인</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+									<input class="form-check-input"
+									       type="radio"
+									       th:field="*{ownerType}"
+									       value="TEAM"
+									       id="owner-team">
+                                    <label class="form-check-label" for="owner-team">팀</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">원본 작품 ID (선택)</label>
+							<input type="number"
+							       th:field="*{originalContentId}"
+							       class="form-control"
+							       placeholder="원본 작품의 번호를 입력하세요">
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a th:href="@{/}" class="btn btn-outline-secondary px-4">취소</a>
+                            <button type="submit" class="btn btn-dark px-5">등록하기</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

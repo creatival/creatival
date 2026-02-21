@@ -1,320 +1,89 @@
-<!doctype html>
-<html lang="ko">
+<html layout:decorate="~{layout}"
+      xmlns:th="http://www.thymeleaf.org">
 
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-	<meta name="description" content="" />
-	<meta name="author" content="" />
-	<title>Creatival</title>
-	<!-- Favicon-->
-	<link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-	<!-- Bootstrap icons-->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-	<!-- Core theme CSS (includes Bootstrap)-->
-	<link href="css/styles.css" rel="stylesheet" />
-</head>
+<div class="container" layout:fragment="content">
 
-<body class="d-flex flex-column">
-	<main class="flex-shrink-0">
-		<!-- Navigation-->
-		<nav class="navbar navbar-expand-lg navbar-light  bg-light ">
-			<div class="container px-5">
-				<a class="navbar-brand" href="index.html"><img src="images/creatival_logoV5-Photoroom.png" alt=""
-						style="width: 200px;"></a>
-				<div class="container mt-4">
-					<div class="input-group search-bar">
-						<input type="text" class="form-control search-input" placeholder="search">
-						<button class="btn search-btn" type="button">
-							<i class="bi bi-search"></i>
-						</button>
-					</div>
-				</div>
-				<div class="d-flex align-items-center gap-3">
-					<button class="btn position-relative">
-						<i class="bi bi-bell fs-5"></i>
-					</button>
-					<button class="btn d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown">
-						<img src="https://dummyimage.com/32x32/ced4da/6c757d" class="rounded-circle" width="32"
-							height="32">
-					</button>
-				</div>
-			</div>
-		</nav>
+    <div class="container pt-5">
 
-		<div class="container pt-5">
-			<div class="row">
-				<div class="col-md-4"><img src="images/pic.png" alt="" style="width: 300px; height: 400px;" /></div>
-				<div class="col-md-8">
-					<h1>제목</h1>
-					<h5>작가명 : </h5>
-					<h6>추천수/조회수 : </h6>
-					<h21>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse cum nobis amet fugiat asperiores
-						harum quas nisi nesciunt aut itaque quisquam non iure illo necessitatibus magnam soluta ipsum
-						beatae nemo. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ratione eum ut sed optio
-						laborum dicta modi aliquid fuga sequi consectetur corporis iusto expedita laudantium enim
-						architecto quae animi eveniet fugit.</h21>
-				</div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="pb-5 row">
-				<div class="pb-5 col-md-8 ms-auto">
-					<ul class="list-group">
-						<li class="list-group-item d-flex align-items-center">
+        <div class="row">
+            <!-- 썸네일 영역 (현재 DTO에 없으므로 기본 이미지 사용) -->
+            <div class="col-md-4">
+                <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}"
+                     alt="썸네일"
+                     style="width: 300px; height: 400px;" />
+            </div>
 
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
+            <!-- 소설 정보 -->
+            <div class="col-md-8">
 
-						</li>
-						<li class="list-group-item d-flex align-items-center">
+                <!-- 제목 -->
+                <h1 th:text="${novel.title}">소설 제목</h1>
 
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
+                <!-- 작가 -->
+                <h5>
+                    작가 :
+                    <span th:text="${novel.displayname}">작가닉네임</span>
+                    (<span th:text="${novel.username}">아이디</span>)
+                </h5>
 
-						</li>
-						<li class="list-group-item d-flex align-items-center">
+                <!-- 조회수 -->
+                <h6>
+                    조회수 :
+                    <span th:text="${novel.viewCount}">0</span>
+                </h6>
 
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
+                <!-- 공개 여부 -->
+                <h6>
+                    공개 범위 :
+                    <span th:text="${novel.visibility}">PUBLIC</span>
+                </h6>
 
-						</li>
-						<li class="list-group-item d-flex align-items-center">
+                <!-- 댓글 허용 여부 -->
+                <h6>
+                    댓글 허용 :
+                    <span th:text="${novel.allowComment} ? '허용' : '비허용'">허용</span>
+                </h6>
 
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
+                <!-- 설명 -->
+                <div class="mt-4">
+                    <p th:text="${novel.description}">
+                        소설 설명이 여기에 들어갑니다.
+                    </p>
+                </div>
 
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-						<li class="list-group-item d-flex align-items-center">
-
-							<div class="flex-grow-1 text-truncate me-3">
-								<a href="#" class="fw-bold text-decoration-none text-dark d-block text-truncate">
-									Lorem ipsum dolor sit ametasperiores et consectetur nostrum accusamus similique.
-									<span class="text-muted">(등록 날짜~)</span>
-								</a>
-							</div>
-
-						</li>
-					</ul>
-					<nav aria-label="Page navigation example">
-							<ul class="pagination justify-content-center pt-3">
-								<li class="page-item disabled">
-									<a class="page-link">이전</a>
-								</li>
-								<li class="page-item active">
-									<a class="page-link" href="#">1</a>
-								</li>
-								<li class="page-item">
-									<a class="page-link" href="#">2</a>
-								</li>
-								<li class="page-item">
-									<a class="page-link" href="#">3</a>
-								</li>
-								<li class="page-item">
-									<a class="page-link" href="#">4</a>
-								</li>
-								<li class="page-item">
-									<a class="page-link" href="#">5</a>
-								</li>
-								<li class="page-item">
-									<a class="page-link" href="#">다음</a>
-								</li>
-							</ul>
-						</nav>
-				</div>
-				
-			</div>
-			
-		</div>
+            </div>
+        </div>
+    </div>
 
 
+    <!-- 에피소드 목록 (추후 List 추가 가능) -->
+    <div class="container">
+        <div class="pb-5 row">
+            <div class="pb-5 col-md-8 ms-auto">
 
+                <ul class="list-group">
 
+                    <!-- 에피소드 반복문 예시 (나중에 추가용) -->
+                    <!--
+                    <li class="list-group-item"
+                        th:each="episode : ${episodeList}">
+                        <a th:href="@{/novel/{id}/episode/{epId}
+                            (id=${novel.id}, epId=${episode.id})}"
+                           th:text="${episode.title}">
+                            에피소드 제목
+                        </a>
+                    </li>
+                    -->
 
-		<!-- FOOTER -->
-		<footer class="footer">
-			<div class="container py-5">
+                    <li class="list-group-item text-center text-muted">
+                        에피소드가 아직 없습니다.
+                    </li>
 
-				<!-- 상단 footer 영역 -->
-				<div class="row text-white mb-4">
-					<div class="col-md">
-						<h4 style="font-weight: 700;">footer 내용</h4>
-						<ul class="list-unstyled">
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-						</ul>
-					</div>
+                </ul>
 
-					<div class="col-md">
-						<h4 style="font-weight: 700;">footer 내용</h4>
-						<ul class="list-unstyled">
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-						</ul>
-					</div>
+            </div>
+        </div>
+    </div>
 
-					<div class="col-md">
-						<h4 style="font-weight: 700;">footer 내용</h4>
-						<ul class="list-unstyled">
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-						</ul>
-					</div>
-
-					<div class="col-md">
-						<h4 style="font-weight: 700;">footer 내용</h4>
-						<ul class="list-unstyled">
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-						</ul>
-					</div>
-
-					<div class="col-md">
-						<h4 style="font-weight: 700;">footer 내용</h4>
-						<ul class="list-unstyled">
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-							<li>footer 내용</li>
-						</ul>
-					</div>
-
-
-				</div>
-
-				<!-- 구분선 -->
-				<hr class="footer-line">
-
-				<!-- 하단 footer -->
-				<div class="row align-items-center text-white footer-bottom">
-					<div class="col-md-4 d-flex justify-content-center">
-						<div class="me-5">이용 약관</div>
-						<div class="ms-5">개인 정보 보호 정책</div>
-					</div>
-
-
-					<div class="col-md-4 text-center">
-						© 2026 creatival All rights reserved.
-					</div>
-
-					<div class="col-md-4 d-flex justify-content-end">
-						<img src="images/creatival-Photoroom.png" alt="" width="168">
-					</div>
-				</div>
-
-
-			</div>
-		</footer>
-</body>
-
+</div>
 </html>
