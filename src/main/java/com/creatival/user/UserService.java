@@ -12,7 +12,9 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.creatival.FileUtil;
+import com.creatival.token.UserToken;
+import com.creatival.token.UserTokenRepository;
 import com.creatival.user.DTO.RequestSignUp;
 import com.creatival.user.DTO.RequestUpdateUser;
 import com.creatival.user.DTO.ResponseProfile;
@@ -22,9 +24,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class UserService {
+
+    private final UserTokenRepository userTokenRepository;
+
+    private final FileUtil fileUtil;
 	private final  UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private static final String UPLOAD_DIR = "src/main/resources/static/images/user";
+
 	
 	//String username, String email, String password, String displayname,String description, boolean isCreator
 	
@@ -59,11 +65,7 @@ public class UserService {
 		String profileImgUrl = null;
 		
 		if(signUpRequest.getProfileImg()!=null) {
-			String fileName = UUID.randomUUID().toString()+"_"+ signUpRequest.getProfileImg().getOriginalFilename();
-			Path filePath = Paths.get(UPLOAD_DIR, fileName);
-			Files.createDirectories(filePath.getParent());
-			Files.write(filePath, signUpRequest.getProfileImg().getBytes());
-			profileImgUrl = "/images/user/"+fileName;
+			profileImgUrl = fileUtil.saveImage(signUpRequest.getProfileImg(), "user");
 		}
 		
 		
@@ -105,16 +107,25 @@ public class UserService {
 		userRepository.save(user);
 	}
 	
+	public void userActivate(Users user) {
+		user.setDeleted(false);
+		user.setDeletedAt(null);
+		userRepository.save(user);
+	}
+	
 	public void updateProfileImg(Users user, MultipartFile file) throws IOException {
 		String profileImgUrl=null;
-		String fileName = UUID.randomUUID().toString()+"_"+ file.getOriginalFilename();
-		Path filePath = Paths.get(UPLOAD_DIR, fileName);
-		Files.createDirectories(filePath.getParent());
-		Files.write(filePath, file.getBytes());
-		profileImgUrl = "/images/user/"+fileName;
+		profileImgUrl = fileUtil.saveImage(file, "user");
 		
 		user.setProfileImgUrl(profileImgUrl);
 		
 		userRepository.save(user);
+	}
+	
+	public String createActiveUserMailLink(Users user) {
+		UserToken token = UserToken.create(user);
+		userTokenRepository.save(token);
+		
+		return "http://localhost:8080/user/active/confirm?token=" + token.getToken();
 	}
 }

@@ -19,7 +19,7 @@ public class FileUtil {
 		Path filePath = Paths.get(rootPath+"/images/"+category, fileName);
 		Files.createDirectories(filePath.getParent());
 		Files.write(filePath, img.getBytes());
-		imgUrl = "/images/user/"+fileName;
+		imgUrl = "/upload/images/"+category+"/"+fileName; //보안 및 html에서 C:를 안 받기에 가상 경로를 넣어줌
 		return imgUrl;
 	}
 }

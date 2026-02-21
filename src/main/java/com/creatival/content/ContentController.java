@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.Enum.OwnerType;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -63,10 +64,28 @@ public class ContentController {
 	}
 	
 	@GetMapping("/novel_detail/{id}")
-	public String novel_detail(Model model, @PathVariable("id") Long id) {
+	public String novel_detail(Model model, @PathVariable("id") Long id, Principal principal) {
 		Content content = contentService.getNovel(id);
 		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
 		model.addAttribute("novel", novelDetail);
+		model.addAttribute("loginUsername", principal.getName());
 		return "novel_detail";
+	}
+	
+	@PostMapping("/novel_delete/{id}")
+	public String novel_delete(@PathVariable Long id, Principal principal) {
+		Content content = contentService.getNovel(id);
+		
+		if(content.getOnwerType()!=OwnerType.TEAM && content.getUser().getUsername() != principal.getName()) {
+			contentService.delete(content);
+			return "redirect:/content/novel_list";
+		}
+		
+		if(content.getOnwerType()==OwnerType.TEAM) {
+			return "redirect:content/novel_detail/"+id+"?error=팀 컨텐츠를 함부로 지울 수는 없습니다.";
+		}
+		if(content.getUser().getUsername() != principal.getName()) {
+			return "redirect:content/novel_detail/"+id+"?error=콘텐츠의 소유자가 아닙니다.";
+		}
 	}
 }

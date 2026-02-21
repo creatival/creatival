@@ -1,8 +1,12 @@
 package com.creatival.user;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.Optional;
 
+import org.apache.catalina.User;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,11 +20,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.creatival.MailService;
+import com.creatival.token.UserToken;
+import com.creatival.token.UserTokenService;
 import com.creatival.user.DTO.RequestSignUp;
 import com.creatival.user.DTO.RequestUpdateUser;
 import com.creatival.user.DTO.ResponseProfile;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -30,15 +37,19 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+
+    private final MailService mailService;
 	private final UserService userService;
+	private final UserTokenService userTokenService;
 	
 	@GetMapping("/signUp")
-	public String signup(@ModelAttribute("signUpRequest") RequestSignUp signUpRequest) {
+	public String signup(Model model) {
+		model.addAttribute("signUpRequest", new RequestSignUp());
 		return "signup_form";
 	}
 	
 	@PostMapping("/signUp")
-	public String signUp(@Valid RequestSignUp signUpRequest ,BindingResult bindingResult) {
+	public String signUp(@Valid @ModelAttribute("signUpRequest") RequestSignUp signUpRequest ,BindingResult bindingResult) {
 		if(bindingResult.hasErrors()) {
 			System.out.println("오류 발생");
 			return "signup_form";
@@ -124,6 +135,46 @@ public class UserController {
 		Users user = userService.getUserByUsername(principal.getName());
 		userService.updateProfileImg(user, profileImg);
 		return "redirect:/user/myPage";
+	}
+	@GetMapping("/activeUser")
+	public String activeUser() {
+		return "activeUserForm";
+	}
+	
+	@PostMapping("activeUser")
+	public String activeUser(@RequestParam("email") String email) throws MessagingException {
+		Users user = userService.getUserByEmail(email);
+		if(user == null) {
+			String msg = URLEncoder.encode("유저를 찾지 못 했습니다.", StandardCharsets.UTF_8);
+			return "redirect:/user/activeUser?error=notFoundUser&message="+msg;
+		}
+		if(!user.isDeleted()) {
+			String msg = URLEncoder.encode("비활성화된 유저가 아닙니다.", StandardCharsets.UTF_8);
+			return "redirect:/user/activeUser?error=notDisableUser&message="+msg;
+		}
+		
+		String link = userService.createActiveUserMailLink(user);
+		
+		mailService.sendActiveUser(email, link);
+		
+		return "sucess_send_mail";
+	}
+	
+	//얘는 메일 인증을 통해 들어오는 녀석임 그래서 루트 페이지로 보냄
+	@GetMapping("/active/confirm")
+	public String confirm(@RequestParam("token") String token) {
+		
+		try {
+			UserToken userToken = userTokenService.getUserTokenByToken(token);
+			Users user = userToken.getUser();
+			userService.userActivate(user);
+			userTokenService.deleteToken(userToken);
+			return "active_success";
+		} catch (IllegalStateException e) {
+			return "active_fail?error=notFoundToken&message=토큰이 맞지 않습니다.";
+		} catch (Exception e) {
+			return "active_fail?error=Exception&message=예상치 못 오류가 발견되었습니다.";
+		}
 	}
 	
 }

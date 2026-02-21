@@ -15,7 +15,10 @@
 
             <!-- 소설 정보 -->
             <div class="col-md-8">
-
+				<div th:if="${novel.username == loginUsername}">
+					<a th:href="@{'/contnent/novel_delete/' + ${novel.id}}" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</a>
+					<a th:href="@{/content/novel_update}" class="btn btn-info">수정하기</a>
+				</div>
                 <!-- 제목 -->
                 <h1 th:text="${novel.title}">소설 제목</h1>
 
