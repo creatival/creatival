@@ -79,5 +79,9 @@ public class ContentService {
 		return contentRepository.findById(id).get();
 	}
 	
+	public void delete(Content content) {
+		contentRepository.delete(content);
+	}
+	
 	// 소설 라인 // 
 }

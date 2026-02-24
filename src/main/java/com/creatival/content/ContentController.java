@@ -87,5 +87,6 @@ public class ContentController {
 		if(content.getUser().getUsername() != principal.getName()) {
 			return "redirect:content/novel_detail/"+id+"?error=콘텐츠의 소유자가 아닙니다.";
 		}
+		return "redirect:content/novel_detail/"+id+"?error=알 수 없는 오류가 발생했습니다.";
 	}
 }
