@@ -1,0 +1,119 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div class="container my-5" layout:fragment="content">
+    
+    <div class="row g-4">
+        <div class="col-12 col-lg-8">
+            
+            <div class="ratio ratio-16x9 bg-dark rounded-3 overflow-hidden shadow-sm mb-3">
+                <video controls poster="images/pic.png" class="object-fit-cover">
+                    <source src="dummy.mp4" type="video/mp4">
+                    브라우저가 비디오 태그를 지원하지 않습니다.
+                </video>
+            </div>
+
+            <h4 class="fw-bold mb-3">유니티로 2D 플랫포머 게임 만들기 1편</h4>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-bottom pb-3 mb-4 gap-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://dummyimage.com/48x48/ced4da/6c757d" class="rounded-circle me-3" alt="채널 로고" style="width: 48px; height: 48px;">
+                    <div>
+                        <h6 class="fw-bold mb-0">Creatival_Official</h6>
+                        <span class="text-muted small">팔로워 1.2만명</span>
+                    </div>
+                    <button class="btn btn-dark btn-sm rounded-pill ms-4 px-3 fw-bold">팔로우</button>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <div class="btn-group shadow-sm" role="group">
+                        <button type="button" class="btn btn-light border-secondary-subtle d-flex align-items-center">
+                            <i class="bi bi-hand-thumbs-up me-2"></i>1.2천
+                        </button>
+                        <button type="button" class="btn btn-light border-secondary-subtle d-flex align-items-center">
+                            <i class="bi bi-hand-thumbs-down"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-light border-secondary-subtle shadow-sm d-flex align-items-center rounded-pill px-3">
+                        <i class="bi bi-share me-2"></i>공유
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-light p-3 rounded-3 mb-5 shadow-sm">
+                <p class="fw-bold small mb-2">조회수 1.5만회 • 2023년 10월 24일</p>
+                <p class="mb-0 text-break text-muted">
+                    이번 영상에서는 유니티 엔진을 사용하여 2D 플랫포머 게임을 만드는 첫 번째 단계를 알아봅니다.<br>
+                    캐릭터 이동, 점프 물리 엔진 적용, 그리고 타일맵 구성까지 핵심적인 기초를 다집니다.<br><br>
+                    #유니티 #게임개발 #2D게임 #코딩
+                </p>
+            </div>
+
+            <div>
+                <h5 class="fw-bold mb-4">댓글 124개</h5>
+                
+                <div class="d-flex align-items-start mb-4">
+                    <img src="https://dummyimage.com/40x40/adb5bd/fff" class="rounded-circle me-3 mt-1" alt="내 프로필" style="width: 40px; height: 40px;">
+                    <div class="w-100">
+                        <input type="text" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none focus-ring-none" placeholder="댓글 추가...">
+                        <div class="d-flex justify-content-end mt-2 gap-2">
+                            <button class="btn btn-sm btn-light rounded-pill px-3">취소</button>
+                            <button class="btn btn-sm btn-primary rounded-pill px-3">댓글</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start mb-4">
+                    <img src="https://dummyimage.com/40x40/6c757d/fff" class="rounded-circle me-3 mt-1" alt="유저 프로필" style="width: 40px; height: 40px;">
+                    <div>
+                        <div class="d-flex align-items-center mb-1">
+                            <span class="fw-bold me-2 small">@GameDevStarter</span>
+                            <span class="text-muted small">2일 전</span>
+                        </div>
+                        <p class="mb-1 text-break">정말 유익한 영상이네요! 다음 편도 기대됩니다. 점프 로직이 헷갈렸는데 이해가 확 됐어요.</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <button class="btn btn-link text-dark p-0 text-decoration-none small"><i class="bi bi-hand-thumbs-up me-1"></i>15</button>
+                            <button class="btn btn-link text-dark p-0 text-decoration-none small"><i class="bi bi-hand-thumbs-down"></i></button>
+                            <button class="btn btn-link text-dark p-0 text-decoration-none small fw-bold">답글</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <h6 class="fw-bold mb-3">다음 동영상</h6>
+            
+            <div class="d-flex flex-column gap-3">
+                <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
+                    <div class="d-flex gap-2 align-items-start">
+                        <div class="position-relative bg-dark rounded-2 overflow-hidden flex-shrink-0" style="width: 160px; height: 90px;">
+                            <img src="images/pic.png" class="object-fit-cover w-100 h-100" alt="추천 영상 썸네일">
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-1 z-1" style="font-size: 0.7rem;">12:05</span>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.95rem;">유니티로 2D 플랫포머 게임 만들기 2편 - 적 AI 구현</h6>
+                            <p class="text-muted small mb-0 text-truncate">Creatival_Official</p>
+                            <p class="text-muted small mb-0">조회수 1.1만회 • 1일 전</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
+                    <div class="d-flex gap-2 align-items-start">
+                        <div class="position-relative bg-dark rounded-2 overflow-hidden flex-shrink-0" style="width: 160px; height: 90px;">
+                            <img src="images/pic.png" class="object-fit-cover w-100 h-100" alt="추천 영상 썸네일">
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-1 z-1" style="font-size: 0.7rem;">08:15</span>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.95rem;">초보자를 위한 일러스트레이터 기초 강좌</h6>
+                            <p class="text-muted small mb-0 text-truncate">그림그리는 영희</p>
+                            <p class="text-muted small mb-0">조회수 8,400회 • 1주 전</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</html>
