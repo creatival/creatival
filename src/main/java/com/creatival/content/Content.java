@@ -12,6 +12,7 @@ import com.creatival.content.Enum.ContentType;
 import com.creatival.user.Users;
 import com.creatival.user.userRole;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -95,7 +96,7 @@ public class Content {
 	@JoinColumn(name = "original_content_id")
 	private Content originalContent;
 	
-	@OneToOne(mappedBy = "content")
+	@OneToOne(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Series series;
 	
 }

@@ -7,17 +7,33 @@
 
         <div class="row">
             <!-- 썸네일 영역 (현재 DTO에 없으므로 기본 이미지 사용) -->
-            <div class="col-md-4">
-                <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}"
-                     alt="썸네일"
-                     style="width: 300px; height: 400px;" />
-            </div>
+			<div class="col-md-4">
+
+			    <div class="position-relative"
+			         style="width:300px; height:400px; cursor:pointer;"
+			         data-bs-toggle="modal"
+			         data-bs-target="#thumbnailUpdateModal"
+			         title="클릭하여 표지 변경">
+
+			        <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}"
+			             class="border shadow-sm"
+			             style="width:100%; height:100%; object-fit:cover;" />
+
+			        <!-- 카메라 아이콘 -->
+			        <div class="position-absolute bottom-0 end-0 bg-white rounded-circle border p-2"
+			             style="width:40px; height:40px;" th:if="${novel.username == loginUsername}">
+			            <i class="bi bi-camera-fill text-dark"></i>
+			        </div>
+
+			    </div>
+
+			</div>
 
             <!-- 소설 정보 -->
             <div class="col-md-8">
 				<div th:if="${novel.username == loginUsername}">
-					<a th:href="@{'/contnent/novel_delete/' + ${novel.id}}" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</a>
-					<a th:href="@{/content/novel_update}" class="btn btn-info">수정하기</a>
+					<a th:href="@{'/content/novel_delete/' + ${novel.id}}" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</a>
+					<a th:href="@{'/content/novel_update/' + ${novel.id}}" class="btn btn-info">수정하기</a>
 				</div>
                 <!-- 제목 -->
                 <h1 th:text="${novel.title}">소설 제목</h1>
@@ -87,6 +103,78 @@
             </div>
         </div>
     </div>
+	
+	<!--소설 표지 수정 모달-->
+	<div class="modal fade" id="thumbnailUpdateModal" tabindex="-1" aria-hidden="true">
+	    <div class="modal-dialog modal-dialog-centered">
+	        <div class="modal-content">
+
+	            <div class="modal-header">
+	                <h5 class="modal-title">소설 표지 변경</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+	            </div>
+
+	            <form th:action="@{/content/updateNovelThumbnail/{id}(id=${novel.id})}"
+	                  method="post"
+	                  enctype="multipart/form-data">
+
+	                <div class="modal-body text-center">
+
+	                    <!-- 미리보기 -->
+	                    <img id="thumbnailPreview"
+	                         th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}"
+	                         class="mb-3 border shadow-sm"
+	                         width="200"
+	                         height="270"
+	                         style="object-fit:cover;">
+
+	                    <input class="form-control"
+	                           type="file"
+	                           id="thumbnailInput"
+	                           name="thumbnailFile"
+	                           accept="image/*"
+	                           required>
+
+	                </div>
+
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+	                    <button type="submit" class="btn btn-dark">변경하기</button>
+	                </div>
+
+	            </form>
+
+	        </div>
+	    </div>
+	</div>
+	
+	<script>
+	    const thumbnailInput = document.getElementById('thumbnailInput');
+	    const thumbnailPreview = document.getElementById('thumbnailPreview');
+
+	    if (thumbnailInput) {
+	        thumbnailInput.onchange = () => {
+	            const [file] = thumbnailInput.files;
+	            if (file) {
+	                thumbnailPreview.src = URL.createObjectURL(file);
+	            }
+	        }
+	    }
+
+	    const thumbnailForm = document.querySelector('#thumbnailUpdateModal form');
+
+	    if (thumbnailForm) {
+	        thumbnailForm.onsubmit = function () {
+	            const submitBtn = this.querySelector('button[type="submit"]');
+
+	            submitBtn.disabled = true;
+	            submitBtn.innerHTML = `
+	                <span class="spinner-border spinner-border-sm" role="status"></span>
+	                업로드 중...
+	            `;
+	        };
+	    }
+	</script>
 
 </div>
 </html>

@@ -1,5 +1,6 @@
 package com.creatival.content;
 
+import java.io.IOException;
 import java.security.Principal;
 
 import org.springframework.data.domain.Page;
@@ -7,14 +8,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -63,17 +67,24 @@ public class ContentController {
 		
 	}
 	
+	
+	
 	@GetMapping("/novel_detail/{id}")
 	public String novel_detail(Model model, @PathVariable("id") Long id, Principal principal) {
 		Content content = contentService.getNovel(id);
 		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
 		model.addAttribute("novel", novelDetail);
-		model.addAttribute("loginUsername", principal.getName());
+		if(principal != null) {
+			model.addAttribute("loginUsername", principal.getName());
+		} else {
+			model.addAttribute("loginUsername", null);
+		}
+		
 		return "novel_detail";
 	}
 	
-	@PostMapping("/novel_delete/{id}")
-	public String novel_delete(@PathVariable Long id, Principal principal) {
+	@GetMapping("/novel_delete/{id}")
+	public String novel_delete(@PathVariable("id") Long id, Principal principal) {
 		Content content = contentService.getNovel(id);
 		
 		if(content.getOnwerType()!=OwnerType.TEAM && content.getUser().getUsername() != principal.getName()) {
@@ -88,5 +99,37 @@ public class ContentController {
 			return "redirect:content/novel_detail/"+id+"?error=콘텐츠의 소유자가 아닙니다.";
 		}
 		return "redirect:content/novel_detail/"+id+"?error=알 수 없는 오류가 발생했습니다.";
+	}
+	@GetMapping("/novel_update/{id}")
+	public String novel_update(@PathVariable("id") Long id, Model model) {
+		Content novel = contentService.getNovel(id);
+		model.addAttribute("novel", UpdateNovelDTO.from(novel, novel.getSeries()));
+		model.addAttribute("novelId", id);
+		return "novel_edit";
+	}
+	@PostMapping("/novel_update/{id}")
+	public String novel_update(@PathVariable("id") Long id,@Valid @ModelAttribute("novel") UpdateNovelDTO updateNovelDTO, BindingResult bindingResult, Principal principal,Model model)  {
+		if(bindingResult.hasErrors()) {
+			System.out.println("오류 발생");
+			return "novel_edit";
+		}
+		
+		try {
+			contentService.updateContentNovel(updateNovelDTO, id, principal.getName());
+			return "redirect:/content/novel_detail/"+id;
+		} catch (IllegalArgumentException e) {
+			bindingResult.reject("updateNovelFailed", e.getMessage());
+			return "novel_edit";
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			bindingResult.reject("updateNovelFailed", "소설을 수정하던 중 알 수 없는 오류가 발생했습니다.");
+	        return "novel_edit";
+		}
+	}
+	
+	@PostMapping("/updateNovelThumbnail/{id}")
+	public String updateNovelThumbnail(@PathVariable("id") Long id, @RequestParam("thumbnailFile") MultipartFile img, Principal principal) throws IOException {
+		contentService.updateNovelThumbnail(id, img, principal.getName());
+		return "redirect:/content/novel_detail/" + id;
 	}
 }

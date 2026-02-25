@@ -103,11 +103,11 @@ public class UserController {
 			model.addAttribute("user", responseProfile);
 			return "redirect:/user/myPage";
 		} catch (IllegalStateException e) {
-			bindingResult.reject("signupFailed", e.getMessage());
+			bindingResult.reject("UpdateUserFailed", e.getMessage());
 			return "redirect:/user/edit";
 		} catch (Exception e) {
 			e.printStackTrace();
-	        bindingResult.reject("signupFailed", "회원가입 중 알 수 없는 오류가 발생했습니다.");
+	        bindingResult.reject("UpdateUserFailed", "정보 수정 중 알 수 없는 오류가 발생했습니다.");
 	        return "redirect:/user/edit";
 		}
 	}

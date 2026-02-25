@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -11,14 +13,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.SeriesRepository;
+import com.creatival.user.UserRepository;
+import com.creatival.user.UserService;
 import com.creatival.user.Users;
+
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,22 +36,17 @@ import lombok.RequiredArgsConstructor;
 public class ContentService {
 	private final ContentRepository contentRepository;
 	private final SeriesRepository seriesRepository;
-	private static final String UPLOAD_DIR = "src/main/resources/static/images/Thumbnail";
+	private final UserService userService;
+	private final FileUtil fileUtil;
 	
 	// 소설 라인 // 
 	@Transactional
 	public void createCotentNovel(CreateNovelDTO createNovelDTO, Users user) throws IOException {
-		
 		String imgurl = null;
 		
-		if(createNovelDTO.getThumbnailFile()!=null)  {
-			String fileName = UUID.randomUUID().toString()+"_"+ createNovelDTO.getThumbnailFile().getOriginalFilename();
-			Path filePath = Paths.get(UPLOAD_DIR, fileName);
-			Files.createDirectories(filePath.getParent());
-			Files.write(filePath, createNovelDTO.getThumbnailFile().getBytes());
-			imgurl = "/images/Thumbnail/"+fileName;
+		if(createNovelDTO.getThumbnailFile() != null) {
+			imgurl = fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
 		}
-		
 		Content content = Content.builder()
 				.title(createNovelDTO.getTitle())
 				.description(createNovelDTO.getDescription())
@@ -81,6 +84,38 @@ public class ContentService {
 	
 	public void delete(Content content) {
 		contentRepository.delete(content);
+	}
+	
+	public void updateContentNovel(UpdateNovelDTO updateNovelDTO, Long id, String username) {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			new IllegalArgumentException("소설 수정 정보가 전달되지 않았습니다.");
+		}
+		Content content = optional.get();
+		Users user = userService.getUserByUsername(username);
+		if(!content.getUser().getId().equals(user.getId())) { //id는 Long으로 이루워져있는데 놀랍게도 Long은 개체라서 이게 맞단다.
+			new IllegalArgumentException("본인이 쓴 소설만 수정할 수 있습니다.");
+		}
+		content.setTitle(updateNovelDTO.getTitle());
+		content.setDescription(updateNovelDTO.getDescription());
+		content.setVisibility(updateNovelDTO.getVisibility());
+		content.setAllowComment(updateNovelDTO.isAllowComment());
+		
+		Series series = content.getSeries();
+		series.setEnd(updateNovelDTO.isEnd());
+		
+		contentRepository.save(content);
+		seriesRepository.save(series);
+	}
+
+	public void updateNovelThumbnail(Long id, MultipartFile img, String name) throws IOException {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			return;
+		}
+		Content content = optional.get();
+		content.setThumbnailImgUrl(fileUtil.saveImage(img, "thumbnail"));
+		contentRepository.save(content);
 	}
 	
 	// 소설 라인 // 

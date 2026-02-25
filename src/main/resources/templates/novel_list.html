@@ -70,31 +70,30 @@
 
 	    </div>
 
-	<nav aria-label="Page navigation example">
-		<ul class="pagination justify-content-center">
-			<li class="page-item disabled">
-				<a class="page-link">이전</a>
-			</li>
-			<li class="page-item active">
-				<a class="page-link" href="#">1</a>
-			</li>
-			<li class="page-item">
-				<a class="page-link" href="#">2</a>
-			</li>
-			<li class="page-item">
-				<a class="page-link" href="#">3</a>
-			</li>
-			<li class="page-item">
-				<a class="page-link" href="#">4</a>
-			</li>
-			<li class="page-item">
-				<a class="page-link" href="#">5</a>
-			</li>
-			<li class="page-item">
-				<a class="page-link" href="#">다음</a>
-			</li>
-		</ul>
-	</nav>
+		<nav aria-label="Page navigation example" th:if="${!paging.isEmpty()}">
+		    <ul class="pagination justify-content-center">
+		        
+		        <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+		            <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">
+		                <span>이전</span>
+		            </a>
+		        </li>
+
+		        <li th:each="page: ${#numbers.sequence(0, paging.totalPages - 1)}"
+		            th:if="${page >= paging.number - 2 and page <= paging.number + 2}"
+		            th:classappend="${page == paging.number} ? 'active'" 
+		            class="page-item">
+		            <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+		        </li>
+
+		        <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+		            <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">
+		                <span>다음</span>
+		            </a>
+		        </li>
+		        
+		    </ul>
+		</nav>
 
 
 	<!-- FOOTER -->
@@ -187,5 +186,4 @@
 
 </body>
 
->>>>>>> branch 'develop' of https://github.com/creatival/creatival.git
 </html>
