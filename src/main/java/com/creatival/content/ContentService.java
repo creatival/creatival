@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,9 +21,11 @@ import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
+import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.UpdateNovelDTO;
+import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
@@ -43,6 +47,29 @@ public class ContentService {
 	private final EpisodeRepository episodeRepository;
 	private final UserService userService;
 	private final FileUtil fileUtil;
+	
+	
+	//공통 라인 //
+	
+	public Episode getPrevEpisode(Episode episode) {
+		Series series = episode.getSeries();
+		Optional<Episode> prevEpisode = episodeRepository.findFirstBySeriesAndEpisodeNumLessThanOrderByEpisodeNumDesc(series, episode.getEpisodeNum());
+		if(prevEpisode.isEmpty()) {
+			System.out.println("이전 에피소드 없음");
+			return null;
+		}
+		return prevEpisode.get();
+	}
+	public Episode getNextEpisode(Episode episode) {
+		Series series = episode.getSeries();
+		Optional<Episode> nextEpisode = episodeRepository.findFirstBySeriesAndEpisodeNumGreaterThanOrderByEpisodeNumAsc(series, episode.getEpisodeNum());
+		if(nextEpisode.isEmpty()) {
+			System.out.println("다음 에피소드 없음");
+			return null;
+		}
+		return nextEpisode.get();
+	}
+	// 공통 라인 //
 	
 	// 소설 라인 // 
 	@Transactional
@@ -123,10 +150,13 @@ public class ContentService {
 		contentRepository.save(content);
 	}
 
+	
 	public void createNovelEpisode(Long id,CreateNovelEpisodeDTO createNovelEpisodeDTO, String username) {
 		Content content = contentRepository.findById(id).get();
 		Series series = content.getSeries();
 		Integer maxNum = episodeRepository.findByMaxEpisodeNumBySeries(series);
+		
+		if(maxNum == null) maxNum=0;
 		
 		Episode episode = Episode.builder()
 				.title(createNovelEpisodeDTO.getTitle())
@@ -151,5 +181,26 @@ public class ContentService {
 		return episodeList.map(episode -> ResponseNovelEpisodeList.from(episode));
 	}
 	
+	public Episode getNovelEpisode(Long episodeId) {
+		Episode episode = episodeRepository.findById(episodeId).get();
+		return episode;
+	}
+	public void updateContentNovelEpisode(UpdateNovelEpisodeDTO updateNovelEpisodeDTO, String name) {
+		Episode episode = episodeRepository.findById(updateNovelEpisodeDTO.getId()).get();
+		if(!episode.getSeries().getContent().getUser().getUsername().equals(name)) {
+			new IllegalArgumentException("에피소드 수정은 본인만 할 수 있습니다.");
+		}
+		episode.setTitle(updateNovelEpisodeDTO.getTitle());
+		episode.setNovelContent(updateNovelEpisodeDTO.getNovelContent());
+		episode.setNote(updateNovelEpisodeDTO.getNote());
+		episode.setFree(updateNovelEpisodeDTO.isFree());
+		episode.setDeleted(updateNovelEpisodeDTO.isDeleted());
+		
+		episodeRepository.save(episode);
+	}
+	
+	public void deleteNovelEpisode(Episode episode) {
+		episodeRepository.delete(episode);
+	}
 	// 소설 라인 // 
 }

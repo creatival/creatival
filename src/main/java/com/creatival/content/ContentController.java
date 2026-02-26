@@ -18,9 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
+import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.UpdateNovelDTO;
+import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -72,7 +74,7 @@ public class ContentController {
 	// 수정할 것
 	
 	@GetMapping("/novel_detail/{id}")
-	public String novel_detail(Model model, @PathVariable("id") Long id,@RequestParam(defaultValue = "0") int page, Principal principal) {
+	public String novel_detail(Model model, @PathVariable("id") Long id,@RequestParam(defaultValue = "0", name = "page") int page, Principal principal) {
 		Content content = contentService.getNovel(id);
 		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
 		model.addAttribute("novel", novelDetail);
@@ -144,18 +146,73 @@ public class ContentController {
 	}
 	
 	@PostMapping("/novel/episode/write/{id}")
-	public String createNovelEpisode(@PathVariable("id") Long id, @Valid CreateNovelEpisodeDTO createNovelEpisodeDTO, BindingResult bindingResult, Principal principal) {
+	public String createNovelEpisode(@PathVariable("id") Long id, @Valid CreateNovelEpisodeDTO createNovelEpisodeDTO, BindingResult bindingResult, Principal principal, Model model) {
 		if(bindingResult.hasErrors()) {
 			System.out.println("오류 발생");
-			return "novel_write";
+			return "novel_episode_write";
 		}
+		
+		Content content = contentService.getNovel(id);
+		model.addAttribute("novel", ResponseNovelDetail.from(content));
 		
 		try {
 			contentService.createNovelEpisode(id, createNovelEpisodeDTO, principal.getName());
 			return "redirect:/content/novel_detail/" + id;
 		} catch (Exception e) {
 			bindingResult.reject("createEpisodeFailed", e.getMessage());
-			return "redirect:/content/novel/episode/write/"+id;
+			return "novel_episode_write";
 		}
+	}
+	
+	//나중에 권한 체크 넣을 것
+	@GetMapping("/novel/episode/{id}")
+	public String novelEpisodeDetail(@PathVariable("id") Long episodeId, Model model) {
+		Episode episode = contentService.getNovelEpisode(episodeId); 
+		ResponseNovelEpisodeDetail episodeDetail = ResponseNovelEpisodeDetail.from(episode);
+		model.addAttribute("episode", episodeDetail);
+		
+		
+		model.addAttribute("prevEpisode", contentService.getPrevEpisode(episode));
+		model.addAttribute("nextEpisode", contentService.getNextEpisode(episode));
+		model.addAttribute("contentId", episode.getSeries().getContent().getId());
+		return "novel_viewer";
+	}
+	
+	@GetMapping("/novel/episode/update/{id}")
+	public String novelEpisodeUpdate(@PathVariable("id") Long episodeId, Model model) {
+		
+		Episode episode = contentService.getNovelEpisode(episodeId);
+		Content content = episode.getSeries().getContent();
+		model.addAttribute("episode", UpdateNovelEpisodeDTO.from(episode));
+		model.addAttribute("novel", ResponseNovelDetail.from(content));
+		return "novel_episode_write_edit";
+	}
+	
+	@PostMapping("/novel/episode/update/{id}")
+	public String novelEpisodeUpdate(@Valid @ModelAttribute("novel") UpdateNovelEpisodeDTO updateNovelEpisodeDTO,BindingResult bindingResult, Model model, Principal principal) {
+		if(bindingResult.hasErrors()) {
+			System.out.println("오류 발생");
+			return "novel_episode_write";
+		}
+		try {
+			contentService.updateContentNovelEpisode(updateNovelEpisodeDTO, principal.getName());
+			return "redirect:/content/novel/episode/"+updateNovelEpisodeDTO.getId();
+		}  catch (IllegalArgumentException e) {
+			bindingResult.reject("updateNovelFailed", e.getMessage());
+			return "novel_episode_write_edit";
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			bindingResult.reject("updateNovelEpisodeFailed", "에피소드를 수정하던 중 알 수 없는 오류가 발생했습니다.");
+	        return "novel_episode_write_edit";
+		}
+	}
+	@GetMapping("/novel/episode/delete/{id}")
+	public String novelEpisodeDelete(@PathVariable("id") Long episodeId, Principal principal) {
+		Episode episode = contentService.getNovelEpisode(episodeId);
+		if(!episode.getSeries().getContent().getUser().getUsername().equals(principal.getName())) {
+			return "/";
+		}
+		contentService.deleteNovelEpisode(episode);
+		return "redirect:/content/novel_detail/"+episode.getSeries().getContent().getId();
 	}
 }

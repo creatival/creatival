@@ -10,7 +10,7 @@
                             <p class="text-muted mb-0"><span th:text="${novel.title}" class="fw-bold text-primary">소설 제목</span>의 이야기를 이어가세요</p>
                         </div>
 
-                        <form th:action="@{/content/episode_write/{novelId}(novelId=${novel.id})}" 
+                        <form th:action="@{/content/novel/episode/write/{novelId}(novelId=${novel.id})}" 
                               th:object="${createNovelEpisodeDTO}" 
                               method="post">
 
