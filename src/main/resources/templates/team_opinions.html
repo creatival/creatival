@@ -1,0 +1,79 @@
+<html layout:decorate="~{layout}">
+<div class="container my-5" layout:fragment="content">
+    
+    <div class="row mb-5 pb-4 border-bottom align-items-end">
+        </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <img src="images/pic.png" class="img-fluid rounded shadow-sm mb-5" alt="프로젝트 대표 이미지" style="width: 100%; height: 400px; object-fit: cover;">
+
+            <section class="mb-5">
+                <h4 class="fw-bold mb-4 border-bottom pb-2">팀 소개</h4>
+                </section>
+
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+                    <h4 class="fw-bold mb-0">프로젝트</h4>
+                    <a th:href="@{/team_project_list}">전체 보기</a>
+                </div>
+                </section>
+
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+                    <h4 class="fw-bold mb-0">팀 의견 <span class="badge bg-secondary ms-2 small" style="font-size: 0.5em;">12</span></h4>
+                </div>
+
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3">
+                            <img src="https://dummyimage.com/40x40/adb5bd/fff" class="rounded-circle" alt="내 프로필">
+                            <div class="w-100">
+                                <textarea class="form-control border-0 shadow-none mb-2" rows="2" placeholder="팀원들과 나누고 싶은 의견을 남겨주세요." style="resize: none;"></textarea>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-primary btn-sm px-3 rounded-pill">의견 등록</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="opinions-list">
+                    <div class="d-flex align-items-start mb-4 pb-3 border-bottom-dashed">
+                        <img src="https://dummyimage.com/40x40/6c757d/fff" class="rounded-circle me-3" alt="유저 프로필">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold small">이영희 <span class="badge bg-info-subtle text-info ms-1" style="font-size: 0.8em;">팀원</span></span>
+                                <span class="text-muted" style="font-size: 0.75rem;">1시간 전</span>
+                            </div>
+                            <p class="mb-1 text-secondary small">캐릭터 이동 애니메이션에 조금 더 무게감을 주면 좋을 것 같아요! 현재는 약간 떠 있는 느낌이 듭니다.</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm p-0 text-muted small">좋아요 3</button>
+                                <button class="btn btn-sm p-0 text-muted small">답글</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start mb-4">
+                        <img src="https://dummyimage.com/40x40/495057/fff" class="rounded-circle me-3" alt="유저 프로필">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold small">박지성 <span class="badge bg-light text-dark border ms-1" style="font-size: 0.8em;">방문자</span></span>
+                                <span class="text-muted" style="font-size: 0.75rem;">5시간 전</span>
+                            </div>
+                            <p class="mb-1 text-secondary small">유니티 2026 버전이라니 기대되네요! 개발 일지도 올려주시면 감사하겠습니다.</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm p-0 text-muted small">좋아요 1</button>
+                                <button class="btn btn-sm p-0 text-muted small">답글</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            </div>
+
+        <div class="col-lg-4">
+            </div>
+    </div>
+</div>
+</html>

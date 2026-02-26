@@ -1,0 +1,138 @@
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
+    <main class="py-5">
+        <h1 class="mt-5 mb-4 text-center">자료 공유실</h1>
+        <h5 class="mb-5 text-center text-muted">필요한 프로젝트 소스를 자유롭게 다운로드하세요.</h5>
+
+		<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+		    <div class="text-muted small">
+		        총 <span class="fw-bold text-dark">128</span>개의 파일
+		    </div>
+
+		    <div class="d-flex align-items-center gap-3">
+		        <div class="btn-group" role="group" aria-label="정렬 방식">
+		            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+		            <label class="btn btn-outline-secondary btn-sm px-3" for="btnradio1">최신순</label>
+
+		            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+		            <label class="btn btn-outline-secondary btn-sm px-3" for="btnradio2">인기순</label>
+		        </div>
+
+		        <a th:href="@{/file_write}" class="btn btn-dark btn-sm px-3 d-flex align-items-center">
+		            <i class="bi bi-plus-lg me-1"></i> 파일 업로드
+		        </a>
+		    </div>
+		</div>
+
+        <div class="row g-4 mb-5">
+            
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <a th:href="@{/file_detail}" class="text-decoration-none text-dark">
+                    <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="ratio ratio-16x9 position-relative bg-light border-bottom d-flex align-items-center justify-content-center">
+                            <img src="images/pic.png" class="object-fit-cover" alt="미리보기">
+                            <span class="badge bg-secondary position-absolute bottom-0 end-0 m-2 z-1">IMG</span>
+                        </div>
+                        
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="min-width: 36px; height: 36px;">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                                
+                                <div class="overflow-hidden">
+                                    <h6 class="card-title fw-bold text-truncate mb-1">UI 디자인 시스템 가이드 v1.2</h6>
+                                    <p class="text-muted small mb-0 text-truncate">Creatival_Design</p>
+                                    <p class="text-muted small mb-0">2.4 MB • 3일 전</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <a th:href="@{/file_detail}" class="text-decoration-none text-dark">
+                    <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="ratio ratio-16x9 position-relative bg-secondary bg-opacity-10 border-bottom d-flex align-items-center justify-content-center">
+                            <div class="display-6 text-secondary fw-bold">PDF</div>
+                            <span class="badge bg-danger position-absolute bottom-0 end-0 m-2 z-1">DOC</span>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="min-width: 36px; height: 36px;">
+                                    <i class="bi bi-file-pdf"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="card-title fw-bold text-truncate mb-1">상반기 프로젝트 기획안 양식</h6>
+                                    <p class="text-muted small mb-0 text-truncate">기획팀_철수</p>
+                                    <p class="text-muted small mb-0">850 KB • 1주 전</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <a th:href="@{/file_detail}" class="text-decoration-none text-dark">
+                    <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="ratio ratio-16x9 position-relative bg-light border-bottom d-flex align-items-center justify-content-center">
+                            <div class="display-6 text-warning"><i class="bi bi-archive"></i></div>
+                            <span class="badge bg-warning text-dark position-absolute bottom-0 end-0 m-2 z-1">ZIP</span>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="min-width: 36px; height: 36px;">
+                                    <i class="bi bi-folder-fill"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="card-title fw-bold text-truncate mb-1">유니티 2D 에셋 패키지 모음</h6>
+                                    <p class="text-muted small mb-0 text-truncate">Game_Dev_Master</p>
+                                    <p class="text-muted small mb-0">145 MB • 2달 전</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <a th:href="@{/file_detail}" class="text-decoration-none text-dark">
+                    <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="ratio ratio-16x9 position-relative bg-dark border-bottom d-flex align-items-center justify-content-center">
+                            <code class="text-success">&lt;CODE/&gt;</code>
+                            <span class="badge bg-success position-absolute bottom-0 end-0 m-2 z-1">JSON</span>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="min-width: 36px; height: 36px;">
+                                    <i class="bi bi-braces"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="card-title fw-bold text-truncate mb-1">글로벌 다국어 처리 JSON 데이터</h6>
+                                    <p class="text-muted small mb-0 text-truncate">Team Creatival</p>
+                                    <p class="text-muted small mb-0">12 KB • 5시간 전</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+			<nav aria-label="Page navigation">
+			        <ul class="pagination justify-content-center">
+			            <li class="page-item disabled">
+			                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
+			            </li>
+			            <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+			            <li class="page-item"><a class="page-link" href="#">2</a></li>
+			            <li class="page-item"><a class="page-link" href="#">3</a></li>
+			            <li class="page-item">
+			                <a class="page-link" href="#">다음</a>
+			            </li>
+			        </ul>
+			    </nav>
+        </div>
+    </main>
+</div>
+</html>

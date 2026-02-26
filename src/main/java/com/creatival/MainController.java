@@ -119,6 +119,11 @@ public class MainController {
 		return "team_detail";
 	}
 	
+	@GetMapping("/team_opinions")
+	public String team_opinions() {
+		return "team_opinions";
+	}
+	
 	@GetMapping("/team_project_list")
 	public String team_project_list() {
 		return "team_project_list";
@@ -138,6 +143,11 @@ public class MainController {
 	public String team_project_edit() {
 		return "team_project_edit";
 	}
+	@GetMapping("/team_project_illust_detail")
+	public String team_project_illust_detail() {
+		return "team_project_illust_detail";
+	}
+	
 	
 	@GetMapping("/team_project_file_upload")
 	public String team_project_file_upload() {
@@ -152,5 +162,40 @@ public class MainController {
 	@GetMapping("/video_write")
 	public String video_write() {
 		return "video_write";
+	}
+	
+	@GetMapping("/video_detail")
+	public String video_detail() {
+		return "video_detail";
+	}
+	
+	@GetMapping("/music_list")
+	public String music_list() {
+		return "music_list";
+	}
+	
+	@GetMapping("/music_write")
+	public String music_write() {
+		return "music_write";
+	}
+	
+	@GetMapping("/music_detail")
+	public String music_detail() {
+		return "music_detail";
+	}
+	
+	@GetMapping("/file_list")
+	public String file_list() {
+		return "file_list";
+	}
+	
+	@GetMapping("/file_detail")
+	public String file_detail() {
+		return "file_detail";
+	}
+	
+	@GetMapping("/file_write")
+	public String file_write() {
+		return "file_write";
 	}
 }
