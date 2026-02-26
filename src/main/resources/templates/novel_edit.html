@@ -1,139 +1,108 @@
 <html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
+<div layout:fragment="content">
+    <main class="flex-shrink-0 mt-5 mb-5">
+        <div class="container d-flex justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-lg-5">
+                        
+                        <div class="mb-4 text-center">
+                            <h3 class="fw-bold text-dark">소설 정보 수정</h3>
+                            <p class="text-muted small">작품의 기본 정보를 변경할 수 있습니다.</p>
+                        </div>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Creatival</title>
+                        <form th:action="@{/content/novel_update/{id}(id=${novelId})}"
+                              th:object="${novel}"
+                              method="post">
 
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="css/styles.css" rel="stylesheet" />
-</head>
+                            <div class="alert alert-danger shadow-sm" role="alert" th:if="${#fields.hasAnyErrors()}">
+                                <ul class="mb-0">
+                                    <li th:each="err : ${#fields.allErrors()}" th:text="${err}">에러 메시지</li>
+                                </ul>
+                            </div>
 
-<body class="d-flex flex-column">
+                            <div class="mb-4">
+                                <label for="title" class="form-label fw-bold">소설 제목</label>
+                                <input type="text"
+                                       id="title"
+                                       class="form-control form-control-lg border-2"
+                                       th:field="*{title}"
+                                       placeholder="작품의 제목을 입력하세요"
+                                       th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+                            </div>
 
-<div class="container mt-5 mb-5 d-flex justify-content-center">
-  <div class="col-lg-8">
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-bold">작품 소개</label>
+                                <textarea id="description"
+                                          class="form-control border-2"
+                                          rows="6"
+                                          th:field="*{description}"
+                                          placeholder="독자들에게 작품을 소개해주세요."></textarea>
+                            </div>
 
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4 p-lg-5">
+                            <hr class="my-4 text-muted opacity-25">
 
-        <div class="mb-4 text-center">
-          <h3 class="fw-bold">소설 수정</h3>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold d-block">소통 설정</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="allowComment" th:field="*{allowComment}">
+                                        <label class="form-check-label ms-2" for="allowComment">댓글 작성을 허용합니다</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold d-block">공개 설정</label>
+                                    <div class="mt-2">
+                                        <div class="form-check form-check-inline me-4">
+                                            <input class="form-check-input" type="radio" id="v_public"
+                                                   th:field="*{visibility}" th:value="${T(com.creatival.content.Enum.Visibility).PUBLIC}">
+                                            <label class="form-check-label" for="v_public">공개</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" id="v_private"
+                                                   th:field="*{visibility}" th:value="${T(com.creatival.content.Enum.Visibility).PRIVATE}">
+                                            <label class="form-check-label" for="v_private">비공개</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold d-block">연재 상태</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" id="status_ing" th:field="*{end}" value="false">
+                                    <label class="btn btn-outline-primary py-2" for="status_ing">연재 중</label>
+
+                                    <input type="radio" class="btn-check" id="status_end" th:field="*{end}" value="true">
+                                    <label class="btn btn-outline-success py-2" for="status_end">완결</label>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                                <a th:href="@{/novel/{id}(id=${novelId})}" class="btn btn-link text-decoration-none text-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i> 이전으로
+                                </a>
+                                <button type="submit" class="btn btn-dark px-5 py-2 fw-bold shadow-sm">
+                                    정보 수정 완료
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+    </main>
 
-        <!-- POST 방식 -->
-        <form th:action="@{/content/novel_update/{id}(id=${novelId})}"
-              th:object="${novel}"
-              method="post">
-
-          <!-- 제목 -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold">소설 제목</label>
-			<div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}" th:fragment="formErrorsFragment">
-																			<div th:each="err : ${#fields.allErrors()}">[[${err}]]</div>
-																	</div>
-            <input type="text"
-                   class="form-control form-control-lg"
-                   th:field="*{title}"
-                   placeholder="수정할 제목">
-          </div>
-
-          <!-- 소개 -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold">작품 소개</label>
-            <textarea class="form-control"
-                      rows="5"
-                      th:field="*{description}"
-                      placeholder="수정할 소개를 작성해주세요."></textarea>
-          </div>
-
-          <!-- allowComment -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold">댓글 허용</label>
-            <div class="form-check">
-              <input class="form-check-input"
-                     type="checkbox"
-                     th:field="*{allowComment}">
-              <label class="form-check-label">댓글을 허용합니다</label>
-            </div>
-          </div>
-		  <!-- 연재 범위 -->
-		  <div class="mb-4">
-		      <label class="form-label fw-semibold d-block">공개 범위</label>
-
-		      <div class="form-check form-check-inline">
-		          <input class="form-check-input"
-		                 type="radio"
-		                 th:field="*{visibility}"
-		                 th:value="${T(com.creatival.content.Enum.Visibility).PUBLIC}">
-		          <label class="form-check-label">공개</label>
-		      </div>
-
-		      <div class="form-check form-check-inline">
-		          <input class="form-check-input"
-		                 type="radio"
-		                 th:field="*{visibility}"
-		                 th:value="${T(com.creatival.content.Enum.Visibility).PRIVATE}">
-		          <label class="form-check-label">비공개</label>
-		      </div>
-		  </div>
-          <!-- 연재 상태 -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold d-block">연재 상태</label>
-
-            <div class="form-check form-check-inline">
-              <input class="form-check-input"
-                     type="radio"
-                     th:field="*{end}"
-                     value="false">
-              <label class="form-check-label">연재 중</label>
-            </div>
-
-            <div class="form-check form-check-inline">
-              <input class="form-check-input"
-                     type="radio"
-                     th:field="*{end}"
-                     value="true">
-              <label class="form-check-label">완결</label>
-            </div>
-          </div>
-
-          <!-- 버튼 -->
-          <div class="d-flex justify-content-between mt-4">
-            <a th:href="@{/novel/{id}(id=${novelId})}"
-               class="btn btn-outline-secondary px-4">
-              취소
-            </a>
-
-            <button type="submit"
-                    class="btn btn-dark px-5">
-              수정하기
-            </button>
-          </div>
-
-        </form>
-
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- JS Validation -->
-<script>
-document.querySelector("form").addEventListener("submit", function(e) {
-
-    const title = document.querySelector("input[name='title']").value.trim();
-
-    if(title === "") {
-        alert("제목은 필수입니다.");
-        e.preventDefault();
-    }
-});
-</script>
-
-</body>
+    <script>
+        document.querySelector("form").addEventListener("submit", function(e) {
+            const title = document.getElementById("title").value.trim();
+            if(!title) {
+                alert("소설 제목은 비워둘 수 없습니다.");
+                e.preventDefault();
+            }
+        });
+    </script>
 </div>
 </html>

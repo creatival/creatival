@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.content.DTO.CreateNovelDTO;
+import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
+import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.Enum.OwnerType;
@@ -67,10 +69,10 @@ public class ContentController {
 		
 	}
 	
-	
+	// 수정할 것
 	
 	@GetMapping("/novel_detail/{id}")
-	public String novel_detail(Model model, @PathVariable("id") Long id, Principal principal) {
+	public String novel_detail(Model model, @PathVariable("id") Long id,@RequestParam(defaultValue = "0") int page, Principal principal) {
 		Content content = contentService.getNovel(id);
 		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
 		model.addAttribute("novel", novelDetail);
@@ -79,7 +81,8 @@ public class ContentController {
 		} else {
 			model.addAttribute("loginUsername", null);
 		}
-		
+		Page<ResponseNovelEpisodeList> paging =  contentService.getEpisodeBySeries(content.getSeries(), page);
+		model.addAttribute("paging", paging);
 		return "novel_detail";
 	}
 	
@@ -131,5 +134,28 @@ public class ContentController {
 	public String updateNovelThumbnail(@PathVariable("id") Long id, @RequestParam("thumbnailFile") MultipartFile img, Principal principal) throws IOException {
 		contentService.updateNovelThumbnail(id, img, principal.getName());
 		return "redirect:/content/novel_detail/" + id;
+	}
+	
+	@GetMapping("/novel/episode/write/{id}")
+	public String createNovelEpisode(CreateNovelEpisodeDTO createNovelEpisodeDTO ,@PathVariable("id") Long id, Model model) {
+		Content content = contentService.getNovel(id);
+		model.addAttribute("novel", ResponseNovelDetail.from(content));
+		return "novel_episode_write";
+	}
+	
+	@PostMapping("/novel/episode/write/{id}")
+	public String createNovelEpisode(@PathVariable("id") Long id, @Valid CreateNovelEpisodeDTO createNovelEpisodeDTO, BindingResult bindingResult, Principal principal) {
+		if(bindingResult.hasErrors()) {
+			System.out.println("오류 발생");
+			return "novel_write";
+		}
+		
+		try {
+			contentService.createNovelEpisode(id, createNovelEpisodeDTO, principal.getName());
+			return "redirect:/content/novel_detail/" + id;
+		} catch (Exception e) {
+			bindingResult.reject("createEpisodeFailed", e.getMessage());
+			return "redirect:/content/novel/episode/write/"+id;
+		}
 	}
 }

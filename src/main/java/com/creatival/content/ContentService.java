@@ -17,11 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateNovelDTO;
+import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
+import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
+import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.content.repository.SeriesRepository;
 import com.creatival.user.UserRepository;
 import com.creatival.user.UserService;
@@ -29,6 +32,7 @@ import com.creatival.user.Users;
 
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -36,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class ContentService {
 	private final ContentRepository contentRepository;
 	private final SeriesRepository seriesRepository;
+	private final EpisodeRepository episodeRepository;
 	private final UserService userService;
 	private final FileUtil fileUtil;
 	
@@ -116,6 +121,34 @@ public class ContentService {
 		Content content = optional.get();
 		content.setThumbnailImgUrl(fileUtil.saveImage(img, "thumbnail"));
 		contentRepository.save(content);
+	}
+
+	public void createNovelEpisode(Long id,CreateNovelEpisodeDTO createNovelEpisodeDTO, String username) {
+		Content content = contentRepository.findById(id).get();
+		Series series = content.getSeries();
+		Integer maxNum = episodeRepository.findByMaxEpisodeNumBySeries(series);
+		
+		Episode episode = Episode.builder()
+				.title(createNovelEpisodeDTO.getTitle())
+				.novelContent(createNovelEpisodeDTO.getNovelContent())
+				.isFree(createNovelEpisodeDTO.isFree())
+				.note(createNovelEpisodeDTO.getNote())
+				.series(series)
+				.episodeNum(maxNum+1)
+				.build();
+		episodeRepository.save(episode);
+		
+		// 시리즈에 저장되는 총 화 수
+		int totalCount = episodeRepository.countBySeries(series);
+		series.setTotalEpisode(totalCount);
+		seriesRepository.save(series);
+	}
+	
+	public Page<ResponseNovelEpisodeList> getEpisodeBySeries(Series series,int page) {
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("episodeNum").descending());
+		Page<Episode> episodeList = episodeRepository.findBySeriesOrderByEpisodeNumAsc(series, pageable);
+		
+		return episodeList.map(episode -> ResponseNovelEpisodeList.from(episode));
 	}
 	
 	// 소설 라인 // 
