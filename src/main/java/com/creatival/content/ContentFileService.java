@@ -1,0 +1,60 @@
+package com.creatival.content;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.creatival.FileUtil;
+import com.creatival.content.Enum.ContentType;
+import com.creatival.content.repository.ContentFileRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class ContentFileService {
+	private final FileUtil fileUtil;
+	private final ContentFileRepository contentFileRepository;
+
+	@Transactional
+	public void createContentFileImageForContent(Content content ,List<MultipartFile> files, String category) {
+		if(files == null || files.isEmpty()) {
+			new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		int sortOrder=1;
+		int testNum=1;
+		System.out.println(files.size());
+		for(MultipartFile file : files) {
+			System.out.println(testNum + "번째 반복함");
+			if(file.isEmpty()) {
+				continue;
+			}
+			try {
+				System.out.println("트라이 시작");
+				String fileName = fileUtil.saveImage(file, category);
+				String fileUrl="/upload/images/"+category+"/" + fileName;
+				ContentFile contentFile = ContentFile.createForContent("ART", fileUrl, fileName, file.getOriginalFilename() , sortOrder, content);
+				System.out.println("저장된 ID: " + contentFile.getId());
+				contentFileRepository.save(contentFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + file.getOriginalFilename(), e);
+			}
+			sortOrder++;
+		}
+	}
+	
+	public ContentFile getContentFileThumbnail(Content content) {
+		if(content.getType() == ContentType.NOVEL) {
+			return null;
+		}
+		ContentFile contentFile = contentFileRepository.findTopByContentOrderBySortOrderAsc(content);
+		return contentFile;
+	}
+	
+	public List<ContentFile> getContentFileByContent(Content content) {
+		return contentFileRepository.findByContent(content);
+	}
+}

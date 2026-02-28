@@ -30,4 +30,5 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 	List<Content> findByTitleContaining(String title); //제목 키워드로 가져오기
 	
 	Page<Content> findByType(ContentType type, Pageable pageable);
+	
 }

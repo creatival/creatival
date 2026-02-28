@@ -20,6 +20,7 @@ public class FileUtil {
 		Files.createDirectories(filePath.getParent());
 		Files.write(filePath, img.getBytes());
 		imgUrl = "/upload/images/"+category+"/"+fileName; //보안 및 html에서 C:를 안 받기에 가상 경로를 넣어줌
-		return imgUrl;
+		System.out.println("saveImage 물리 저장 끝");
+		return fileName;
 	}
 }

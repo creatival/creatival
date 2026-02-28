@@ -2,6 +2,7 @@ package com.creatival.content;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -14,9 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
+import com.creatival.content.DTO.ResponseArtDetail;
+import com.creatival.content.DTO.ResponseArtList;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
@@ -27,6 +32,7 @@ import com.creatival.content.Enum.OwnerType;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 public class ContentController {
 	private final ContentService contentService;
 	private final UserService userService;
+	private final ContentFileService contentFileService;
 	
 	@GetMapping("/novel_list")
 	public String novel_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
@@ -92,12 +99,12 @@ public class ContentController {
 	public String novel_delete(@PathVariable("id") Long id, Principal principal) {
 		Content content = contentService.getNovel(id);
 		
-		if(content.getOnwerType()!=OwnerType.TEAM && content.getUser().getUsername() != principal.getName()) {
+		if(content.getOwnerType()!=OwnerType.TEAM && content.getUser().getUsername() != principal.getName()) {
 			contentService.delete(content);
 			return "redirect:/content/novel_list";
 		}
 		
-		if(content.getOnwerType()==OwnerType.TEAM) {
+		if(content.getOwnerType()==OwnerType.TEAM) {
 			return "redirect:content/novel_detail/"+id+"?error=팀 컨텐츠를 함부로 지울 수는 없습니다.";
 		}
 		if(content.getUser().getUsername() != principal.getName()) {
@@ -214,5 +221,60 @@ public class ContentController {
 		}
 		contentService.deleteNovelEpisode(episode);
 		return "redirect:/content/novel_detail/"+episode.getSeries().getContent().getId();
+	}
+	
+	//
+	
+	@GetMapping("/art/list")
+	public String artList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		Page<ResponseArtList> paging = contentService.getArtList(page);
+		model.addAttribute("paging", paging);
+		return "illustration_list";
+	}
+	
+	@GetMapping("/art/create")
+	public String createArt(CreateArtDTO createArtDTO) {
+		return "illustration_write";
+	}
+	
+	@PostMapping("/art/create")
+	public String createArt(@Valid @ModelAttribute CreateArtDTO createArtDTO,HttpServletRequest request, BindingResult bindingResult, Model model, Principal principal) {
+		if(bindingResult.hasErrors()) {
+			System.out.println("오류 발생");
+			return "illustration_write";
+		}
+		if (request instanceof MultipartHttpServletRequest) {
+	        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	        List<MultipartFile> files = multipartRequest.getFiles("images");
+	        System.out.println("Servlet 레벨에서 찾은 파일 개수: " + (files != null ? files.size() : 0));
+	    }
+		if (createArtDTO.getImages() == null || createArtDTO.getImages().isEmpty()) {
+	        System.out.println("이미지 리스트가 비어있습니다.");
+	    }
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		try {
+			contentService.createContentArt(createArtDTO, user);
+			//return "redirect:/content/art/list";
+			return "redirect:/";
+		} catch (IllegalArgumentException e) {
+			bindingResult.reject("updateNovelFailed", e.getMessage());
+			return "illustration_write";
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			bindingResult.reject("createArtFailed", "일러스트를 생성 중 오류가 발생했습니다.");
+	        return "illustration_write";
+		}	
+	}
+	@GetMapping("/art/detail/{id}")
+	public String artDtail(@PathVariable("id") Long id, Principal principal,  Model model) {
+		Content content = contentService.getArt(id);
+		if(content == null) {
+			return "redirect:/content/art/list";
+		}
+		List<ContentFile> list = contentFileService.getContentFileByContent(content);
+		ResponseArtDetail responseArtDetail = ResponseArtDetail.from(content, list);
+		model.addAttribute("art", responseArtDetail);
+		return "illustration_detail";
 	}
 }

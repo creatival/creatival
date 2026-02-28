@@ -3,6 +3,8 @@ package com.creatival.content;
 
 import java.time.LocalDateTime;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.creatival.user.userRole;
 
 import jakarta.persistence.Column;
@@ -27,7 +29,7 @@ import lombok.Setter;
 @Entity
 public class ContentFile {
 	
-	public ContentFile() {
+	private ContentFile() {
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -59,4 +61,26 @@ public class ContentFile {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "episode_id")
 	private Episode episode;
+	
+	public static ContentFile create(String fileType, String fileUrl, String fileName, String originalFileName, int sortOrder) {
+		return ContentFile.builder()
+				.fileType(fileType)
+				.fileUrl(fileUrl)
+				.fileName(fileName)
+				.originalFileName(originalFileName)
+				.sortOrder(sortOrder)
+				.build();
+	}
+	
+	public static ContentFile createForContent(String fileType, String fileUrl, String fileName, String originalFileName, int sortOrder, Content content) {
+		ContentFile contentFile = create(fileType, fileUrl, fileName, originalFileName, sortOrder);
+		contentFile.setContent(content);
+		return contentFile;
+	}
+	
+	public static ContentFile createForEpisode(String fileType, String fileUrl, String fileName, String originalFileName, int sortOrder, Episode episode) {
+		ContentFile contentFile = create(fileType, fileUrl, fileName, originalFileName, sortOrder);
+		contentFile.setEpisode(episode);
+		return contentFile;
+	}
 }

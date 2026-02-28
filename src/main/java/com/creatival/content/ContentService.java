@@ -18,8 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.FileUtil;
+import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
+import com.creatival.content.DTO.ResponseArtList;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
@@ -42,12 +44,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class ContentService {
+
+    private final ContentFileService contentFileService;
 	private final ContentRepository contentRepository;
 	private final SeriesRepository seriesRepository;
 	private final EpisodeRepository episodeRepository;
 	private final UserService userService;
 	private final FileUtil fileUtil;
-	
+
 	
 	//공통 라인 //
 	
@@ -84,7 +88,7 @@ public class ContentService {
 				.description(createNovelDTO.getDescription())
 				.user(user)
 				.visibility(createNovelDTO.getVisibility())
-				.onwerType(createNovelDTO.getOwnerType())
+				.ownerType(createNovelDTO.getOwnerType())
 				.type(ContentType.NOVEL)
 				.isAllowComment(createNovelDTO.isAllowComment())
 				.isFanWork(createNovelDTO.isFanWork())
@@ -105,7 +109,7 @@ public class ContentService {
 	
 	public Page<ResponseNovelList> getNovelList(int page) {
 		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
-		Page<Content> contents = contentRepository.findAll(pageable);
+		Page<Content> contents = contentRepository.findByType(ContentType.NOVEL,pageable);
 		
 		return contents.map(content -> ResponseNovelList.from(content, content.getSeries()));
 	}
@@ -203,4 +207,45 @@ public class ContentService {
 		episodeRepository.delete(episode);
 	}
 	// 소설 라인 // 
+	
+	// 그림 라인 //
+	public void createContentArt(CreateArtDTO createArtDTO, Users user) {
+		if(createArtDTO.getImages().isEmpty() || createArtDTO.getImages() == null) {
+			throw new IllegalArgumentException("파일이 비어있습니다."); // throw 추가!
+		}
+		Content content = Content.builder()
+				.user(user)
+				.ownerType(createArtDTO.getOwnerType())
+				.type(ContentType.ART)
+				.title(createArtDTO.getTitle())
+				.description(createArtDTO.getDescription())
+				.ThumbnailImgUrl(createArtDTO.getThumbnailImgUrl())
+				.visibility(createArtDTO.getVisibility())
+				.isAllowComment(createArtDTO.isAllowComment())
+				.isFanWork(createArtDTO.isFanWork())
+				.build();
+		if(content.isFanWork() && createArtDTO.getOriginalContentId() != null) {
+			content.setOriginalContent(contentRepository.findById(createArtDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
+		}
+		
+		contentRepository.save(content);
+		System.out.println(createArtDTO.getImages().size() + "개수");
+		contentFileService.createContentFileImageForContent(content, createArtDTO.getImages(), "art");
+	}
+	
+	public Page<ResponseArtList> getArtList(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.ART,pageable);
+		
+		return contents.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content)));
+	}
+	
+	
+	public Content getArt(Long id) {
+		Optional<Content> content = contentRepository.findById(id);
+		if(content.isPresent()) {
+			return content.get();
+		}
+		return null;
+	}
 }

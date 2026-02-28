@@ -1,7 +1,7 @@
 <html layout:decorate="~{layout}">
 <head>
     <style>
-        /* 작품 뷰어 배경 (약간 어둡게 처리하여 그림 집중도 향상) */
+        /* [기존 디자인 유지] */
         .art-viewer {
             background-color: #f8f9fa;
             min-height: 500px;
@@ -11,15 +11,23 @@
             padding: 40px 0;
         }
         
-        /* 작품 이미지 (원본 비율 유지, 최대 폭 제한) */
+        /* [요청사항] 이미지 최대 높이 제한 및 중앙 정렬 */
         .art-image {
             max-width: 100%;
-            max-height: 85vh; /* 화면 높이의 85%까지만 차지 */
+            max-height: 80vh; /* 최대 높이를 화면의 80%로 제한 */
+            object-fit: contain; /* 비율 유지하며 영역 안에 맞춤 */
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             border-radius: 4px;
+            display: block;
+            margin: 0 auto;
         }
 
-        /* 작가 프로필 이미지 */
+        /* 슬라이드 컨트롤 버튼 색상 조정 (밝은 배경용) */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(1) grayscale(100); /* 검은색 화살표로 변경 */
+        }
+
         .artist-avatar {
             width: 50px;
             height: 50px;
@@ -29,18 +37,14 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* 반응 버튼 스타일 */
         .action-btn {
             border-radius: 50px;
             padding: 8px 20px;
             font-weight: 600;
             transition: all 0.2s;
         }
-        .action-btn:hover {
-            transform: translateY(-2px);
-        }
+        .action-btn:hover { transform: translateY(-2px); }
 
-        /* 태그 스타일 */
         .art-tag {
             background-color: #e9ecef;
             color: #495057;
@@ -52,32 +56,59 @@
             margin-bottom: 6px;
             display: inline-block;
         }
-        .art-tag:hover {
-            background-color: #dee2e6;
-            color: #212529;
-        }
     </style>
 </head>
 
 <div layout:fragment="content">
 
     <div class="art-viewer w-100">
-        <div class="container text-center">
-            <img src="images/pic.png" class="art-image" alt="작품 상세 이미지">
+        <div class="container">
+            <div id="artSlider" class="carousel slide" data-bs-ride="false">
+                
+                <div class="carousel-inner">
+                    <div th:each="file, iter : ${art.fileList}" 
+                         class="carousel-item" 
+                         th:classappend="${iter.first} ? 'active'">
+                        <img th:src="${file.fileUrl}" class="art-image" th:alt="${art.title}">
+                    </div>
+                    
+                    <div th:if="${art.fileList == null or art.fileList.isEmpty()}" class="carousel-item active">
+                        <img src="https://dummyimage.com/600x400/dee2e6/6c757d.png&text=No+Image" class="art-image">
+                    </div>
+                </div>
+
+                <th:block th:if="${art.fileList != null and art.fileList.size() > 1}">
+                    <button class="carousel-control-prev" type="button" data-bs-target="#artSlider" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#artSlider" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    
+                    <div class="carousel-indicators" style="position: relative; margin-top: 20px;">
+                        <button th:each="file, iter : ${art.fileList}" 
+                                type="button" data-bs-target="#artSlider" 
+                                th:data-bs-slide-to="${iter.index}" 
+                                th:classappend="${iter.first} ? 'active'"
+                                style="background-color: #333;"></button>
+                    </div>
+                </th:block>
+            </div>
         </div>
     </div>
 
     <div class="container py-5">
         <div class="row">
-            
             <div class="col-lg-8">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <h2 class="fw-bold mb-2">신비로운 숲의 수호자</h2>
+                        <h2 class="fw-bold mb-2" th:text="${art.title}">작품 제목</h2>
                         <div class="text-muted small">
-                            <span class="me-3">게시일: 2026.02.12</span>
-                            <span class="me-3"><i class="bi bi-eye"></i> 12,345</span>
-                            <span><i class="bi bi-heart-fill text-danger"></i> 854</span>
+                            <span class="me-3">게시일: <th:block th:text="${#temporals.format(art.createdAt, 'yyyy.MM.dd')}"></th:block></span>
+                            <span class="me-3"><i class="bi bi-eye"></i> <th:block th:text="${art.viewCount}"></th:block></span>
+                            <span><i class="bi bi-heart-fill text-danger"></i> 0</span>
                         </div>
                     </div>
                     <div class="d-none d-md-block">
@@ -87,45 +118,23 @@
                 </div>
 
                 <div class="mb-4">
-                    <p class="text-secondary" style="line-height: 1.8;">
-                        이 작품은 깊은 숲속에서 잊혀진 고대의 수호자를 컨셉으로 작업했습니다.<br>
-                        빛의 표현과 질감 처리에 많은 시간을 들였습니다. <br>
-                        사용 툴: Photoshop, Blender 3D.
+                    <p class="text-secondary" style="line-height: 1.8; white-space: pre-wrap;" th:text="${art.description}">
+                        작품 설명
                     </p>
                 </div>
 
                 <div class="mb-5">
-                    <a href="#" class="art-tag">#판타지</a>
-                    <a href="#" class="art-tag">#컨셉아트</a>
-                    <a href="#" class="art-tag">#배경원화</a>
                     <a href="#" class="art-tag">#일러스트</a>
+                    <a th:if="${art.isFanWork}" class="art-tag">#2차창작</a>
                 </div>
 
-                <div class="card bg-light border-0 rounded-3 p-4 mb-5">
-                    <h5 class="fw-bold mb-4">댓글 (3)</h5>
-                    
+                <div class="card bg-light border-0 rounded-3 p-4 mb-5" th:if="${art.isAllowComment}">
+                    <h5 class="fw-bold mb-4">댓글</h5>
                     <div class="d-flex mb-4">
                         <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px; min-width: 40px;"></div>
                         <div class="input-group">
                             <input type="text" class="form-control border-0 shadow-sm" placeholder="댓글" style="border-radius: 20px 0 0 20px;">
                             <button class="btn btn-primary px-4" style="border-radius: 0 20px 20px 0;">등록</button>
-                        </div>
-                    </div>
-
-                    <div class="vstack gap-3">
-                        <div class="d-flex">
-                            <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px;"></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">User123 <span class="text-muted small fw-normal ms-1">1시간 전</span></h6>
-                                <p class="text-secondary mb-0 small">색감이 너무 아름답네요! 빛 표현이 인상적입니다.</p>
-                            </div>
-                        </div>
-                        <div class="d-flex">
-                            <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px;"></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">ArtLover <span class="text-muted small fw-normal ms-1">3시간 전</span></h6>
-                                <p class="text-secondary mb-0 small">혹시 작업 시간이 얼마나 걸리셨나요?</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -135,42 +144,26 @@
                 <div class="card border shadow-sm rounded-3 sticky-top" style="top: 2rem;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
-                            <div class="bg-dark rounded-circle artist-avatar me-3"></div> <div>
-                                <h5 class="fw-bold mb-0">아트마스터</h5>
-                                <small class="text-muted">Fantasy Illustrator</small>
+                            <img th:src="${art.profileImgUrl ?: 'https://dummyimage.com/50x50/ced4da/6c757d'}" class="artist-avatar me-3">
+                            <div>
+                                <h5 class="fw-bold mb-0" th:text="${art.displayname ?: art.username}">작가명</h5>
+                                <small class="text-muted">Creator</small>
                             </div>
                         </div>
                         <button class="btn btn-dark w-100 mb-3 rounded-pill">팔로우</button>
-                        
                         <hr class="my-4">
-                        
                         <h6 class="fw-bold mb-3 text-muted small">이 작가의 다른 작품</h6>
                         <div class="row g-2">
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
+                            <div class="col-4" th:each="i : ${#numbers.sequence(1, 5)}">
+                                <div class="bg-light rounded border" style="aspect-ratio: 1/1;"></div>
                             </div>
                             <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                             <div class="col-4">
-                                <a href="#" class="d-flex align-items-center justify-content-center bg-light rounded border text-decoration-none text-muted h-100 small">
-                                    +더보기
-                                </a>
+                                <a href="#" class="d-flex align-items-center justify-content-center bg-light rounded border text-decoration-none text-muted h-100 small">+더보기</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

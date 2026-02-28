@@ -60,7 +60,7 @@ public class Content {
 //	private Project project; 
 	
 	@Enumerated(EnumType.STRING)
-	private OwnerType onwerType;
+	private OwnerType ownerType;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

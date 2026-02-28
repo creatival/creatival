@@ -51,7 +51,7 @@ public class ResponseNovelList {
 				.id(content.getId())
 				.title(content.getTitle())
 				.contentType(content.getType())
-				.ownerType(content.getOnwerType())
+				.ownerType(content.getOwnerType())
 				.visibility(content.getVisibility())
 				.viewCount(content.getViewCount())
 				.userId(content.getUser().getId())

@@ -1,202 +1,176 @@
 <html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
-<head>
-    <style>
-        /* 이미지 업로드 드롭존 스타일 */
-        .upload-zone {
-            border: 2px dashed #dee2e6;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            background-color: #f8f9fa;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .upload-zone:hover {
-            border-color: #000;
-            background-color: #f1f3f5;
-        }
-        .upload-icon {
-            font-size: 3rem;
-            color: #adb5bd;
-        }
-        .tag-input-wrapper {
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            padding: 5px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        .tag-badge {
-            background-color: #e9ecef;
-            padding: 2px 10px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-        }
-        .tag-badge .btn-close {
-            font-size: 0.6rem;
-            margin-left: 5px;
-        }
-    </style>
-</head>
+<div layout:fragment="content">
 
-<body class="d-flex flex-column">
+<div class="container py-5" style="max-width: 900px;">
+    <h3 class="fw-bold mb-4">작품 등록</h3>
 
-    <div class="container mt-5 mb-5 d-flex justify-content-center">
-      <div class="col-lg-8">
-
-        <div class="card shadow-sm border-0">
-          <div class="card-body p-4 p-lg-5">
-
-            <div class="mb-4 text-center">
-              <h3 class="fw-bold">일러스트 투고</h3>
-              <p class="text-muted mb-0">당신의 멋진 작품을 세상에 공유해보세요</p>
-            </div>
-
-            <form>
-				<div class="mb-4">
-				    <label class="form-label fw-semibold">작품 업로드</label>
-				    <div class="upload-zone" id="dropZone">
-				        <input type="file" class="d-none" id="illustFile" accept="image/*">
-				        
-				        <div id="uploadPlaceholder">
-				            <i class="bi bi-cloud-arrow-up upload-icon"></i>
-				            <p class="mt-2 mb-1 fw-bold">클릭하거나 파일을 여기로 끌어다 놓으세요</p>
-				            <p class="text-muted small">PNG, JPG, GIF (최대 20MB)</p>
-				        </div>
-
-				        <div id="imagePreview" class="d-none">
-				            <img src="" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 400px;">
-				            <p class="mt-3 small text-primary text-decoration-underline">이미지 교체하기</p>
-				        </div>
-				    </div>
-				</div>
-
-				<script>
-				    const dropZone = document.getElementById('dropZone');
-				    const fileInput = document.getElementById('illustFile');
-				    const preview = document.getElementById('imagePreview');
-				    const placeholder = document.getElementById('uploadPlaceholder');
-				    const previewImg = preview.querySelector('img');
-
-				    // 1. 클릭하면 파일 선택창 띄우기
-				    dropZone.addEventListener('click', () => fileInput.click());
-
-				    // 2. 파일이 선택되었을 때 처리
-				    fileInput.addEventListener('change', function() {
-				        handleFiles(this.files);
-				    });
-
-				    // 3. 드래그 앤 드롭 기능
-				    dropZone.addEventListener('dragover', (e) => {
-				        e.preventDefault();
-				        dropZone.style.borderColor = "#000"; // 드래그 중일 때 테두리 강조
-				    });
-
-				    dropZone.addEventListener('dragleave', () => {
-				        dropZone.style.borderColor = "#dee2e6";
-				    });
-
-				    dropZone.addEventListener('drop', (e) => {
-				        e.preventDefault();
-				        dropZone.style.borderColor = "#dee2e6";
-				        const files = e.dataTransfer.files;
-				        handleFiles(files);
-				    });
-
-				    // 파일을 읽어서 미리보기에 표시하는 함수
-				    function handleFiles(files) {
-				        if (files.length > 0) {
-				            const file = files[0];
-				            
-				            // 이미지 파일인지 확인
-				            if (file.type.startsWith('image/')) {
-				                const reader = new FileReader();
-				                
-				                reader.onload = function(e) {
-				                    previewImg.src = e.target.result; // 이미지 경로 설정
-				                    placeholder.classList.add('d-none'); // 메시지 숨김
-				                    preview.classList.remove('d-none'); // 미리보기 표시
-				                }
-				                
-				                reader.readAsDataURL(file);
-				            } else {
-				                alert('이미지 파일만 업로드 가능합니다!');
-				            }
-				        }
-				    }
-				</script>
-              </div>
-
-              <div class="mb-4">
-                <label class="form-label fw-semibold">작품 제목</label>
-                <input type="text" class="form-control" placeholder="작품의 이름을 지어주세요.">
-              </div>
-
-              <div class="mb-4">
-                <label class="form-label fw-semibold">작품 설명</label>
-                <textarea class="form-control" rows="3" placeholder="작품에 담긴 의미나 작업 도구 등을 적어주세요."></textarea>
-              </div>
-
-              <div class="mb-4">
-                <label class="form-label fw-semibold">태그</label>
-                <div class="tag-input-wrapper mb-2">
-                    <span class="tag-badge">#판타지 <button type="button" class="btn-close"></button></span>
-                    <span class="tag-badge">#캐릭터 <button type="button" class="btn-close"></button></span>
-                    <input type="text" class="form-control border-0 p-0 ps-2" style="width: auto; flex-grow: 1;" placeholder="태그 입력 후 Enter">
-                </div>
-                <small class="text-muted">쉼표(,) 또는 엔터로 구분하여 입력해주세요.</small>
-              </div>
-
-              <div class="row mb-4">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">공개 범위</label>
-                    <select class="form-select">
-                        <option value="public" selected>전체 공개</option>
-                        <option value="follower">팔로워 공개</option>
-                        <option value="private">비공개</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">AI 생성 여부</label>
-                    <div class="pt-2">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="aiStatus" id="aiNo" checked>
-                            <label class="form-check-label" for="aiNo">직접 작업</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="aiStatus" id="aiYes">
-                            <label class="form-check-label" for="aiYes">AI 도움/생성</label>
-                        </div>
-                    </div>
-                </div>
-              </div>
-
-              <div class="mb-4 border p-3 rounded bg-light">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="copyrightCheck">
-                    <label class="form-check-label small" for="copyrightCheck">
-                        본인은 이 작품의 저작권자이며, 타인의 권리를 침해하지 않았음을 확인합니다.
-                    </label>
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between mt-5">
-                <a href="#" class="btn btn-outline-secondary px-4">취소</a>
-                <button type="button" class="btn btn-primary px-5 text-white fw-bold">투고하기</button>
-              </div>
-
-            </form>
-
+    <form th:action="@{/content/art/create}" 
+          method="post" 
+          enctype="multipart/form-data"
+          th:object="${createArtDTO}">
+		  
+		  <div class="alert alert-danger shadow-sm" role="alert" th:if="${#fields.hasAnyErrors()}">
+              <ul class="mb-0">
+                  <li th:each="err : ${#fields.allErrors()}" th:text="${err}">에러 메시지</li>
+              </ul>
           </div>
+
+        <!-- 제목 -->
+        <div class="mb-3">
+            <label class="form-label">제목</label>
+            <input type="text" th:field="*{title}" class="form-control" required>
         </div>
 
-      </div>
-    </div>
+        <!-- 설명 -->
+        <div class="mb-3">
+            <label class="form-label">설명</label>
+            <textarea th:field="*{description}" class="form-control" rows="4"></textarea>
+        </div>
 
-</body>
+        <!-- 소유자 유형 -->
+        <div class="mb-3">
+            <label class="form-label">소유자 유형</label>
+            <select th:field="*{ownerType}" class="form-select" required>
+                <option value="">선택하세요</option>
+                <option value="USER">본인</option>
+                <option value="TEAM">팀</option>
+            </select>
+        </div>
+
+        <!-- 공개 범위 -->
+        <div class="mb-3">
+            <label class="form-label">공개 설정</label>
+            <select th:field="*{visibility}" class="form-select">
+                <option value="PUBLIC">전체 공개</option>
+                <option value="PRIVATE">비공개</option>
+            </select>
+        </div>
+
+        <!-- 댓글 허용 -->
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" th:field="*{allowComment}">
+            <label class="form-check-label">댓글 허용</label>
+        </div>
+
+        <!-- 2차 창작 -->
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" 
+                   th:field="*{fanWork}" 
+                   id="fanWorkCheck"
+                   onchange="toggleOriginalInput()">
+            <label class="form-check-label">2차 창작</label>
+        </div>
+
+        <!-- 원본 ID (2차 창작일 때만) -->
+        <div class="mb-4" id="originalContentWrapper" style="display:none;">
+            <label class="form-label">원본 콘텐츠 ID</label>
+            <input type="number" 
+                   th:field="*{originalContentId}" 
+                   class="form-control"
+                   placeholder="원본 작품 ID를 입력하세요">
+        </div>
+
+        <!-- 이미지 업로드 -->
+        <div class="mb-3">
+            <label class="form-label">이미지 (최대 4장)</label>
+
+            <!-- 숨겨진 파일 input -->
+            <input type="file"
+                   id="imageInput"
+                   name="images"
+                   accept="image/*"
+                   multiple
+                   hidden>
+
+            <!-- 버튼 -->
+            <button type="button" 
+                    class="btn btn-outline-dark mb-3"
+                    onclick="triggerImageInput()">
+                이미지 추가
+            </button>
+
+            <!-- 미리보기 -->
+            <div id="previewContainer" class="row g-3"></div>
+        </div>
+
+        <!-- 제출 -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-dark px-4">
+                등록하기
+            </button>
+        </div>
+
+    </form>
+</div>
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const artForm = document.getElementById('artForm');
+    let selectedFiles = [];
+
+    function triggerImageInput() {
+        if (selectedFiles.length >= 4) {
+            alert("이미지는 최대 4장까지 가능합니다.");
+            return;
+        }
+        imageInput.click();
+    }
+
+    imageInput.addEventListener('change', function () {
+        const files = Array.from(this.files);
+
+        files.forEach(file => {
+            if (selectedFiles.length >= 4) return;
+            selectedFiles.push(file);
+            renderPreview(file);
+        });
+
+        // 중요: 먼저 value를 비워야 다음번에 동일 파일 선택이 가능함
+        this.value = ""; 
+        // 그 후 selectedFiles에 담긴 모든 파일을 input에 다시 동기화
+        updateInputFiles();
+    });
+
+    function renderPreview(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const col = document.createElement('div');
+            col.className = "col-6 col-md-3 position-relative";
+            col.innerHTML = `
+                <div class="border rounded overflow-hidden position-relative">
+                    <img src="${e.target.result}" class="img-fluid" style="aspect-ratio:1/1; object-fit:cover;">
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="removeImage(this)">✕</button>
+                </div>`;
+            previewContainer.appendChild(col);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function removeImage(button) {
+        const col = button.closest('.col-6');
+        const index = Array.from(previewContainer.children).indexOf(col);
+        selectedFiles.splice(index, 1);
+        col.remove();
+        updateInputFiles();
+    }
+
+    function updateInputFiles() {
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        imageInput.files = dataTransfer.files;
+        console.log("현재 전송 대기 파일 수:", imageInput.files.length);
+    }
+
+    artForm.addEventListener('submit', function (e) {
+        if (selectedFiles.length === 0) {
+            e.preventDefault();
+            alert("이미지를 최소 1장 이상 추가해주세요.");
+            return;
+        }
+        // 마지막으로 한 번 더 동기화 확인
+        updateInputFiles();
+    });
+</script>
+
 </div>
 </html>

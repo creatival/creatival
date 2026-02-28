@@ -61,7 +61,7 @@ public class ResponseNovelDetail {
 				.title(content.getTitle())
 				.contentType(content.getType())
 				.description(content.getDescription())
-				.ownerType(content.getOnwerType())
+				.ownerType(content.getOwnerType())
 				.visibility(content.getVisibility())
 				.allowComment(content.isAllowComment())
 				.viewCount(content.getViewCount())
