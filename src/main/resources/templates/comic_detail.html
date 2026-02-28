@@ -1,0 +1,105 @@
+<html layout:decorate="~{layout}">
+<head>
+    <style>
+        /* 만화 전용 추가 스타일 */
+        .comic-info-card { background-color: #f8f9fa; border-radius: 15px; padding: 30px; }
+        .comic-thumbnail { width: 100%; max-width: 300px; height: 400px; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .episode-img { width: 100px; height: 60px; object-fit: cover; border-radius: 4px; }
+        .btn-read-first { background-color: #3f4e8d; color: white; padding: 12px 30px; border-radius: 5px; font-weight: bold; border: none; }
+        .btn-read-first:hover { background-color: #2e3968; color: white; }
+        .tag-badge { background-color: #e9ecef; color: #495057; text-decoration: none; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; margin-right: 5px; }
+    </style>
+</head>
+
+<div class="container" layout:fragment="content">
+    <div class="container pt-5 mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center mb-4 mb-md-0">
+                <img src="images/pic.png" alt="만화 썸네일" class="comic-thumbnail" />
+            </div>
+            
+            <div class="col-md-8">
+                <div class="comic-info-card shadow-sm">
+                    <div class="mb-3">
+                        <span class="badge bg-primary mb-2">월요웹툰</span>
+                        <h1 class="fw-bold mb-1">만화 제목</h1>
+                        <p class="text-muted fs-5 mb-2">작가명 : <span class="text-dark">홍길동 / 임꺽정</span></p>
+                    </div>
+
+                    <div class="d-flex gap-4 mb-3 text-secondary border-bottom pb-3">
+                        <span><i class="bi bi-eye"></i> 조회수 1.2M</span>
+                        <span><i class="bi bi-heart-fill text-danger"></i> 추천수 45,000</span>
+                    </div>
+
+                    <p class="comic-description text-secondary mb-4" style="line-height: 1.8;">
+                        이곳에 만화의 줄거리가 들어갑니다. 주인공이 역경을 딛고 성장하는 흥미진진한 판타지 대작! 
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse cum nobis amet fugiat asperiores 
+                        harum quas nisi nesciunt aut itaque quisquam non iure illo necessitatibus.
+                    </p>
+
+                    <div class="mb-4">
+                        <a href="#" class="tag-badge">#판타지</a>
+                        <a href="#" class="tag-badge">#먼치킨</a>
+                        <a href="#" class="tag-badge">#성장물</a>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-read-first shadow-sm">첫 회 시청하기</button>
+                        <button class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i> 관심작품</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <h4 class="fw-bold mb-4 border-bottom pb-2">회차 리스트 (총 123화)</h4>
+                
+                <div class="list-group list-group-flush shadow-sm rounded border">
+                    <a th:href="@{/comic_viewer}" class="list-group-item list-group-item-action py-3">
+                        <div class="d-flex align-items-center">
+                            <img src="images/pic.png" class="episode-img me-3 shadow-sm" alt="123화 썸네일">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-bold">123화 - 새로운 시작의 서막</h6>
+                                <span class="text-muted small">2026.02.12</span>
+                            </div>
+                            <div class="text-end text-muted small d-none d-md-block">
+                                <span><i class="bi bi-heart"></i> 1.2k</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="list-group-item list-group-item-action py-3">
+                        <div class="d-flex align-items-center">
+                            <img src="images/pic.png" class="episode-img me-3 shadow-sm" alt="122화 썸네일">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-bold">122화 - 위기의 순간</h6>
+                                <span class="text-muted small">2026.02.05</span>
+                            </div>
+                            <div class="text-end text-muted small d-none d-md-block">
+                                <span><i class="bi bi-heart"></i> 1.1k</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="list-group-item list-group-item-action py-3 text-center text-secondary small">
+                        이전 회차 더보기
+                    </a>
+                </div>
+
+                <nav aria-label="Page navigation" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled"><a class="page-link">이전</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
