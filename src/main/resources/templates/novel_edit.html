@@ -1,239 +1,185 @@
-<html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Creatival</title>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="css/styles.css" rel="stylesheet" />
+<head>
+    <style>
+        /* 1. 상단 헤더 스타일 (image_8dcf3c.png 반영) */
+        .edit-header {
+            position: relative;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .edit-header .back-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1.5rem;
+            color: #333;
+            text-decoration: none;
+        }
+        .edit-title-line {
+            display: inline-block;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        /* 2. 폼 필드 스타일 */
+        .form-control-custom {
+            border: none;
+            border-bottom: 1px solid #ced4da;
+            border-radius: 0;
+            padding: 10px 0;
+            box-shadow: none !important;
+            text-align: center;
+            background-color: transparent;
+        }
+        .form-control-custom:focus {
+            border-color: #3b447a;
+        }
+
+        /* 3. 코멘트(작품 소개) 박스 (image_8dcf3c.png 반영) */
+        .description-box {
+            background-color: #e9ecef; /* 연회색 배경 */
+            border: none;
+            border-radius: 15px; /* 둥근 모서리 */
+            padding: 20px;
+            resize: none;
+            text-align: center;
+        }
+        .description-box:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 68, 122, 0.2);
+        }
+
+        /* 4. 이미지 플레이스홀더 및 업로드 버튼 */
+        .image-placeholder {
+            background-color: #ced4da;
+            border-radius: 10px;
+            width: 220px;
+            height: 300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            font-size: 3rem;
+        }
+        .btn-upload-small {
+            background-color: white;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 5px 25px;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 15px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        /* 5. 하단 액션 버튼 (업로드 / 취소) */
+        .btn-submit-action {
+            background-color: #3b447a; color: white; border-radius: 8px;
+            padding: 15px 0; font-weight: bold; width: 48%; border: none;
+        }
+        .btn-cancel-action {
+            background-color: white; color: #f05a28; border: 2px solid #f05a28;
+            border-radius: 8px; padding: 15px 0; font-weight: bold; width: 48%;
+            text-decoration: none; display: inline-block; text-align: center;
+        }
+
+        /* 6. 기존 설정들을 담는 깔끔한 박스 */
+        .settings-label { font-size: 0.85rem; color: #6c757d; font-weight: 600; margin-bottom: 8px; display: block; }
+        .settings-group { background: #fcfcfc; border-radius: 10px; padding: 20px; border: 1px solid #eee; text-align: left;}
+    </style>
 </head>
 
-<body class="d-flex flex-column">
-
-	<div class="container mt-5 mb-5 d-flex justify-content-center">
-	  <div class="col-lg-8">
-
-	    <div class="card shadow-sm border-0">
-	      <div class="card-body p-4 p-lg-5">
-
-	        <!-- 타이틀 -->
-	        <div class="mb-4 text-center">
-	          <h3 class="fw-bold">소설 수정</h3>
-	        </div>
-
-	        <form>
-
-	          <!-- 소설 제목 -->
-	          <div class="mb-4">
-	            <label class="form-label fw-semibold">소설 제목</label>
-	            <input type="text"
-	                   class="form-control form-control-lg"
-	                   placeholder="수정할 제목">
-	          </div>
-
-	          <!-- 작품 소개 -->
-	          <div class="mb-4">
-	            <label class="form-label fw-semibold">작품 소개</label>
-	            <textarea class="form-control"
-	                      rows="5"
-	                      placeholder="수정할 소개를 작성해주세요."></textarea>
-	          </div>
-
-			  <!-- 장르 -->
-			  <div class="mb-4">
-			    <label class="form-label fw-semibold d-block mb-3">장르 선택 (중복 가능)</label>
-
-			    <div class="row">
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="fantasy">
-			          <label class="form-check-label" for="fantasy">판타지</label>
-			        </div>
-			      </div>
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="romance">
-			          <label class="form-check-label" for="romance">로맨스</label>
-			        </div>
-			      </div>
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="modern">
-			          <label class="form-check-label" for="modern">현대</label>
-			        </div>
-			      </div>
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="martial">
-			          <label class="form-check-label" for="martial">무협</label>
-			        </div>
-			      </div>
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="sf">
-			          <label class="form-check-label" for="sf">SF</label>
-			        </div>
-			      </div>
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="thriller">
-			          <label class="form-check-label" for="thriller">스릴러</label>
-			        </div>
-			      </div>
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="mystery">
-			          <label class="form-check-label" for="mystery">미스터리</label>
-			        </div>
-			      </div>
-
-			      <div class="col-md-4">
-			        <div class="form-check">
-			          <input class="form-check-input" type="checkbox" id="school">
-			          <label class="form-check-label" for="school">학원</label>
-			        </div>
-			      </div>
-
-			    </div>
-			  </div>
+<div layout:fragment="content">
+    <main class="flex-shrink-0 mt-5 mb-5">
+        <div class="container d-flex justify-content-center">
+            <div class="col-lg-7 col-md-9">
 
 
-	          <!-- 연재 상태 -->
-	          <div class="mb-4">
-	            <label class="form-label fw-semibold d-block">연재 상태</label>
+                <form th:action="@{/content/novel_update/{id}(id=${novelId})}" th:object="${novel}" method="post" id="editForm">
+                    
+                    <div class="alert alert-danger shadow-sm rounded-3" role="alert" th:if="${#fields.hasAnyErrors()}">
+                        <ul class="mb-0 list-unstyled text-center">
+                            <li th:each="err : ${#fields.allErrors()}" th:text="${err}">에러 메시지</li>
+                        </ul>
+                    </div>
 
-	            <div class="form-check form-check-inline">
-	              <input class="form-check-input" type="radio" name="status" checked>
-	              <label class="form-check-label">연재 중</label>
-	            </div>
+                    <div class="mb-5">
+                        <input type="text" id="title" class="form-control form-control-custom fs-4 fw-bold" th:field="*{title}" placeholder="작품의 제목을 입력하세요" required>
+                    </div>
 
-	            <div class="form-check form-check-inline">
-	              <input class="form-check-input" type="radio" name="status">
-	              <label class="form-check-label">완결</label>
-	            </div>
-	          </div>
+                    <div class="mb-5 text-center">
+                        <div class="image-placeholder shadow-sm">
+                            <i class="bi bi-image"></i>
+                        </div>
+                        <label class="btn-upload-small shadow-sm">txt 파일 업로드</label>
+                        </div>
 
-	          <!-- 표지 이미지 -->
-	          <div class="mb-4">
-	            <label class="form-label fw-semibold">표지 이미지</label>
-	            <input class="form-control" type="file">
-	          </div>
+                    <div class="mb-5 text-center">
+                        <label class="form-label text-dark fw-bold mb-3"><i class="bi bi-list-text"></i> 글 수정하기</label>
+                        <textarea id="description" class="form-control description-box" rows="5" th:field="*{description}" placeholder="코멘트 내용"></textarea>
+                        
+                        <div class="mt-3 text-primary small fw-semibold opacity-75">
+                            #태그 - #태그 - #태그 - #태그 - <i class="bi bi-plus-circle text-muted"></i>
+                        </div>
+                    </div>
 
-	          <!-- 버튼 -->
-	          <div class="d-flex justify-content-between mt-4">
-	            <a href="#" class="btn btn-outline-secondary px-4">
-	              취소
-	            </a>
+                    <div class="settings-group mb-5 shadow-sm">
+                        <div class="row text-center text-md-start">
+                            <div class="col-md-4 mb-3 mb-md-0 border-end">
+                                <span class="settings-label text-dark">소통 설정</span>
+                                <div class="form-check form-switch d-inline-block">
+                                    <input class="form-check-input" type="checkbox" id="allowComment" th:field="*{allowComment}">
+                                    <label class="form-check-label ms-2 small" for="allowComment">댓글 허용</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0 border-end">
+                                <span class="settings-label text-dark">공개 범위</span>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="v_public" th:field="*{visibility}" th:value="${T(com.creatival.content.Enum.Visibility).PUBLIC}">
+                                    <label class="form-check-label small" for="v_public">공개</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="v_private" th:field="*{visibility}" th:value="${T(com.creatival.content.Enum.Visibility).PRIVATE}">
+                                    <label class="form-check-label small" for="v_private">비공개</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="settings-label text-dark">연재 상태</span>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="status_ing" th:field="*{end}" value="false">
+                                    <label class="form-check-label small" for="status_ing">연재 중</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="status_end" th:field="*{end}" value="true">
+                                    <label class="form-check-label small" for="status_end">완결</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-	            <button type="button" class="btn btn-dark px-5">
-	              등록하기
-	            </button>
-	          </div>
-
-	        </form>
-
-	      </div>
-	    </div>
-
-	  </div>
-	</div>
-
-	
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="container py-5">
-
-        <!-- 상단 footer 영역 -->
-        <div class="row text-white mb-4">
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-
-        </div>
-
-        <!-- 구분선 -->
-        <hr class="footer-line">
-
-        <!-- 하단 footer -->
-        <div class="row align-items-center text-white footer-bottom">
-            <div class="col-md-4 d-flex justify-content-center">
-                <div class="me-5">이용 약관</div>
-                <div class="ms-5">개인 정보 보호 정책</div>
-            </div>
-
-
-            <div class="col-md-4 text-center">
-                © 2026 creatival All rights reserved.
-            </div>
-
-            <div class="col-md-4 d-flex justify-content-end">
-                <img src="images/creatival-Photoroom.png" alt="" width="168">
+                    <div class="d-flex justify-content-between mt-5 pt-4" style="border-top: 1px solid #dee2e6;">
+                        <button type="submit" class="btn-submit-action shadow-sm">업로드</button>
+                        <a th:href="@{/novel/{id}(id=${novelId})}" class="btn-cancel-action shadow-sm">취소</a>
+                    </div>
+                </form>
             </div>
         </div>
+    </main>
 
-
-    </div>
-</footer>
-
-</body>
+    <script>
+        document.getElementById("editForm").addEventListener("submit", function(e) {
+            const title = document.getElementById("title").value.trim();
+            if(!title) {
+                alert("소설 제목은 비워둘 수 없습니다.");
+                e.preventDefault();
+            }
+        });
+    </script>
+</div>
+</html>

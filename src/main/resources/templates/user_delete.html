@@ -1,0 +1,51 @@
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
+<body>
+	<div class="container mt-5" style="max-width: 700px;">
+	    <h2 class="mb-4 text-center">유저 비활성화</h2>
+
+	    <form method="post" th:action="@{/user/delete}" enctype="multipart/form-data" id="deleteForm">
+			<div class="text-center">
+				<h2><b>정말 프로필을 비활성화하시겠습니까?</b></h2>
+				<p>계정 비활성화 이후 약 30일동안 보관 후 삭제처리됩니다.</p>
+				<p>비활성화되는 동안 계정을 다시 활성화시킬 수 있습니다. <br />하지만 삭제 후에는 복구할 수 없습니다.</p>
+				<p>또한 삭제 후 올린 게시물들은 자동으로 삭제처리됩니다.</p>
+				<br /><br /><br />
+				<p>위 내용을 확인하셨으며 정말 계정을 비활성화하시겠습니까?</p>
+			</div>
+	        <!-- 크리에이터 여부 -->
+	        <div class="form-check mb-4">
+	            <input class="form-check-input" type="checkbox" id="realDelete" name="realDelete">
+	            <label class="form-check-label" for="realDelete">
+	                내용을 확인했으며 계정을 비활성화하겠습니다.
+	            </label>
+	        </div>
+
+	        <!-- 버튼 -->
+	        <button type="button" id="deleteBtn" class="btn btn-danger" disabled>계정 비활성화</button>
+	    </form>
+	</div>
+	<script>
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const checkbox = document.getElementById('realDelete');
+	        const deleteBtn = document.getElementById('deleteBtn');
+	        const deleteForm = document.getElementById('deleteForm');
+
+	        // 1. 체크박스 상태에 따라 버튼 활성화/비활성화
+	        checkbox.addEventListener('change', function() {
+	            deleteBtn.disabled = !this.checked;
+	        });
+
+	        // 2. 버튼 클릭 시 최종 확인 후 폼 전송
+	        deleteBtn.addEventListener('click', function() {
+	            // 브라우저 기본 컨펌창 (SweetAlert2 같은 라이브러리를 쓰셔도 좋습니다)
+	            const finalCheck = confirm("정말 계정을 비활성화하시겠습니까?\n확인 버튼 클릭 시 즉시 로그아웃됩니다.");
+	            
+	            if (finalCheck) {
+	                deleteForm.submit(); // 실제로 POST 요청을 날림
+	            }
+	        });
+	    });
+	</script>
+</body>
+</html>

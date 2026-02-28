@@ -1,159 +1,148 @@
-<html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Creatival</title>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="css/styles.css" rel="stylesheet" />
+<head>
+    <style>
+        /* 1. 상단 내비게이션 바 (image_8f341a.png 반영) */
+        .reader-header {
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 0;
+            background-color: #fff;
+        }
+
+        /* 2. 본문 뷰어 스타일 */
+        .novel-body {
+            font-size: 1.25rem; 
+            line-height: 2.3; /* 가독성을 위한 넓은 줄간격 */
+            color: #212529;
+            min-height: 60vh;
+            padding-bottom: 50px;
+        }
+
+        /* 3. 작가의 코멘트 영역 (image_8ed5dd.png 완벽 재현) */
+        .author-comment-wrapper {
+            margin: 60px 0;
+            text-align: center;
+        }
+        .author-comment-box {
+            background-color: #e9ecef; /* 시안과 동일한 연회색 배경 */
+            border-radius: 20px;       /* 둥근 사각형 */
+            padding: 25px 30px;
+            display: inline-block;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .author-comment-header {
+            font-size: 0.8rem;
+            color: #495057;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #adb5bd;
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+            padding-bottom: 8px;
+        }
+        .author-comment-content {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #212529;
+            word-break: break-all;
+        }
+
+        /* 4. 다음 화 시청하기 버튼 (image_8ed1c1.png 스타일) */
+        .btn-next-action {
+            background-color: #3b447a; /* 짙은 남색 */
+            color: white !important;
+            border-radius: 50px;
+            padding: 12px 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 30px;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-next-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* 5. 하단 고정 주황색 바 (image_8f341a.png) */
+        .sticky-bottom-control {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background-color: #f05a28; color: white; z-index: 1050; padding: 12px 0;
+        }
+        .sticky-bottom-control a { color: white !important; text-decoration: none; font-size: 0.95rem; }
+        
+        /* 푸터가 없으므로 바닥 여백만 확보 */
+        body { padding-bottom: 80px !important; }
+    </style>
 </head>
 
-<body class="d-flex flex-column">
+<body class="d-flex flex-column h-100">
+    <div layout:fragment="content">
 
-    
-
-<!-- 소설 뷰어 -->
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-
-            <h2 class="fw-bold">1화. 달빛을 먹는 도시</h2>
-            <p class="text-muted">작가 홍길동 | 2026.02.11</p>
-            <hr>
-
-            <div class="fs-5 lh-lg text-break mt-4" style="white-space: pre-line;">
-				도시의 밤은 항상 밝았다.
-						가로등도, 간판도, 사람들의 휴대폰 화면도 꺼지지 않았다.
-						그래서 아무도 몰랐다.
-						하늘의 달이 점점 작아지고 있다는 걸.
-						고등학생 윤하는 어느 날 옥상에서 그걸 발견했다.
-						달이 어제보다 조금 얇아 보였다. 기분 탓이라 생각했지만, 다음 날은 더 작았다.
-						“달이 줄어들고 있어.”
-						친구 민재는 웃었다.
-						“야, 네가 잠을 안 자서 그래.”
-						하지만 윤하는 확신했다. 도시가 너무 밝아서, 사람들이 밤을 잊어서, 달빛이 설 자리를 잃고 있다는 걸.
-						그날 밤, 윤하는 모든 불을 껐다.
-						방 안의 전등도, 컴퓨터도, 휴대폰도.
-						처음엔 무서웠다.
-						도시는 늘 밝았으니까.
-						하지만 창밖으로 조용히 달빛이 들어오기 시작했다.
-						아주 약하지만, 분명히 빛났다.
-						다음 날, 윤하는 학교에서 작은 캠페인을 시작했다.
-						“하루에 10분만 불을 꺼주세요.”
-						처음엔 아무도 관심 없었다.
-						하지만 시험 기간이 끝난 어느 날, 학교 전체가 10분 동안 불을 껐다.
-						그리고 그날 밤, 달은 아주 조금 더 둥글어졌다.
-						사람들은 그제야 깨달았다.
-						밤은 없애야 할 시간이 아니라, 지켜야 할 시간이라는 걸.
-						그 후로 도시는 매주 한 번, 10분씩 어두워졌다.
-						그리고 달은 다시 천천히 차오르기 시작했다.
-						윤하는 옥상에서 미소 지었다.
-						“미안해, 우리가 너무 밝았지?”
-						달은 대답 대신, 조용히 빛났다.
+        <nav class="reader-header sticky-top shadow-sm">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a th:href="@{/content/novel_detail/{id}(id=${contentId})}" class="text-dark text-decoration-none small">
+                    <i class="bi bi-chevron-left"></i> <span th:text="|${episode.episodeNum}화 (회차)|">01(회차)</span>
+                </a>
+                <h5 class="fw-bold mb-0 text-truncate mx-3" th:text="${episode.title}">에피소드 제목</h5>
+                <div class="d-flex gap-3 text-muted" style="cursor:pointer;">
+                    <i class="bi bi-star"></i> <i class="bi bi-bookmark"></i>
+                </div>
             </div>
+        </nav>
 
-            <hr class="mt-5">
+        <div class="container my-5 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    
+                    <article class="novel-body text-start" sec:authorize="isAuthenticated()">
+                        <div style="white-space: pre-line;" th:text="${episode.novelContent}">
+                            본문 텍스트가 노출되는 영역입니다.
+                        </div>
+                    </article>
 
-            <div class="d-flex justify-content-between mb-5">
-                <a href="#" class="btn btn-outline-secondary">이전화</a>
-                <a href="#" class="btn btn-outline-dark">목록</a>
-                <a href="#" class="btn btn-outline-secondary">다음화</a>
-            </div>
+                    <div class="author-comment-wrapper" th:if="${episode.note != null and !#strings.isEmpty(episode.note)}">
+                        <div class="author-comment-box">
+                            <div class="author-comment-header text-muted">작가의 코멘트</div>
+                            <div class="author-comment-content" th:text="${episode.note}">
+                                쉽지않네
+                            </div>
+                        </div>
 
-        </div>
-    </div>
-</div>
-<!-- ✅ 소설 끝 -->
+                    </div>
 
+                    <div sec:authorize="isAnonymous()" class="alert alert-secondary text-center py-5">
+                        로그인 후 열람이 가능합니다.
+                    </div>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="container py-5">
-
-        <!-- 상단 footer 영역 -->
-        <div class="row text-white mb-4">
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-            <div class="col-md">
-                <h4 style="font-weight: 700;">footer 내용</h4>
-                <ul class="list-unstyled">
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                    <li>footer 내용</li>
-                </ul>
-            </div>
-
-
-        </div>
-
-        <!-- 구분선 -->
-        <hr class="footer-line">
-
-        <!-- 하단 footer -->
-        <div class="row align-items-center text-white footer-bottom">
-            <div class="col-md-4 d-flex justify-content-center">
-                <div class="me-5">이용 약관</div>
-                <div class="ms-5">개인 정보 보호 정책</div>
-            </div>
-
-
-            <div class="col-md-4 text-center">
-                © 2026 creatival All rights reserved.
-            </div>
-
-            <div class="col-md-4 d-flex justify-content-end">
-                <img src="images/creatival-Photoroom.png" alt="" width="168">
+                </div>
             </div>
         </div>
 
+        <div class="sticky-bottom-control shadow-lg">
+            <div class="container">
+                <div class="row text-center align-items-center">
+                    <div class="col-4">
+                        <a th:if="${prevEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${prevEpisode.id})}">
+                            <i class="bi bi-caret-left-fill"></i> 이전
+                        </a>
+                        <span th:if="${prevEpisode == null}" class="opacity-50">이전</span>
+                    </div>
+                    <div class="col-4 border-start border-end border-white border-opacity-25">
+                        <a href="#comment-section">
+                            <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a th:if="${nextEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${nextEpisode.id})}">
+                            다음 <i class="bi bi-caret-right-fill"></i>
+                        </a>
+                        <span th:if="${nextEpisode == null}" class="opacity-50">다음</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    </div>
-</footer>
-
-</body>
+    </div> </body>
+</html>

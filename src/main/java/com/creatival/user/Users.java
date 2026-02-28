@@ -13,13 +13,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @Entity
 public class Users {
+	
+	protected Users() {
+		
+	}
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -56,5 +64,20 @@ public class Users {
 	@CreationTimestamp
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
+	
+	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+	private boolean isDeleted = false;
+	
+	private LocalDateTime deletedAt;
+
+	public Users(String username, String displayName, String email, String password, boolean isCreator) {
+		super();
+		this.username = username;
+		this.displayName = displayName;
+		this.email = email;
+		this.password = password;
+		this.isCreator = isCreator;
+	}
+	
 	
 }

@@ -1,163 +1,161 @@
-<html layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
     <style>
-        /* 일러스트 전용 추가 스타일 */
-        .illust-card-img {
+        /* 1. 상단 카테고리 아이콘 */
+        .category-icon {
+            width: 70px; height: 70px;
+            background-color: #f1f3f5;
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; margin: 0 auto;
+        }
+        .category-icon:hover { background-color: #e9ecef; transform: translateY(-3px); }
+        .category-icon img { width: 40px; height: auto; }
+
+        /* 2. 일러스트 카드 */
+        .illust-card { transition: transform 0.2s; border: none; background: none; }
+        .illust-card:hover { transform: translateY(-5px); }
+        .thumbnail-wrapper {
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #eee;
+            position: relative;
+        }
+
+        /* 3. 시안과 동일한 밑줄 페이지네이션 */
+        .custom-pagination .page-link {
+            border: none; color: #333; font-weight: 700;
+            background: none; padding: 2px 10px; font-size: 1.1rem;
+        }
+        .custom-pagination .page-item.active .page-link {
+            background: none; color: #333;
+            border-bottom: 3px solid #f05a28; /* 주황-빨강 밑줄 */
+            border-radius: 0;
+        }
+        .custom-pagination .page-link:hover { color: #f05a28; }
+
+        /* 4. 딥 블루 푸터 스타일 (이미지 색상 반영) */
+        .full-footer {
+            background-color: #0b152d !important; 
+            color: white !important;
             width: 100%;
-            aspect-ratio: 1 / 1; /* 일러스트는 정사각형 비율이 깔끔합니다 */
-            object-fit: cover;
-            border-radius: 8px 8px 0 0;
+            margin-top: 80px;
         }
-        .illust-hover:hover {
-            transform: scale(1.02);
-            transition: all 0.3s ease-in-out;
-        }
-        .artist-profile {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: #dee2e6;
-            margin-right: 8px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .stat-icon {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
+        .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
+        .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+        
+        .tag-text { color: #4dabf7; font-size: 0.8rem; }
+        .btn-register { font-size: 0.85rem; color: #888; text-decoration: none; }
     </style>
 </head>
 
-<div class="container" layout:fragment="content">
-    
-	<div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
-	    <div>
-	        <h2 class="fw-bold">갤러리</h2>
-	        <p class="text-muted mb-0">멋진 일러스트와 원화를 감상해보세요.</p>
-	    </div>
-	    
-	    <div class="d-flex gap-2">
-	        <a th:href="@{/Illustration_write}" class="btn btn-dark px-4">
-	            작품 등록
-	        </a>
-	        
-	        <div class="btn-group" role="group">
-	            <button type="button" class="btn btn-outline-dark active">인기순</button>
-	            <button type="button" class="btn btn-outline-dark">최신순</button>
-	            <button type="button" class="btn btn-outline-dark">팔로잉</button>
-	        </div>
-	    </div>
-	</div>
+<th:block layout:fragment="content">
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center g-3 justify-content-center">
+                <div class="col-4 col-md-2" th:each="cat : ${ {'paint', 'comic', 'sing', 'yutu', 'git', 'folder'} }">
+                    <a th:href="@{/Illustration_list}" class="text-decoration-none text-dark">
+                        <div class="category-icon mb-2">
+                            <img th:src="@{|/images/${cat}.png|}" th:alt="${cat}">
+                        </div>
+                        <div class="small fw-bold" th:text="${cat == 'paint' ? '일러스트' : (cat == 'comic' ? '만화' : (cat == 'sing' ? '음원' : (cat == 'yutu' ? '비디오' : (cat == 'git' ? '웹소설' : '파일'))))}">카테고리</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="container pb-5 px-0">
-        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div class="container text-center mb-5">
+        <div class="mb-2">
+            <a th:href="@{/content/art/create}" class="btn-register">일러스트 등록하기</a>
+        </div>
+        <h3 class="fw-bold mb-4">추천 일러스트</h3>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="/" class="text-muted text-decoration-none small">홈 페이지로 돌아가기</a>
             
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 illust-hover position-relative">
-                    <button class="btn btn-sm position-absolute top-0 end-0 m-2 text-white" style="background: rgba(0,0,0,0.3); border-radius: 50%;">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                    
-                    <a th:href="@{/Illustration_detail}">
-                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
+            <nav th:if="${paging != null and !paging.isEmpty()}">
+                <ul class="pagination custom-pagination mb-0">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                        <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">&lt;</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#" th:text="${paging.number + 1}">1</a></li>
+                    <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                        <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">&gt;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+            <div class="col" th:each="art : ${paging}">
+                <div class="card illust-card h-100">
+                    <a th:href="@{|/content/art/detail/${art.id}|}" class="text-decoration-none text-dark">
+                        <div class="thumbnail-wrapper mb-2 shadow-sm">
+                            <img th:src="${art.thumbnailUrl ?: '/images/pic.png'}" 
+                                 class="w-100 h-100" style="object-fit: cover;">
+                        </div>
+                        <div class="px-1 text-start">
+                            <h6 class="fw-bold mb-1 text-truncate" th:text="${art.title}">작품 제목</h6>
+                            <p class="text-muted small mb-0" th:text="${art.displayname}">작가이름</p>
+                            <p class="tag-text mb-0 mt-1">#일러스트 #아트</p>
+                        </div>
                     </a>
-                    <div class="card-body p-3">
-                        <h6 class="card-title fw-bold text-truncate mb-2">빛의 인도자</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-truncate">
-                                <div class="artist-profile"></div>
-                                <span class="small text-muted">아트마스터</span>
-                            </div>
-                        </div>
-                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
-                            <span><i class="bi bi-eye"></i> 1.2k</span>
-                            <span><i class="bi bi-heart-fill text-danger"></i> 450</span>
-                        </div>
-                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 illust-hover position-relative">
-                    <button class="btn btn-sm position-absolute top-0 end-0 m-2 text-white" style="background: rgba(0,0,0,0.3); border-radius: 50%;">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                    <a th:href="@{/Illustration_detail}">
-                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
-                    </a>
-                    <div class="card-body p-3">
-                        <h6 class="card-title fw-bold text-truncate mb-2">여름날의 추억</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-truncate">
-                                <div class="artist-profile"></div>
-                                <span class="small text-muted">SummerRain</span>
-                            </div>
-                        </div>
-                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
-                            <span><i class="bi bi-eye"></i> 850</span>
-                            <span><i class="bi bi-heart-fill text-danger"></i> 120</span>
-                        </div>
-                    </div>
+        <nav class="mt-5" th:if="${paging != null and !paging.isEmpty()}">
+            <ul class="pagination justify-content-center custom-pagination">
+                <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">&lt;</a>
+                </li>
+                <li th:each="page: ${#numbers.sequence(0, paging.totalPages - 1)}"
+                    th:if="${page >= paging.number - 2 and page <= paging.number + 2}"
+                    th:classappend="${page == paging.number} ? 'active'" class="page-item">
+                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+                </li>
+                <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">&gt;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <footer class="full-footer">
+        <div class="container py-5">
+            <div class="row mb-4">
+                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+                    <h6 class="fw-bold mb-3">회사 정보</h6>
+                    <ul class="list-unstyled small opacity-75">
+                        <li>이용 안내</li>
+                        <li>공지사항</li>
+                        <li>고객센터</li>
+                        <li>도움말</li>
+                        <li>광고문의</li>
+                    </ul>
                 </div>
             </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 illust-hover">
-                    <a th:href="@{/Illustration_detail}">
-                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
-                    </a>
-                    <div class="card-body p-3">
-                        <h6 class="card-title fw-bold text-truncate mb-2">도시 야경 원화</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-truncate">
-                                <div class="artist-profile"></div>
-                                <span class="small text-muted">CityVibe</span>
-                            </div>
-                        </div>
-                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
-                            <span><i class="bi bi-eye"></i> 3.4k</span>
-                            <span><i class="bi bi-heart-fill text-danger"></i> 890</span>
-                        </div>
-                    </div>
+            <hr class="footer-line">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+                    <span>이용 약관</span>
+                    <span>개인 정보 보호 정책</span>
+                </div>
+                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+                    © 2026 creatival All rights reserved.
+                </div>
+                <div class="col-md-4 text-end">
+                    <img th:src="@{/images/creatival-Photoroom.png}" alt="logo" width="140">
                 </div>
             </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 illust-hover">
-                    <a th:href="@{/Illustration_detail}">
-                        <img src="images/pic.png" class="illust-card-img" alt="일러스트">
-                    </a>
-                    <div class="card-body p-3">
-                        <h6 class="card-title fw-bold text-truncate mb-2">캐릭터 컨셉 아트</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-truncate">
-                                <div class="artist-profile"></div>
-                                <span class="small text-muted">Concept_J</span>
-                            </div>
-                        </div>
-                        <div class="mt-2 pt-2 border-top d-flex gap-3 stat-icon">
-                            <span><i class="bi bi-eye"></i> 520</span>
-                            <span><i class="bi bi-heart-fill text-danger"></i> 64</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            </div> 
-    </div> 
-
-    <nav aria-label="Page navigation" class="mb-5">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1">이전</a>
-            </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">다음</a>
-            </li>
-        </ul>
-    </nav>
-</div>
+        </div>
+    </footer>
+</th:block>
 </html>

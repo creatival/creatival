@@ -1,7 +1,8 @@
 <html layout:decorate="~{layout}">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        /* 작품 뷰어 배경 (약간 어둡게 처리하여 그림 집중도 향상) */
+        /* [기존 디자인 유지] */
         .art-viewer {
             background-color: #f8f9fa;
             min-height: 500px;
@@ -11,168 +12,219 @@
             padding: 40px 0;
         }
         
-        /* 작품 이미지 (원본 비율 유지, 최대 폭 제한) */
         .art-image {
             max-width: 100%;
-            max-height: 85vh; /* 화면 높이의 85%까지만 차지 */
+            max-height: 80vh; 
+            object-fit: contain; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             border-radius: 4px;
+            display: block;
+            margin: 0 auto;
         }
 
-        /* 작가 프로필 이미지 */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(1) grayscale(100); 
+        }
+
         .artist-avatar {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             object-fit: cover;
             border-radius: 50%;
             border: 2px solid #fff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* 반응 버튼 스타일 */
-        .action-btn {
-            border-radius: 50px;
-            padding: 8px 20px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .action-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        /* 태그 스타일 */
         .art-tag {
-            background-color: #e9ecef;
-            color: #495057;
-            padding: 6px 14px;
-            border-radius: 20px;
+            color: #0d6efd; 
             font-size: 0.9rem;
             text-decoration: none;
-            margin-right: 6px;
-            margin-bottom: 6px;
+            margin-right: 8px;
             display: inline-block;
         }
-        .art-tag:hover {
-            background-color: #dee2e6;
-            color: #212529;
+        
+        .comment-section {
+            background-color: #f1f3f5;
+            border-radius: 12px;
+            padding: 50px 20px;
+        }
+        .btn-navy {
+            background-color: #2D3278;
+            color: white;
+            border: none;
+            border-radius: 6px;
         }
     </style>
 </head>
 
 <div layout:fragment="content">
 
-    <div class="art-viewer w-100">
-        <div class="container text-center">
-            <img src="images/pic.png" class="art-image" alt="작품 상세 이미지">
-        </div>
+    <div class="container text-center mt-5 mb-4">
+        <h3 class="fw-bold" th:text="${art.title}">작품 제목</h3>
     </div>
 
-    <div class="container py-5">
-        <div class="row">
-            
-            <div class="col-lg-8">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div>
-                        <h2 class="fw-bold mb-2">신비로운 숲의 수호자</h2>
-                        <div class="text-muted small">
-                            <span class="me-3">게시일: 2026.02.12</span>
-                            <span class="me-3"><i class="bi bi-eye"></i> 12,345</span>
-                            <span><i class="bi bi-heart-fill text-danger"></i> 854</span>
-                        </div>
+    <div class="art-viewer w-100 mb-4">
+        <div class="container" style="max-width: 800px;">
+            <div id="artSlider" class="carousel slide" data-bs-ride="false">
+                <div class="carousel-inner">
+                    <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
+                        <img th:src="${file.fileUrl}" class="art-image">
                     </div>
-                    <div class="d-none d-md-block">
-                        <button class="btn btn-outline-danger action-btn me-2"><i class="bi bi-heart"></i> 좋아요</button>
-                        <button class="btn btn-outline-secondary action-btn"><i class="bi bi-share"></i> 공유</button>
-						<button class="btn btn-outline-secondary action-btn"> 수정하기</button>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <p class="text-secondary" style="line-height: 1.8;">
-                        이 작품은 깊은 숲속에서 잊혀진 고대의 수호자를 컨셉으로 작업했습니다.<br>
-                        빛의 표현과 질감 처리에 많은 시간을 들였습니다. <br>
-                        사용 툴: Photoshop, Blender 3D.
-                    </p>
-                </div>
-
-                <div class="mb-5">
-                    <a href="#" class="art-tag">#판타지</a>
-                    <a href="#" class="art-tag">#컨셉아트</a>
-                    <a href="#" class="art-tag">#배경원화</a>
-                    <a href="#" class="art-tag">#일러스트</a>
-                </div>
-
-                <div class="card bg-light border-0 rounded-3 p-4 mb-5">
-                    <h5 class="fw-bold mb-4">댓글 (3)</h5>
-                    
-                    <div class="d-flex mb-4">
-                        <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px; min-width: 40px;"></div>
-                        <div class="input-group">
-                            <input type="text" class="form-control border-0 shadow-sm" placeholder="댓글" style="border-radius: 20px 0 0 20px;">
-                            <button class="btn btn-primary px-4" style="border-radius: 0 20px 20px 0;">등록</button>
-                        </div>
-                    </div>
-
-                    <div class="vstack gap-3">
-                        <div class="d-flex">
-                            <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px;"></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">User123 <span class="text-muted small fw-normal ms-1">1시간 전</span></h6>
-                                <p class="text-secondary mb-0 small">색감이 너무 아름답네요! 빛 표현이 인상적입니다.</p>
-                            </div>
-                        </div>
-                        <div class="d-flex">
-                            <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px;"></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">ArtLover <span class="text-muted small fw-normal ms-1">3시간 전</span></h6>
-                                <p class="text-secondary mb-0 small">혹시 작업 시간이 얼마나 걸리셨나요?</p>
-                            </div>
-                        </div>
+                    <div th:if="${art.fileList == null or art.fileList.isEmpty()}" class="carousel-item active">
+                        <img src="https://dummyimage.com/800x500/dee2e6/6c757d.png&text=No+Image" class="art-image">
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="col-lg-4 ps-lg-5">
-                <div class="card border shadow-sm rounded-3 sticky-top" style="top: 2rem;">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-dark rounded-circle artist-avatar me-3"></div> <div>
-                                <h5 class="fw-bold mb-0">아트마스터</h5>
-                                <small class="text-muted">Fantasy Illustrator</small>
-                            </div>
-                        </div>
-                        <button class="btn btn-dark w-100 mb-3 rounded-pill">팔로우</button>
-                        
-                        <hr class="my-4">
-                        
-                        <h6 class="fw-bold mb-3 text-muted small">이 작가의 다른 작품</h6>
-                        <div class="row g-2">
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                            <div class="col-4">
-                                <a href="#"><img src="images/pic.png" class="img-fluid rounded border" alt="썸네일"></a>
-                            </div>
-                             <div class="col-4">
-                                <a href="#" class="d-flex align-items-center justify-content-center bg-light rounded border text-decoration-none text-muted h-100 small">
-                                    +더보기
-                                </a>
-                            </div>
-                        </div>
+    <div class="container" style="max-width: 800px;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <a href="#" class="art-tag">#일러스트</a>
+                <a th:if="${art.isFanWork}" class="art-tag">#2차창작</a>
+                <div class="text-muted small mt-1" th:text="${art.description}">작품 설명</div>
+            </div>
+            <div class="d-flex gap-3 text-center">
+                <div style="cursor:pointer;"><i class="bi bi-bookmark fs-4"></i><div class="small text-muted">북마크</div></div>
+                <div style="cursor:pointer;"><i class="bi bi-star fs-4"></i><div class="small text-muted">추천하기</div></div>
+            </div>
+        </div>
+
+        <div class="mb-4 small fw-bold">
+            <span class="me-3">조회수 <span th:text="${art.viewCount}">0</span></span>
+            <span>추천 0</span>
+        </div>
+
+        <div class="d-flex align-items-center py-3 border-bottom mb-5">
+            <img th:src="${art.profileImgUrl ?: 'https://dummyimage.com/50x50/ced4da/6c757d'}" class="artist-avatar me-3">
+            <h6 class="fw-bold mb-0" th:text="${art.displayname ?: art.username}">작가이름</h6>
+        </div>
+
+		<div class="comment-box-container mt-5">
+		    <div class="comment-section p-4 p-md-5">
+		        <h5 class="text-center fw-bold mb-4">댓글</h5>
+
+		        <div class="comment-input-area d-flex align-items-center justify-content-center mb-5">
+		            <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px; min-width: 40px;"></div>
+		            
+		            <div class="flex-grow-1 position-relative me-3" style="max-width: 500px;">
+		                <input type="text" class="form-control comment-input" placeholder="댓글 쓰기">
+		            </div>
+
+		            <button class="btn btn-navy-custom px-4 py-2">댓글 작성</button>
+		        </div>
+
+		        <hr class="mb-5 opacity-10" style="max-width: 650px; margin: 0 auto;">
+
+		        <div class="comment-list mx-auto" style="max-width: 550px;">
+		            
+		            <div class="d-flex mb-4">
+		                <div class="bg-secondary rounded-circle me-3" style="width: 35px; height: 35px; min-width: 35px;"></div>
+		                <div class="comment-content">
+		                    <div class="d-flex align-items-center mb-1">
+		                        <span class="fw-bold small me-2">닉네임</span>
+		                        <span class="text-muted" style="font-size: 0.7rem;">03/14 15:30</span>
+		                    </div>
+		                    <p class="small mb-0 text-dark">디테일 대단하네요!</p>
+		                </div>
+		            </div>
+
+		            <div class="d-flex mb-4">
+		                <div class="bg-secondary rounded-circle me-3" style="width: 35px; height: 35px; min-width: 35px;"></div>
+		                <div class="comment-content">
+		                    <div class="d-flex align-items-center mb-1">
+		                        <span class="fw-bold small me-2">닉네임</span>
+		                        <span class="text-muted" style="font-size: 0.7rem;">03/14 15:35</span>
+		                    </div>
+		                    <p class="small mb-0 text-dark">#일러스트 #최고 #추천</p>
+		                </div>
+		            </div>
+		            
+		            <div class="text-center mt-5">
+		                <button class="btn btn-navy-custom w-100 py-3 fw-bold" style="border-radius: 12px; max-width: 400px;">더 보기</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+
+		<style>
+		    /* 이미지 디자인 재현을 위한 전용 스타일 */
+		    .comment-section {
+		        background-color: #f8f9fa; /* 연한 회색 배경 */
+		        border-radius: 15px;
+		    }
+
+		    /* 하단 라인만 있는 입력창 */
+		    .comment-input {
+		        border: none !important;
+		        border-bottom: 1px solid #dee2e6 !important;
+		        background-color: transparent !important;
+		        border-radius: 0 !important;
+		        padding-left: 0 !important;
+		        box-shadow: none !important;
+		    }
+		    
+		    .comment-input:focus {
+		        border-bottom: 2px solid #2D3278 !important;
+		    }
+
+		    /* 이미지 속 남색 버튼 스타일 */
+		    .btn-navy-custom {
+		        background-color: #2D3278 !important;
+		        color: white !important;
+		        border-radius: 30px; /* 둥근 버튼 */
+		        font-size: 0.9rem;
+		        transition: opacity 0.2s;
+		    }
+		    
+		    .btn-navy-custom:hover {
+		        opacity: 0.9;
+		    }
+		</style>
+
+        <div class="mt-5 text-center">
+            <h6 class="fw-bold mb-4 text-muted small">연관 작품</h6>
+            <div class="row row-cols-3 g-2 mb-5">
+                <div class="col" th:each="i : ${#numbers.sequence(1, 12)}">
+                    <div class="bg-light border rounded" style="aspect-ratio: 1/1; display:flex; align-items:center; justify-content:center;">
+                        <i class="bi bi-image text-muted opacity-25 fs-3"></i>
                     </div>
                 </div>
             </div>
-
         </div>
+
     </div>
+	<footer class="full-footer text-light">
+	    <div class="container py-5">
+	        <div class="row mb-4">
+	            <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+	                <h6 class="fw-bold mb-3">회사 정보</h6>
+	                <ul class="list-unstyled small opacity-75">
+	                    <li>이용 안내</li>
+	                    <li>공지사항</li>
+	                    <li>고객센터</li>
+	                    <li>도움말</li>
+	                    <li>광고문의</li>
+	                </ul>
+	            </div>
+	        </div>
+	        <hr class="footer-line">
+	        <div class="row align-items-center">
+	            <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+	                <span>이용 약관</span>
+	                <span>개인 정보 보호 정책</span>
+	            </div>
+	            <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+	                © 2026 creatival All rights reserved.
+	            </div>
+	            <div class="col-md-4 text-end">
+	                <img th:src="@{/images/creatival-Photoroom.png}" alt="logo" width="140">
+	            </div>
+	        </div>
+	    </div>
+	</footer>
 </div>
 </html>
