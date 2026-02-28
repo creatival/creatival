@@ -23,4 +23,14 @@ public class FileUtil {
 		System.out.println("saveImage 물리 저장 끝");
 		return fileName;
 	}
+	public void deleteImage(String fileName, String category) throws IOException {
+	    Path filePath = Paths.get(rootPath + "/images/" + category, fileName);
+
+	    if (Files.exists(filePath)) {
+	        Files.delete(filePath);
+	        System.out.println("파일 물리 삭제 완료: " + fileName);
+	    } else {
+	        System.out.println("삭제할 파일이 존재하지 않음: " + fileName);
+	    }
+	}
 }

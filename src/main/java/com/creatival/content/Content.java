@@ -1,6 +1,7 @@
 package com.creatival.content;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -99,4 +100,6 @@ public class Content {
 	@OneToOne(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Series series;
 	
+	@OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ContentFile> contentFile;
 }

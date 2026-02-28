@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.creatival.FileUtil;
+import com.creatival.tag.Tag;
 import com.creatival.token.UserToken;
 import com.creatival.token.UserTokenRepository;
 import com.creatival.user.DTO.RequestSignUp;
@@ -26,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final UserTokenRepository userTokenRepository;
-
+    private final String imgPath="/upload/images/user/";
     private final FileUtil fileUtil;
 	private final  UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -62,10 +63,10 @@ public class UserService {
 			throw new IllegalStateException("비밀번호가 같지 않습니다.");
 		}
 		
-		String profileImgUrl = null;
+		String profileImgUrl = imgPath;
 		
 		if(signUpRequest.getProfileImg()!=null) {
-			profileImgUrl = fileUtil.saveImage(signUpRequest.getProfileImg(), "user");
+			profileImgUrl += fileUtil.saveImage(signUpRequest.getProfileImg(), "user");
 		}
 		
 		
@@ -115,7 +116,7 @@ public class UserService {
 	
 	public void updateProfileImg(Users user, MultipartFile file) throws IOException {
 		String profileImgUrl=null;
-		profileImgUrl = fileUtil.saveImage(file, "user");
+		profileImgUrl = imgPath+fileUtil.saveImage(file, "user");
 		
 		user.setProfileImgUrl(profileImgUrl);
 		

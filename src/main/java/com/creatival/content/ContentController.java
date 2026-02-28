@@ -26,6 +26,7 @@ import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.UpdateArtDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.Enum.OwnerType;
@@ -87,6 +88,7 @@ public class ContentController {
 		model.addAttribute("novel", novelDetail);
 		if(principal != null) {
 			model.addAttribute("loginUsername", principal.getName());
+			
 		} else {
 			model.addAttribute("loginUsername", null);
 		}
@@ -246,7 +248,6 @@ public class ContentController {
 		if (request instanceof MultipartHttpServletRequest) {
 	        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 	        List<MultipartFile> files = multipartRequest.getFiles("images");
-	        System.out.println("Servlet 레벨에서 찾은 파일 개수: " + (files != null ? files.size() : 0));
 	    }
 		if (createArtDTO.getImages() == null || createArtDTO.getImages().isEmpty()) {
 	        System.out.println("이미지 리스트가 비어있습니다.");
@@ -276,5 +277,52 @@ public class ContentController {
 		ResponseArtDetail responseArtDetail = ResponseArtDetail.from(content, list);
 		model.addAttribute("art", responseArtDetail);
 		return "illustration_detail";
+	}
+	
+	@GetMapping("/art/update/{id}")
+	public String updateArt(@PathVariable("id") Long id, Model model) {
+		UpdateArtDTO updateArtDTO = UpdateArtDTO.from(contentService.getArt(id));
+		Content content = contentService.getArt(id);
+		ResponseArtDetail artDetail = ResponseArtDetail.from(content, contentFileService.getContentFileByContent(content));
+		model.addAttribute("updateArtDTO", updateArtDTO);
+		model.addAttribute("art", artDetail);
+		model.addAttribute("id", id);
+		return "illustration_edit";
+	}
+	
+	@PostMapping("/art/update/{id}")
+	public String updateArt(
+	        @PathVariable("id") Long id,
+	        @ModelAttribute("updateArtDTO") UpdateArtDTO updateArtDTO,
+	        BindingResult bindingResult,
+	        Model model) throws IOException {
+
+	    Content content = contentService.getArt(id);
+
+	    System.out.println(updateArtDTO.getNewFiles().size() + "파일 사이즈");
+	    if (bindingResult.hasErrors()) {
+
+	        ResponseArtDetail artDetail =
+	                ResponseArtDetail.from(
+	                        content,
+	                        contentFileService.getContentFileByContent(content)
+	                );
+
+	        model.addAttribute("art", artDetail);
+	        model.addAttribute("id", id);
+
+	        return "illustration_edit";
+	    }
+
+	    contentService.updateContentArt(id, updateArtDTO);
+
+	    return "redirect:/content/art/detail/" + id;
+	}
+	
+	@GetMapping("/art/delete/{id}")
+	public String deleteArt(@PathVariable("id") Long id, Principal principal) {
+		Content content = contentService.getArt(id);
+		contentService.delete(content);
+		return "redirect:/content/art/list";
 	}
 }

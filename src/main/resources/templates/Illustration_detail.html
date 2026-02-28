@@ -111,10 +111,30 @@
                             <span><i class="bi bi-heart-fill text-danger"></i> 0</span>
                         </div>
                     </div>
-                    <div class="d-none d-md-block">
-                        <button class="btn btn-outline-danger action-btn me-2"><i class="bi bi-heart"></i> 좋아요</button>
-                        <button class="btn btn-outline-secondary action-btn"><i class="bi bi-share"></i> 공유</button>
-                    </div>
+					<div class="d-none d-md-block">
+
+					    <!-- 작성자 본인일 경우만 수정/삭제 버튼 표시 -->
+					    <th:block th:if="${art.username == #authentication.name}">
+					        <a th:href="@{/content/art/update/{id}(id=${art.id})}"
+					           class="btn btn-outline-primary action-btn me-2">
+					            <i class="bi bi-pencil"></i> 수정
+					        </a>
+
+					        <a th:href="@{/content/art/delete/{id}(id=${art.id})}"
+					           onclick="return confirm('정말 삭제하시겠습니까?');"
+					           class="btn btn-outline-danger action-btn me-2">
+					            <i class="bi bi-trash"></i> 삭제
+					        </a>
+					    </th:block>
+
+					    <button class="btn btn-outline-danger action-btn me-2">
+					        <i class="bi bi-heart"></i> 좋아요
+					    </button>
+
+					    <button class="btn btn-outline-secondary action-btn">
+					        <i class="bi bi-share"></i> 공유
+					    </button>
+					</div>
                 </div>
 
                 <div class="mb-4">

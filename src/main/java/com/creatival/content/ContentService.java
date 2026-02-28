@@ -26,6 +26,7 @@ import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.UpdateArtDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.Enum.ContentType;
@@ -247,5 +248,31 @@ public class ContentService {
 			return content.get();
 		}
 		return null;
+	}
+	
+	@Transactional
+	public void updateContentArt(Long id, UpdateArtDTO dto) throws IOException {
+
+	    Content content = contentRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Content not found"));
+
+	    content.setTitle(dto.getTitle());
+	    content.setDescription(dto.getDescription());
+	    content.setVisibility(dto.getVisibility());
+	    content.setAllowComment(dto.isAllowComment());
+	    
+	    if (dto.getDeleteFileIds() != null && !dto.getDeleteFileIds().isEmpty()) {
+	        for (Long fileId : dto.getDeleteFileIds()) {
+	            contentFileService.deleteImage(fileId);
+	        }
+	    }
+
+	    if (dto.getNewFiles() != null) {
+	        for (MultipartFile file : dto.getNewFiles()) {
+	            if (!file.isEmpty()) {
+	                contentFileService.createContentFileImageForContent(content, dto.getNewFiles(), "art");
+	            }
+	        }
+	    }
 	}
 }

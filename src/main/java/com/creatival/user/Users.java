@@ -1,8 +1,12 @@
 package com.creatival.user;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.creatival.tag.TagToUsers;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +15,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
@@ -69,6 +74,9 @@ public class Users {
 	private boolean isDeleted = false;
 	
 	private LocalDateTime deletedAt;
+	
+	@OneToMany(mappedBy = "user")
+	private List<TagToUsers> tagToUsers = new ArrayList<>();
 
 	public Users(String username, String displayName, String email, String password, boolean isCreator) {
 		super();
