@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.creatival.tag.TagToUsers;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -75,7 +76,7 @@ public class Users {
 	
 	private LocalDateTime deletedAt;
 	
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TagToUsers> tagToUsers = new ArrayList<>();
 
 	public Users(String username, String displayName, String email, String password, boolean isCreator) {

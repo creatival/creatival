@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -13,4 +15,5 @@ public interface UserRepository extends JpaRepository<Users, Long>{
 	Optional<Users> findByUsername(String username);
 	Optional<Users> findByEmail(String email);
 	List<Users> findAllByIsDeleted(boolean deleted);
+	List<Users> findByIsDeletedTrueAndDeletedAtBefore(LocalDateTime time);
 }
