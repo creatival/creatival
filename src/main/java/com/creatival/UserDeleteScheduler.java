@@ -17,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 public class UserDeleteScheduler {
 	private final UserService userService;
 
-    @Scheduled(cron = "0 45 11 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void deleteInactiveUsers() {
 
-        LocalDateTime threshold = LocalDateTime.now().minusDays(0);
+        LocalDateTime threshold = LocalDateTime.now().minusDays(30);
 
         List<Users> usersToDelete =
                	userService.getAllByIsDeleted(threshold);
