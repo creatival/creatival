@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.creatival.content.Content;
 import com.creatival.content.ContentFileService;
 import com.creatival.content.ContentService;
 import com.creatival.user.UserService;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class TagController {
 	private final TagService tagService;
 	private final UserService userService;
+	private final ContentService contentService;
 	
 	@PostMapping("/createUserTag")
 	public String createTagForUser(@RequestParam("tagName") String tagName, Principal principal) {
@@ -31,6 +33,23 @@ public class TagController {
 		tagService.createTagForUser(user, tagName);
 		return "redirect:/user/myPage";
 	}
+	
+	@PostMapping("/createContentNovelTag/{id}")
+	public String createTagForNovel(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
+		createTagForContent(tagName, id, principal.getName());
+		return "redirect:/content/novel_detail/"+id;
+	}
+	@PostMapping("/createContentArtTag/{id}")
+	public String createTagForArt(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
+		createTagForContent(tagName, id, principal.getName());
+		return "redirect:/content/art/detail/"+id;
+	}
+	
+	private void createTagForContent(String tagName, Long id, String username) {
+		Content content = contentService.getContent(id);
+		tagService.createTagForContent(content, tagName, username);
+	}
+	
 	@GetMapping("/deleteUserTag")
 	public String deleteUserTag(@RequestParam("tagId") Long tagId, Principal principal) {
 	    
@@ -38,8 +57,21 @@ public class TagController {
 	    Long userId = user.getId();
 	    
 	    // 서비스에 삭제 로직 위임
-	    tagService.deleteMapping(userId, tagId);
+	    tagService.deleteMappingForUser(userId, tagId);
 	    
 	    return "redirect:/user/myPage"; // 삭제 후 다시 마이페이지로
+	}
+	
+	@GetMapping("/novel/deleteContentTag")
+	public String deleteContentNovelTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
+		tagService.deleteMappingForContent(contentId, tagId);
+		
+		return "redirect:/content/novel_detail/"+contentId;
+	}
+	@GetMapping("/art/deleteContentTag")
+	public String deleteContentArtTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
+		tagService.deleteMappingForContent(contentId, tagId);
+		
+		return "redirect:/content/art/detail/"+contentId;
 	}
 }

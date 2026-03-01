@@ -42,7 +42,11 @@ public class Tag {
 	
 	@OneToMany(mappedBy = "tag")
 	@Builder.Default()
-	private List<TagToUsers> tagToUsers = new ArrayList<>(); 
+	private List<TagToUsers> tagToUsers = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "tag")
+	@Builder.Default
+	private List<TagToContent> tagToContent = new ArrayList<>();
 	
 	@CreationTimestamp
 	private LocalDateTime createdAt;

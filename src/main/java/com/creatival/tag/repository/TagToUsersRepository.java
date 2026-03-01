@@ -1,4 +1,4 @@
-package com.creatival.tag;
+package com.creatival.tag.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +11,7 @@ import com.creatival.user.Users;
 import jakarta.transaction.Transactional;
 
 import com.creatival.tag.Tag;
+import com.creatival.tag.TagToUsers;
 
 
 

@@ -30,8 +30,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class UserService {
 
-    private final TagService tagService;
-
     private final UserTokenRepository userTokenRepository;
     private final String imgPath="/upload/images/user/";
     private final FileUtil fileUtil;
@@ -142,7 +140,6 @@ public class UserService {
 	
 	@Transactional
 	public void userDelete(Users user) {
-		tagService.deleteTagForDeleteUser(user);
 		userRepository.delete(user);
 	}
 	

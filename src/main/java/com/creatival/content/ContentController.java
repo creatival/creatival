@@ -30,6 +30,8 @@ import com.creatival.content.DTO.UpdateArtDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.Enum.OwnerType;
+import com.creatival.tag.ResponseTagDTO;
+import com.creatival.tag.TagService;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -44,6 +46,7 @@ public class ContentController {
 	private final ContentService contentService;
 	private final UserService userService;
 	private final ContentFileService contentFileService;
+	private final TagService tagService;
 	
 	@GetMapping("/novel_list")
 	public String novel_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
@@ -94,6 +97,8 @@ public class ContentController {
 		}
 		Page<ResponseNovelEpisodeList> paging =  contentService.getEpisodeBySeries(content.getSeries(), page);
 		model.addAttribute("paging", paging);
+		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		model.addAttribute("tagList", contentTags);
 		return "novel_detail";
 	}
 	
@@ -276,6 +281,8 @@ public class ContentController {
 		List<ContentFile> list = contentFileService.getContentFileByContent(content);
 		ResponseArtDetail responseArtDetail = ResponseArtDetail.from(content, list);
 		model.addAttribute("art", responseArtDetail);
+		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		model.addAttribute("tagList", contentTags);
 		return "illustration_detail";
 	}
 	

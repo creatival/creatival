@@ -62,6 +62,29 @@
                     댓글 허용 :
                     <span th:text="${novel.allowComment} ? '허용' : '비허용'">허용</span>
                 </h6>
+				
+				<div class="d-flex justify-content-start align-items-center gap-2 mb-3">			   
+					<div th:each="tag : ${tagList}" class="badge rounded-pill bg-primary ...">
+					    <span th:text="'#' + ${tag.tagText}">#태그명</span>
+					    
+					    <a th:href="@{/tag/novel/deleteContentTag(tagId=${tag.id},contentId=${novel.id})}"  th:if="${novel.username==#authentication.name}"
+					       onclick="return confirm('삭제하시겠습니까?');">
+					        <i class="bi bi-x-circle-fill"></i>
+					    </a>
+					</div>
+						 
+					  <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">
+					          등록된 태그가 없습니다.
+					      </span>
+
+				    <button type="button"  th:if="${novel.username==#authentication.name}"
+				            class="btn btn-outline-primary btn-sm rounded-circle p-0" 
+				            style="width: 24px; height: 24px; line-height: 1;"
+				            data-bs-toggle="modal" 
+				            data-bs-target="#tagAddModal">
+				        <i class="bi bi-plus"></i>
+				    </button>
+				</div>
 
                 <!-- 설명 -->
                 <div class="mt-4">
@@ -204,6 +227,36 @@
 	        </div>
 	    </div>
 	</div>
+	<div class="modal fade" id="tagAddModal" tabindex="-1" aria-hidden="true">
+			    <div class="modal-dialog modal-dialog-centered modal-sm">
+			        <div class="modal-content">
+			            <div class="modal-header">
+			                <h6 class="modal-title fw-bold">새 태그 추가</h6>
+			                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			            </div>
+			            <form th:action="@{/tag/createContentNovelTag/{id}(id=${novel.id})}" method="post">
+			                <div class="modal-body text-center">
+			                    <div class="input-group">
+			                        <span class="input-group-text">#</span>
+			                        <input type="text" 
+			                               name="tagName" 
+			                               class="form-control" 
+			                               placeholder="태그명 입력" 
+			                               required 
+			                               maxlength="20">
+			                    </div>
+			                    <div class="form-text mt-2 text-start">
+			                        공백 없이 입력해주세요.
+			                    </div>
+			                </div>
+			                <div class="modal-footer p-2">
+			                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">취소</button>
+			                    <button type="submit" class="btn btn-primary btn-sm px-3">추가</button>
+			                </div>
+			            </form>
+			        </div>
+			    </div>
+			</div>
 	
 	<script>
 	    const thumbnailInput = document.getElementById('thumbnailInput');

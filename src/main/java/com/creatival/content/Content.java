@@ -1,6 +1,7 @@
 package com.creatival.content;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,8 @@ import org.hibernate.validator.constraints.UniqueElements;
 
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.Enum.Visibility;
+import com.creatival.tag.TagToContent;
+import com.creatival.tag.TagToUsers;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.user.Users;
 import com.creatival.user.userRole;
@@ -102,4 +105,8 @@ public class Content {
 	
 	@OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ContentFile> contentFile;
+	
+	@OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<TagToContent> tagToContent = new ArrayList<>();
 }

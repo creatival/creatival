@@ -74,15 +74,23 @@ public class ContentService {
 		}
 		return nextEpisode.get();
 	}
+	
+	public Content getContent(Long id) {
+		Optional<Content> content = contentRepository.findById(id);
+		if(content.isPresent()) {
+			return content.get();
+		}
+		return null;
+	}
 	// 공통 라인 //
 	
 	// 소설 라인 // 
 	@Transactional
 	public void createCotentNovel(CreateNovelDTO createNovelDTO, Users user) throws IOException {
-		String imgurl = null;
+		String imgurl = "/upload/images/thumbnail/";
 		
 		if(createNovelDTO.getThumbnailFile() != null) {
-			imgurl = fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
+			imgurl += fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
 		}
 		Content content = Content.builder()
 				.title(createNovelDTO.getTitle())
@@ -151,7 +159,8 @@ public class ContentService {
 			return;
 		}
 		Content content = optional.get();
-		content.setThumbnailImgUrl(fileUtil.saveImage(img, "thumbnail"));
+		String imgUrl = "/upload/images/thumbnail/";
+		content.setThumbnailImgUrl(imgUrl+fileUtil.saveImage(img, "thumbnail"));
 		contentRepository.save(content);
 	}
 
