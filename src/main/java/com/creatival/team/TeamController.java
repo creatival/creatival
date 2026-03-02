@@ -2,7 +2,9 @@ package com.creatival.team;
 
 import java.security.Principal;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.creatival.team.DTO.CreateTeamDTO;
+import com.creatival.team.DTO.ResponseTeamListDTO;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -29,7 +32,9 @@ public class TeamController {
 	
 	
 	@GetMapping("/list")
-	public String teamList() {
+	public String teamList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		Page<ResponseTeamListDTO> paging = teamService.getTeamList(page);
+		model.addAttribute("paging", paging);
 		return "team_list";
 	}
 	

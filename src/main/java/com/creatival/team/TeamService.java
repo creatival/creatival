@@ -2,12 +2,18 @@ package com.creatival.team;
 
 import java.io.IOException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.creatival.FileUtil;
+import com.creatival.content.Enum.Visibility;
 import com.creatival.tag.Tag;
 import com.creatival.tag.TagService;
 import com.creatival.team.DTO.CreateTeamDTO;
+import com.creatival.team.DTO.ResponseTeamListDTO;
 import com.creatival.user.Users;
 
 import lombok.RequiredArgsConstructor;
@@ -45,5 +51,11 @@ public class TeamService {
 		        tagService.createTagForTeam(team, tagName, user);
 		    }
 		}
+	}
+	
+	public Page<ResponseTeamListDTO> getTeamList(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Team> teams = teamRepository.findByVisibility(Visibility.PUBLIC, pageable);
+		return teams.map(team -> ResponseTeamListDTO.from(team));
 	}
 }
