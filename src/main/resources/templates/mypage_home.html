@@ -150,6 +150,28 @@
 		        </div>
 		    </div>
 		</div>
+		
+		<script>
+		        const imageInput = document.getElementById('profileImageInput');
+		        const imagePreview = document.getElementById('imagePreview');
+		        if(imageInput) {
+		            imageInput.onchange = () => {
+		                const [file] = imageInput.files;
+		                if (file) { imagePreview.src = URL.createObjectURL(file); }
+		            }
+		        }
+				const profileForm = document.querySelector('#imageUpdateModal form');
+				profileForm.onsubmit = function() {
+				    const submitBtn = this.querySelector('button[type="submit"]');
+				    
+				    // 버튼 중복 클릭 방지 및 로딩 표시
+				    submitBtn.disabled = true;
+				    submitBtn.innerHTML = `
+				        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+				        업로드 중...
+				    `;
+				};
+		    </script>
     <footer class="footer bg-dark text-white mt-5">
         </footer>
 </div>
