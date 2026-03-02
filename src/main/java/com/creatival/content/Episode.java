@@ -53,8 +53,13 @@ public class Episode {
 	@Lob
 	private String novelContent;
 	
+	@Builder.Default
 	boolean isFree=true;
+	@Builder.Default
 	boolean isDeleted=false;
+	
+	@Builder.Default
+	private Long viewCount=0L;
 	
 	@Lob
 	private String note;

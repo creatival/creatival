@@ -11,7 +11,9 @@ import com.creatival.content.repository.ContentFileRepository;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.tag.repository.TagRepository;
 import com.creatival.tag.repository.TagToContentRepository;
+import com.creatival.tag.repository.TagToTeamRepository;
 import com.creatival.tag.repository.TagToUsersRepository;
+import com.creatival.team.Team;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -21,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class TagService {
+
+    private final TagToTeamRepository tagToTeamRepository;
 
     private final TagToContentRepository tagToContentRepository;
 
@@ -95,5 +99,18 @@ public class TagService {
 	}
 	public void deleteTagForDeleteContent(Content content) {
 		tagToContentRepository.deleteByContent(content);
+	}
+	//나중에 공통 로직 정리 필요
+	public void createTagForTeam(Team team, String tagName, Users user) {
+		Tag tag;
+		if(tagRepository.findByTagText(tagName).isEmpty()) {
+			tag = Tag.builder().tagText(tagName).user(user).build();
+			tagRepository.save(tag);
+		} else {
+			tag = tagRepository.findByTagText(tagName).get();
+		}
+		
+		TagToTeam tagToTeam = TagToTeam.from(team, tag);
+		tagToTeamRepository.save(tagToTeam);
 	}
 }

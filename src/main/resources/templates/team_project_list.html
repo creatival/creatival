@@ -1,0 +1,112 @@
+<html layout:decorate="~{layout}">
+<head>
+    <style>
+        .comic-card-img {
+            height: 300px;
+            object-fit: cover; /* 이미지가 비율을 유지하며 꽉 차게 */
+        }
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+    </style>
+</head>
+
+<div class="container" layout:fragment="content">
+    
+	<div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
+	    <div>
+	        <h2 class="fw-bold">프로젝트 모음</h2>
+	    </div>
+
+	    <div class="d-flex gap-2">
+	        <a th:href="@{/team_project_write}" class="btn btn-dark px-4 shadow-sm">
+	        	</i> 프로젝트 등록
+	        </a>
+	    </div>
+	</div>
+
+    <div class="container pb-5 px-0">
+        
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+            
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
+                    
+                    <a th:href="@{/team_project_detail}">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">다양한 게임</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+						<a class="btn btn-primary" th:href="@{/team_project_edit}">수정</a>
+						<a class="btn btn-danger">삭제</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">다양한 활동</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+							<a class="btn btn-primary">수정</a>
+                            <a class="btn btn-danger">삭제</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">스피키</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+						<a class="btn btn-primary">수정</a>
+						<a class="btn btn-danger">삭제</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
+                    <a href="#">
+                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title fw-bold text-truncate">팀 제목 예시</h6>
+                        <div class="d-flex justify-content-between align-items-center fs-7">
+						<a class="btn btn-primary">수정</a>
+						<a class="btn btn-danger">삭제</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div> </div> <nav aria-label="Page navigation example" class="mb-5">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">5</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</html>

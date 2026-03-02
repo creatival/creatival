@@ -28,6 +28,8 @@ public class CreateNovelDTO {
 	private MultipartFile thumbnailFile;
 
 	private boolean allowComment;
+	
+	private String tagString;
 
 	private boolean fanWork;
 

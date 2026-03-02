@@ -1,0 +1,54 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div class="container my-5" layout:fragment="content">
+    
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <h3 class="fw-bold mb-4 border-bottom pb-3">음악 등록</h3>
+            
+            <form action="/music/upload" method="post" enctype="multipart/form-data" class="bg-white p-4 rounded-3 shadow-sm border">
+                
+                <div class="mb-4">
+                    <label for="musicTitle" class="form-label fw-bold">곡 제목 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="musicTitle" name="title" placeholder="곡 제목을 입력하세요" required>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="artistName" class="form-label fw-bold">아티스트 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="artistName" name="artist" placeholder="아티스트명" required>
+                    </div>
+                    <div class="col-md-6 mt-3 mt-md-0">
+                        <label for="genre" class="form-label fw-bold">장르</label>
+                        <select class="form-select" id="genre" name="genre">
+                            <option value="">장르 선택</option>
+                            <option value="pop">팝 (Pop)</option>
+                            <option value="hiphop">힙합 (Hip-Hop)</option>
+                            <option value="indie">인디 (Indie)</option>
+                            <option value="classic">클래식 (Classic)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-3 bg-light rounded border">
+                    <label for="coverFile" class="form-label fw-bold"><i class="bi bi-image me-1"></i> 앨범 커버 이미지 <span class="text-danger">*</span></label>
+                    <input class="form-control mb-3" type="file" id="coverFile" name="coverImage" accept="image/*" required>
+                    
+                    <label for="audioFile" class="form-label fw-bold"><i class="bi bi-music-note-beamed me-1"></i> 음원 파일 (MP3) <span class="text-danger">*</span></label>
+                    <input class="form-control" type="file" id="audioFile" name="audioFile" accept="audio/*" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="lyrics" class="form-label fw-bold">곡 설명 및 가사</label>
+                    <textarea class="form-control" id="lyrics" name="description" rows="5" placeholder="곡에 대한 설명이나 가사를 입력해주세요."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a th:href="@{/music_list}" class="btn btn-secondary px-4">취소</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">등록하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</html>

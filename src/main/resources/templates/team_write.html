@@ -1,0 +1,229 @@
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
+
+    <div class="container mt-5 mb-5 d-flex justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-lg-5">
+
+                    <div class="mb-4 text-center">
+                        <h3 class="fw-bold">팀 생성</h3>
+                    </div>
+
+                    <form th:action="@{/team/create}"
+                          th:object="${createTeamDTO}"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        <!-- 🔵 배너 업로드 -->
+                        <div class="mb-5">
+                            <div class="text-center mb-3">
+                                <h5 class="fw-bold">배너 이미지</h5>
+                            </div>
+
+                            <div class="upload-zone" id="bannerDropZone">
+                                <input type="file"
+                                       th:field="*{bannerImage}"
+                                       class="d-none"
+                                       id="bannerFile"
+                                       accept="image/*">
+
+                                <div id="bannerPlaceholder">
+                                    <i class="bi bi-cloud-arrow-up upload-icon"></i>
+                                    <p class="mt-2 mb-1 fw-bold">배너 이미지를 업로드하세요</p>
+                                    <p class="text-muted small">가로형 이미지 권장 (PNG, JPG)</p>
+                                </div>
+
+                                <div id="bannerPreview" class="d-none">
+                                    <img src=""
+                                         class="img-fluid rounded shadow-sm"
+                                         style="max-height: 250px; width:100%; object-fit:cover;">
+                                    <p class="mt-3 small text-primary text-decoration-underline">이미지 교체하기</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 🔵 팀 프로필 -->
+                        <div class="mb-5">
+                            <div class="text-center mb-3">
+                                <h5 class="fw-bold">팀 프로필</h5>
+                            </div>
+
+                            <div class="upload-zone" id="profileDropZone">
+                                <input type="file"
+                                       th:field="*{profileImage}"
+                                       class="d-none"
+                                       id="profileFile"
+                                       accept="image/*">
+
+                                <div id="profilePlaceholder">
+                                    <i class="bi bi-cloud-arrow-up upload-icon"></i>
+                                    <p class="mt-2 mb-1 fw-bold">프로필 이미지를 업로드하세요</p>
+                                    <p class="text-muted small">정사각형 이미지 권장 (PNG, JPG)</p>
+                                </div>
+
+                                <div id="profilePreview" class="d-none">
+                                    <img src=""
+                                         class="img-fluid rounded-circle shadow-sm"
+                                         style="max-height: 200px;">
+                                    <p class="mt-3 small text-primary text-decoration-underline">이미지 교체하기</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 팀 이름 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">팀 이름</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{name}"
+                                   placeholder="팀의 이름을 지어주세요.">
+                        </div>
+
+                        <!-- 팀 설명 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">팀 설명</label>
+                            <textarea class="form-control"
+                                      rows="3"
+                                      th:field="*{description}"
+                                      placeholder="팀에 대한 설명을 적어주세요."></textarea>
+                        </div>
+						
+						<!-- 팀 태그 -->
+						<div class="mb-4">
+						    <label class="form-label fw-semibold">팀 태그</label>
+
+						    <div class="border rounded p-3" id="tagContainer">
+						        <div class="d-flex flex-wrap gap-2 mb-2" id="tagList"></div>
+
+						        <input type="text"
+						               class="form-control"
+						               id="tagInput"
+						               placeholder="태그를 입력하고 Enter를 누르세요">
+						    </div>
+
+						    <!-- 실제 전송용 hidden input 영역 -->
+						    <div id="hiddenTagInputs"></div>
+						</div>
+
+                        <!-- 공개 범위 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">공개 범위</label>
+                            <select class="form-select" th:field="*{visibility}">
+                                <option th:value="PUBLIC">공개</option>
+                                <option th:value="PRIVATE">비공개</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-5">
+                            <a href="#" class="btn btn-outline-secondary px-4">취소</a>
+                            <button type="submit"
+                                    class="btn btn-primary px-5 text-white fw-bold">
+                                제작하기
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+	<script>
+	    document.getElementById("bannerDropZone")
+	        .addEventListener("click", function () {
+	            document.getElementById("bannerFile").click();
+	        });
+
+	    document.getElementById("profileDropZone")
+	        .addEventListener("click", function () {
+	            document.getElementById("profileFile").click();
+	        });
+	</script>
+	<script>
+	    const bannerInput = document.getElementById("bannerFile");
+	    const bannerPreview = document.querySelector("#bannerPreview img");
+	    const bannerPreviewWrapper = document.getElementById("bannerPreview");
+	    const bannerPlaceholder = document.getElementById("bannerPlaceholder");
+
+	    bannerInput.addEventListener("change", function () {
+	        const file = this.files[0];
+	        if (file) {
+	            const reader = new FileReader();
+	            reader.onload = function (e) {
+	                bannerPreview.src = e.target.result;
+	                bannerPreviewWrapper.classList.remove("d-none");
+	                bannerPlaceholder.classList.add("d-none");
+	            };
+	            reader.readAsDataURL(file);
+	        }
+	    });
+
+	    const profileInput = document.getElementById("profileFile");
+	    const profilePreview = document.querySelector("#profilePreview img");
+	    const profilePreviewWrapper = document.getElementById("profilePreview");
+	    const profilePlaceholder = document.getElementById("profilePlaceholder");
+
+	    profileInput.addEventListener("change", function () {
+	        const file = this.files[0];
+	        if (file) {
+	            const reader = new FileReader();
+	            reader.onload = function (e) {
+	                profilePreview.src = e.target.result;
+	                profilePreviewWrapper.classList.remove("d-none");
+	                profilePlaceholder.classList.add("d-none");
+	            };
+	            reader.readAsDataURL(file);
+	        }
+	    });
+	</script>
+	<script>
+	    const tagInput = document.getElementById("tagInput");
+	    const tagList = document.getElementById("tagList");
+	    const hiddenTagInputs = document.getElementById("hiddenTagInputs");
+
+	    tagInput.addEventListener("keydown", function (e) {
+	        if (e.key === "Enter") {
+	            e.preventDefault();
+
+	            const tagValue = tagInput.value.trim();
+	            if (!tagValue) return;
+
+	            // 중복 방지
+	            const existingTags = document.querySelectorAll("input[name='tags']");
+	            for (let tag of existingTags) {
+	                if (tag.value === tagValue) {
+	                    tagInput.value = "";
+	                    return;
+	                }
+	            }
+
+	            // 화면 태그 생성
+	            const badge = document.createElement("span");
+	            badge.className = "badge bg-primary";
+	            badge.textContent = tagValue + " ×";
+	            badge.style.cursor = "pointer";
+
+	            // 클릭 시 제거
+	            badge.addEventListener("click", function () {
+	                badge.remove();
+	                hiddenInput.remove();
+	            });
+
+	            tagList.appendChild(badge);
+
+	            // 실제 전송용 hidden input 생성
+	            const hiddenInput = document.createElement("input");
+	            hiddenInput.type = "hidden";
+	            hiddenInput.name = "tags";
+	            hiddenInput.value = tagValue;
+	            hiddenTagInputs.appendChild(hiddenInput);
+
+	            tagInput.value = "";
+	        }
+	    });
+	</script>
+</div>
+</html>

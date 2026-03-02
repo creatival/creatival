@@ -1,139 +1,148 @@
-<!DOCTYPE html>
-<html layout:decorate="~{layout}"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<div layout:fragment="content">
+<head>
+    <style>
+        /* 1. 상단 내비게이션 바 (image_8f341a.png 반영) */
+        .reader-header {
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 0;
+            background-color: #fff;
+        }
 
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
+        /* 2. 본문 뷰어 스타일 */
+        .novel-body {
+            font-size: 1.25rem; 
+            line-height: 2.3; /* 가독성을 위한 넓은 줄간격 */
+            color: #212529;
+            min-height: 60vh;
+            padding-bottom: 50px;
+        }
 
-                <!-- ===================== -->
-                <!-- 제목 -->
-                <!-- ===================== -->
-                <h2 class="fw-bold"
-                    th:text="|${episode.episodeNum}화. ${episode.title}|">
-                </h2>
+        /* 3. 작가의 코멘트 영역 (image_8ed5dd.png 완벽 재현) */
+        .author-comment-wrapper {
+            margin: 60px 0;
+            text-align: center;
+        }
+        .author-comment-box {
+            background-color: #e9ecef; /* 시안과 동일한 연회색 배경 */
+            border-radius: 20px;       /* 둥근 사각형 */
+            padding: 25px 30px;
+            display: inline-block;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .author-comment-header {
+            font-size: 0.8rem;
+            color: #495057;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #adb5bd;
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+            padding-bottom: 8px;
+        }
+        .author-comment-content {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #212529;
+            word-break: break-all;
+        }
 
-                <!-- ===================== -->
-                <!-- 작성일 + 무료/유료 -->
-                <!-- ===================== -->
-                <p class="text-muted">
-                    <span th:text="${#temporals.format(episode.createdAt, 'yyyy.MM.dd')}"></span>
+        /* 4. 다음 화 시청하기 버튼 (image_8ed1c1.png 스타일) */
+        .btn-next-action {
+            background-color: #3b447a; /* 짙은 남색 */
+            color: white !important;
+            border-radius: 50px;
+            padding: 12px 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 30px;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-next-action:hover { opacity: 0.9; transform: translateY(-1px); }
 
-                    <span class="badge bg-success ms-2"
-                          th:if="${episode.free}">
-                        무료
-                    </span>
+        /* 5. 하단 고정 주황색 바 (image_8f341a.png) */
+        .sticky-bottom-control {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background-color: #f05a28; color: white; z-index: 1050; padding: 12px 0;
+        }
+        .sticky-bottom-control a { color: white !important; text-decoration: none; font-size: 0.95rem; }
+        
+        /* 푸터가 없으므로 바닥 여백만 확보 */
+        body { padding-bottom: 80px !important; }
+    </style>
+</head>
 
-                    <span class="badge bg-danger ms-2"
-                          th:if="${!episode.free}">
-                        유료
-                    </span>
-                </p>
+<body class="d-flex flex-column h-100">
+    <div layout:fragment="content">
 
-                <hr>
+        <nav class="reader-header sticky-top shadow-sm">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a th:href="@{/content/novel_detail/{id}(id=${contentId})}" class="text-dark text-decoration-none small">
+                    <i class="bi bi-chevron-left"></i> <span th:text="|${episode.episodeNum}화 (회차)|">01(회차)</span>
+                </a>
+                <h5 class="fw-bold mb-0 text-truncate mx-3" th:text="${episode.episodeNum+'. '+episode.title}">에피소드 제목</h5>
+                <div class="d-flex gap-3 text-muted" style="cursor:pointer;">
+                    <i class="bi bi-star"></i> <i class="bi bi-bookmark"></i>
+                </div>
+            </div>
+        </nav>
 
-                <!-- ===================== -->
-                <!-- 로그인 사용자만 열람 -->
-                <!-- ===================== -->
-
-                <div sec:authorize="isAuthenticated()">
-
-                    <!-- 기본 전체 출력 -->
-                    <div class="fs-5 lh-lg text-break mt-4"
-                         style="white-space: pre-line;"
-                         th:text="${episode.novelContent}">
-                    </div>
-
-                    <!-- ===================================================== -->
-                    <!-- 🔒 유료 가리기 + 구매 여부 체크 (나중에 활성화) -->
-                    <!-- ===================================================== -->
-
-                    <!--
-                    <div th:if="${episode.free}">
-                        <div class="fs-5 lh-lg text-break mt-4"
-                             style="white-space: pre-line;"
-                             th:text="${episode.novelContent}">
+        <div class="container my-5 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    
+                    <article class="novel-body text-start" sec:authorize="isAuthenticated()">
+                        <div style="white-space: pre-line;" th:text="${episode.novelContent}">
+                            본문 텍스트가 노출되는 영역입니다.
                         </div>
-                    </div>
+                    </article>
 
-                    <div th:if="${!episode.free}">
-                        <div th:if="${purchased}">
-                            <div class="fs-5 lh-lg text-break mt-4"
-                                 style="white-space: pre-line;"
-                                 th:text="${episode.novelContent}">
+                    <div class="author-comment-wrapper" th:if="${episode.note != null and !#strings.isEmpty(episode.note)}">
+                        <div class="author-comment-box">
+                            <div class="author-comment-header text-muted">작가의 코멘트</div>
+                            <div class="author-comment-content" th:text="${episode.note}">
+                                쉽지않네
                             </div>
                         </div>
 
-                        <div th:unless="${purchased}">
-                            <div class="alert alert-warning mt-4">
-                                🔒 이 화는 유료입니다. 구매 후 열람 가능합니다.
-                            </div>
-                        </div>
                     </div>
-                    -->
+
+                    <div sec:authorize="isAnonymous()" class="alert alert-secondary text-center py-5">
+                        로그인 후 열람이 가능합니다.
+                    </div>
 
                 </div>
-
-                <!-- ===================== -->
-                <!-- 비로그인 -->
-                <!-- ===================== -->
-                <div sec:authorize="isAnonymous()">
-                    <div class="alert alert-secondary mt-4">
-                        로그인 후 열람 가능합니다.
-                    </div>
-                </div>
-
-                <!-- ===================== -->
-                <!-- 작가의 말 -->
-                <!-- ===================== -->
-                <div class="mt-5"
-                     th:if="${episode.note != null and !#strings.isEmpty(episode.note)}">
-
-                    <h5>작가의 말</h5>
-
-                    <div class="border rounded p-3 bg-light"
-                         style="white-space: pre-line;"
-                         th:text="${episode.note}">
-                    </div>
-                </div>
-
-                <hr class="mt-5">
-
-                <!-- ===================== -->
-                <!-- 이전화 / 목록 / 다음화 -->
-                <!-- ===================== -->
-				<div class="d-flex justify-content-between mb-5">
-
-				    <a th:if="${prevEpisode != null}"
-				       th:href="@{/content/novel/episode/{id}(id=${prevEpisode.id})}"
-				       class="btn btn-outline-secondary">
-				        이전화
-				    </a>
-				    <a th:if="${prevEpisode == null}" class="btn btn-outline-secondary disabled">
-				        이전화 없음
-				    </a>
-
-				    <a th:href="@{/content/novel_detail/{id}(id=${contentId})}" class="btn btn-outline-dark">
-				        목록
-				    </a>
-
-				    <a th:if="${nextEpisode != null}"
-				       th:href="@{/content/novel/episode/{id}(id=${nextEpisode.id})}"
-				       class="btn btn-outline-secondary">
-				        다음화
-				    </a>
-				    <a th:if="${nextEpisode == null}" class="btn btn-outline-secondary disabled">
-				        다음화 없음
-				    </a>
-
-				</div>
-
             </div>
         </div>
-    </div>
 
-</div>
+        <div class="sticky-bottom-control shadow-lg">
+            <div class="container">
+                <div class="row text-center align-items-center">
+                    <div class="col-4">
+                        <a th:if="${prevEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${prevEpisode.id})}">
+                            <i class="bi bi-caret-left-fill"></i> 이전
+                        </a>
+                        <span th:if="${prevEpisode == null}" class="opacity-50">이전</span>
+                    </div>
+                    <div class="col-4 border-start border-end border-white border-opacity-25">
+                        <a href="#comment-section">
+                            <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a th:if="${nextEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${nextEpisode.id})}">
+                            다음 <i class="bi bi-caret-right-fill"></i>
+                        </a>
+                        <span th:if="${nextEpisode == null}" class="opacity-50">다음</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> </body>
 </html>

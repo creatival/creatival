@@ -1,130 +1,235 @@
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html layout:decorate="~{layout}"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{layout}">
-<head>
-    <style>
-        .art-viewer { background-color: #f8f9fa; min-height: 500px; display: flex; align-items: center; justify-content: center; padding: 40px 0; }
-        .art-image { max-width: 100%; max-height: 80vh; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 4px; display: block; margin: 0 auto; }
-        .carousel-control-prev-icon, .carousel-control-next-icon { filter: invert(1) grayscale(100); }
-        .artist-avatar { width: 50px; height: 50px; object-fit: cover; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .action-btn { border-radius: 50px; padding: 8px 20px; font-weight: 600; transition: all 0.2s; }
-        .art-tag { background-color: #e9ecef; color: #495057; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; text-decoration: none; margin-right: 6px; margin-bottom: 6px; display: inline-block; }
-    </style>
-</head>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <div layout:fragment="content">
-    <div class="art-viewer w-100">
-        <div class="container">
-            <div id="artSlider" class="carousel slide" data-bs-ride="false">
+
+    <style>
+        .art-viewer {
+            background-color: #f8f9fa;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .art-image {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 4px;
+			display: block;
+			margin: 0 auto;
+        }
+
+        .artist-avatar {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .art-tag {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 6px;
+            display: inline-block;
+        }
+
+        .btn-navy-custom {
+            background-color: #2D3278;
+            color: white;
+            border-radius: 30px;
+        }
+
+        .comment-section {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px 20px;
+        }
+
+        .comment-input {
+            border: none !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            background-color: transparent !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .comment-input:focus {
+            border-bottom: 2px solid #2D3278 !important;
+        }
+    </style>
+
+    <!-- 제목 -->
+    <div class="container text-center mt-5 mb-4">
+        <h3 class="fw-bold" th:text="${art.title}">작품 제목</h3>
+    </div>
+
+    <!-- 이미지 캐러셀 -->
+    <div class="art-viewer w-100 mb-4">
+        <div class="container" style="max-width: 800px;">
+            <div id="artSlider" class="carousel slide">
                 <div class="carousel-inner">
-                    <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
-                        <img th:src="${file.fileUrl}" class="art-image" th:alt="${art.title}">
+					
+					<th:block th:if="${art.fileList != null and art.fileList.size() > 1}">
+					    
+					    <button class="carousel-control-prev"
+					            type="button"
+					            data-bs-target="#artSlider"
+					            data-bs-slide="prev">
+					        <span class="carousel-control-prev-icon"></span>
+					    </button>
+
+					    <button class="carousel-control-next"
+					            type="button"
+					            data-bs-target="#artSlider"
+					            data-bs-slide="next">
+					        <span class="carousel-control-next-icon"></span>
+					    </button>
+
+					</th:block>
+                    <div th:each="file, iter : ${art.fileList}"
+                         class="carousel-item"
+                         th:classappend="${iter.first} ? 'active'">
+                        <img th:src="${file.fileUrl}"
+                             class="art-image"
+                             th:alt="${art.title}">
                     </div>
-                    <div th:if="${art.fileList == null or art.fileList.isEmpty()}" class="carousel-item active">
-                        <img src="https://dummyimage.com/600x400/dee2e6/6c757d.png&text=No+Image" class="art-image">
+
+                    <div th:if="${art.fileList == null or art.fileList.isEmpty()}"
+                         class="carousel-item active">
+                        <img src="https://dummyimage.com/800x500/dee2e6/6c757d.png&text=No+Image"
+                             class="art-image">
                     </div>
                 </div>
-
-                <th:block th:if="${art.fileList != null and art.fileList.size() > 1}">
-                    <button class="carousel-control-prev" type="button" data-bs-target="#artSlider" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#artSlider" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    </button>
-                    <div class="carousel-indicators" style="position: relative; margin-top: 20px;">
-                        <button th:each="file, iter : ${art.fileList}" type="button" data-bs-target="#artSlider" 
-                                th:data-bs-slide-to="${iter.index}" th:classappend="${iter.first} ? 'active'" style="background-color: #333;"></button>
-                    </div>
-                </th:block>
+				<div class="carousel-indicators" style="position: relative; margin-top: 20px;">
+                    <button th:each="file, iter : ${art.fileList}" type="button" data-bs-target="#artSlider" 
+                            th:data-bs-slide-to="${iter.index}" th:classappend="${iter.first} ? 'active'" style="background-color: #333;"></button>
+                </div>	
             </div>
         </div>
     </div>
 
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div>
-                        <h2 class="fw-bold mb-2" th:text="${art.title}">작품 제목</h2>
-                        <div class="text-muted small">
-                            <span class="me-3">게시일: <th:block th:text="${#temporals.format(art.createdAt, 'yyyy.MM.dd')}"></th:block></span>
-                            <span class="me-3"><i class="bi bi-eye"></i> <th:block th:text="${art.viewCount}"></th:block></span>
-                        </div>
-                    </div>
-                    
-                    <div class="d-none d-md-block">
-                        <th:block sec:authorize="isAuthenticated()" th:if="${art.username == #authentication.name}">
-                            <a th:href="@{/content/art/update/{id}(id=${art.id})}" class="btn btn-outline-primary action-btn me-2">수정</a>
-                            <a th:href="@{/content/art/delete/{id}(id=${art.id})}" onclick="return confirm('삭제하시겠습니까?');" class="btn btn-outline-danger action-btn me-2">삭제</a>
-                        </th:block>
-                        <button class="btn btn-outline-danger action-btn me-2"><i class="bi bi-heart"></i> 좋아요</button>
-                    </div>
-                </div>
+    <div class="container" style="max-width: 800px;">
 
-                <div class="mb-4">
-                    <p class="text-secondary" style="line-height: 1.8; white-space: pre-wrap;" th:text="${art.description}">설명</p>
-                </div>
-                
-                <div class="d-flex justify-content-start align-items-center gap-2 mb-5">               
-                    <div th:each="tag : ${tagList}" class="art-tag">
-                        <span th:text="'#' + ${tag.tagText}">#태그</span>
-                        <a sec:authorize="isAuthenticated()" th:if="${art.username == #authentication.name}"
-                           th:href="@{/tag/art/deleteContentTag(tagId=${tag.id},contentId=${art.id})}" onclick="return confirm('삭제하시겠습니까?');">
-                            <i class="bi bi-x-circle-fill"></i>
-                        </a>
-                    </div>
-                    <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">등록된 태그가 없습니다.</span>
-
-                    <button type="button" sec:authorize="isAuthenticated()" th:if="${art.username == #authentication.name}"
-                            class="btn btn-outline-primary btn-sm rounded-circle p-0" style="width: 24px; height: 24px;"
-                            data-bs-toggle="modal" data-bs-target="#tagAddModal">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                </div>
-
-                <div class="card bg-light border-0 rounded-3 p-4 mb-5" th:if="${art.isAllowComment}">
-                    <h5 class="fw-bold mb-4">댓글</h5>
-                    <div class="d-flex">
-                        <div class="bg-secondary rounded-circle me-3" style="width: 40px; height: 40px;"></div>
-                        <div class="input-group">
-                            <input type="text" class="form-control border-0 shadow-sm" placeholder="댓글을 입력하세요.">
-                            <button class="btn btn-primary px-4">등록</button>
-                        </div>
-                    </div>
-                </div>
+        <!-- 설명 + 정보 -->
+        <div class="mb-3">
+            <div class="text-muted small mb-2">
+                <span th:text="${#temporals.format(art.createdAt,'yyyy.MM.dd')}"></span>
+                · 조회수 <span th:text="${art.viewCount}"></span>
             </div>
 
-            <div class="col-lg-4 ps-lg-5">
-                <div class="card border shadow-sm rounded-3 sticky-top" style="top: 2rem;">
-                    <div class="card-body p-4 text-center">
-                        <img th:src="${art.profileImgUrl ?: 'https://dummyimage.com/50x50/ced4da/6c757d'}" class="artist-avatar mb-2">
-                        <h5 class="fw-bold mb-3" th:text="${art.displayname ?: art.username}">작가명</h5>
-                        <button class="btn btn-dark w-100 rounded-pill">팔로우</button>
-                    </div>
+            <div class="mb-3"
+                 style="white-space: pre-wrap;"
+                 th:text="${art.description}">
+            </div>
+
+            <!-- 태그 -->
+            <div class="mb-4">
+                <div th:each="tag : ${tagList}" class="art-tag">
+                    <span th:text="'#' + ${tag.tagText}"></span>
+
+                    <a sec:authorize="isAuthenticated()"
+                       th:if="${art.username == #authentication.name}"
+                       th:href="@{/tag/art/deleteContentTag(tagId=${tag.id},contentId=${art.id})}"
+                       onclick="return confirm('삭제하시겠습니까?');">
+                        <i class="bi bi-x-circle-fill ms-1"></i>
+                    </a>
                 </div>
+
+                <!-- 태그 추가 버튼 -->
+                <button type="button"
+                        sec:authorize="isAuthenticated()"
+                        th:if="${art.username == #authentication.name}"
+                        class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2"
+                        style="width:24px;height:24px;"
+                        data-bs-toggle="modal"
+                        data-bs-target="#tagAddModal">
+                    <i class="bi bi-plus"></i>
+                </button>
             </div>
         </div>
+
+        <!-- 수정/삭제 -->
+        <div class="mb-4"
+             sec:authorize="isAuthenticated()"
+             th:if="${art.username == #authentication.name}">
+            <a th:href="@{/content/art/update/{id}(id=${art.id})}"
+               class="btn btn-outline-primary btn-sm me-2">수정</a>
+
+            <a th:href="@{/content/art/delete/{id}(id=${art.id})}"
+               onclick="return confirm('삭제하시겠습니까?');"
+               class="btn btn-outline-danger btn-sm">삭제</a>
+        </div>
+
+        <!-- 작가 -->
+        <div class="d-flex align-items-center py-3 border-top border-bottom mb-5">
+            <img th:src="${art.profileImgUrl ?: 'https://dummyimage.com/50x50/ced4da/6c757d'}"
+                 class="artist-avatar me-3">
+            <h6 class="fw-bold mb-0"
+                th:text="${art.displayname ?: art.username}">
+            </h6>
+        </div>
+
+        <!-- 댓글 -->
+        <div th:if="${art.isAllowComment}" class="comment-section">
+            <h5 class="text-center fw-bold mb-4">댓글</h5>
+
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="bg-secondary rounded-circle me-3"
+                     style="width:40px;height:40px;"></div>
+
+                <input type="text"
+                       class="form-control comment-input me-3"
+                       placeholder="댓글 쓰기"
+                       style="max-width:500px;">
+
+                <button class="btn btn-navy-custom px-4">작성</button>
+            </div>
+        </div>
+
     </div>
 
-    <div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal" tabindex="-1">
+    <!-- 태그 추가 모달 -->
+    <div sec:authorize="isAuthenticated()"
+         class="modal fade"
+         id="tagAddModal"
+         tabindex="-1">
+
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
-                <form th:action="@{/tag/createContentArtTag/{id}(id=${art.id})}" method="post">
+                <form th:action="@{/tag/createContentArtTag/{id}(id=${art.id})}"
+                      method="post">
+
                     <div class="modal-body">
                         <h6 class="fw-bold mb-3">새 태그 추가</h6>
                         <div class="input-group">
                             <span class="input-group-text">#</span>
-                            <input type="text" name="tagName" class="form-control" required>
+                            <input type="text"
+                                   name="tagName"
+                                   class="form-control"
+                                   required>
                         </div>
                     </div>
+
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
+                        <button type="submit"
+                                class="btn btn-primary btn-sm w-100">
+                            추가
+                        </button>
                     </div>
+
                 </form>
             </div>
         </div>
     </div>
+
 </div>
 </html>

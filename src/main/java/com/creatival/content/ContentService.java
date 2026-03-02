@@ -33,6 +33,7 @@ import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.content.repository.SeriesRepository;
+import com.creatival.tag.TagService;
 import com.creatival.user.UserRepository;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -46,12 +47,15 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class ContentService {
 
+    private final TagService tagService;
+
     private final ContentFileService contentFileService;
 	private final ContentRepository contentRepository;
 	private final SeriesRepository seriesRepository;
 	private final EpisodeRepository episodeRepository;
 	private final UserService userService;
 	private final FileUtil fileUtil;
+
 
 	
 	//공통 라인 //
@@ -108,6 +112,21 @@ public class ContentService {
 		}
 		
 		contentRepository.save(content);
+		
+		String tagString = createNovelDTO.getTagString();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        // 쉼표로 구분된 문자열을 배열로 변환
+	        String[] tags = tagString.split(",");
+	        
+	        for (String tagName : tags) {
+	            String trimmedTag = tagName.trim();
+	            if (!trimmedTag.isEmpty()) {
+	                // 태그를 저장하고 소설과 연결하는 로직 호출
+	                // 예: tagService.addTagToContent(novel, trimmedTag);
+	            	tagService.createTagForContent(content, tagName, user.getUsername());
+	            }
+	        }
+	    }
 		
 		Series series = Series.builder()
 				.content(content)
@@ -215,6 +234,19 @@ public class ContentService {
 	
 	public void deleteNovelEpisode(Episode episode) {
 		episodeRepository.delete(episode);
+	}
+	
+	@Transactional
+	public Long getFirstEpisodeId(Content content) {
+	    Series series = content.getSeries();
+	    
+	    if (series == null) {
+	        return null;
+	    }
+
+	    return episodeRepository.findFirstBySeriesOrderByEpisodeNumAsc(series)
+	            .map(Episode::getId)
+	            .orElse(null); 
 	}
 	// 소설 라인 // 
 	
