@@ -1,6 +1,7 @@
 package com.creatival.team;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -12,11 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.creatival.team.DTO.CreateTeamDTO;
-import com.creatival.team.DTO.ResponseTeamListDTO;
+import com.creatival.tag.ResponseTagDTO;
+import com.creatival.tag.TagService;
+import com.creatival.team.dto.CreateTeamDTO;
+import com.creatival.team.dto.ResponseTeamDetailDTO;
+import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -29,6 +34,7 @@ import jakarta.validation.Valid;
 public class TeamController {
 	private final TeamService teamService;
 	private final UserService userService;
+	private final TagService tagService;
 	
 	
 	@GetMapping("/list")
@@ -64,4 +70,19 @@ public class TeamController {
 		
 	}
 	
+	@GetMapping("/{id}")
+	public String teamDetail(Model model,@PathVariable("id") Long id) {
+		ResponseTeamDetailDTO dto = teamService.getTeamDetail(id);
+		model.addAttribute("team", dto);
+		
+		Team team = teamService.getTeamById(id);
+		List<ResponseTagDTO> tags = tagService.getTagForTeam(team);
+		model.addAttribute("tagList", tags);
+		return "team_detail";
+	}
+	
+	@GetMapping("/team/{id}/teamApplication")
+	public String team_application_manage(Model model, @PathVariable("id") Long id) {
+		return "team_application_manage";
+	}
 }

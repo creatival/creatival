@@ -1,4 +1,4 @@
-package com.creatival.team.DTO;
+package com.creatival.team.dto;
 
 
 import java.util.List;

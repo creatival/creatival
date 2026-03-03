@@ -70,6 +70,16 @@ public class TagService {
 	                .collect(Collectors.toList());
 	}
 	
+	public List<ResponseTagDTO> getTagForTeam(Team team){
+		List<TagToTeam> mappings = tagToTeamRepository.findByTeam(team);
+		return mappings.stream()
+	            .map(m -> new ResponseTagDTO(
+	                    m.getTag().getId(), 
+	                    m.getTag().getTagText()
+	                ))
+	                .collect(Collectors.toList());
+	}
+	
 	public List<ResponseTagDTO> getTagForContent(Content content) {
 		List<TagToContent> mappings = tagToContentRepository.findByContent(content);
 		return mappings.stream()
