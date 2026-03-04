@@ -15,6 +15,12 @@
                           th:object="${createTeamDTO}"
                           method="post"
                           enctype="multipart/form-data">
+						  
+						  <div class="alert alert-danger shadow-sm rounded-3" role="alert" th:if="${#fields.hasAnyErrors()}">
+						                          <ul class="mb-0 list-unstyled text-center">
+						                              <li th:each="err : ${#fields.allErrors()}" th:text="${err}">에러 메시지</li>
+						                          </ul>
+						                      </div>
 
                         <!-- 🔵 배너 업로드 -->
                         <div class="mb-5">

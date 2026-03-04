@@ -28,8 +28,6 @@
                     <!-- 신청자 이름 -->
                     <td th:text="${app.username}">username</td>
 
-                    <!-- 포지션 -->
-                    <td th:text="${app.position}">position</td>
 
                     <!-- 메시지 -->
                     <td>
@@ -39,7 +37,7 @@
                     </td>
 
                     <!-- 신청일 -->
-                    <td th:text="${#temporals.format(app.appliedAt, 'yyyy-MM-dd HH:mm')}">
+                    <td th:text="${#temporals.format(app.createdAt, 'yyyy-MM-dd HH:mm')}">
                         2026-03-03
                     </td>
 

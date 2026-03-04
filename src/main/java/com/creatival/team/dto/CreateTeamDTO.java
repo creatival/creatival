@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 public class CreateTeamDTO {
-	 @NotEmpty(message = "팀 이름은 필수입니다.")
+	@NotEmpty(message = "팀 이름은 필수입니다.")
     @Size(max = 50, message = "팀 이름은 50자 이내여야 합니다.")
     private String name;
 

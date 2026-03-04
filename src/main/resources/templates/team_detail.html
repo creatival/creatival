@@ -48,8 +48,8 @@
                 <i class="bi bi-heart"></i> 1.2k
             </button>
             
-            <button class="btn btn-outline-secondary me-2">수정하기</button>
-            <button class="btn btn-primary px-4">팀 참여 신청</button>
+            <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary me-2" th:if="${team.leaderUsername == #authentication.name}">수정하기</a>
+            <a th:href="@{/team/{id}/application(id=${team.id})}" class="btn btn-primary px-4">팀 참여 신청</a>
         </div>
     </div>
 
@@ -147,22 +147,42 @@
                 </div>
             </div>
 
-			<a th:href="@{/team/{id}/teamApplication(id=${team.id})}" class="btn btn-outline-secondary me-2">신청  현황</a>
+			<a th:href="@{/team/{id}/teamApplicationManage(id=${team.id})}" class="btn btn-outline-secondary me-2">신청  현황</a>
             <!-- 팀원 영역 (임시 유지) -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-4 border-bottom pb-2">참여중인 팀원</h5>
 
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item px-0 border-0 d-flex align-items-center">
-                            <img src="https://dummyimage.com/40x40/adb5bd/495057"
-                                 class="rounded-circle me-3">
-                            <div>
-                                <p class="mb-0 fw-bold small">김철수 (팀장)</p>
-                                <small class="text-muted">메인 개발자</small>
-                            </div>
-                        </div>
-                    </div>
+					<div class="list-group list-group-flush">
+
+					    <div class="list-group-item px-0 border-0 d-flex align-items-center"
+					         th:each="member : ${memberList}">
+
+					        <!-- 프로필 이미지 -->
+					        <img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} 
+					                     : 'https://dummyimage.com/40x40/adb5bd/495057'"
+					             class="rounded-circle me-3"
+					             width="40" height="40">
+
+					        <div>
+					            <!-- 이름 + 역할 -->
+					            <p class="mb-0 fw-bold small">
+					                <span th:text="${member.username}">홍길동</span>
+					                <span th:if="${member.role.name() == 'LEADER'}">
+					                    (팀장)
+					                </span>
+					            </p>
+
+					            <!-- 포지션 -->
+					            <small class="text-muted"
+					                   th:text="${member.position}">
+					                포지션
+					            </small>
+					        </div>
+
+					    </div>
+
+					</div>
                 </div>
             </div>
 			
