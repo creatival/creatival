@@ -26,12 +26,14 @@ import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.UpdateArtDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.content.repository.SeriesRepository;
+import com.creatival.tag.TagService;
 import com.creatival.user.UserRepository;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -45,12 +47,15 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class ContentService {
 
+    private final TagService tagService;
+
     private final ContentFileService contentFileService;
 	private final ContentRepository contentRepository;
 	private final SeriesRepository seriesRepository;
 	private final EpisodeRepository episodeRepository;
 	private final UserService userService;
 	private final FileUtil fileUtil;
+
 
 	
 	//공통 라인 //
@@ -73,15 +78,23 @@ public class ContentService {
 		}
 		return nextEpisode.get();
 	}
+	
+	public Content getContent(Long id) {
+		Optional<Content> content = contentRepository.findById(id);
+		if(content.isPresent()) {
+			return content.get();
+		}
+		return null;
+	}
 	// 공통 라인 //
 	
 	// 소설 라인 // 
 	@Transactional
 	public void createCotentNovel(CreateNovelDTO createNovelDTO, Users user) throws IOException {
-		String imgurl = null;
+		String imgurl = "/upload/images/thumbnail/";
 		
 		if(createNovelDTO.getThumbnailFile() != null) {
-			imgurl = fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
+			imgurl += fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
 		}
 		Content content = Content.builder()
 				.title(createNovelDTO.getTitle())
@@ -99,6 +112,21 @@ public class ContentService {
 		}
 		
 		contentRepository.save(content);
+		
+		String tagString = createNovelDTO.getTagString();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        // 쉼표로 구분된 문자열을 배열로 변환
+	        String[] tags = tagString.split(",");
+	        
+	        for (String tagName : tags) {
+	            String trimmedTag = tagName.trim();
+	            if (!trimmedTag.isEmpty()) {
+	                // 태그를 저장하고 소설과 연결하는 로직 호출
+	                // 예: tagService.addTagToContent(novel, trimmedTag);
+	            	tagService.createTagForContent(content, tagName, user.getUsername());
+	            }
+	        }
+	    }
 		
 		Series series = Series.builder()
 				.content(content)
@@ -150,7 +178,8 @@ public class ContentService {
 			return;
 		}
 		Content content = optional.get();
-		content.setThumbnailImgUrl(fileUtil.saveImage(img, "thumbnail"));
+		String imgUrl = "/upload/images/thumbnail/";
+		content.setThumbnailImgUrl(imgUrl+fileUtil.saveImage(img, "thumbnail"));
 		contentRepository.save(content);
 	}
 
@@ -206,6 +235,19 @@ public class ContentService {
 	public void deleteNovelEpisode(Episode episode) {
 		episodeRepository.delete(episode);
 	}
+	
+	@Transactional
+	public Long getFirstEpisodeId(Content content) {
+	    Series series = content.getSeries();
+	    
+	    if (series == null) {
+	        return null;
+	    }
+
+	    return episodeRepository.findFirstBySeriesOrderByEpisodeNumAsc(series)
+	            .map(Episode::getId)
+	            .orElse(null); 
+	}
 	// 소설 라인 // 
 	
 	// 그림 라인 //
@@ -247,5 +289,31 @@ public class ContentService {
 			return content.get();
 		}
 		return null;
+	}
+	
+	@Transactional
+	public void updateContentArt(Long id, UpdateArtDTO dto) throws IOException {
+
+	    Content content = contentRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Content not found"));
+
+	    content.setTitle(dto.getTitle());
+	    content.setDescription(dto.getDescription());
+	    content.setVisibility(dto.getVisibility());
+	    content.setAllowComment(dto.isAllowComment());
+	    
+	    if (dto.getDeleteFileIds() != null && !dto.getDeleteFileIds().isEmpty()) {
+	        for (Long fileId : dto.getDeleteFileIds()) {
+	            contentFileService.deleteImage(fileId);
+	        }
+	    }
+
+	    if (dto.getNewFiles() != null) {
+	        for (MultipartFile file : dto.getNewFiles()) {
+	            if (!file.isEmpty()) {
+	                contentFileService.createContentFileImageForContent(content, dto.getNewFiles(), "art");
+	            }
+	        }
+	    }
 	}
 }

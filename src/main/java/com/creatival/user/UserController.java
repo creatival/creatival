@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.catalina.User;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import com.creatival.MailService;
+import com.creatival.tag.ResponseTagDTO;
+import com.creatival.tag.TagService;
 import com.creatival.token.UserToken;
 import com.creatival.token.UserTokenService;
 import com.creatival.user.DTO.RequestSignUp;
@@ -41,6 +45,7 @@ public class UserController {
     private final MailService mailService;
 	private final UserService userService;
 	private final UserTokenService userTokenService;
+	private final TagService tagService;
 	
 	@GetMapping("/signUp")
 	public String signup(Model model) {
@@ -81,6 +86,8 @@ public class UserController {
 	public String myPage(Model model, Principal principal) {
 		Users user = userService.getUserByUsername(principal.getName());
 		model.addAttribute("user", ResponseProfile.from(user));
+		List<ResponseTagDTO> userTags = tagService.getTagForUser(user);
+		model.addAttribute("tagList", userTags);
 		return "mypage_home";
 	}
 	

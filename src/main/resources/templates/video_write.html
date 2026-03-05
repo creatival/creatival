@@ -1,0 +1,101 @@
+<html layout:decorate="~{layout}">
+<div class="container my-5" layout:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-0">새 동영상 업로드</h2>
+            <p class="text-muted mb-0 mt-1">크리에이터님의 멋진 영상을 공유해 주세요.</p>
+        </div>
+        <a th:href="@{/video_list}" class="btn btn-outline-secondary">취소 및 돌아가기</a>
+    </div>
+
+    <form action="#" method="post" enctype="multipart/form-data">
+        <div class="row g-4">
+            
+            <div class="col-lg-4">
+                
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4 text-center border-2 rounded" style="border-style: dashed !important; border-color: #dee2e6 !important;">
+                        <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
+                            <i class="bi bi-film fs-2 text-primary"></i>
+                        </div>
+                        <h6 class="fw-bold">동영상 파일 선택</h6>
+                        <p class="text-muted small mb-3">MP4, WebM (최대 1GB)</p>
+                        
+                        <input type="file" class="d-none" id="videoFile" accept="video/mp4,video/webm">
+                        <button type="button" class="btn btn-primary btn-sm px-3" onclick="document.getElementById('videoFile').click()">
+                            컴퓨터에서 찾기
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 text-center border-2 rounded" style="border-style: dashed !important; border-color: #dee2e6 !important;">
+                        <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
+                            <i class="bi bi-image fs-2 text-success"></i>
+                        </div>
+                        <h6 class="fw-bold">썸네일 업로드</h6>
+                        <p class="text-muted small mb-3">16:9 비율 권장 (JPG, PNG)</p>
+                        
+                        <input type="file" class="d-none" id="thumbnailFile" accept="image/jpeg,image/png">
+                        <button type="button" class="btn btn-outline-success btn-sm px-3" onclick="document.getElementById('thumbnailFile').click()">
+                            이미지 선택
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">세부 정보</h5>
+
+                        <div class="mb-4">
+                            <label for="videoTitle" class="form-label fw-semibold">제목 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg fs-6" id="videoTitle" placeholder="동영상을 설명할 수 있는 매력적인 제목을 입력하세요" required>
+                            <div class="form-text text-end">0 / 100자</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="videoDesc" class="form-label fw-semibold">설명</label>
+                            <textarea class="form-control" id="videoDesc" rows="5" placeholder="시청자에게 동영상에 대해 설명해 주세요. 링크나 타임스탬프를 추가할 수도 있습니다."></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-block">공개 범위</label>
+                                <div class="btn-group w-100" role="group" aria-label="공개 범위 선택">
+                                    <input type="radio" class="btn-check" name="visibility" id="public" value="public" checked>
+                                    <label class="btn btn-outline-primary" for="public">전체 공개</label>
+
+                                    <input type="radio" class="btn-check" name="visibility" id="follower" value="follower">
+                                    <label class="btn btn-outline-primary" for="follower">팔로워 전용</label>
+
+                                    <input type="radio" class="btn-check" name="visibility" id="private" value="private">
+                                    <label class="btn btn-outline-primary" for="private">비공개</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="videoTags" class="form-label fw-semibold">태그 (선택 사항)</label>
+                            <input type="text" class="form-control" id="videoTags" placeholder="쉼표(,)로 구분하여 입력하세요. 예: 유니티, 튜토리얼, 2D게임">
+                        </div>
+
+                        <div class="d-flex justify-content-end border-top pt-4 mt-auto">
+                            <button type="button" class="btn btn-light border me-2 px-4">임시 저장</button>
+                            <button type="submit" class="btn btn-primary px-5 fw-bold"><i class="bi bi-upload me-2"></i>동영상 게시</button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </form>
+    
+</div>
+</html>

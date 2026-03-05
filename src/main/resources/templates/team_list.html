@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="kr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <style>
+        .team-banner {
+            height: 120px;
+            overflow: hidden;
+        }
+
+        .team-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .team-profile {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            margin-top: -40px;
+        }
+
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+    </style>
+</head>
+
+<div class="container" layout:fragment="content">
+
+    <!-- 상단 제목 영역 -->
+    <div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
+        <div>
+            <h2 class="fw-bold">추천 팀</h2>
+            <p class="text-muted mb-0">다양한 팀들을 만나보세요.</p>
+        </div>
+
+        <div>
+            <a th:href="@{/team/create}" class="btn btn-dark px-4 shadow-sm">
+                팀 등록
+            </a>
+        </div>
+    </div>
+
+    <!-- 팀 카드 영역 -->
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+
+        <div class="col" th:each="team : ${paging}">
+            <div class="card h-100 shadow-sm rounded border-0 hover-shadow overflow-hidden position-relative">
+
+                <!-- 배너 이미지 -->
+                <a th:href="@{/team/{id}(id=${team.id})}">
+                    <div class="team-banner">
+                        <img th:src="${team.bannerImgUrl != null ? team.bannerImgUrl : '/images/default-banner.png'}">
+                    </div>
+                </a>
+
+                <!-- 카드 본문 -->
+                <div class="card-body p-2 text-center">
+
+                    <!-- 프로필 이미지 -->
+                    <img th:src="${team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
+                         class="rounded-circle border border-white shadow team-profile">
+
+                    <!-- 팀 이름 -->
+                    <h6 class="card-title fw-bold text-truncate mt-2 mb-1"
+                        th:text="${team.name}">
+                        팀 이름
+                    </h6>
+
+                    <!-- 리더 이름 -->
+                    <div class="text-muted small text-truncate"
+                         th:text="${team.leaderUsername}">
+                        리더 이름
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 페이징 -->
+    <nav aria-label="Page navigation" class="my-5"
+         th:if="${paging.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+
+            <!-- 이전 -->
+            <li class="page-item"
+                th:classappend="${paging.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/team/list(page=${paging.number - 1})}">
+                    이전
+                </a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                th:classappend="${paging.number == i} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/team/list(page=${i})}"
+                   th:text="${i + 1}">
+                </a>
+            </li>
+
+            <!-- 다음 -->
+            <li class="page-item"
+                th:classappend="${paging.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/team/list(page=${paging.number + 1})}">
+                    다음
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>
+
+</html>

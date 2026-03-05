@@ -1,0 +1,95 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div class="container my-5" layout:fragment="content">
+    
+    <div class="row g-5">
+        <div class="col-12 col-md-5 col-lg-4 text-center">
+            <div class="shadow rounded-4 overflow-hidden mb-4 mx-auto" style="max-width: 350px;">
+                <div class="ratio ratio-1x1 bg-light">
+                    <img src="images/album1.png" class="object-fit-cover" alt="앨범 커버" onerror="this.src='https://dummyimage.com/400x400/ced4da/6c757d&text=Cover'">
+                </div>
+            </div>
+            
+            <h4 class="fw-bold mb-1">여름 밤의 산책</h4>
+            <p class="text-muted mb-4">인디 밴드 A</p>
+
+            <audio controls class="w-100 shadow-sm rounded-pill mb-3" style="height: 50px;">
+                <source src="dummy.mp3" type="audio/mpeg">
+                브라우저가 오디오 태그를 지원하지 않습니다.
+            </audio>
+
+            <div class="d-flex justify-content-center gap-3 mb-4">
+                <button class="btn btn-outline-danger rounded-pill px-3"><i class="bi bi-heart me-1"></i> 1,024</button>
+                <button class="btn btn-outline-secondary rounded-pill px-3"><i class="bi bi-share me-1"></i> 공유</button>
+                <button class="btn btn-outline-secondary rounded-pill px-3">수정</button>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-7 col-lg-8">
+            <ul class="nav nav-tabs mb-4" id="musicTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active text-dark fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">곡 정보 및 가사</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-dark fw-bold" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab">댓글 (124)</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="musicTabContent">
+                
+                <div class="tab-pane fade show active" id="info" role="tabpanel" tabindex="0">
+                    <div class="bg-light p-4 rounded-3 mb-4">
+                        <div class="row text-muted small mb-3 border-bottom pb-2">
+                            <div class="col-6"><strong>발매일:</strong> 2023.10.25</div>
+                            <div class="col-6"><strong>장르:</strong> 인디 / 어쿠스틱</div>
+                        </div>
+                        <p class="mb-4 text-break">
+                            여름 밤 가볍게 산책하며 듣기 좋은 어쿠스틱 감성의 곡입니다.<br>
+                            바람 소리와 함께 편안함을 느껴보세요.
+                        </p>
+                        
+                        <h6 class="fw-bold mb-3"><i class="bi bi-mic-fill me-2"></i>가사</h6>
+                        <div class="text-muted p-3 border rounded bg-white" style="line-height: 2; max-height: 300px; overflow-y: auto;">
+                            선선한 바람이 불어오는 밤<br>
+                            너와 걷던 이 길을 걷네...<br>
+                            가사가 길어지면 여기에 스크롤이 생깁니다.<br>
+                            (가사가 들어갈 자리입니다)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="comments" role="tabpanel" tabindex="0">
+                    <div>
+                        <h5 class="fw-bold mb-4">댓글 124개</h5>
+                        
+                        <div class="d-flex align-items-start mb-4">
+                            <img src="https://dummyimage.com/40x40/adb5bd/fff" class="rounded-circle me-3 mt-1" alt="내 프로필" style="width: 40px; height: 40px;">
+                            <div class="w-100">
+                                <textarea class="form-control border-0 border-bottom rounded-0 px-0 shadow-none focus-ring-none bg-transparent" placeholder="댓글 추가..." rows="1" style="resize: none;"></textarea>
+                                
+                                <div class="d-flex justify-content-end mt-2 gap-2">
+                                    <button class="btn btn-sm btn-light rounded-pill px-3">취소</button>
+                                    <button class="btn btn-sm btn-primary rounded-pill px-3">댓글</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start mb-4">
+                            <img src="https://dummyimage.com/40x40/6c757d/fff" class="rounded-circle me-3 mt-1" alt="유저 프로필" style="width: 40px; height: 40px;">
+                            <div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <span class="fw-bold me-2 small">@MusicLover</span>
+                                    <span class="text-muted small">2일 전</span>
+                                </div>
+                                <p class="mb-1 text-break">노래가 정말 좋네요! 산책할 때 듣기 딱이에요.</p>
+                                
+                                <div class="d-flex align-items-center gap-3">
+                                    <button class="btn btn-link text-dark p-0 text-decoration-none small"><i class="bi bi-hand-thumbs-up me-1"></i>15</button>
+                                    <button class="btn btn-link text-dark p-0 text-decoration-none small"><i class="bi bi-hand-thumbs-down"></i></button>
+                                    <button class="btn btn-link text-dark p-0 text-decoration-none small fw-bold">답글</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div> </div> </div> </div> </div>
+</html>

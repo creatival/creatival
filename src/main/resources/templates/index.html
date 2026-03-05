@@ -1,3 +1,4 @@
+
 <html layout:decorate="~{layout}">
 <div class="container-fluid p-0" layout:fragment="content">
     <header class="bg-light py-5">
@@ -41,6 +42,7 @@
 	                    <div class="fw-bold">일러스트</div>
 	                </a>
 	            </div>
+<<<<<<< HEAD
 
 	            <div class="col-4 col-md-2">
 	                <a th:href="@{/comic_list}" class="text-decoration-none text-dark category-item d-block">
@@ -168,13 +170,125 @@
                         <li>footer 내용</li>
                         <li>footer 내용</li>
                     </ul>
+=======
+	        </header>
+        <!-- CATEGORY -->
+        <section class="py-4">
+            <div class="container">
+                <div class="row text-center g-3 justify-content-center">
+                    <div class="col-4 col-md-2">
+                        <a th:href="@{/content/art/list}">
+                            <div class="bg-light rounded py-4"><img src="images/paint.png" alt="" style="width: 100px;" /></div>
+                        </a>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <a th:href="@{/content/comic_list}">
+                            <div class="bg-light rounded py-4"><img src="images/comic.png" alt="" style="width: 100px;" /></div>
+                        </a>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <a th:href="@{/content/Illustration_list}">
+                            <div class="bg-light rounded py-4"><img src="images/sing.png" alt="" style="width: 100px;" /></div>
+                        </a>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <a th:href="@{/content/Illustration_list}">
+                            <div class="bg-light rounded py-4"><img src="images/yutu.png" alt="" style="width: 100px;" /></div>
+                        </a>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <a th:href="@{/content/novel_list}">
+                            <div class="bg-light rounded py-4"><img src="images/git.png" alt="" style="width: 100px;" /></div>
+                        </a>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <a th:href="@{/content/Illustration_list}">
+                            <div class="bg-light rounded py-4"><img src="images/folder.png" alt="" style="width: 100px;" /></div>
+                        </a>
+                    </div>
+>>>>>>> branch 'jinhoe' of https://github.com/creatival/creatival.git
                 </div>
             </div>
+<<<<<<< HEAD
             <hr class="opacity-25">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-3">
                 <div class="d-flex gap-4 small mb-3 mb-md-0">
                     <span class="opacity-75">이용 약관</span>
                     <span class="fw-bold">개인 정보 보호 정책</span>
+=======
+        </section>
+
+        <!-- TEAM PROJECT -->
+        <h1 class="mt-5 mb-4" style="display: flex; justify-content: center;"><a th:href="@{team/list}">팀 프로젝트</a></h1>
+        <h5 class="mb-5" style="display: flex; justify-content: center;">팀 프로젝트 가입하기</h4>
+            <section class="py-5">
+                <div class="container">
+                    <div class="row g-4 mt-5">
+                        <div class="col-lg-4 mb-5">
+                            <div class="card h-100 shadow border-0">
+                                <img class="card-img-top" src="https://dummyimage.com/600x350/ced4da/6c757d"
+                                    alt="..." />
+                                <div class="card-body p-4">
+                                    <a class="text-decoration-none link-dark stretched-link" href="#!">
+                                        <h5 class="card-title mb-3">팀명</h5>
+                                    </a>
+                                    <p class="card-text mb-0">팀 프로잭트 이름</p>
+                                </div>
+                                <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
+                                    <div class="d-flex align-items-end justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="small">
+                                                <div class="fw-bold">프로젝트 내용</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-5">
+                            <div class="card h-100 shadow border-0">
+                                <img class="card-img-top" src="https://dummyimage.com/600x350/adb5bd/495057"
+                                    alt="..." />
+                                <div class="card-body p-4">
+                                    <a class="text-decoration-none link-dark stretched-link" href="#!">
+                                        <h5 class="card-title mb-3">팀명</h5>
+                                    </a>
+                                    <p class="card-text mb-0">팀 프로잭트 이름</p>
+                                </div>
+                                <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
+                                    <div class="d-flex align-items-end justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="small">
+                                                <div class="fw-bold">프로젝트 내용</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-5">
+                            <div class="card h-100 shadow border-0">
+                                <img class="card-img-top" src="https://dummyimage.com/600x350/6c757d/343a40"
+                                    alt="..." />
+                                <div class="card-body p-4">
+                                    <a class="text-decoration-none link-dark stretched-link" href="#!">
+                                        <h5 class="card-title mb-3">팀명</h5>
+                                    </a>
+                                    <p class="card-text mb-0">팀 프로젝트 이름</p>
+                                </div>
+                                <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
+                                    <div class="d-flex align-items-end justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="small">
+                                                <div class="fw-bold">프로젝트 내용</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+>>>>>>> branch 'jinhoe' of https://github.com/creatival/creatival.git
                 </div>
                 <div class="small opacity-50 mb-3 mb-md-0">
                     © 2026 creatival All rights reserved.

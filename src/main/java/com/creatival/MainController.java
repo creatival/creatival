@@ -78,14 +78,118 @@ public class MainController {
 	public String mypage() {
 		return "mypage_home";
 	}
+	@GetMapping("/user_board")
+	public String user_board() {
+		return "user_board";
+	}
 	
-	@GetMapping("/sungmin") 
-	public String sungmin() {
-		return "index";
+	@GetMapping("/board_detail")
+	public String board_detail() {
+		return "board_detail";
+	}
+	
+	@GetMapping("/board_write")
+	public String board_write() {
+		return "board_write";
+	}
+	
+	@GetMapping("/originator_board") 
+	public String originator_board() {
+		return "originator_board";
+	}
+	
+	@GetMapping("/team_list") 
+	public String team_list() {
+		return "team_list";
 	}
 
-	@GetMapping("/teamzang")
-	public String teamzang() {
-		return "teamzang";
+	@GetMapping("/team_write")
+	public String team_write() {
+		return "team_write";
+	}
+	
+	@GetMapping("/team_detail")
+	public String team_detail() {
+		return "team_detail";
+	}
+	
+	@GetMapping("/team_opinions")
+	public String team_opinions() {
+		return "team_opinions";
+	}
+	
+	@GetMapping("/team_project_list")
+	public String team_project_list() {
+		return "team_project_list";
+	}
+	
+	@GetMapping("/team_project_write")
+	public String team_project_write() {
+		return "team_project_write";
+	}
+	
+	@GetMapping("/team_project_detail")
+	public String team_project_detail() {
+		return "team_project_detail";
+	}
+	
+	@GetMapping("/team_project_edit")
+	public String team_project_edit() {
+		return "team_project_edit";
+	}
+	@GetMapping("/team_project_illust_detail")
+	public String team_project_illust_detail() {
+		return "team_project_illust_detail";
+	}
+	
+	
+	@GetMapping("/team_project_file_upload")
+	public String team_project_file_upload() {
+		return "team_project_file_upload";
+	}
+	
+	@GetMapping("/video_list")
+	public String video_list() {
+		return "video_list";
+	}
+	
+	@GetMapping("/video_write")
+	public String video_write() {
+		return "video_write";
+	}
+	
+	@GetMapping("/video_detail")
+	public String video_detail() {
+		return "video_detail";
+	}
+	
+	@GetMapping("/music_list")
+	public String music_list() {
+		return "music_list";
+	}
+	
+	@GetMapping("/music_write")
+	public String music_write() {
+		return "music_write";
+	}
+	
+	@GetMapping("/music_detail")
+	public String music_detail() {
+		return "music_detail";
+	}
+	
+	@GetMapping("/file_list")
+	public String file_list() {
+		return "file_list";
+	}
+	
+	@GetMapping("/file_detail")
+	public String file_detail() {
+		return "file_detail";
+	}
+	
+	@GetMapping("/file_write")
+	public String file_write() {
+		return "file_write";
 	}
 }

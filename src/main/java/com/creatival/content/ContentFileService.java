@@ -1,11 +1,13 @@
 package com.creatival.content;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.FileUtil;
+import com.creatival.content.DTO.UpdateArtDTO;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentFileRepository;
 
@@ -56,5 +58,16 @@ public class ContentFileService {
 	
 	public List<ContentFile> getContentFileByContent(Content content) {
 		return contentFileRepository.findByContent(content);
+	}
+	
+	@Transactional
+	public void deleteImage(Long fileId) throws IOException {
+
+	    ContentFile contentFile = contentFileRepository.findById(fileId)
+	            .orElseThrow(() -> new IllegalArgumentException("파일이 존재하지 않습니다."));
+
+	    fileUtil.deleteImage(contentFile.getFileName(), "art");
+
+	    contentFileRepository.delete(contentFile);
 	}
 }

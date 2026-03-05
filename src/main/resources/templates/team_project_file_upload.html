@@ -1,0 +1,90 @@
+<html layout:decorate="~{layout}">
+<div class="container my-5" layout:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h3 class="fw-bold mb-0">프로젝트 파일 업로드</h3>
+                <a th:href="@{/team_project_detail}" class="btn btn-outline-secondary btn-sm">돌아가기</a>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4 text-center border-2 border-dashed rounded" style="border-style: dashed !important; border-color: #dee2e6 !important;">
+                    <i class="bi bi-cloud-arrow-up display-1 text-primary mb-3"></i>
+                    <h5 class="fw-bold">파일을 선택하거나 여기로 끌어다 놓으세요</h5>
+                    <p class="text-muted small">JPG, PNG, PDF, ZIP (최대 50MB)</p>
+                    
+                    <div class="input-group mb-3 justify-content-center">
+                        <input type="file" class="form-control d-none" id="fileInput" multiple>
+                        <button class="btn btn-primary px-4 py-2" onclick="document.getElementById('fileInput').click()">
+                            파일 찾기
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">업로드 진행 상태</h6>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1 me-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">project_final_v2.zip</small>
+                                <small class="fw-bold">75%</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%;"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm text-danger"><i class="bi bi-x-circle"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">최근 업로드 된 파일</h6>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-3">
+                                    <i class="bi bi-file-earmark-image text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold small">main_banner.png</p>
+                                    <small class="text-muted">1.2 MB • 2026.02.21</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">다운로드</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#">삭제</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-3">
+                                    <i class="bi bi-file-earmark-pdf text-danger fs-4"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold small">기획서_최종본.pdf</p>
+                                    <small class="text-muted">4.5 MB • 2026.02.20</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-success">검토완료</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btn-primary py-3 fw-bold">모든 파일 제출하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

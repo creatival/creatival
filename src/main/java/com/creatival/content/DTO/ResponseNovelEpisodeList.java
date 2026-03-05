@@ -29,6 +29,8 @@ public class ResponseNovelEpisodeList {
 	
 	private String username;
 	
+	private Long viewCount;
+	
 	private LocalDateTime createdAt;
 	
 	private LocalDateTime updatedAt;
@@ -39,6 +41,7 @@ public class ResponseNovelEpisodeList {
 				.title(episode.getTitle())
 				.free(episode.isFree())
 				.episodeNum(episode.getEpisodeNum())
+				.viewCount(episode.getViewCount())
 				.deleted(episode.isDeleted())
 				.createdAt(episode.getCreatedAt())
 				.updatedAt(episode.getUpdatedAt())
