@@ -93,8 +93,7 @@ public class ContentController {
 		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
 		model.addAttribute("novel", novelDetail);
 		if(principal != null) {
-			model.addAttribute("loginUsername", principal.getName());
-			
+			model.addAttribute("loginUsername", principal.getName());	
 		} else {
 			model.addAttribute("loginUsername", null);
 		}

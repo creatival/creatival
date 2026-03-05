@@ -178,7 +178,7 @@ public class TeamController {
 		Long teamId = teamService.approveApplication(id, user.getId());
 		
 		redirectAttributes.addFlashAttribute("message", "신청을 승인했습니다.");
-
+		redirectAttributes.addFlashAttribute("icon", "success");
         return "redirect:/team/" + teamId + "/teamApplicationManage";
 	}
 	
@@ -188,7 +188,35 @@ public class TeamController {
 		Long teamId = teamService.rejectedApplication(id, user.getId());
 		
 		redirectAttributes.addFlashAttribute("message", "신청을 거절했습니다.");
-
+		redirectAttributes.addFlashAttribute("icon", "error");
         return "redirect:/team/" + teamId + "/teamApplicationManage";
+	}
+	
+	@GetMapping("/{id}/delete")
+	public String teamDelete(Model model,@PathVariable("id") Long id, Principal principal) {
+		ResponseTeamDetailDTO dto = teamService.getTeamDetail(id);
+		model.addAttribute("team", dto);
+		return "team_delete";
+	}
+	
+	@PostMapping("/{id}/delete")
+	public String teamDelete(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal.getName()==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		
+		Team team = teamService.getTeamById(id);
+		Users user = userService.getUserByUsername(principal.getName());
+		if(team.getUser().getId()!=user.getId()) {
+			redirectAttributes.addFlashAttribute("message", "팀 해체는 팀장만 할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		teamService.delete(id);
+		redirectAttributes.addFlashAttribute("message", "팀이 해체되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/team/list";
 	}
 }

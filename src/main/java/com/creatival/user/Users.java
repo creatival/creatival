@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.creatival.tag.TagToUsers;
+import com.creatival.team.TeamMember;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -78,6 +79,9 @@ public class Users {
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TagToUsers> tagToUsers = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TeamMember> teamList = new ArrayList<>();
 
 	public Users(String username, String displayName, String email, String password, boolean isCreator) {
 		super();

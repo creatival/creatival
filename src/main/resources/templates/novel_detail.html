@@ -27,7 +27,7 @@
         .first-btn {
             background-color: #2f3e75; color: white; font-weight: bold;
             padding: 12px; border-radius: 6px; display: block;
-            text-align: center; text-decoration: none; margin: 15px 0;
+            text-align: center; text-decoration: none; margin: 15px auto;
         }
 
         /* ===== 우측 정보창 (이미지 스타일) ===== */
@@ -77,7 +77,7 @@
 </head>
 
 <div class="container novel-container" layout:fragment="content">
-    
+	
     <div class="row">
         <div class="col-md-4 novel-sidebar">
             <div class="novel-thumb-wrapper shadow" 
@@ -112,6 +112,10 @@
                     상태: <strong th:text="${novel.visibility}">PUBLIC</strong> | 
                     댓글: <strong th:text="${novel.allowComment} ? '허용' : '비허용'">허용</strong>
                 </div>
+				<div th:if="${novel.username == #authentication.name}">
+				        <a th:href="@{/content/novel_update/{id}(id=${novel.id})}" class="btn btn-sm btn-light text-primary">수정</a>
+				        <a th:href="@{/content/novel_delete/{id}(id=${novel.id})}" class="btn btn-sm btn-light text-danger" onclick="return confirm('삭제?');">삭제</a>
+				    </div>
             </div>
 
             <div class="tag-area">
@@ -147,7 +151,8 @@
                                 <span th:text="${#temporals.format(episode.createdAt, 'yyyy-MM-dd')}"></span>
                             </div>
                         </a>
-                        <div th:if="${novel.username == loginUsername}">
+						
+                        <div th:if="${novel.username == #authentication.name}">
                             <a th:href="@{/content/novel/episode/update/{id}(id=${episode.id})}" class="btn btn-sm btn-light text-primary">수정</a>
                             <a th:href="@{/content/novel/episode/delete/{id}(id=${episode.id})}" class="btn btn-sm btn-light text-danger" onclick="return confirm('삭제?');">삭제</a>
                         </div>

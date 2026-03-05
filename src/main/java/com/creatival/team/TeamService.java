@@ -216,4 +216,13 @@ public class TeamService {
 		
 		teamRepository.save(team);
 	}
+
+	public void delete(Long teamId) {
+		Optional<Team> team = teamRepository.findById(teamId);
+		if(team.isEmpty()) {
+			return;
+		}
+		teamRepository.delete(team.get());
+		
+	}
 }
