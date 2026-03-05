@@ -1,59 +1,120 @@
 <html layout:decorate="~{layout}">
 <div layout:fragment="content">
 
-<div class="container py-5" style="max-width: 800px;">
+<div class="container py-4" style="background:#f6f7fb; border-radius:12px; padding:30px;">
 
-    <!-- 팀 정보 -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <h4 class="fw-bold mb-2" th:text="${team.name}">팀 이름</h4>
-            <p class="text-muted mb-0" th:text="${team.description}">
-                팀 설명이 들어갑니다.
-            </p>
-        </div>
-    </div>
+    <div class="row">
 
-    <!-- 신청 폼 -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="fw-bold mb-4">팀 가입 신청</h5>
+        <!-- 왼쪽 영역 -->
+        <div class="col-lg-8">
 
-            <form th:action="@{/team/{teamId}/application(teamId=${team.id})}"
-                  th:object="${createTeamApplicationDTO}"
-                  method="post">
-				  <div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}" th:fragment="formErrorsFragment">
-				  					<div th:each="err : ${#fields.allErrors()}">[[${err}]]</div>
-				  			</div>
+            <!-- 제목 -->
+            <h3 class="mb-3" style="color:#2f3e7a; font-weight:700;">
+                팀 참여 신청
+            </h3>
 
-                <!-- 지원 메시지 -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">지원 메시지</label>
-                    <textarea class="form-control"
-                              th:field="*{message}"
-                              rows="6"
-                              placeholder="팀에 지원하는 이유와 본인의 역할을 작성해주세요."></textarea>
+            <!-- 팀 정보 카드 -->
+            <div class="card shadow-sm mb-4" style="border-radius:14px; border-top:4px solid #ff7a2f;">
+                <div class="card-body">
 
-                    <!-- 에러 메시지 -->
-                    <div class="text-danger mt-1"
-                         th:if="${#fields.hasErrors('message')}"
-                         th:errors="*{message}">
+                    <h4 class="fw-bold mb-2" th:text="${team.name}">팀 이름</h4>
+
+                    <div class="text-muted small mb-3">
+                        📅 설립일 :
+                        <span th:text="${#temporals.format(team.createdAt,'yyyy.MM.dd')}"></span>
                     </div>
+
+                    <hr>
+
+                    <p class="text-secondary mb-0"
+                       th:text="${team.description}">
+                        팀 소개
+                    </p>
+
                 </div>
+            </div>
 
-                <!-- 버튼 영역 -->
-                <div class="d-flex justify-content-end gap-2">
-                    <a th:href="@{/team/{id}(id=${team.id})}"
-                       class="btn btn-outline-secondary">
-                        취소
-                    </a>
+            <!-- 신청 폼 -->
+            <div class="card shadow-sm" style="border-radius:14px;">
+                <div class="card-body">
 
-                    <button type="submit" class="btn btn-primary">
-                        신청하기
-                    </button>
+                    <form th:action="@{/team/{teamId}/application(teamId=${team.id})}"
+                          th:object="${createTeamApplicationDTO}"
+                          method="post">
+
+                        <!-- 에러 -->
+                        <div class="alert alert-danger"
+                             th:if="${#fields.hasAnyErrors()}">
+                            <div th:each="err : ${#fields.allErrors()}">
+                                [[${err}]]
+                            </div>
+                        </div>
+
+                        <!-- 메시지 -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                지원 메시지
+                            </label>
+
+                            <textarea class="form-control"
+                                      th:field="*{message}"
+                                      rows="8"
+                                      placeholder="팀에 지원하는 이유와 본인이 맡을 수 있는 역할을 작성해주세요."
+                                      style="border-radius:10px;"></textarea>
+
+                            <div class="text-danger mt-1"
+                                 th:if="${#fields.hasErrors('message')}"
+                                 th:errors="*{message}">
+                            </div>
+
+                        </div>
+
+                        <!-- 버튼 -->
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a th:href="@{/team/{id}(id=${team.id})}"
+                               class="btn btn-outline-secondary"
+							   style="background:#ff7a2f; color:white;">
+                                취소
+                            </a>
+
+                            <button type="submit"
+                                    class="btn"
+                                    style="background:#030F2F; color:white; font-weight:600;">
+                                팀 참여 신청
+                            </button>
+
+                        </div>
+
+                    </form>
+
                 </div>
+            </div>
 
-            </form>
         </div>
+
+        <!-- 오른쪽 안내 -->
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm" style="border-radius:14px;">
+                <div class="card-body">
+
+                    <h6 class="fw-bold mb-3" style="color:#2f3e7a;">
+                        신청 안내
+                    </h6>
+
+                    <ul class="small text-muted mb-0">
+                        <li>팀 활동에 적극적으로 참여해주세요.</li>
+                        <li>지원 메시지를 성실하게 작성해주세요.</li>
+                        <li>팀장이 신청을 승인하면 참여할 수 있습니다.</li>
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
 </div>
