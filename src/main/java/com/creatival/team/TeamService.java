@@ -16,6 +16,7 @@ import com.creatival.tag.Tag;
 import com.creatival.tag.TagService;
 import com.creatival.team.Enum.ApplicationStatus;
 import com.creatival.team.Enum.TeamRole;
+import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
@@ -23,6 +24,10 @@ import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
 import com.creatival.team.dto.UpdateTeamDTO;
+import com.creatival.team.repository.ProjectRepository;
+import com.creatival.team.repository.TeamApplicationRepository;
+import com.creatival.team.repository.TeamMemberRepository;
+import com.creatival.team.repository.TeamRepository;
 import com.creatival.user.Users;
 
 import jakarta.transaction.Transactional;
@@ -37,6 +42,7 @@ public class TeamService {
 	private final TagService tagService;
 	private final TeamMemberRepository teamMemberRepository;
 	private final TeamApplicationRepository teamApplicationRepository;
+	private final ProjectRepository projectRepository;
 	
 	public Team getTeamById(Long id) {
 		return teamRepository.findById(id).get();
@@ -224,5 +230,28 @@ public class TeamService {
 		}
 		teamRepository.delete(team.get());
 		
+	}
+
+	public void createProject(@Valid CreateProjectDTO createProjectDTO, Team team) throws IOException {
+		String banner = "/upload/images/banner/";
+		if(createProjectDTO.getBannerImg() != null) {
+			banner += fileUtil.saveImage(createProjectDTO.getBannerImg(), "banner");
+		}
+		Project project = Project.builder()
+				.title(createProjectDTO.getTitle())
+				.description(createProjectDTO.getDescription())
+				.visibility(createProjectDTO.getVisibility())
+				.endDate(createProjectDTO.getEndDate())
+				.bannerImgUrl(banner)
+				.team(team)
+				.build();
+		projectRepository.save(project);
+		
+		if (createProjectDTO.getTags() != null) {
+		    for (String tagName : createProjectDTO.getTags()) {
+
+		        tagService.createTagForProject(project, tagName, team.getUser());
+		    }
+		}
 	}
 }

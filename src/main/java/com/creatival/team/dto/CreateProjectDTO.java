@@ -1,12 +1,13 @@
 package com.creatival.team.dto;
 
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.content.Enum.Visibility;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -17,19 +18,20 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter @Setter
 @AllArgsConstructor
-public class CreateTeamDTO {
-	@NotEmpty(message = "팀 이름은 필수입니다.")
-    @Size(max = 50, message = "팀 이름은 50자 이내여야 합니다.")
-    private String name;
+public class CreateProjectDTO {
 
-    @Size(max = 1000, message = "설명은 1000자 이내여야 합니다.")
+	@NotEmpty(message = "제목은 필수 사항입니다.")
+	@Size(max = 50, message = "제목은 50글자 이내로 작성해주셔야합니다.")
+    private String title;
+
     private String description;
 
+    private MultipartFile bannerImg;
+
+    private LocalDateTime endDate;
+
     private Visibility visibility;
-
-    private MultipartFile profileImage;
-
-    private MultipartFile bannerImage;
     
     private List<String> tags;
+
 }

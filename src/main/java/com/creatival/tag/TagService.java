@@ -11,8 +11,10 @@ import com.creatival.content.repository.ContentFileRepository;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.tag.repository.TagRepository;
 import com.creatival.tag.repository.TagToContentRepository;
+import com.creatival.tag.repository.TagToProjectRepository;
 import com.creatival.tag.repository.TagToTeamRepository;
 import com.creatival.tag.repository.TagToUsersRepository;
+import com.creatival.team.Project;
 import com.creatival.team.Team;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -31,6 +33,7 @@ public class TagService {
     private final UserService userService;
 	private final TagRepository tagRepository;
 	private final TagToUsersRepository tagToUsersRepository;
+	private final TagToProjectRepository tagToProjectRepository;
 
 	
 	public void createTagForUser(Users user, String tagName) {
@@ -122,5 +125,18 @@ public class TagService {
 		
 		TagToTeam tagToTeam = TagToTeam.from(team, tag);
 		tagToTeamRepository.save(tagToTeam);
+	}
+
+	public void createTagForProject(Project project, String tagName, Users user) {
+		Tag tag;
+		if(tagRepository.findByTagText(tagName).isEmpty()) {
+			tag = Tag.builder().tagText(tagName).user(user).build();
+			tagRepository.save(tag);
+		} else {
+			tag = tagRepository.findByTagText(tagName).get();
+		}
+		
+		TagToProject tagToProject = TagToProject.from(project, tag);
+		tagToProjectRepository.save(tagToProject);
 	}
 }

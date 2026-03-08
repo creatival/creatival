@@ -1,4 +1,4 @@
-package com.creatival.team;
+package com.creatival.team.repository;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.creatival.team.Enum.ApplicationStatus;
 import com.creatival.user.Users;
 import com.creatival.team.Team;
+import com.creatival.team.TeamApplication;
 
 
 public interface TeamApplicationRepository extends JpaRepository<TeamApplication, Long> {

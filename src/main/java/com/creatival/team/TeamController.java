@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
+import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
@@ -218,5 +219,52 @@ public class TeamController {
 		redirectAttributes.addFlashAttribute("message", "팀이 해체되었습니다.");
 		redirectAttributes.addFlashAttribute("icon", "success");
 		return "redirect:/team/list";
+	}
+	
+	@GetMapping("/{id}/project/create")
+	public String createTeamProject(Model model,@PathVariable("id") Long id, Principal principal,CreateProjectDTO createProjectDTO, RedirectAttributes redirectAttributes) {
+		Team team = teamService.getTeamById(id);
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id;
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		if(!team.getUser().getId().equals(user.getId())) {
+			redirectAttributes.addFlashAttribute("message", "프로젝트 생성은 팀장만 할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warging");
+			return "redirect:/team/"+id;
+		}
+		model.addAttribute("teamId", team.getId());
+		return "team_project_write";
+	}
+	
+	@PostMapping("/{id}/project/create")
+	public String createTeamProjectPost(Model model,@PathVariable("id") Long id, Principal principal, @Valid @ModelAttribute CreateProjectDTO createProjectDTO, RedirectAttributes redirectAttributes) {
+		Team team = teamService.getTeamById(id);
+		
+		model.addAttribute("teamId", team.getId());
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id+"/project/create";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		if(!team.getUser().getId().equals(user.getId())) {
+			redirectAttributes.addFlashAttribute("message", "프로젝트 생성은 팀장만 할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warging");
+			return "redirect:/team/"+id+"/project/create";
+		}
+		
+		try {
+			teamService.createProject(createProjectDTO, team);
+			return "redirect:/team/"+id;
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 만일 동일한 오류가 계속 발견된다면 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id+"/project/create";
+		}
+		
 	}
 }
