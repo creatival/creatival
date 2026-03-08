@@ -19,6 +19,7 @@ import com.creatival.team.Enum.TeamRole;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
+import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
@@ -90,6 +91,10 @@ public class TeamService {
 		Page<Team> teams = teamRepository.findByVisibility(Visibility.PUBLIC, pageable);
 		return teams.map(team -> ResponseTeamListDTO.from(team));
 	}
+	
+	
+	
+	
 
 	public ResponseTeamDetailDTO getTeamDetail(Long id) {
 		Optional<Team> team = teamRepository.findById(id);
@@ -253,5 +258,17 @@ public class TeamService {
 		        tagService.createTagForProject(project, tagName, team.getUser());
 		    }
 		}
+	}
+	
+	public List<ResponseProjectListDTO> getProjectList(Team team) {
+		List<Project> projects = projectRepository.findByTeamAndVisibility(team,Visibility.PUBLIC);
+		System.out.println("조회된 프로젝트 개수: " + projects.size());
+		return projects.stream().map(project -> ResponseProjectListDTO.from(project)).toList();
+	}
+	
+	public Page<ResponseProjectListDTO> getProjectList(int page, Team team) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Project> projects = projectRepository.findByTeamAndVisibility(team, Visibility.PUBLIC, pageable);
+		return projects.map(project -> ResponseProjectListDTO.from(project));
 	}
 }

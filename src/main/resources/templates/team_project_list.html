@@ -29,71 +29,29 @@
 
     <div class="container pb-5 px-0">
         
-        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-            
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
-                    
-                    <a th:href="@{/team_project_detail}">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">다양한 게임</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-						<a class="btn btn-primary" th:href="@{/team_project_edit}">수정</a>
-						<a class="btn btn-danger">삭제</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">다양한 활동</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-							<a class="btn btn-primary">수정</a>
-                            <a class="btn btn-danger">삭제</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">스피키</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-						<a class="btn btn-primary">수정</a>
-						<a class="btn btn-danger">삭제</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">팀 제목 예시</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-						<a class="btn btn-primary">수정</a>
-						<a class="btn btn-danger">삭제</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div> </div> <nav aria-label="Page navigation example" class="mb-5">
+		<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+		    <div class="col" th:each="project : ${paging}">
+		        <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
+		            
+		            <a th:href="@{/team/{tid}/project/{pid}/detail(tid=${teamId}, pid=${project.id})}">
+		                <img th:src="${project.bannerImgUrl}" class="card-img-top comic-card-img" alt="프로젝트 썸네일">
+		            </a>
+		            
+		            <div class="card-body p-2">
+		                <h6 class="card-title fw-bold text-truncate" th:text="${project.title}">프로젝트 제목</h6>
+		                
+		                <div class="d-flex justify-content-between align-items-center fs-7">
+		                    <a class="btn btn-primary" th:href="@{/team/{tid}/project/{pid}/edit(tid=${teamId}, pid=${project.id})}">수정</a>
+		                    
+		                    <form th:action="@{/team/{tid}/project/{pid}/delete(tid=${teamId}, pid=${project.id})}" method="post">
+		                        <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+		                    </form>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		</div> <nav aria-label="Page navigation example" class="mb-5">
         <ul class="pagination justify-content-center">
             <li class="page-item disabled">
                 <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>

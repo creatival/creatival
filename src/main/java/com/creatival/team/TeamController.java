@@ -1,5 +1,6 @@
 package com.creatival.team;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.creatival.tag.TagService;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
+import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
@@ -88,6 +90,9 @@ public class TeamController {
 		
 		List<ResponseTeamMember> members = teamService.getMemberForTeam(team);
 		model.addAttribute("memberList", members);
+		
+		List<ResponseProjectListDTO> projects = teamService.getProjectList(team);
+		model.addAttribute("projectList", projects);
 		return "team_detail";
 	}
 	
@@ -267,4 +272,14 @@ public class TeamController {
 		}
 		
 	}
+	
+	@GetMapping("/{id}/project/list")
+	public String projectList(Model model, @PathVariable("id") Long id, @RequestParam(value = "page", defaultValue = "0") int page) {
+		Team team = teamService.getTeamById(id);
+		Page<ResponseProjectListDTO> list = teamService.getProjectList(page, team);
+		model.addAttribute("paging", list);
+		model.addAttribute("teamId", id);
+		return "team_project_list";
+	}
+	
 }

@@ -80,20 +80,20 @@
                     <h4 class="fw-bold mb-0">프로젝트</h4>
 					<div>
 						<a class="btn btn-outline-secondary me-2" th:href="@{/team/{id}/project/create(id=${team.id})}">프로젝트 등록</a>
-	                    <a th:href="@{/team_project_list}">전체 보기</a>
+	                    <a th:href="@{/team/{id}/project/list(id=${team.id})}">전체 보기</a>
 					</div>
                 </div>
-
-                <div class="list-group list-group-flush shadow-sm rounded border">
-                    <a th:href="@{/team_project_detail}"
+                <div class="list-group list-group-flush shadow-sm rounded border" th:each="project : ${projectList}">
+                    <a th:href="@{/team/{tid}/project/{pid}(tid=${team.id}, pid=${project.id})}"
                        class="list-group-item list-group-item-action py-3">
                         <div class="d-flex align-items-center">
-                            <img src="/images/pic.png"
+                            <img th:src="${project.bannerImgUrl}"
                                  class="rounded me-3"
                                  style="width: 80px; height: 60px; object-fit: cover;">
                             <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold">임시 프로젝트</h6>
-                                <span class="text-muted small">2026.02.12</span>
+                                <h6 class="mb-1 fw-bold" th:text="${project.title}">임시 프로젝트</h6>
+                                <span class="text-muted small" th:text="${#temporals.format(project.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
+								
                             </div>
                             <div class="text-end text-muted small d-none d-md-block">
                                 <span><i class="bi bi-heart"></i> 1.2k</span>
