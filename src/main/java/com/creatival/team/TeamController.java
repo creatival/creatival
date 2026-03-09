@@ -25,11 +25,13 @@ import com.creatival.tag.TagService;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
+import com.creatival.team.dto.ResponseProjectDeatilDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
+import com.creatival.team.dto.UpdateProjectDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -280,6 +282,60 @@ public class TeamController {
 		model.addAttribute("paging", list);
 		model.addAttribute("teamId", id);
 		return "team_project_list";
+	}
+	
+	@GetMapping("/{tid}/project/{pid}")
+	public String projectDetail(Model model, @PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId) {
+		Project project = teamService.getProjectById(projectId);
+		model.addAttribute("dto", ResponseProjectDeatilDTO.from(project));
+		return "team_project_detail";
+	}
+	
+	@GetMapping("/{tid}/project/{pid}/edit")
+	public String projectUpdate(Model model, @PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId, Principal principal, RedirectAttributes redirectAttributes) {
+		Team team = teamService.getTeamById(teamId);
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "프로젝트를 수정할려면 로그인을 해야합니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+teamId+"/project/"+projectId;
+		}
+		if(!team.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 프로젝트를 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+teamId+"/project/"+projectId;
+		}
+		Project project = teamService.getProjectById(projectId);
+		if(project == null) {
+			redirectAttributes.addFlashAttribute("message", "프로젝트를 발견하지 못 했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+teamId+"/project/"+projectId;
+		}
+		UpdateProjectDTO dto = UpdateProjectDTO.from(project);
+		model.addAttribute("teamId", teamId);
+		model.addAttribute("dto", dto);
+		return "team_project_edit";
+	}
+	
+	@PostMapping("/{tid}/project/{pid}/edit")
+	public String projectUdate(Model model,@Valid @ModelAttribute(name = "dto") UpdateProjectDTO dto, @PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId, RedirectAttributes redirectAttributes) {
+		Team team = teamService.getTeamById(teamId);
+		
+		try {
+			teamService.updateProject(dto, team, projectId);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/"+teamId+"/project/"+projectId;
+		} catch (IllegalStateException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+teamId+"/project/"+projectId+"/edit";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "예기치 못 한 오류가 발생했습니다. 계속되면 문의를 주시길 바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+teamId+"/project/"+projectId+"/edit";
+		}
+		
 	}
 	
 }

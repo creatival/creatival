@@ -146,7 +146,13 @@ public class UserService {
 	public void userAllDelete(List<Users> users) {
 		for(Users user : users) {
 			System.out.println("삭제됨, 삭제 대상 : " + user.getUsername());
-			userRepository.delete(user);
+			user.setUsername("deleted_"+UUID.randomUUID());
+			user.setEmail("deleted_"+UUID.randomUUID());
+			user.setDisplayName("deleted_"+UUID.randomUUID());
+			user.setPassword("deleted_"+UUID.randomUUID());
+			user.setProfileImgUrl("deleted_"+UUID.randomUUID());
+			
+			userRepository.save(user);
 		}
 	}
 	

@@ -24,6 +24,7 @@ import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
+import com.creatival.team.dto.UpdateProjectDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
 import com.creatival.team.repository.ProjectRepository;
 import com.creatival.team.repository.TeamApplicationRepository;
@@ -270,5 +271,34 @@ public class TeamService {
 		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
 		Page<Project> projects = projectRepository.findByTeamAndVisibility(team, Visibility.PUBLIC, pageable);
 		return projects.map(project -> ResponseProjectListDTO.from(project));
+	}
+
+	public Project getProjectById(Long projectId) {
+		Optional<Project> project = projectRepository.findById(projectId);
+		return project.isPresent() ? project.get() : null;
+	}
+
+	public void updateProject(@Valid UpdateProjectDTO dto, Team team, Long projectId) throws IOException {
+		String banner = "/upload/images/banner/";
+		System.out.println(dto.getId());
+		Optional<Project> optional = projectRepository.findById(projectId);
+		if(optional.isEmpty()) {
+			throw new IllegalStateException("수정할려는 프로젝트를 찾을 수 없습니다.");
+		}
+		Project project = optional.get();
+		
+		project.setTitle(dto.getTitle());
+		project.setDescription(dto.getDescription());
+		project.setEndDate(dto.getEndDate());
+		project.setVisibility(dto.getVisibility());
+		project.setStatus(dto.getStatus());
+		
+		if(dto.getBannerImg() != null && !dto.getBannerImg().isEmpty()) {
+			banner += fileUtil.saveImage(dto.getBannerImg(), "banner");
+			project.setBannerImgUrl(banner);
+		}
+		
+		projectRepository.save(project);
+		
 	}
 }

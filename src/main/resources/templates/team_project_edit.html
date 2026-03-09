@@ -1,169 +1,215 @@
-<html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
-    <style>
-        /* 이미지 업로드 드롭존 스타일 */
-        .upload-zone {
-            border: 2px dashed #dee2e6;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            background-color: #f8f9fa;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .upload-zone:hover {
-            border-color: #000;
-            background-color: #f1f3f5;
-        }
-        .upload-icon {
-            font-size: 3rem;
-            color: #adb5bd;
-        }
-        .tag-input-wrapper {
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            padding: 5px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        .tag-badge {
-            background-color: #e9ecef;
-            padding: 2px 10px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-        }
-        .tag-badge .btn-close {
-            font-size: 0.6rem;
-            margin-left: 5px;
-        }
-    </style>
+	<style>
+		.upload-zone {
+			border: 2px dashed #dee2e6;
+			border-radius: 15px;
+			padding: 40px;
+			text-align: center;
+			background-color: #f8f9fa;
+			transition: all .3s;
+			cursor: pointer;
+		}
+
+		.upload-zone:hover {
+			border-color: #000;
+			background-color: #f1f3f5;
+		}
+
+		.upload-icon {
+			font-size: 3rem;
+			color: #adb5bd;
+		}
+
+		.tag-input-wrapper {
+			border: 1px solid #ced4da;
+			border-radius: .25rem;
+			padding: 5px;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 5px;
+		}
+
+		.tag-badge {
+			background-color: #e9ecef;
+			padding: 2px 10px;
+			border-radius: 15px;
+			font-size: .9rem;
+			display: flex;
+			align-items: center;
+		}
+
+		.tag-badge .btn-close {
+			font-size: .6rem;
+			margin-left: 5px;
+		}
+	</style>
 </head>
 
-<body class="d-flex flex-column">
+<body>
 
-    <div class="container mt-5 mb-5 d-flex justify-content-center">
-      <div class="col-lg-8">
+	<div layout:fragment="content">
 
-        <div class="card shadow-sm border-0">
-          <div class="card-body p-4 p-lg-5">
+		<div class="container mt-5 mb-5 d-flex justify-content-center">
+			<div class="col-lg-8">
 
-            <div class="mb-4 text-center">
-              <h3 class="fw-bold">표지</h3>
-            </div>
+				<div class="card shadow-sm border-0">
+					<div class="card-body p-4 p-lg-5">
 
-            <form>
-				<div class="mb-4">
-				    <label class="form-label fw-semibold">표지 업로드</label>
-				    <div class="upload-zone" id="dropZone">
-				        <input type="file" class="d-none" id="illustFile" accept="image/*">
-				        
-				        <div id="uploadPlaceholder">
-				            <i class="bi bi-cloud-arrow-up upload-icon"></i>
-				            <p class="mt-2 mb-1 fw-bold">클릭하거나 파일을 여기로 끌어다 놓으세요</p>
-				            <p class="text-muted small">PNG, JPG, GIF (최대 20MB)</p>
-				        </div>
+						<div class="mb-4 text-center">
+							<h3 class="fw-bold">표지</h3>
+						</div>
 
-				        <div id="imagePreview" class="d-none">
-				            <img src="" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 400px;">
-				            <p class="mt-3 small text-primary text-decoration-underline">이미지 교체하기</p>
-				        </div>
-				    </div>
+						<form id="projectForm" th:action="@{/team/{id}/project/{pid}/edit(id=${teamId}, pid=${dto.id})}" method="post" enctype="multipart/form-data">
+
+							<div class="mb-4">
+								<label class="form-label fw-semibold">표지 업로드</label>
+								<div class="upload-zone" id="dropZone">
+									<input type="file" class="d-none" id="illustFile" name="bannerImg" accept="image/*">
+									
+									<div id="uploadPlaceholder" th:classappend="${dto.bannerImgUrl != null ? 'd-none' : ''}">
+										<i class="bi bi-cloud-arrow-up upload-icon"></i>
+										<p class="mt-2 mb-1 fw-bold">클릭하거나 파일을 여기로 끌어다 놓으세요</p>
+										<p class="text-muted small">PNG, JPG, GIF (최대 20MB)</p>
+									</div>
+
+									<div id="imagePreview" th:classappend="${dto.bannerImgUrl == null ? 'd-none' : ''}">
+										<img th:src="${dto.bannerImgUrl}" alt="Preview" class="img-fluid rounded shadow-sm"
+											style="max-height:400px;">
+										<p class="mt-3 small text-primary text-decoration-underline">이미지 교체하기</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-4">
+								<label class="form-label fw-semibold">프로젝트 이름</label>
+								<input type="text" name="title" class="form-control" th:value="${dto.title}" placeholder="프로젝트의 이름을 지어주세요.">
+							</div>
+
+							<div class="mb-4">
+								<label class="form-label fw-semibold">프로젝트 설명</label>
+								<textarea name="description" class="form-control" rows="3"
+									placeholder="프로젝트에 대한 설명을 적어주세요." th:text="${dto.description}"></textarea>
+							</div>
+
+							<div class="row mb-4">
+							    <div class="col-md-6">
+							        <label class="form-label fw-semibold">프로젝트 마감일</label>
+									<input type="datetime-local" 
+									       name="endDate" 
+									       th:value="${dto.endDate != null ? #temporals.format(dto.endDate, 'yyyy-MM-dd''T''HH:mm') : ''}" 
+									       class="form-control">
+							        <small class="text-muted">선택하지 않으면 마감일 없이 진행됩니다.</small>
+							    </div>
+
+							    <div class="col-md-6">
+							        <label class="form-label fw-semibold">공개 여부</label>
+							        <select name="visibility" class="form-select">
+							            <option value="PUBLIC" th:selected="${dto.visibility == 'PUBLIC'}">공개</option>
+							            <option value="PRIVATE" th:selected="${dto.visibility == 'PRIVATE'}">비공개</option>
+							        </select>
+							    </div>
+                                
+                                <div class="col-md-6 mt-3">
+							        <label class="form-label fw-semibold">프로젝트 상태 수정</label>
+							        <select name="status" id="statusSelect" class="form-select">
+							            <option value="ACTIVITY" th:selected="${dto.status == 'ACTIVITY'}">활동 중</option>
+							            <option value="PAUSED" th:selected="${dto.status == 'PAUSED'}">휴식 중</option>
+							            <option value="ARCHIVE" th:selected="${dto.status == 'ARCHIVE'}">진행 중단</option>
+							            <option value="COMPLETED" th:selected="${dto.status == 'COMPLETED'}">완료</option>
+							        </select>
+							    </div>
+							</div>
+
+							<div class="d-flex justify-content-between mt-5">
+								<a href="/" class="btn btn-outline-secondary px-4">취소</a>
+								<button type="submit" class="btn btn-primary px-5 text-white fw-bold">제작하기</button>
+							</div>
+
+						</form>
+
+					</div>
 				</div>
 
-				<script>
-				    const dropZone = document.getElementById('dropZone');
-				    const fileInput = document.getElementById('illustFile');
-				    const preview = document.getElementById('imagePreview');
-				    const placeholder = document.getElementById('uploadPlaceholder');
-				    const previewImg = preview.querySelector('img');
+			</div>
+		</div>
 
-				    // 1. 클릭하면 파일 선택창 띄우기
-				    dropZone.addEventListener('click', () => fileInput.click());
+	</div>
 
-				    // 2. 파일이 선택되었을 때 처리
-				    fileInput.addEventListener('change', function() {
-				        handleFiles(this.files);
-				    });
+	<th:block layout:fragment="script">
+		<script>
+			// --- 이미지 업로드 관련 스크립트 ---
+			const dropZone = document.getElementById('dropZone');
+			const fileInput = document.getElementById('illustFile');
+			const preview = document.getElementById('imagePreview');
+			const placeholder = document.getElementById('uploadPlaceholder');
+			const previewImg = preview.querySelector('img');
 
-				    // 3. 드래그 앤 드롭 기능
-				    dropZone.addEventListener('dragover', (e) => {
-				        e.preventDefault();
-				        dropZone.style.borderColor = "#000"; // 드래그 중일 때 테두리 강조
-				    });
+			dropZone.addEventListener('click', () => fileInput.click());
 
-				    dropZone.addEventListener('dragleave', () => {
-				        dropZone.style.borderColor = "#dee2e6";
-				    });
+			fileInput.addEventListener('change', function () {
+				handleFiles(this.files);
+			});
 
-				    dropZone.addEventListener('drop', (e) => {
-				        e.preventDefault();
-				        dropZone.style.borderColor = "#dee2e6";
-				        const files = e.dataTransfer.files;
-				        handleFiles(files);
-				    });
+			dropZone.addEventListener('dragover', (e) => {
+				e.preventDefault();
+				dropZone.style.borderColor = "#000";
+			});
 
-				    // 파일을 읽어서 미리보기에 표시하는 함수
-				    function handleFiles(files) {
-				        if (files.length > 0) {
-				            const file = files[0];
-				            
-				            // 이미지 파일인지 확인
-				            if (file.type.startsWith('image/')) {
-				                const reader = new FileReader();
-				                
-				                reader.onload = function(e) {
-				                    previewImg.src = e.target.result; // 이미지 경로 설정
-				                    placeholder.classList.add('d-none'); // 메시지 숨김
-				                    preview.classList.remove('d-none'); // 미리보기 표시
-				                }
-				                
-				                reader.readAsDataURL(file);
-				            } else {
-				                alert('이미지 파일만 업로드 가능합니다!');
-				            }
-				        }
-				    }
-				</script>
-              </div>
+			dropZone.addEventListener('dragleave', () => {
+				dropZone.style.borderColor = "#dee2e6";
+			});
 
-              <div class="mb-4">
-                <label class="form-label fw-semibold">프로젝트 이름</label>
-                <input type="text" class="form-control" placeholder="수정할 프로젝트의 이름을 넣어주세요.">
-              </div>
+			dropZone.addEventListener('drop', (e) => {
+				e.preventDefault();
+				dropZone.style.borderColor = "#dee2e6";
+				handleFiles(e.dataTransfer.files);
+			});
 
-              <div class="mb-4">
-                <label class="form-label fw-semibold">프로젝트 설명</label>
-                <textarea class="form-control" rows="3" placeholder="수정할 내용을 넣어주세요."></textarea>
-              </div>
+			function handleFiles(files) {
+				if (files.length > 0) {
+					const file = files[0];
+					if (file.type.startsWith('image/')) {
+						const reader = new FileReader();
+						reader.onload = function (e) {
+							previewImg.src = e.target.result;
+							placeholder.classList.add('d-none');
+							preview.classList.remove('d-none');
+						}
+						reader.readAsDataURL(file);
+					} else {
+						alert("이미지 파일만 업로드 가능합니다.");
+					}
+				}
+			}
 
-              <div class="mb-4">
-                <label class="form-label fw-semibold">태그</label>
-                <div class="tag-input-wrapper mb-2">
-                    <span class="tag-badge">#게임 <button type="button" class="btn-close"></button></span>
-                    <span class="tag-badge">#스피키 네르지 마세요 <button type="button" class="btn-close"></button></span>
-                    <input type="text" class="form-control border-0 p-0 ps-2" style="width: auto; flex-grow: 1;" placeholder="태그 입력 후 Enter">
-                </div>
-                <small class="text-muted">쉼표(,) 또는 엔터로 구분하여 입력해주세요.</small>
-              </div>
+			// --- 상태 변경 및 폼 제출 경고 스크립트 ---
+			document.addEventListener('DOMContentLoaded', function() {
+				const statusSelect = document.getElementById('statusSelect');
+				const projectForm = document.getElementById('projectForm');
 
+				// 1. 상태를 '진행 중단'으로 변경할 때 즉각 알림
+				statusSelect.addEventListener('change', function() {
+					if (this.value === 'ARCHIVE') {
+						alert("주의: '진행 중단' 상태로 설정하면 이후 프로젝트 활동이 제한될 수 있습니다.");
+					}
+				});
 
-              <div class="d-flex justify-content-between mt-5">
-                <a href="#" class="btn btn-outline-secondary px-4">취소</a>
-				<button type="button" class="btn btn-primary px-5 text-white fw-bold">수정하기</button>
-              </div>
-
-            </form>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
+				// 2. 폼 제출 시 최종 확인
+				projectForm.addEventListener('submit', function(e) {
+					if (statusSelect.value === 'ARCHIVE') {
+						const confirmMsg = "프로젝트 상태가 '진행 중단'으로 설정되어 있습니다.\n이대로 저장하시겠습니까?";
+						if (!confirm(confirmMsg)) {
+							e.preventDefault(); // '취소' 클릭 시 폼 제출 중단
+						}
+					}
+				});
+			});
+		</script>
+	</th:block>
 
 </body>
-</div>
 </html>
