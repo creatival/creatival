@@ -139,4 +139,9 @@ public class TagService {
 		TagToProject tagToProject = TagToProject.from(project, tag);
 		tagToProjectRepository.save(tagToProject);
 	}
+
+	public void deleteMappingForTeam(Long teamId, Long tagId) {
+		tagToTeamRepository.deleteByTeamIdAndTagId(teamId, tagId);
+		
+	}
 }

@@ -74,4 +74,11 @@ public class TagController {
 		
 		return "redirect:/content/art/detail/"+contentId;
 	}
+	
+	@GetMapping("/team/deleteTeamTag")
+	public String deleteTeamTag(@RequestParam("tagId") Long tagId, @RequestParam("teamId") Long teamId) {
+		tagService.deleteMappingForTeam(teamId, tagId);
+		
+		return "redirect:/team/"+teamId;
+	}
 }

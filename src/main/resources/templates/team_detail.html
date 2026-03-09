@@ -32,13 +32,33 @@
             </p>
 
             <!-- 태그 (tagList 사용) -->
-            <div class="mt-2">
-                <span class="badge bg-light text-dark me-1"
-                      th:each="tag : ${tagList}"
-                      th:text="'#' + ${tag.tagText}">
-                    #게임
-                </span>
+			<div class="tag-area">
+				<div class="mb-4">
+	                <div th:each="tag : ${tagList}" class="badge rounded-pill tag-badge">
+	                    <span th:text="'#' + ${tag.tagText}"></span>
+
+	                    <a sec:authorize="isAuthenticated()"
+	                       th:if="${team.leaderUsername == #authentication.name}"
+	                       th:href="@{/tag/team/deleteTeamTag(tagId=${tag.id},teamId=${team.id})}"
+	                       onclick="return confirm('삭제하시겠습니까?');"
+						   >
+	                        <i class="bi bi-x-circle-fill ms-1"></i>
+	                    </a>
+	                </div>
+
+	                <!-- 태그 추가 버튼 -->
+	                <button type="button"
+	                        sec:authorize="isAuthenticated()"
+	                         th:if="${team.leaderUsername == #authentication.name}"
+	                        class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2"
+	                        style="width:24px;height:24px;"
+	                        data-bs-toggle="modal"
+	                        data-bs-target="#tagAddModal">
+	                    <i class="bi bi-plus"></i>
+	                </button>
+	            </div>
             </div>
+			
 
         </div>
 
