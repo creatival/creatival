@@ -221,7 +221,39 @@
 
         </div>
     </div>
-	
+	<!-- 태그 추가 모달 -->
+	    <div sec:authorize="isAuthenticated()"
+	         class="modal fade"
+	         id="tagAddModal"
+	         tabindex="-1">
+
+	        <div class="modal-dialog modal-dialog-centered modal-sm">
+	            <div class="modal-content">
+	                <form th:action="@{/tag/team/createTeamTag/{id}(id=${team.id})}"
+	                      method="post">
+
+	                    <div class="modal-body">
+	                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
+	                        <div class="input-group">
+	                            <span class="input-group-text">#</span>
+	                            <input type="text"
+	                                   name="tagName"
+	                                   class="form-control"
+	                                   required>
+	                        </div>
+	                    </div>
+
+	                    <div class="modal-footer">
+	                        <button type="submit"
+	                                class="btn btn-primary btn-sm w-100">
+	                            추가
+	                        </button>
+	                    </div>
+
+	                </form>
+	            </div>
+	        </div>
+	    </div>
 	<script th:inline="javascript">
 	    $(function() {
 	        const msg = /*[[${message}]]*/ null;

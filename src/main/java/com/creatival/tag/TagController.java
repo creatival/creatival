@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.creatival.content.Content;
 import com.creatival.content.ContentFileService;
 import com.creatival.content.ContentService;
+import com.creatival.team.Team;
+import com.creatival.team.TeamService;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -26,6 +28,7 @@ public class TagController {
 	private final TagService tagService;
 	private final UserService userService;
 	private final ContentService contentService;
+	private final TeamService teamService;
 	
 	@PostMapping("/createUserTag")
 	public String createTagForUser(@RequestParam("tagName") String tagName, Principal principal) {
@@ -80,5 +83,13 @@ public class TagController {
 		tagService.deleteMappingForTeam(teamId, tagId);
 		
 		return "redirect:/team/"+teamId;
+	}
+	
+	@PostMapping("/team/createTeamTag/{id}")
+	public String createTeamTag(@RequestParam("tagName") String tagName,@PathVariable("id") Long id, Principal principal) {
+		Users user = userService.getUserByUsername(principal.getName());
+		Team team = teamService.getTeamById(id);
+		tagService.createTagForTeam(team, tagName, user);
+		return "redirect:/team/"+id;
 	}
 }
