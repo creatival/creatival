@@ -30,6 +30,7 @@ import com.creatival.team.repository.ProjectRepository;
 import com.creatival.team.repository.TeamApplicationRepository;
 import com.creatival.team.repository.TeamMemberRepository;
 import com.creatival.team.repository.TeamRepository;
+import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
 import jakarta.transaction.Transactional;
@@ -45,6 +46,7 @@ public class TeamService {
 	private final TeamMemberRepository teamMemberRepository;
 	private final TeamApplicationRepository teamApplicationRepository;
 	private final ProjectRepository projectRepository;
+	private final UserService userService;
 	
 	public Team getTeamById(Long id) {
 		return teamRepository.findById(id).get();
@@ -300,5 +302,26 @@ public class TeamService {
 		
 		projectRepository.save(project);
 		
+	}
+
+	public TeamMember getMemberForTeamByUser(Team team, Users user) {
+		Optional<TeamMember> teamMember = teamMemberRepository.findByTeamAndUser(team, user);
+		if(teamMember.isEmpty()) {
+			return null;
+		}
+		return teamMember.get();
+	}
+
+	public void memberChangePosition(TeamMember member, String position) {
+		member.setPosition(position);
+		teamMemberRepository.save(member);
+	}
+
+	public TeamMember getMemberForTeamById(Long memberId) {
+		Optional<TeamMember> teamMember = teamMemberRepository.findById(memberId);
+		if(teamMember.isEmpty()) {
+			return null;
+		}
+		return teamMember.get();
 	}
 }

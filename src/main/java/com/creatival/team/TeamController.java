@@ -337,5 +337,26 @@ public class TeamController {
 		}
 		
 	}
+	@GetMapping("/{id}/teamMemberManage")
+	public String teamMemberManage(Model model,@PathVariable("id") Long id) {
+		Team team = teamService.getTeamById(id);
+		
+		model.addAttribute("leaderUsername", team.getUser().getUsername());
+		model.addAttribute("teamId", team.getId());
+		
+		List<ResponseTeamMember> members = teamService.getMemberForTeam(team);
+		model.addAttribute("memberList", members);
+		return "team_member_manage";
+	}
 	
+	@PostMapping("{id}/member/changePosition")
+	public String memberChangePosition(@PathVariable("id") Long id, @RequestParam("memberId") Long memberId, @RequestParam("position") String position, RedirectAttributes redirectAttributes) {
+		TeamMember member = teamService.getMemberForTeamById(memberId);
+		if(member==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 멤버를 찾지 못 했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+		}
+		teamService.memberChangePosition(member, position);
+		return "redirect:/team/"+id+"/teamMemberManage";
+	}
 }

@@ -171,7 +171,8 @@
                 </div>
             </div>
 
-			<a th:href="@{/team/{id}/teamApplicationManage(id=${team.id})}" class="btn btn-outline-secondary me-2">신청  현황</a>
+			<a th:href="@{/team/{id}/teamApplicationManage(id=${team.id})}" th:if="${team.leaderUsername == #authentication.name}" class="btn btn-outline-secondary me-2">신청 현황</a>
+			<a th:href="@{/team/{id}/teamMemberManage(id=${team.id})}" class="btn btn-outline-secondary me-2">멤버 보기</a>
             <!-- 팀원 영역 (임시 유지) -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
@@ -180,7 +181,9 @@
 					<div class="list-group list-group-flush">
 
 					    <div class="list-group-item px-0 border-0 d-flex align-items-center"
-					         th:each="member : ${memberList}">
+					         th:each="member : ${memberList}"
+							 th:if="${!#lists.isEmpty(memberList)}"
+							 >
 
 					        <!-- 프로필 이미지 -->
 					        <img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} 
@@ -205,6 +208,7 @@
 					        </div>
 
 					    </div>
+						<p th:if="${#lists.isEmpty(memberList)}">아직 아무도 없습니다.</p>
 
 					</div>
                 </div>

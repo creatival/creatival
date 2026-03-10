@@ -160,4 +160,7 @@ public class UserService {
 		List<Users> list = userRepository.findByIsDeletedTrueAndDeletedAtBefore(threshold);
 		return list;
 	}
+	public Users getUserById(Long userId) {
+		return userRepository.findById(userId).get();
+	}
 }
