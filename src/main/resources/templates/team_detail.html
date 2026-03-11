@@ -68,7 +68,6 @@
                 <i class="bi bi-heart"></i> 1.2k
             </button>
             
-            <a th:href="@{/team/{id}/delete(id=${team.id})}" class="btn btn-outline-danger me-2" th:if="${team.leaderUsername == #authentication.name}" onclick="return confirm('정말 팀을 해체하시겠습니까?');">팀 해체</a>
             <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary me-2" th:if="${team.leaderUsername == #authentication.name}">수정하기</a>
             <a th:href="@{/team/{id}/application(id=${team.id})}" class="btn btn-primary px-4">팀 참여 신청</a>
         </div>

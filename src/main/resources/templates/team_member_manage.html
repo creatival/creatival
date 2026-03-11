@@ -89,12 +89,12 @@
 								<input type="hidden" name="memberId"
 								       th:value="${member.id}">
 
-								<button class="btn btn-outline-primary"
-										type="submit"
-										th:if="${leaderUsername == #authentication.name && member.role.name() == 'MEMBER'}">
-
-									팀장 위임
-								</button>
+									   <button class="btn btn-outline-primary"
+									           type="submit"
+									           th:if="${leaderUsername == #authentication.name && member.role.name() == 'MEMBER'}"
+									           onclick="return confirm('정말 이 멤버에게 팀장을 위임하시겠습니까?');">
+									       팀장 위임
+									   </button>
 
 							</form>
 
