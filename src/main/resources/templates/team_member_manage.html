@@ -100,10 +100,9 @@
 
 							<!-- 멤버 삭제 -->
 							<button class="btn btn-outline-danger"
-									th:if="${leaderUsername == #authentication.name}"
+							        th:if="${leaderUsername == #authentication.name && member.username != #authentication.name}"
 							        th:onclick="'removeMember(' + ${member.id} + ')'">
-
-								삭제
+							    삭제
 							</button>
 							<!-- 역할 변경 -->
 							<button class="btn btn-outline-success"
@@ -188,25 +187,35 @@
 
 <script>
 
-function removeMember(memberId){
+	function removeMember(memberId){
 
-	Swal.fire({
-		title: '멤버를 삭제하시겠습니까?',
-		icon: 'warning',
-		showCancelButton: true,
-		confirmButtonText: '삭제',
-		cancelButtonText: '취소'
-	}).then((result)=>{
+		Swal.fire({
+			title: '멤버를 삭제하시겠습니까?',
+			text: '삭제 사유를 입력해주세요.',
+			icon: 'warning',
+			input: 'text',
+			inputPlaceholder: '탈퇴 사유 입력',
+			showCancelButton: true,
+			confirmButtonText: '탈퇴',
+			cancelButtonText: '취소',
+			inputValidator: (value) => {
+				if (!value) {
+					return '탈퇴 사유를 입력해주세요!'
+				}
+			}
+		}).then((result)=>{
 
-		if(result.isConfirmed){
+			if(result.isConfirmed){
 
-			location.href = "/team/member/delete/" + memberId;
+				const message = encodeURIComponent(result.value)
 
-		}
+				location.href = "/team/member/delete/" + memberId + "?message=" + message
 
-	});
+			}
 
-}
+		});
+
+	}
 
 
 </script>

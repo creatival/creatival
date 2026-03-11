@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.creatival.FileUtil;
+import com.creatival.MailService;
 import com.creatival.content.Enum.Visibility;
 import com.creatival.tag.Tag;
 import com.creatival.tag.TagService;
@@ -30,9 +31,12 @@ import com.creatival.team.repository.ProjectRepository;
 import com.creatival.team.repository.TeamApplicationRepository;
 import com.creatival.team.repository.TeamMemberRepository;
 import com.creatival.team.repository.TeamRepository;
+import com.creatival.token.UserToken;
+import com.creatival.token.UserTokenService;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +44,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class TeamService {
+
+    private final UserTokenService userTokenService;
+
+    private final MailService mailService;
 	private final FileUtil fileUtil;
 	private final TeamRepository teamRepository;
 	private final TagService tagService;
@@ -47,6 +55,7 @@ public class TeamService {
 	private final TeamApplicationRepository teamApplicationRepository;
 	private final ProjectRepository projectRepository;
 	private final UserService userService;
+
 	
 	public Team getTeamById(Long id) {
 		return teamRepository.findById(id).get();
@@ -323,5 +332,37 @@ public class TeamService {
 			return null;
 		}
 		return teamMember.get();
+	}
+
+	public void deleteMember(TeamMember member, String message) throws MessagingException {
+		teamMemberRepository.delete(member);
+		mailService.deleteTeamMemberMail(member.getUser().getEmail(), member, message);
+	}
+
+	public void leaveTeam(TeamMember member, String message) throws MessagingException {
+		teamMemberRepository.delete(member);
+		mailService.leaveTeamMemberMail(member.getTeam().getUser().getEmail(), member, message);
+		
+	}
+	//Leader은 바뀔 팀의 기존 리더를 의미함
+	public void changeTeamLeader(TeamMember member, TeamMember leader, Team team) {
+		member.setRole(TeamRole.LEADER);
+		member.setPosition("팀장");
+		
+		leader.setRole(TeamRole.MEMBER);
+		leader.setPosition("팀원");
+		
+		team.setUser(member.getUser());
+		
+		teamMemberRepository.save(member);
+		teamMemberRepository.save(leader);
+		
+		teamRepository.save(team);
+	}
+	
+	public String createChangeTeamLeaderLink(Users user, Team team) {
+		UserToken token = userTokenService.createUserToken(user);
+		
+		return "http://localhost:8080/team/member/changeLeader?token=" + token.getToken() + "&teamId="+team.getId();
 	}
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.creatival.MailService;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.team.dto.CreateProjectDTO;
@@ -33,9 +34,12 @@ import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
 import com.creatival.team.dto.UpdateProjectDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
+import com.creatival.token.UserToken;
+import com.creatival.token.UserTokenService;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 
@@ -46,6 +50,8 @@ public class TeamController {
 	private final TeamService teamService;
 	private final UserService userService;
 	private final TagService tagService;
+	private final MailService mailService;
+	private final UserTokenService userTokenService;
 	
 	
 	@GetMapping("/list")
@@ -355,8 +361,109 @@ public class TeamController {
 		if(member==null) {
 			redirectAttributes.addFlashAttribute("message", "해당하는 멤버를 찾지 못 했습니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id+"/teamMemberManage";
 		}
 		teamService.memberChangePosition(member, position);
 		return "redirect:/team/"+id+"/teamMemberManage";
 	}
+	
+	@GetMapping("/member/delete/{memberId}")
+	public String deleteMember(@PathVariable("memberId") Long id, @RequestParam(name = "message") String message, Principal principal, RedirectAttributes redirectAttributes) throws MessagingException {
+		TeamMember member = teamService.getMemberForTeamById(id);
+		Team team = member.getTeam();
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "팀원을 탈퇴시키는 행위는 로그인이 필요합니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id+"/teamMemberManage";
+		}
+		
+		Users user = member.getUser();
+		
+		if(!team.getUser().getUsername().equals(principal.getName()) && !user.getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀의 팀장만 팀원을 탈퇴시킬 수 있습니다!");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/team/"+id+"/teamMemberManage";
+		}
+		if(team.getUser().getUsername().equals(principal.getName())) {
+			teamService.deleteMember(member, message);
+			redirectAttributes.addFlashAttribute("message", "팀원이 탈퇴처리되었습니다. 작성된 사유는 메일로 보내졌습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/"+id+"/teamMemberManage";
+		}
+		if(user.getUsername().equals(principal.getName())) {
+			teamService.leaveTeam(member, message);
+			redirectAttributes.addFlashAttribute("message", "정상적으로 탈퇴처리되었습니다. 작성된 사유는 메일로 보내졌습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/";
+		}
+		
+		
+		
+		redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생하였습니다.");
+		redirectAttributes.addFlashAttribute("icon", "error");
+		return "redirect:/team/"+id+"/teamMemberManage";
+	}
+	
+	@PostMapping("/member/role")
+	public String changeTeamLeader(@RequestParam(name = "memberId") Long memberId, Principal principal, RedirectAttributes redirectAttributes) throws MessagingException {
+		TeamMember member = teamService.getMemberForTeamById(memberId);
+		Team team = member.getTeam();
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "해당 작업은 로그인이 필요합니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+team.getId()+"/teamMemberManage";
+		}
+		if(!team.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀의 팀장만 팀장을 변경할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/team/"+team.getId()+"/teamMemberManage";
+		}
+		
+		String link = teamService.createChangeTeamLeaderLink(member.getUser(), team);
+		mailService.changeTeamLeader(member.getUser().getEmail(), link);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 팀장 변경 메세지를 전달하였습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/team/"+team.getId();
+	}
+	
+	@GetMapping("/member/changeLeader")
+	public String changeTeamLeader(@RequestParam("token") String token, @RequestParam("teamId") Long teamId,Principal principal,RedirectAttributes redirectAttributes) {
+		UserToken token2 = userTokenService.getUserTokenByToken(token);
+		if(token2 == null) {
+			redirectAttributes.addFlashAttribute("message", "토큰이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(!token2.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "귀하를 위한 토큰이 아닙니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Team team = teamService.getTeamById(teamId);
+		if(teamService.getMemberForTeamByUser(team, token2.getUser()) == null) {
+			redirectAttributes.addFlashAttribute("message", "오직 멤버만 팀장이 될 수 있습니다!");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		TeamMember member = teamService.getMemberForTeamByUser(team, token2.getUser());
+		TeamMember leader = teamService.getMemberForTeamByUser(team, team.getUser()); // Leader은 바뀔 기존 리더를 의미함
+		try {
+			teamService.changeTeamLeader(member,leader, team);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 변경되었습니다!");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			userTokenService.deleteToken(token2);
+			return "redirect:/team/"+team.getId();
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 났습니다. 사이트 관리자에게 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+team.getId();
+		}
+	}
+	
 }
