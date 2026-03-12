@@ -20,6 +20,13 @@ public class UserTokenService {
 		}
 		return null;
 	}
+	public UserToken getUserTokenById(Long tokenId) {
+		Optional<UserToken> userToken = userTokenRepository.findById(tokenId);
+		if(userToken.isPresent()) {
+			return userToken.get();
+		}
+		return null;
+	}
 	public UserToken createUserToken(Users user) {
 		Optional<UserToken> optional =userTokenRepository.findByUser(user);
 		if(optional.isPresent()) {

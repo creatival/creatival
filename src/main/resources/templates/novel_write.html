@@ -140,6 +140,11 @@
                                 <label class="form-check-label" for="comment-no">금지</label>
                             </div>
                         </div>
+						<div class="col-md-6"></div>
+                        <div class="col-md-6">
+                            <span class="settings-label">프로젝트 연결 (선택)</span>
+                            <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="projectTag 입력">
+                        </div>
                         <div class="col-md-6">
                             <span class="settings-label">원본 작품 ID (선택)</span>
                             <input type="number" th:field="*{originalContentId}" class="form-control form-control-sm" placeholder="ID 입력">
@@ -156,69 +161,79 @@
         </div>
     </div>
 
-    <script th:inline="javascript">
-        // 1. 이미지 미리보기 스크립트
-        function previewImage(input) {
-            const fileDisplay = document.getElementById('fileNameDisplay');
-            const preview = document.getElementById('imagePreview');
-            const placeholder = document.getElementById('placeholder');
+	<script th:inline="javascript">
+	    // 1. 이미지 미리보기 스크립트
+	    function previewImage(input) {
+	        const fileDisplay = document.getElementById('fileNameDisplay');
+	        const preview = document.getElementById('imagePreview');
+	        const placeholder = document.getElementById('placeholder');
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                fileDisplay.innerText = input.files[0].name;
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    placeholder.style.display = 'none';
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+	        if (input.files && input.files[0]) {
+	            const reader = new FileReader();
+	            fileDisplay.innerText = input.files[0].name;
+	            reader.onload = (e) => {
+	                preview.src = e.target.result;
+	                preview.style.display = 'block';
+	                placeholder.style.display = 'none';
+	            }
+	            reader.readAsDataURL(input.files[0]);
+	        }
+	    }
 
-        // 2. 태그 관리 스크립트
-        let tagArray = [];
+	    // 2. 태그 관리 스크립트
+	    let tagArray = [];
 
-        function handleTagKey(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addTag();
-            }
-        }
+	    function handleTagKey(e) {
+	        if (e.key === 'Enter') {
+	            e.preventDefault();
+	            addTag();
+	        }
+	    }
 
-        function addTag() {
-            const input = document.getElementById('tagInput');
-            const value = input.value.trim().replace(/#/g, ''); // # 제거
+	    function addTag() {
+	        const input = document.getElementById('tagInput');
+	        const value = input.value.trim().replace(/#/g, '');
 
-            if (value && !tagArray.includes(value)) {
-                if (tagArray.length >= 10) {
-                    alert("태그는 최대 10개까지 등록 가능합니다.");
-                    return;
-                }
-                tagArray.push(value);
-                updateTags();
-                input.value = '';
-            }
-        }
+	        if (value && !tagArray.includes(value)) {
+	            if (tagArray.length >= 10) {
+	                alert("태그는 최대 10개까지 등록 가능합니다.");
+	                return;
+	            }
+	            tagArray.push(value);
+	            updateTags();
+	            input.value = '';
+	        }
+	    }
 
-        function removeTag(tag) {
-            tagArray = tagArray.filter(t => t !== tag);
-            updateTags();
-        }
+	    function removeTag(tag) {
+	        tagArray = tagArray.filter(t => t !== tag);
+	        updateTags();
+	    }
 
-        function updateTags() {
-            const container = document.getElementById('tagContainer');
-            const hiddenInput = document.getElementById('finalTagString');
-            
-            // UI 갱신
-            container.innerHTML = tagArray.map(t => `
-                <span class="tag-badge shadow-sm">
-                    #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
-                </span>
-            `).join('');
-            
-            // 콤마로 구분된 문자열로 변환하여 히든 필드에 저장
-            hiddenInput.value = tagArray.join(',');
-        }
-    </script>
+	    function updateTags() {
+	        const container = document.getElementById('tagContainer');
+	        const hiddenInput = document.getElementById('finalTagString');
+
+	        container.innerHTML = tagArray.map(t => `
+	            <span class="tag-badge shadow-sm">
+	                #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
+	            </span>
+	        `).join('');
+
+	        hiddenInput.value = tagArray.join(',');
+	    }
+
+	    // 3. projectTag / originalContentId 동시 입력 방지
+	    document.getElementById("novelForm").addEventListener("submit", function(e) {
+
+	        const projectTag = document.querySelector("input[name='projectTag']").value.trim();
+	        const originalContentId = document.querySelector("input[name='originalContentId']").value.trim();
+
+	        if (projectTag !== "" && originalContentId !== "") {
+	            alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
+	            e.preventDefault(); // submit 차단
+	        }
+	    });
+	</script>
 </div>
 </html>

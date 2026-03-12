@@ -26,6 +26,7 @@ public class ResponseProjectDeatilDTO {
 	private LocalDateTime createdAt;
 	private LocalDateTime endDate;
 	private Visibility visibility;
+	private String projectTag;
 	
 	//team 관련
 	private Long teamId;
@@ -44,6 +45,7 @@ public class ResponseProjectDeatilDTO {
 				.createdAt(project.getCreatedAt())
 				.endDate(project.getEndDate())
 				.visibility(project.getVisibility())
+				.projectTag(project.getProjectTag())
 				.teamId(project.getTeam().getId())
 				.teamName(project.getTeam().getName())
 				.profileImgUrl(project.getTeam().getProfileImgUrl())

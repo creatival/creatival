@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import com.creatival.user.Users;
 import com.creatival.content.Enum.ContentType;
+import com.creatival.team.Project;
+
 
 
 
@@ -28,6 +30,8 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 	List<Content> findByOriginalContent(Content originalContent);
 	
 	List<Content> findByTitleContaining(String title); //제목 키워드로 가져오기
+	
+	List<Content> findByProject(Project project);
 	
 	Page<Content> findByType(ContentType type, Pageable pageable);
 	

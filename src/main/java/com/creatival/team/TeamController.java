@@ -3,6 +3,7 @@ package com.creatival.team;
 import java.awt.print.Pageable;
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,8 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.MailService;
+import com.creatival.content.Content;
+import com.creatival.content.ContentService;
+import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
+import com.creatival.team.Enum.TeamRole;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
@@ -34,6 +39,8 @@ import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
 import com.creatival.team.dto.UpdateProjectDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
+import com.creatival.team.repository.TeamMemberRepository;
+import com.creatival.team.repository.TeamRepository;
 import com.creatival.token.UserToken;
 import com.creatival.token.UserTokenService;
 import com.creatival.user.UserService;
@@ -42,16 +49,23 @@ import com.creatival.user.Users;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
-
+//팀장 넘겨받는거 동의 비동의 그거 추가하는 것도 해야됨
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/team")
 public class TeamController {
+
+    private final TeamRepository teamRepository;
+
+    private final TeamMemberRepository teamMemberRepository;
 	private final TeamService teamService;
 	private final UserService userService;
 	private final TagService tagService;
 	private final MailService mailService;
 	private final UserTokenService userTokenService;
+	private final ContentService contentService;
+
+
 	
 	
 	@GetMapping("/list")
@@ -268,7 +282,12 @@ public class TeamController {
 			redirectAttributes.addFlashAttribute("icon", "warging");
 			return "redirect:/team/"+id+"/project/create";
 		}
-		
+		Project project = teamService.getProjectTag(createProjectDTO.getProjectTag());
+		if(project != null) {
+			redirectAttributes.addFlashAttribute("message", "이미 존재하는 프로젝트 태그입니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id+"/project/create";
+		}
 		try {
 			teamService.createProject(createProjectDTO, team);
 			return "redirect:/team/"+id;
@@ -293,7 +312,9 @@ public class TeamController {
 	@GetMapping("/{tid}/project/{pid}")
 	public String projectDetail(Model model, @PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId) {
 		Project project = teamService.getProjectById(projectId);
+		List<ResponseContentListForProject> contents = contentService.getContentByProject(project);
 		model.addAttribute("dto", ResponseProjectDeatilDTO.from(project));
+		model.addAttribute("contentList", contents);
 		return "team_project_detail";
 	}
 	
@@ -427,7 +448,7 @@ public class TeamController {
 	}
 	
 	@GetMapping("/member/changeLeader")
-	public String changeTeamLeader(@RequestParam("token") String token, @RequestParam("teamId") Long teamId,Principal principal,RedirectAttributes redirectAttributes) {
+	public String changeTeamLeader(Model model,@RequestParam("token") String token, @RequestParam("teamId") Long teamId,Principal principal,RedirectAttributes redirectAttributes) {
 		UserToken token2 = userTokenService.getUserTokenByToken(token);
 		if(token2 == null) {
 			redirectAttributes.addFlashAttribute("message", "토큰이 존재하지 않습니다.");
@@ -450,20 +471,120 @@ public class TeamController {
 			redirectAttributes.addFlashAttribute("icon", "warning");
 			return "redirect:/";
 		}
-		TeamMember member = teamService.getMemberForTeamByUser(team, token2.getUser());
-		TeamMember leader = teamService.getMemberForTeamByUser(team, team.getUser()); // Leader은 바뀔 기존 리더를 의미함
-		try {
-			teamService.changeTeamLeader(member,leader, team);
-			redirectAttributes.addFlashAttribute("message", "성공적으로 변경되었습니다!");
-			redirectAttributes.addFlashAttribute("icon", "success");
-			userTokenService.deleteToken(token2);
-			return "redirect:/team/"+team.getId();
-		} catch (Exception e) {
-			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 났습니다. 사이트 관리자에게 문의바랍니다.");
-			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/team/"+team.getId();
-		}
+		model.addAttribute("tokenId", token2.getId());
+		model.addAttribute("teamId", team.getId());
+		return "change_team_leader";
+		
 	}
 	
+	@PostMapping("/member/changeLeader")
+	public String changeTeamLeader(@RequestParam("tokenId") Long tokenId, @RequestParam("teamId") Long teamId, Principal principal, RedirectAttributes redirectAttributes) {
+		UserToken token2 = userTokenService.getUserTokenById(tokenId);
+		if(token2 == null) {
+			redirectAttributes.addFlashAttribute("message", "토큰이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(!token2.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "귀하를 위한 토큰이 아닙니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		
+		Team team = teamService.getTeamById(teamId);
+		
+		if(teamService.getMemberForTeamByUser(team, token2.getUser()) == null) {
+			redirectAttributes.addFlashAttribute("message", "오직 멤버만 팀장이 될 수 있습니다!");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		
+		TeamMember member = teamService.getMemberForTeamByUser(team, token2.getUser());
+		TeamMember leader = teamService.getMemberForTeamByUser(team, team.getUser());
+		
+		member.setRole(TeamRole.LEADER);
+		member.setPosition("팀장");
+		leader.setRole(TeamRole.MEMBER);
+		leader.setPosition("팀원");
+		
+		team.setUser(member.getUser());
+		
+		teamMemberRepository.save(member);
+		teamMemberRepository.save(leader);
+		
+		teamRepository.save(team);
+		
+		redirectAttributes.addFlashAttribute("message", "성공적으로 변경되었습니다!");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		
+		userTokenService.deleteToken(token2);
+		
+		return "redirect:/team/"+teamId;
+	}
+	@PostMapping("/member/rejectLeader")
+	public String rejectTeamLeader(@RequestParam("tokenId") Long tokenId, @RequestParam("teamId") Long teamId, Principal principal, RedirectAttributes redirectAttributes) {
+		UserToken token2 = userTokenService.getUserTokenById(tokenId);
+		if(token2 == null) {
+			redirectAttributes.addFlashAttribute("message", "토큰이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(!token2.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "귀하를 위한 토큰이 아닙니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		
+		Team team = teamService.getTeamById(teamId);
+		
+		if(teamService.getMemberForTeamByUser(team, token2.getUser()) == null) {
+			redirectAttributes.addFlashAttribute("message", "오직 멤버만 팀장이 될 수 있습니다!");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		
+		redirectAttributes.addFlashAttribute("message", "성공적으로 거절되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		
+		userTokenService.deleteToken(token2);
+		
+		return "redirect:/team/"+teamId;
+	}
+	
+	@PostMapping("/createCheck/{id}")
+	public String createCheck(@PathVariable("id") Long id,@RequestParam("title") String title, @RequestParam("deadline") LocalDateTime deadline, Principal principal, RedirectAttributes redirectAttributes) {
+		Project project = teamService.getProjectById(id);
+		
+		if(project == null) {
+			redirectAttributes.addFlashAttribute("message", "존재하지 않는 프로젝트입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 되어있지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+project.getId();
+		}
+		
+		Team team = project.getTeam();
+		
+		if(!team.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 계획을 수립하고 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/team/"+team.getId()+"/project/"+project.getId();
+		}
+		
+		teamService.createCheckout(project, title, deadline);
+		return "redirect:/team/"+team.getId()+"/project/"+project.getId();
+	}
 }

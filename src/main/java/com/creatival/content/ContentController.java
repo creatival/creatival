@@ -69,7 +69,10 @@ public class ContentController {
 			System.out.println("오류 발생");
 			return "novel_write";
 		}
-		
+		if (createNovelDTO.getOriginalContentId()!=null && createNovelDTO.getProjectTag() !=null) {
+			bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 content에 속하거나 하나만 할 수 있습니다");
+			return "illustration_write";
+		}
 		try {
 			contentService.createCotentNovel(createNovelDTO, userService.getUserByUsername(principal.getName()));
 			return "redirect:/content/novel_list";
@@ -265,6 +268,10 @@ public class ContentController {
 		if (createArtDTO.getImages() == null || createArtDTO.getImages().isEmpty()) {
 	        System.out.println("이미지 리스트가 비어있습니다.");
 	    }
+		if (createArtDTO.getOriginalContentId()!=null && createArtDTO.getProjectTag() !=null) {
+			bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 content에 속하거나 하나만 할 수 있습니다");
+			return "illustration_write";
+		}
 		Users user = userService.getUserByUsername(principal.getName());
 		
 		try {

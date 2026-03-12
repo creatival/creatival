@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.ResponseArtList;
+import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
@@ -34,6 +36,9 @@ import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.content.repository.SeriesRepository;
 import com.creatival.tag.TagService;
+import com.creatival.team.Project;
+import com.creatival.team.TeamMember;
+import com.creatival.team.TeamService;
 import com.creatival.user.UserRepository;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
@@ -46,6 +51,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class ContentService {
+
+    private final TeamService teamService;
 
     private final TagService tagService;
 
@@ -86,6 +93,20 @@ public class ContentService {
 		}
 		return null;
 	}
+	
+	public List<ResponseContentListForProject> getContentByProject(Project project) {
+		List<Content> list = contentRepository.findByProject(project);
+		List<ResponseContentListForProject> contents = new ArrayList<>();
+		for(Content content : list) {
+			if(content.getType() == ContentType.NOVEL) {
+				contents.add(ResponseContentListForProject.fromNovel(content));
+			} else if(content.getType()==ContentType.ART) {
+				ContentFile contentFile = contentFileService.getContentFileThumbnail(content);
+				contents.add(ResponseContentListForProject.fromArt(content, contentFile.getFileUrl()));
+			}
+		}
+		return contents;
+	}
 	// 공통 라인 //
 	
 	// 소설 라인 // 
@@ -110,7 +131,17 @@ public class ContentService {
 		if(content.isFanWork() && createNovelDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createNovelDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
 		}
-		
+		if(!createNovelDTO.getProjectTag().isBlank() || createNovelDTO.getProjectTag() != null) {
+			Project project = teamService.getProjectTag(createNovelDTO.getProjectTag());
+			if(project==null) {
+				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
+			}
+			TeamMember member = teamService.getMemberForTeamByUser(project.getTeam(), user);
+			if(member == null) {
+				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
+			}
+			content.setProject(project);
+		}
 		contentRepository.save(content);
 		
 		String tagString = createNovelDTO.getTagString();
@@ -253,8 +284,9 @@ public class ContentService {
 	// 그림 라인 //
 	public void createContentArt(CreateArtDTO createArtDTO, Users user) {
 		if(createArtDTO.getImages().isEmpty() || createArtDTO.getImages() == null) {
-			throw new IllegalArgumentException("파일이 비어있습니다."); // throw 추가!
+			throw new IllegalArgumentException("파일이 비어있습니다.");
 		}
+		
 		Content content = Content.builder()
 				.user(user)
 				.ownerType(createArtDTO.getOwnerType())
@@ -268,6 +300,17 @@ public class ContentService {
 				.build();
 		if(content.isFanWork() && createArtDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createArtDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
+		}
+		if(!createArtDTO.getProjectTag().isBlank() || createArtDTO.getProjectTag() != null) {
+			Project project = teamService.getProjectTag(createArtDTO.getProjectTag());
+			if(project==null) {
+				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
+			}
+			TeamMember member = teamService.getMemberForTeamByUser(project.getTeam(), user);
+			if(member == null) {
+				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
+			}
+			content.setProject(project);
 		}
 		
 		contentRepository.save(content);

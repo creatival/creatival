@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.creatival.content.Content;
 import com.creatival.content.Enum.Visibility;
 import com.creatival.tag.TagToProject;
 import com.creatival.tag.TagToTeam;
@@ -58,6 +59,9 @@ public class Project {
 	
 	private String bannerImgUrl;
 	
+	@Column(nullable = false, unique = true)
+	private String projectTag;
+	
 	@CreationTimestamp
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
@@ -75,4 +79,12 @@ public class Project {
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<TagToProject> tagToProject = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Content> contents = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Checkout> checkouts = new ArrayList<>();
 }

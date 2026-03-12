@@ -1,6 +1,7 @@
 package com.creatival.team;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +28,7 @@ import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
 import com.creatival.team.dto.UpdateProjectDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
-import com.creatival.team.repository.ProjectRepository;
-import com.creatival.team.repository.TeamApplicationRepository;
-import com.creatival.team.repository.TeamMemberRepository;
-import com.creatival.team.repository.TeamRepository;
+import com.creatival.team.repository.*;
 import com.creatival.token.UserToken;
 import com.creatival.token.UserTokenService;
 import com.creatival.user.UserService;
@@ -45,6 +43,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class TeamService {
 
+    private final CheckoutRepository checkoutRepository;
+
     private final UserTokenService userTokenService;
 
     private final MailService mailService;
@@ -55,6 +55,7 @@ public class TeamService {
 	private final TeamApplicationRepository teamApplicationRepository;
 	private final ProjectRepository projectRepository;
 	private final UserService userService;
+
 
 	
 	public Team getTeamById(Long id) {
@@ -260,6 +261,7 @@ public class TeamService {
 				.visibility(createProjectDTO.getVisibility())
 				.endDate(createProjectDTO.getEndDate())
 				.bannerImgUrl(banner)
+				.projectTag(createProjectDTO.getProjectTag())
 				.team(team)
 				.build();
 		projectRepository.save(project);
@@ -364,5 +366,30 @@ public class TeamService {
 		UserToken token = userTokenService.createUserToken(user);
 		
 		return "http://localhost:8080/team/member/changeLeader?token=" + token.getToken() + "&teamId="+team.getId();
+	}
+
+	public Project getProjectTag(String projectTag) {
+		Optional<Project> project = projectRepository.findByProjectTag(projectTag);
+		if(project.isPresent()) {
+			return project.get();
+		}
+		return null;
+		
+	}
+	
+	public void createCheckout(Project project, String title, LocalDateTime deadline) {
+		Checkout checkout = new Checkout();
+		checkout.setTitle(title);
+		checkout.setProject(project);
+		
+		int max = checkoutRepository.findMaxSortOrder(project.getId());
+
+		checkout.setSortOrder(max + 1);
+		
+		if(deadline != null) {
+			checkout.setDeadline(deadline);
+		}
+		
+		checkoutRepository.save(checkout);
 	}
 }

@@ -32,6 +32,9 @@ public class CreateProjectDTO {
 
     private Visibility visibility;
     
+    @NotEmpty(message = "프로젝트 태그는 필수 사항입니다.")
+    private String projectTag;
+    
     private List<String> tags;
 
 }

@@ -32,6 +32,8 @@ public class CreateArtDTO {
 	
 	private Visibility visibility;
 	
+	private String projectTag;
+	
 	private boolean allowComment;
 	private boolean fanWork;
 	private List<MultipartFile> images;

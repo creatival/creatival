@@ -112,7 +112,7 @@
 									프로젝트 이름
 								</label>
 
-								<input type="text" name="title" class="form-control" placeholder="프로젝트의 이름을 지어주세요.">
+								<input type="text" name="title" class="form-control" placeholder="프로젝트의 이름을 지어주세요." required>
 
 							</div>
 
@@ -129,9 +129,18 @@
 									placeholder="프로젝트에 대한 설명을 적어주세요."></textarea>
 
 							</div>
+							<!-- 프로젝트 태그 -->
+							<div class="mb-4">
+								<label class="form-label fw-semibold">프로젝트 태그</label>
+	
+							        <input type="text"
+							               class="form-control"
+							               id="projectTagInput"
+										   name="projectTag"
+							               placeholder="프로젝트 태그를 입력해주세요, 프로젝트와 Content를 연결하는 역할이니 신중하게 선택해주세요." required>
+							</div>
 
-
-							<!-- 팀 태그 -->
+							<!-- 태그 -->
 							<div class="mb-4">
 							    <label class="form-label fw-semibold">태그</label>
 

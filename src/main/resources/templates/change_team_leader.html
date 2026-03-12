@@ -1,0 +1,40 @@
+<html layout:decorate="~{layout}">
+<div class="container" layout:fragment="content">
+    <div class="container mt-5" style="max-width: 700px;">
+        <h2 class="mb-4 text-center">팀장 변경 동의</h2>
+
+        <form method="post" th:action="@{/team/member/changeLeader}" id="changeForm">
+            <input type="hidden" name="tokenId" th:value="${tokenId}" />
+            <input type="hidden" name="teamId" th:value="${teamId}" />
+            
+            <div class="text-center">
+                <h2 class="text-danger"><b>팀장을 이어받는데 동의하시겠습니까?</b></h2>
+                <p>특정 팀의 팀장인 경우 <b>절대로 탈퇴되지 않습니다.</b></p>
+                <br /><br />
+                <p>위 요소를 확인하시고 이어받으시겠습니까?</p>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="button" onclick="submitForm('agree')" class="btn btn-primary btn-lg w-100">동의</button>
+                <button type="button" onclick="submitForm('reject')" class="btn btn-outline-secondary btn-lg w-100">거절</button>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+        function submitForm(actionType) {
+            const form = document.getElementById('changeForm');
+            
+            if (actionType === 'agree') {
+                // 동의 시 보낼 주소
+                form.action = /*[[@{/team/member/changeLeader}]]*/ '/team/member/changeLeader';
+            } else {
+                // 거절 시 보낼 주소 (원하시는 거절 처리 경로로 수정하세요)
+                form.action = /*[[@{/team/member/rejectLeader}]]*/ '/team/member/rejectLeader';
+            }
+            
+            form.submit();
+        }
+    </script>
+</div>
+</html>
