@@ -1,6 +1,7 @@
 package com.creatival.team;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import com.creatival.team.Enum.TeamRole;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
+import com.creatival.team.dto.ResponseCheckoutListDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
@@ -391,5 +393,44 @@ public class TeamService {
 		}
 		
 		checkoutRepository.save(checkout);
+	}
+	
+	public List<ResponseCheckoutListDTO> getCheckoutByProject(Project project) {
+		List<Checkout> list = checkoutRepository.findByProjectOrderBySortOrder(project);
+		return list.stream().map(checkout -> ResponseCheckoutListDTO.from(checkout)).toList();
+	}
+	@Transactional
+	public void updateCheck(Long id, boolean checked) {
+		Checkout check = checkoutRepository.findById(id)
+	            .orElseThrow();
+
+	    check.setChecked(checked);
+		
+	}
+
+	@Transactional
+	public void updateCheckSecure(Long checkId, boolean checked, String username) {
+	    Checkout checkout = checkoutRepository.findById(checkId)
+	            .orElseThrow(() -> new IllegalArgumentException("항목을 찾을 수 없습니다."));
+
+	    // 체크리스트가 속한 프로젝트의 팀장 이름과 현재 로그인한 유저 이름 비교
+	    if (!checkout.getProject().getTeam().getUser().getUsername().equals(username)) {
+	    	throw new IllegalArgumentException("수정 권한이 없습니다.");
+	    }
+
+	    checkout.setChecked(checked); // 더티 체킹으로 업데이트
+	}
+
+	public Checkout getCheckoutById(Long id) {
+		Optional<Checkout> checkout = checkoutRepository.findById(id);
+		if(checkout.isPresent()) {
+			return checkout.get();
+		}
+		return null;
+	}
+
+	public void deleteCheck(Checkout checkout) {
+		checkoutRepository.delete(checkout);
+		
 	}
 }

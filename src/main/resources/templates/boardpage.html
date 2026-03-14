@@ -1,0 +1,258 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Creatival - 통합 게시판</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --board-blue: #3B4371;
+            --board-orange: #FF7F50;
+            --user-blue-line: #4a90e2; 
+            --bg-light: #F0F2F5;
+        }
+
+        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 0; background-color: #fff; color: #333; }
+        .board-container { max-width: 1200px; margin: 0 auto; padding: 0 15px; overflow: hidden; }
+
+        /* 1. 카테고리 아이콘 영역 (요청된 클래스로 수정) */
+        .category-container {
+            display: flex; justify-content: center; gap: 20px; padding: 40px 0 20px;
+            overflow-x: auto; scrollbar-width: none;
+        }
+        .category-container::-webkit-scrollbar { display: none; }
+        .category-item { flex: 0 0 auto; width: 100px; text-align: center; text-decoration: none !important; }
+        .icon-box {
+            width: 70px; height: 70px; background-color: var(--bg-light); border-radius: 20px;
+            margin: 0 auto 10px; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s; font-size: 1.5rem; color: #555;
+        }
+        .category-item:hover .icon-box { transform: translateY(-5px); background-color: #e9ecef; }
+        .category-item span { font-size: 0.85rem; font-weight: 700; color: #666; }
+
+        /* 2. 게시판 헤더 및 탭 (디자인 유지) */
+        .board-main-title { font-size: 2.2rem; font-weight: 800; margin: 30px 0; text-align: center; }
+        
+        .nav-tabs-board { 
+            display: flex; justify-content: center; gap: 40px; 
+            margin-bottom: 30px; border-bottom: 1px solid #eee; 
+            position: relative; 
+        }
+        .board-tab {
+            background: none; border: none; font-size: 1.1rem; font-weight: 700; color: #aaa;
+            padding: 0 10px 15px 10px; cursor: pointer; transition: color 0.3s;
+        }
+        .board-tab.active { color: #000; }
+
+        /* 움직이는 주황색 바 (애니메이션 유지) */
+        .tab-indicator {
+            position: absolute;
+            bottom: -1px;
+            height: 3px;
+            background-color: var(--board-orange);
+            border-radius: 3px 3px 0 0;
+            transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            left: 0;
+            width: 0;
+        }
+
+        /* 3. 검색창 (디자인 유지) */
+        .board-search-container { max-width: 600px; margin: 0 auto 40px; position: relative; }
+        .board-search-input {
+            border: 2px solid #ddd; border-radius: 30px; padding: 12px 25px; width: 100%; outline: none;
+            box-sizing: border-box; font-size: 0.95rem;
+        }
+        .board-search-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #333; font-size: 1.2rem; background: none; border: none; cursor: pointer; }
+
+        /* 4. 슬라이딩 애니메이션 (기능 유지) */
+        .board-content-wrapper { width: 100%; position: relative; }
+        .tab-content { display: none; width: 100%; }
+        .tab-content.active { display: block; }
+
+        .slide-in-right { animation: slideInRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+        .slide-in-left { animation: slideInLeft 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 5. 공통 테이블 설정 (디자인 유지) */
+        .table-board { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
+        .table-board th, .table-board td { font-size: 1.1rem; padding: 15px 10px; }
+
+        .user-board-table thead { background-color: var(--board-blue); color: #fff; }
+        .user-board-table th { font-weight: 500; border: none; }
+        .user-board-table td { border-bottom: 2px solid var(--user-blue-line); }
+
+        .creator-board-table { border: 1px solid var(--board-orange); }
+        .creator-board-table thead { border-bottom: 2px solid var(--board-orange); color: var(--board-orange); }
+        .creator-board-table th { border-right: 1px solid var(--board-orange); }
+        .creator-board-table td { border-bottom: 1px solid #eee; border-right: 1px solid #eee; }
+        .creator-board-table th:last-child, .creator-board-table td:last-child { border-right: none; }
+
+        /* 6. 페이지네이션 및 버튼 (디자인 유지) */
+        .board-top-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .btn-write { 
+            background-color: var(--board-blue); color: #fff; border: none; border-radius: 4px; 
+            padding: 8px 22px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 0.9rem;
+        }
+        .pagination-custom { display: flex; list-style: none; gap: 15px; padding: 0; margin: 30px 0; justify-content: center; }
+        .pagination-custom a { text-decoration: none; color: #333; font-weight: 700; }
+        .pagination-custom .active a { color: var(--board-orange); }
+    </style>
+</head>
+<body>
+
+<div class="board-container">
+    <div class="main-content-container">
+        <div class="category-container">
+            <a th:href="@{/art_list}" class="category-item">
+                <div class="icon-box"><img src="images/paint.png" alt="일러스트" style="width: 60px;" /></div>
+                <span>일러스트</span>
+            </a>
+            <a th:href="@{/comic_list}" class="category-item">
+                <div class="icon-box"><img src="images/comic.png" alt="만화" style="width: 60px;" /></div>
+                <span>만화</span>
+            </a>
+            <a th:href="@{/music_list}" class="category-item">
+                <div class="icon-box"><img src="images/sing.png" alt="음악" style="width: 60px;" /></div>
+                <span>음악</span>
+            </a>
+            <a th:href="@{/video_list}" class="category-item">
+                <div class="icon-box"><img src="images/yutu.png" alt="비디오" style="width: 60px;" /></div>
+                <span>비디오</span>
+            </a>
+            <a th:href="@{/comic_list}" class="category-item">
+                <div class="icon-box"><img src="images/git.png" alt="소설" style="width: 60px;" /></div>
+                <span>소설</span>
+            </a>
+            <a th:href="@{/file_list}" class="category-item">
+                <div class="icon-box"><img src="images/folder.png" alt="파일" style="width: 60px;" /></div>
+                <span>파일</span>
+            </a>
+        </div>
+
+    <h1 class="board-main-title">게시판</h1>
+
+    <div class="nav-tabs-board">
+        <button class="board-tab active" id="tab-user" onclick="switchTab('user', 0)">유저 게시판</button>
+        <button class="board-tab" id="tab-creator" onclick="switchTab('creator', 1)">창작자 게시판</button>
+        <div id="tabIndicator" class="tab-indicator"></div>
+    </div>
+
+    <div class="board-search-container">
+        <form th:action="@{/board/search}" method="get">
+            <input type="text" name="keyword" class="board-search-input" placeholder="검색어를 입력하세요">
+            <button type="submit" class="board-search-icon"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+
+    <div class="board-content-wrapper">
+        
+        <div class="tab-content active" id="content-user">
+            <div class="board-top-actions">
+                <a th:href="@{/board_write}" class="btn-write">글 작성</a>
+                <ul class="pagination-custom">
+                    <li class="active"><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                </ul>
+            </div>
+            <table class="table-board user-board-table">
+                <thead>
+                    <tr><th style="width: 10%;">번호</th><th style="width: 50%;">제목</th><th style="width: 15%;">작성자</th><th style="width: 15%;">날짜</th><th style="width: 10%;">조회수</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="i : ${#numbers.sequence(1, 10)}">
+                        <td>[[${i}]]</td>
+                        <td style="text-align: left; padding-left: 20px;">자유로운 게시판 글입니다</td>
+                        <td>닉네임</td>
+                        <td>2026.03.12</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="content-creator">
+            <div class="board-top-actions">
+                <a href="/write" class="btn-write" style="background-color: var(--board-orange);">창작물 등록</a>
+                <ul class="pagination-custom">
+                    <li class="active"><a href="#">1</a></li>
+                </ul>
+            </div>
+            <table class="table-board creator-board-table">
+                <thead>
+                    <tr><th style="width: 10%;">번호</th><th style="width: 50%;">제목</th><th style="width: 15%;">작성자</th><th style="width: 15%;">날짜</th><th style="width: 10%;">조회수</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="i : ${#numbers.sequence(1, 10)}">
+                        <td>[[${i}]]</td>
+                        <td style="text-align: left; padding-left: 20px;">창작 결과물 제목</td>
+                        <td>닉네임</td>
+                        <td>2026.03.12</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentIndex = 0;
+
+    // 화면 로딩 및 리사이즈 시 주황색 바 위치 조정
+    document.addEventListener("DOMContentLoaded", () => {
+        const activeTab = document.querySelector('.board-tab.active');
+        if (activeTab) updateIndicator(activeTab);
+    });
+
+    window.addEventListener('resize', () => {
+        const activeTab = document.querySelector('.board-tab.active');
+        if (activeTab) updateIndicator(activeTab);
+    });
+
+    // 탭 전환 및 슬라이드 애니메이션 로직
+    function switchTab(tabId, index) {
+        if (currentIndex === index) return;
+        
+        const direction = index > currentIndex ? 1 : -1; 
+        currentIndex = index;
+
+        document.querySelectorAll('.board-tab').forEach(tab => tab.classList.remove('active'));
+        const clickedTab = document.getElementById('tab-' + tabId);
+        clickedTab.classList.add('active');
+
+        updateIndicator(clickedTab);
+
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => {
+            content.classList.remove('active', 'slide-in-right', 'slide-in-left');
+            void content.offsetWidth; 
+        });
+
+        const activeContent = document.getElementById('content-' + tabId);
+        activeContent.classList.add('active');
+        
+        if (direction === 1) {
+            activeContent.classList.add('slide-in-right');
+        } else {
+            activeContent.classList.add('slide-in-left');
+        }
+    }
+
+    function updateIndicator(tabElement) {
+        const indicator = document.getElementById('tabIndicator');
+        indicator.style.width = tabElement.offsetWidth + 'px';
+        indicator.style.left = tabElement.offsetLeft + 'px';
+    }
+</script>
+
+</body>
+</html>

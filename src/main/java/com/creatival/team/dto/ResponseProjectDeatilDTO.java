@@ -33,6 +33,7 @@ public class ResponseProjectDeatilDTO {
 	private String teamName;
 	private String profileImgUrl;
 	private LocalDateTime teamCreatedAt;
+	private String leaderUsername;
 	
 	public static ResponseProjectDeatilDTO from(Project project) {
 		return ResponseProjectDeatilDTO.builder()
@@ -50,6 +51,7 @@ public class ResponseProjectDeatilDTO {
 				.teamName(project.getTeam().getName())
 				.profileImgUrl(project.getTeam().getProfileImgUrl())
 				.teamCreatedAt(project.getTeam().getCreatedAt())
+				.leaderUsername(project.getTeam().getUser().getUsername())
 				.build();
 	}
 }

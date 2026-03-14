@@ -2,7 +2,8 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
 <div class="container my-5" layout:fragment="content">
-
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
     <div class="row mb-5 pb-4 border-bottom align-items-end">
 
         <div class="col-md-8">
@@ -206,53 +207,92 @@
 
 
 
-            <div class="card shadow-sm border-0 mb-4">
+			<div class="card shadow-sm border-0 mb-4">
+			    <div class="card-body">
 
-                <div class="card-body">
+			        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+			            <h5 class="fw-bold mb-0">
+			                프로젝트 진행도
+			            </h5>
 
-                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+			            <a class="btn btn-sm btn-outline-primary"
+			               sec:authorize="isAuthenticated()"
+			               data-bs-toggle="modal"
+			               data-bs-target="#createCheckModal">
+			                계획 추가하기
+			            </a>
+			        </div>
 
-                        <h5 class="fw-bold mb-0">
-                            프로젝트 진행도
-                        </h5>
+			        <!-- 전체 공정률 -->
+					<div class="mb-4">
+					    <div class="d-flex justify-content-between mb-1">
+					        <small class="text-muted small">
+					            전체 공정률
+					        </small>
 
-						<a class="btn btn-sm btn-outline-primary"
-						   sec:authorize="isAuthenticated()"
-						   data-bs-toggle="modal"
-						   data-bs-target="#createCheckModal">
-						    계획 추가하기
-						</a>
+					        <small id="progressText"
+					               class="fw-bold text-primary"
+					               th:text="${(dto.totalProgress != null ? dto.totalProgress : 0) + '%'}">
+					        </small>
+					    </div>
 
-                    </div>
+					    <div class="progress" style="height:8px">
+					        <div id="progressBar"
+					             class="progress-bar progress-bar-striped progress-bar-animated"
+					             role="progressbar"
+					             th:style="'width:' + ${(dto.totalProgress != null ? dto.totalProgress : 0)} + '%'">
+					        </div>
+					    </div>
+					</div>
 
+			        <!-- 체크리스트 -->
+					<div class="list-group" th:if="${checkList != null}" id="checkList">
 
-                    <div class="mb-4">
+					    <div class="list-group-item d-flex justify-content-between align-items-center"
+					         th:each="check : ${checkList}">
 
-                        <div class="d-flex justify-content-between mb-1">
+					        <div>
+					            <!-- 제목 -->
+					            <div class="fw-semibold"
+					                 th:text="${check.title}">
+					            </div>
 
-                            <small class="text-muted small">
-                                전체 공정률
-                            </small>
+					            <!-- 마감일 -->
+					            <small class="text-muted">
+					                마감일 :
+					                <span th:if="${check.deadline != null}"
+					                      th:text="${#temporals.format(check.deadline,'yyyy-MM-dd HH:mm')}">
+					                </span>
 
-                            <small class="fw-bold text-primary"
-                                   th:text="${(dto.totalProgress != null ? dto.totalProgress : 0) + '%'}">
-                            </small>
+					                <span th:if="${check.deadline == null}">
+					                    미정
+					                </span>
+					            </small>
+					        </div>
 
-                        </div>
+					        <!-- 체크박스 -->
+					        <div>
+					            <!-- 팀장만 체크 가능 -->
+								<input type="checkbox"
+								       class="form-check-input progress-check"
+								       th:data-id="${check.id}" 
+								       th:checked="${check.checked}"
+								       th:disabled="${dto.leaderUsername != #authentication.name}" />
+									   <a th:if="${dto.leaderUsername == #authentication.name}"
+									              th:href="@{/team/check/delete/{cid}(cid=${check.id})}"
+									              class="text-danger me-3"
+									              onclick="return confirm('이 계획을 정말 삭제하시겠습니까?');"
+									              style="text-decoration: none;">
+									               <i class="bi bi-x-circle-fill"></i>
+									           </a>
+					        </div>
 
-                        <div class="progress" style="height:8px">
+					    </div>
 
-                            <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                 role="progressbar"
-                                 th:style="'width:' + ${(dto.totalProgress != null ? dto.totalProgress : 0)} + '%'">
-                            </div>
+					</div>
 
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
+			    </div>
+			</div>
 
 
             <div class="d-grid gap-2">
@@ -318,6 +358,87 @@
 			</div>
         </div>
     </div>
-	
+	<script>
+
+	document.addEventListener("DOMContentLoaded", function () {
+
+	    const checkboxes = document.querySelectorAll(".progress-check");
+	    const progressBar = document.getElementById("progressBar");
+	    const progressText = document.getElementById("progressText");
+
+	    function updateProgress() {
+
+	        const total = checkboxes.length;
+	        let checked = 0;
+
+	        checkboxes.forEach(cb => {
+	            if (cb.checked) checked++;
+	        });
+
+	        const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+	        progressBar.style.width = percent + "%";
+	        progressText.innerText = percent + "%";
+	    }
+		updateProgress();
+
+	    checkboxes.forEach(cb => {
+	        cb.addEventListener("change", updateProgress);
+	    });
+
+	});
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+
+		    const token = document.querySelector('meta[name="_csrf"]').content;
+		    const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+		    const checkboxes = document.querySelectorAll(".progress-check");
+		    const progressBar = document.getElementById("progressBar");
+		    const progressText = document.getElementById("progressText");
+
+		    function updateProgress() {
+
+		        const total = checkboxes.length;
+		        let checked = 0;
+
+		        checkboxes.forEach(cb => {
+		            if (cb.checked) checked++;
+		        });
+
+		        const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+		        progressBar.style.width = percent + "%";
+		        progressText.innerText = percent + "%";
+		    }
+
+		    checkboxes.forEach(cb => {
+
+		        cb.addEventListener("change", function () {
+
+		            updateProgress();
+
+		            const checkId = this.dataset.id;
+		            const checked = this.checked;
+
+		            fetch("/team/check/update", {
+		                method: "POST",
+		                headers: {
+		                    "Content-Type": "application/json",
+		                    [header]: token
+		                },
+		                body: JSON.stringify({
+		                    id: checkId,
+		                    checked: checked
+		                })
+		            });
+
+		        });
+
+		    });
+
+		});
+	</script>
 </div>
 </html>

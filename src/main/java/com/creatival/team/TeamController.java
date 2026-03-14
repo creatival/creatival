@@ -2,11 +2,15 @@ package com.creatival.team;
 
 import java.awt.print.Pageable;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,7 +22,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.MailService;
@@ -31,12 +37,14 @@ import com.creatival.team.Enum.TeamRole;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
+import com.creatival.team.dto.ResponseCheckoutListDTO;
 import com.creatival.team.dto.ResponseProjectDeatilDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
+import com.creatival.team.dto.UpdateCheckDTO;
 import com.creatival.team.dto.UpdateProjectDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
 import com.creatival.team.repository.TeamMemberRepository;
@@ -55,6 +63,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/team")
 public class TeamController {
 
+    private final PasswordEncoder passwordEncoder;
+
     private final TeamRepository teamRepository;
 
     private final TeamMemberRepository teamMemberRepository;
@@ -64,6 +74,7 @@ public class TeamController {
 	private final MailService mailService;
 	private final UserTokenService userTokenService;
 	private final ContentService contentService;
+
 
 
 	
@@ -313,8 +324,10 @@ public class TeamController {
 	public String projectDetail(Model model, @PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId) {
 		Project project = teamService.getProjectById(projectId);
 		List<ResponseContentListForProject> contents = contentService.getContentByProject(project);
+		List<ResponseCheckoutListDTO> checkouts = teamService.getCheckoutByProject(project);
 		model.addAttribute("dto", ResponseProjectDeatilDTO.from(project));
 		model.addAttribute("contentList", contents);
+		model.addAttribute("checkList", checkouts);
 		return "team_project_detail";
 	}
 	
@@ -562,7 +575,7 @@ public class TeamController {
 	}
 	
 	@PostMapping("/createCheck/{id}")
-	public String createCheck(@PathVariable("id") Long id,@RequestParam("title") String title, @RequestParam("deadline") LocalDateTime deadline, Principal principal, RedirectAttributes redirectAttributes) {
+	public String createCheck(@PathVariable("id") Long id,@RequestParam("title") String title, @RequestParam(required = false, value = "deadline") LocalDateTime deadline, Principal principal, RedirectAttributes redirectAttributes) {
 		Project project = teamService.getProjectById(id);
 		
 		if(project == null) {
@@ -586,5 +599,49 @@ public class TeamController {
 		
 		teamService.createCheckout(project, title, deadline);
 		return "redirect:/team/"+team.getId()+"/project/"+project.getId();
+	}
+	
+	
+	
+	@PostMapping("/check/update")
+	@ResponseBody
+	public ResponseEntity<String> updateCheck(@RequestBody UpdateCheckDTO request, Principal principal) {
+	    // 1. 로그인 확인
+	    if (principal == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+	    }
+
+	    try {
+	        teamService.updateCheckSecure(request.getId(), request.isChecked(), principal.getName());
+	        return ResponseEntity.ok("업데이트 완료");
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("본인의 프로젝트만 수정할 수 있습니다.");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청입니다.");
+	    }
+	}
+	@GetMapping("/check/delete/{id}")
+	public String deleteCheck(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Checkout checkout = teamService.getCheckoutById(id);
+		if(checkout == null) {
+			redirectAttributes.addFlashAttribute("message", "없애려는 계획이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요합니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "/login";
+		}
+		if(!checkout.getProject().getTeam().getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 계획을 조정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/team/"+checkout.getProject().getTeam().getId()+"/project/"+checkout.getProject().getId();
+		}
+		
+		teamService.deleteCheck(checkout);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 조정되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/team/"+checkout.getProject().getTeam().getId()+"/project/"+checkout.getProject().getId();
 	}
 }
