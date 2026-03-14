@@ -1,166 +1,167 @@
 <html layout:decorate="~{layout}">
 <div class="container" layout:fragment="content">
-	<head>
-		<style>
-		        /* 이미지 업로드 드롭존 스타일 */
-		        .upload-zone {
-		            border: 2px dashed #dee2e6;
-		            border-radius: 15px;
-		            padding: 40px;
-		            text-align: center;
-		            background-color: #f8f9fa;
-		            transition: all 0.3s;
-		            cursor: pointer;
-		        }
-		        .upload-zone:hover {
-		            border-color: #000;
-		            background-color: #f1f3f5;
-		        }
-		        .upload-icon {
-		            font-size: 3rem;
-		            color: #adb5bd;
-		        }
-		        .tag-input-wrapper {
-		            border: 1px solid #ced4da;
-		            border-radius: 0.25rem;
-		            padding: 5px;
-		            display: flex;
-		            flex-wrap: wrap;
-		            gap: 5px;
-		        }
-		        .tag-badge {
-		            background-color: #e9ecef;
-		            padding: 2px 10px;
-		            border-radius: 15px;
-		            font-size: 0.9rem;
-		            display: flex;
-		            align-items: center;
-		        }
-		        .tag-badge .btn-close {
-		            font-size: 0.6rem;
-		            margin-left: 5px;
-		        }
-		    </style>
-	</head>
+    <style>
+        .detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            left: -50px;
+            top: 10px;
+            font-size: 1.5rem;
+            color: #333;
+            text-decoration: none;
+        }
+        /* 입력창 디자인 커스텀 (디자인 유지) */
+        .input-title {
+            font-size: 2rem;
+            font-weight: bold;
+            border: none;
+            outline: none;
+            width: 100%;
+            text-align: center;
+            background: transparent;
+        }
+        .input-content {
+            border: none;
+            outline: none;
+            width: 100%;
+            min-height: 200px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            background: transparent;
+            resize: none;
+        }
+        .user-info {
+            color: #999;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .section-divider {
+            border: none;
+            border-top: 1px solid #dee2e6;
+            margin: 40px 0;
+        }
+        /* 파일 선택 박스 스타일 */
+        .file-preview-box {
+            background-color: #e0e0e0;
+            width: 150px;
+            height: 100px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: background 0.2s;
+            vertical-align: top;
+        }
+        .file-preview-box:hover {
+            background-color: #d0d0d0;
+        }
+        .file-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .btn-action {
+            background-color: #323b6d;
+            color: white;
+            padding: 10px 40px;
+            border: none;
+            border-radius: 4px;
+        }
+        .btn-action:hover {
+            background-color: #242a50;
+            color: white;
+        }
+        
+        @media (max-width: 992px) {
+            .back-btn { position: static; display: block; margin-bottom: 20px; }
+        }
+    </style>
+
     <main class="py-5">
-        <h1 class="mt-5 mb-4 text-center">파일 등록</h1>
-        <h5 class="mb-5 text-center text-muted">공유할 파일의 정보를 입력하고 업로드하세요.</h5>
+        <form th:action="@{/upload}" method="post" enctype="multipart/form-data" class="detail-container">
+            <a href="javascript:history.back()" class="back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
 
-        <div class="container" style="max-width: 800px;">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4 p-md-5">
-                    <form>
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">제목</label>
-                            <input type="text" class="form-control" placeholder="제목을 입력하세요" required>
-                        </div>
+            <div class="text-center">
+                <input type="text" name="title" class="input-title" placeholder="제목을 입력하세요" required>
+                <div class="user-info mt-2">
+                    <span class="user-id">현재 사용자 아이디</span> 
+                </div>
+                <hr class="section-divider">
+            </div>
 
-						<div class="mb-3">
-						    <label class="form-label fw-semibold">파일 업로드</label>
-						    <div class="upload-zone" id="dropZone" style="border: 2px dashed #dee2e6; padding: 40px; text-align: center; cursor: pointer; border-radius: 10px;">
-						        <input type="file" class="d-none" id="illustFile">
-						        
-						        <div id="uploadPlaceholder">
-						            <i class="bi bi-cloud-arrow-up upload-icon" style="font-size: 2rem;"></i>
-						            <p class="mt-2 mb-1 fw-bold">클릭하거나 파일을 여기로 끌어다 놓으세요</p>
-						            <p class="text-muted small">모든 파일 형식 업로드 가능 (최대 20MB)</p>
-						        </div>
+            <div class="content-area text-center">
+                <textarea name="content" class="input-content" placeholder="내용을 입력하세요 (그거거)" required></textarea>
+            </div>
 
-						        <div id="filePreview" class="d-none">
-						            <div id="imagePreview" class="d-none">
-						                <img src="" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 400px;">
-						            </div>
-						            <div id="genericFilePreview" class="d-none py-4">
-						                <img src="/images/folder.png" alt="file-icon" style="width: 50px;" class="mb-2">
-						                <h5 id="fileNameDisplay" class="fw-bold"></h5>
-						            </div>
-						            <p class="mt-3 small text-primary text-decoration-underline">파일 교체하기</p>
-						        </div>
-						    </div>
-						</div>
+            <hr class="section-divider">
 
-						<script>
-						    const dropZone = document.getElementById('dropZone');
-						    const fileInput = document.getElementById('illustFile');
-						    const placeholder = document.getElementById('uploadPlaceholder');
-						    
-						    const filePreview = document.getElementById('filePreview');
-						    const imagePreviewArea = document.getElementById('imagePreview');
-						    const genericPreviewArea = document.getElementById('genericFilePreview');
-						    const previewImg = imagePreviewArea.querySelector('img');
-						    const fileNameDisplay = document.getElementById('fileNameDisplay');
+            <div class="text-center mb-5">
+                <p class="small fw-bold mb-3">첨부파일 추가 (클릭하여 파일 선택)</p>
+                
+                <input type="file" id="fileInput" name="files" multiple class="d-none" onchange="handleFileSelect(this)">
+                
+                <div id="preview-list" class="d-flex justify-content-center gap-2 flex-wrap">
+                    <div class="file-preview-box rounded" onclick="document.getElementById('fileInput').click()">
+                        <i class="bi bi-plus-lg fs-2 text-white"></i>
+                    </div>
+                </div>
 
-						    dropZone.addEventListener('click', () => fileInput.click());
-
-						    fileInput.addEventListener('change', function() {
-						        handleFiles(this.files);
-						    });
-
-						    dropZone.addEventListener('dragover', (e) => {
-						        e.preventDefault();
-						        dropZone.style.borderColor = "#000";
-						    });
-
-						    dropZone.addEventListener('dragleave', () => {
-						        dropZone.style.borderColor = "#dee2e6";
-						    });
-
-						    dropZone.addEventListener('drop', (e) => {
-						        e.preventDefault();
-						        dropZone.style.borderColor = "#dee2e6";
-						        handleFiles(e.dataTransfer.files);
-						    });
-
-						    function handleFiles(files) {
-						        if (files.length > 0) {
-						            const file = files[0];
-						            
-						            placeholder.classList.add('d-none');
-						            filePreview.classList.remove('d-none');
-
-						            // 1. 이미지 파일인 경우 미리보기 실행
-						            if (file.type.startsWith('image/')) {
-						                const reader = new FileReader();
-						                reader.onload = function(e) {
-						                    previewImg.src = e.target.result;
-						                    imagePreviewArea.classList.remove('d-none');
-						                    genericPreviewArea.classList.add('d-none');
-						                }
-						                reader.readAsDataURL(file);
-						            } 
-						            // 2. 이미지가 아닌 모든 다른 파일인 경우 파일명 표시
-						            else {
-						                fileNameDisplay.textContent = file.name;
-						                imagePreviewArea.classList.add('d-none');
-						                genericPreviewArea.classList.remove('d-none');
-						            }
-						        }
-						    }
-						</script>
-						<div class="mb-4">
-						    <label class="form-label fw-semibold">태그</label>
-						                <div class="tag-input-wrapper mb-2">
-						                    <span class="tag-badge">#판타지 <button type="button" class="btn-close"></button></span>
-						                    <span class="tag-badge">#캐릭터 <button type="button" class="btn-close"></button></span>
-						                    <input type="text" class="form-control border-0 p-0 ps-2" style="width: auto; flex-grow: 1;" placeholder="태그 입력 후 Enter">
-						                </div>
-						                <small class="text-muted">쉼표(,) 또는 엔터로 구분하여 입력해주세요.</small>
-						              </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">파일 설명</label>
-                            <textarea class="form-control" rows="6" placeholder="파일에 대한 간단한 설명을 적어주세요"></textarea>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <div class="d-flex justify-content-center gap-3">
-                            <button type="button" class="btn btn-lg btn-outline-secondary px-5" onclick="history.back()">취소</button>
-                            <button type="submit" class="btn btn-lg btn-dark px-5">등록 완료</button>
-                        </div>
-                    </form>
+                <div class="mt-4">
+                    <input type="text" name="tags" class="form-control border-0 text-center text-primary" placeholder="#태그 #입력 (쉼표나 공백으로 구분)">
                 </div>
             </div>
-        </div>
+
+            <hr class="section-divider">
+
+            <div class="text-center mt-5">
+                <button type="submit" class="btn btn-action">등록 완료</button>
+            </div>
+        </form>
     </main>
+
+    <script>
+        function handleFileSelect(input) {
+            const previewList = document.getElementById('preview-list');
+            // 기존 미리보기 초기화 (필요에 따라 유지하고 싶으면 append 방식으로 변경 가능)
+            previewList.innerHTML = `
+                <div class="file-preview-box rounded" onclick="document.getElementById('fileInput').click()">
+                    <i class="bi bi-plus-lg fs-2 text-white"></i>
+                </div>
+            `;
+
+            if (input.files) {
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const box = document.createElement('div');
+                        box.className = 'file-preview-box rounded';
+                        
+                        // 이미지 파일이면 썸네일 표시, 아니면 아이콘 표시
+                        if (file.type.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            box.appendChild(img);
+                        } else {
+                            box.innerHTML = `<i class="bi bi-file-earmark-arrow-up fs-2 text-white"></i>`;
+                        }
+                        
+                        previewList.prepend(box); // 새 파일을 리스트 앞에 추가
+                    };
+                    
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+    </script>
 </div>
 </html>
