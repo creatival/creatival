@@ -108,6 +108,8 @@ public class BoardController {
 	
 	@GetMapping("/detail/{id}")
 	public String boardDetail(@PathVariable("id") Long boardId, Model model, Principal principal) {
+		
+		boardService.viewCountUpById(boardId);
 		ResponseBoardDetailDTO dto = boardService.getBoardDetailById(boardId);
 		model.addAttribute("board", dto);
 		return "board_detail";

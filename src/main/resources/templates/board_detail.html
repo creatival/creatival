@@ -1,98 +1,215 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 
-<div class="container" layout:fragment="content">
-<div class="container py-5" th:object="${board}">
+<div layout:fragment="content">
+
+<style>
+	:root {
+				--board-blue: #3B4371;
+				--board-orange: #FF7F50;
+				--user-blue-line: #4a90e2;
+				--bg-light: #F0F2F5;
+			}
+
+.post-header-top { border-top: 3px solid #2c3e50; }
+.bg-indigo-light { background-color: #f8f9ff; border-bottom: 1px solid #e9ecef; }
+.text-indigo { color: #3f51b5; }
+.comment-section { background-color: #fdfdfd; border-radius: 8px; }
+.btn-list { background-color: #2c3e50; color: white; }
+.btn-list:hover { background-color: #1a252f; color: white; }
+.active-tab { color: #000 !important; border-bottom: 3px solid #ff6b6b !important; font-weight: bold; }
+/* 팀/프로젝트 관련 추가 스타일 */
+.team-banner img { width: 100%; height: 120px; object-fit: cover; }
+.team-profile { width: 60px; height: 60px; margin-top: -30px; object-fit: cover; }
+.nav-tabs-board {
+			display: flex;
+			justify-content: center;
+			gap: 40px;
+			margin-bottom: 30px;
+			border-bottom: 1px solid #eee;
+			position: relative;
+		}
+	.board-tab {
+				background: none;
+				border: none;
+				font-size: 1.1rem;
+				font-weight: 700;
+				color: #aaa;
+				padding: 0 10px 15px 10px;
+				cursor: pointer;
+				transition: color 0.3s;
+				}
+	.board-tab.active {
+				color: #000;
+			}
+		.board-tab.active.user {
+			color: #000;
+			border-bottom: 2px solid var(--board-blue);
+		}
+		.board-tab.active.creator {
+			color: #000;
+			border-bottom: 2px solid var(--board-orange);
+		}
+</style>
+
+<div class="container py-5" th:if="${board != null}" th:object="${board}">
 
     <div class="text-center mb-5">
         <h1 class="display-5 fw-bold">게시판</h1>
     </div>
 
+	<div class="nav-tabs-board" th:if="${board != null}">
+	    <a th:href="@{/board(type='NORMAL')}" 
+	       class="board-tab" 
+	       th:classappend="${board.boardType != null && board.boardType.name() == 'NORMAL'} ? 'active user' : ''">
+	       유저 게시판
+	    </a>
+	    
+	    <a th:href="@{/board(type='CREATOR')}" 
+	       class="board-tab" 
+	       th:classappend="${board.boardType != null && board.boardType.name() == 'CREATOR'} ? 'active creator' : ''">
+	       창작자 게시판
+	    </a>
+	    
+	    <div id="tabIndicator" class="tab-indicator"></div>
+	</div>
+
     <div class="post-header-top">
 
-        <!-- 게시글 헤더 -->
         <div class="p-4 bg-indigo-light">
-
             <div class="mb-2">
                 <span class="badge bg-primary mb-2"
                       th:text="*{boardType}"
                       style="background-color:#3f51b5 !important;">
-                    자유
                 </span>
             </div>
 
-            <h3 class="fw-bold mb-3" th:text="*{title}">
-                게시판 구현 중입니다. 디자인 어떤가요?
-            </h3>
+            <h3 class="fw-bold mb-3" th:text="*{title}">제목 없음</h3>
 
             <div class="d-flex justify-content-between align-items-center text-muted small">
-
                 <div class="d-flex align-items-center">
-                    <span class="fw-bold text-dark me-3"
-                          th:text="*{displayname}">
-                          작성자
-                    </span>
-
-                    <span class="me-3"
-                          th:text="${#temporals.format(board.createdAt,'yyyy.MM.dd HH:mm')}">
-                          날짜
-                    </span>
-
-                    <span th:text="'조회수 ' + *{viewCount}">
-                          조회수
-                    </span>
+                    <span class="fw-bold text-dark me-3" th:text="*{displayname}">작성자</span>
+                    <span class="me-3" th:text="*{createdAt != null} ? ${#temporals.format(board.createdAt,'yyyy.MM.dd HH:mm')} : '-'"></span>
+                    <span th:text="'조회수 ' + *{viewCount}"></span>
                 </div>
-
+                <div>
+                    <span class="me-2">추천 0</span>
+                    <span>댓글 0</span>
+                </div>
             </div>
         </div>
 
-
-        <!-- 게시글 본문 -->
         <div class="py-5 px-4 min-vh-50 border-bottom">
+            <p th:text="*{boardText}"></p>
 
-            <p th:text="*{boardText}">
-                게시글 본문 내용
-            </p>
+			<div class="d-flex flex-wrap justify-content-center gap-4 my-5">
 
+			    <div th:if="*{content != null}" style="flex: 1; min-width: 280px; max-width: 320px;">
+			        <div class="mb-2">
+			            <span class="px-3 py-1 rounded-pill text-white small fw-bold" 
+			                  style="background-color: var(--orange, #fd7e14); font-size: 0.75rem;">
+			                콘텐츠
+			            </span>
+			        </div>
+			        <div class="card h-100 shadow-sm border-0 position-relative overflow-hidden">
+			            <a th:href="*{content.contentUrl}">
+			                <img th:src="*{content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}"
+			                     class="card-img-top" style="height:180px; object-fit:cover;">
+			            </a>
+			            <div class="card-body p-3 text-center">
+			                <h6 class="card-title fw-bold text-truncate mb-0" th:text="*{content.title + '(' + content.type + ')'}"></h6>
+							<p class="text-truncate mb-0" th:text="*{'창작자 :' + content.username + '(' + content.displayname + ')'}"></p>
+			            </div>
+			        </div>
+			    </div>
 
-            <!-- 프로젝트 정보 -->
-            <div class="my-4 p-3 border bg-light" th:if="*{project != null}">
-                <h6 class="fw-bold mb-2">프로젝트</h6>
+			    <div th:if="*{team != null}" style="flex: 1; min-width: 280px; max-width: 320px;">
+			        <div class="mb-2">
+			            <span class="px-3 py-1 rounded-pill text-white small fw-bold" 
+			                  style="background-color: var(--orange, #fd7e14); font-size: 0.75rem;">
+			                팀
+			            </span>
+			        </div>
+			        <div class="card h-100 shadow-sm rounded border-0 overflow-hidden position-relative">
+			            <a th:href="@{/team/{id}(id=*{team.id})}">
+			                <div class="team-banner">
+			                    <img th:src="*{team.bannerImgUrl != null ? team.bannerImgUrl : '/images/default-banner.png'}" 
+			                         style="width: 100%; height: 180px; object-fit: cover;">
+			                </div>
+			            </a>
+			            <div class="card-body p-3 text-center">
+			                <img th:src="*{team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
+			                     class="rounded-circle border border-white shadow"
+			                     style="width: 60px; height: 60px; margin-top: -45px; object-fit: cover; position: relative; z-index: 1;">
+			                <h6 class="card-title fw-bold text-truncate mt-2 mb-0" th:text="*{team.name}"></h6>
+			            </div>
+			        </div>
+			    </div>
 
-                <div>
-                    <span th:text="*{project.name}">프로젝트 이름</span>
-                </div>
-            </div>
+			    <div th:if="*{project != null}" style="flex: 1; min-width: 280px; max-width: 320px;">
+			        <div class="mb-2">
+			            <span class="px-3 py-1 rounded-pill text-white small fw-bold" 
+			                  style="background-color: var(--orange, #fd7e14); font-size: 0.75rem;">
+			                프로젝트
+			            </span>
+			        </div>
+			        <a th:href="@{/team/{tid}/project/{pid}(tid=*{team != null ? team.id : 0}, pid=*{project.id})}"
+			           class="text-decoration-none text-dark">
+			            <div class="card h-100 shadow-sm border rounded overflow-hidden">
+			                <img th:src="*{project.bannerImgUrl != null ? project.bannerImgUrl : '/images/default-project.png'}"
+			                     class="card-img-top" style="width: 100%; height: 180px; object-fit: cover;">
+			                <div class="card-body p-3 text-center">
+			                    <h6 class="fw-bold text-truncate mb-0" th:text="*{project.title}"></h6>
+								<p class="text-truncate mb-0" th:text="*{'소속 :' + project.teamName}"></p>
+			                </div>
+			            </div>
+			        </a>
+			    </div>
 
-
-            <!-- 팀 정보 -->
-            <div class="my-4 p-3 border bg-light" th:if="*{team != null}">
-                <h6 class="fw-bold mb-2">팀</h6>
-
-                <div>
-                    <span th:text="*{team.name}">팀 이름</span>
-                </div>
-            </div>
-
-
-            <!-- 콘텐츠 정보 -->
-            <div class="my-4 text-center" th:if="*{content != null}">
-                <div class="bg-light d-inline-block p-5 border text-muted">
-
-                    <div>
-                        <span th:text="*{content.contentInfo}">
-                            콘텐츠 정보
-                        </span>
-                    </div>
-
-                </div>
-            </div>
-
+			</div>
         </div>
+    </div>
 
+    <div class="d-flex justify-content-between mt-4">
+        <div>
+            <button class="btn btn-outline-secondary rounded-0 px-4">수정</button>
+            <button class="btn btn-outline-danger rounded-0 px-4">삭제</button>
+        </div>
+        <div>
+            <a th:href="@{/board}" class="btn btn-list rounded-0 px-4">목록으로</a>
+        </div>
+    </div>
+
+    <div class="comment-section mt-5 p-4 border">
+        <h5 class="fw-bold mb-4">댓글 <span class="text-indigo">0</span></h5>
+        <div class="mt-4 shadow-sm">
+            <textarea class="form-control border-bottom-0 rounded-0" rows="3" placeholder="댓글을 입력해주세요."></textarea>
+            <div class="d-flex justify-content-end border p-2 bg-light">
+                <button class="btn btn-dark rounded-0 px-4 btn-sm" style="background-color:#2c3e50;">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 border-top border-bottom">
+        <div class="row py-3 border-bottom mx-0 align-items-center">
+            <div class="col-2 text-muted small px-4">다음글 ▲</div>
+            <div class="col-10 text-truncate">
+                <a href="#" class="text-decoration-none text-dark">다음 글 제목이 이곳에 표시됩니다.</a>
+            </div>
+        </div>
+        <div class="row py-3 mx-0 align-items-center">
+            <div class="col-2 text-muted small px-4">이전글 ▼</div>
+            <div class="col-10 text-truncate">
+                <a href="#" class="text-decoration-none text-dark">이전 글 제목이 이곳에 표시됩니다.</a>
+            </div>
+        </div>
     </div>
 
 </div>
 
+<div class="container py-5 text-center" th:if="${board == null}">
+    <p>게시글 데이터를 불러올 수 없습니다.</p>
+    <a th:href="@{/board}" class="btn btn-primary">목록으로 돌아가기</a>
 </div>
 
+</div>
 </html>

@@ -22,12 +22,15 @@ public class ResponseProjectListDTO {
 	
 	private LocalDateTime createdAt;
 	
+	private String teamName;
+	
 	public static ResponseProjectListDTO from(Project project) {
 		return ResponseProjectListDTO.builder()
 				.id(project.getId())
 				.title(project.getTitle())
 				.bannerImgUrl(project.getBannerImgUrl())
 				.createdAt(project.getCreatedAt())
+				.teamName(project.getTeam().getName())
 				.build(); 
 	}
 }

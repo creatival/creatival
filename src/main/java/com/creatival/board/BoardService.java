@@ -25,6 +25,7 @@ import com.creatival.team.Team;
 import com.creatival.team.TeamService;
 import com.creatival.user.Users;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -96,6 +97,11 @@ public class BoardService {
 			}
 		}
 		return null;
+		
+	}
+	@Transactional
+	public void viewCountUpById(Long boardId) {
+		boardRepository.incrementViewCount(boardId);
 		
 	}
 }
