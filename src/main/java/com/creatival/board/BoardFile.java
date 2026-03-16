@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Entity
+@NoArgsConstructor
 public class BoardFile {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

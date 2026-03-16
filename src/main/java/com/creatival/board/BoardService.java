@@ -15,6 +15,8 @@ import com.creatival.board.Enum.BoardType;
 import com.creatival.board.dto.CreateBoardDTO;
 import com.creatival.board.dto.ResponseBoardDetailDTO;
 import com.creatival.board.dto.ResponseBoardListDTO;
+import com.creatival.board.dto.UpdateBoardDTO;
+import com.creatival.board.repository.BoardFileRepository;
 import com.creatival.board.repository.BoardRepository;
 import com.creatival.content.Content;
 import com.creatival.content.ContentFile;
@@ -26,11 +28,13 @@ import com.creatival.team.TeamService;
 import com.creatival.user.Users;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class BoardService {
+
 
     private final BoardRepository boardRepository;
 	private final ContentService contentService;
@@ -38,7 +42,13 @@ public class BoardService {
 	private final TeamService teamService;
 	private final BoardFileService boardFileService;
 
-	
+	public Board getBoardById(Long boardId) {
+		Optional<Board> board = boardRepository.findById(boardId);
+		if(board.isPresent()) {
+			return board.get();
+		}
+		return null;
+	}
 	public void createBoard(CreateBoardDTO createBoardDTO, Users user) {
 		Board board = Board.builder()
 				.title(createBoardDTO.getTitle())
@@ -104,4 +114,46 @@ public class BoardService {
 		boardRepository.incrementViewCount(boardId);
 		
 	}
+	public void updateBoard(@Valid UpdateBoardDTO dto, Long boardId) {
+		Board board = getBoardById(boardId);
+		board.setTitle(dto.getTitle());
+		board.setBoardText(dto.getBoardText());
+		
+		if(dto.getTeamId()!=null) {
+			if(board.getTeam()==null || !board.getTeam().getId().equals(dto.getTeamId())) {
+				Team team = teamService.getTeamById(dto.getTeamId());
+				board.setTeam(team);
+			}
+		} else {
+			board.setTeam(null);
+		}
+		if(dto.getProjectId()!=null ) {
+			if(board.getProject()==null || !board.getProject().getId().equals(dto.getProjectId())) {
+				Project project = teamService.getProjectById(dto.getProjectId());
+				board.setProject(project);
+			}
+		} else {
+			board.setProject(null);
+		}
+		
+		if(dto.getContentId()!=null) {
+			if(board.getContent()==null || !board.getContent().getId().equals(dto.getContentId())) {
+				Content content = contentService.getContent(dto.getContentId());
+				board.setContent(content);
+			}
+		} else {
+			board.setContent(null);
+		}
+		if(dto.getDeleteFileIds()!=null) {
+			for(Long id : dto.getDeleteFileIds()) {
+				boardFileService.deleteById(id);
+			}
+		}
+		
+		if(dto.getImages()!=null) {
+			boardFileService.createBoardFile(board, dto.getImages(), "Board");
+		}
+	}
+
+	
 }

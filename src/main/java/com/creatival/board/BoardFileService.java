@@ -2,11 +2,13 @@ package com.creatival.board;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.FileUtil;
+import com.creatival.board.dto.ResponseBoardFileDTO;
 import com.creatival.board.repository.BoardFileRepository;
 import com.creatival.content.Content;
 import com.creatival.content.ContentFile;
@@ -76,5 +78,17 @@ public class BoardFileService {
 	        return "VIDEO";
 	    }
 	    return "UNKNOWN";
+	}
+	
+	public List<ResponseBoardFileDTO> getBoardFileById(Board board) {
+		if(board == null) {
+			return null;
+		}
+		return boardFileRepository.findByBoard(board).stream().map(boardFile -> ResponseBoardFileDTO.from(boardFile)).toList();
+	}
+
+	public void deleteById(Long id) {
+		boardFileRepository.deleteById(id);
+		
 	}
 }

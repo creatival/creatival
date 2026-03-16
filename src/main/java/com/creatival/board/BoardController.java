@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.creatival.board.Enum.BoardType;
 import com.creatival.board.dto.CreateBoardDTO;
 import com.creatival.board.dto.ResponseBoardDetailDTO;
+import com.creatival.board.dto.ResponseBoardFileDTO;
 import com.creatival.board.dto.ResponseBoardListDTO;
+import com.creatival.board.dto.UpdateBoardDTO;
 import com.creatival.content.Content;
 import com.creatival.content.ContentService;
 import com.creatival.team.Project;
@@ -108,11 +111,41 @@ public class BoardController {
 	
 	@GetMapping("/detail/{id}")
 	public String boardDetail(@PathVariable("id") Long boardId, Model model, Principal principal) {
-		
+		List<ResponseBoardFileDTO> boardFiles = boardFileService.getBoardFileById(boardService.getBoardById(boardId));
 		boardService.viewCountUpById(boardId);
 		ResponseBoardDetailDTO dto = boardService.getBoardDetailById(boardId);
 		model.addAttribute("board", dto);
+		model.addAttribute("fileList", boardFiles);
 		return "board_detail";
+	}
+	
+	@GetMapping("/edit/{id}")
+	public String boardEdit(@PathVariable("id") Long boardId, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		Board board = boardService.getBoardById(boardId);
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필수적으로 필요합니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/board/detail/"+boardId;
+		}
+		if(board==null) {
+			redirectAttributes.addFlashAttribute("message", "수정할려는 게시물이 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(!board.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "귀하에게는 수정할 권한이 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/board/detail/"+boardId;
+		}
+		List<ResponseBoardFileDTO> list = boardFileService.getBoardFileById(board);
+		model.addAttribute("updateBoardDTO", UpdateBoardDTO.from(board, list));
+		return "board_edit";
+	}
+	
+	@PostMapping("/edit/{id}")
+	public String boardEdit(@Valid @ModelAttribute("updateBoardDTO") UpdateBoardDTO dto,@PathVariable("id") Long boardId, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		boardService.updateBoard(dto, boardId);
+		return "redirect:/board/detail/"+boardId;
 	}
 	
 	@GetMapping("/info/{type}")

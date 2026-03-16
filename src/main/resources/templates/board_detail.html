@@ -77,10 +77,10 @@
 
         <div class="p-4 bg-indigo-light">
             <div class="mb-2">
-                <span class="badge bg-primary mb-2"
-                      th:text="*{boardType}"
-                      style="background-color:#3f51b5 !important;">
-                </span>
+				<span class="badge mb-2"
+				      th:text="*{boardType}"
+				      th:style="'background-color: ' + (*{boardType.name() == 'NORMAL'} ? 'var(--board-blue)' : 'var(--board-orange)') + ' !important;'">
+				</span>
             </div>
 
             <h3 class="fw-bold mb-3" th:text="*{title}">제목 없음</h3>
@@ -100,7 +100,34 @@
 
         <div class="py-5 px-4 min-vh-50 border-bottom">
             <p th:text="*{boardText}"></p>
+			<div th:if="${fileList != null && !fileList.empty}" 
+			     class="row g-3 mb-5 justify-content-center">
+			    
+			    <div th:each="file, iterStat : ${fileList}" th:if="${iterStat.index < 3}" 
+			         class="col-12 col-md-10 col-lg-8"> 
+			        
+			        <div class="shadow-sm rounded overflow-hidden bg-light border mx-auto" 
+			             style="max-width: 800px; max-height: 500px;"> 
+			            
+			            <th:block th:if="${file.fileType == 'IMAGE'}">
+			                <img th:src="${file.fileUrl}" 
+			                     class="img-fluid d-block mx-auto" 
+			                     style="cursor: zoom-in; width: 100%; height: auto; max-height: 500px; object-fit: contain;" 
+			                     onclick="window.open(this.src)">
+			            </th:block>
 
+			            <th:block th:if="${file.fileType == 'VIDEO'}">
+			                <div class="ratio ratio-16x9">
+			                    <video controls class="w-100 h-100 bg-black">
+			                        <source th:src="${file.fileUrl}">
+			                        브라우저가 비디오를 지원하지 않습니다.
+			                    </video>
+			                </div>
+			            </th:block>
+			            
+			        </div>
+			    </div>
+			</div>
 			<div class="d-flex flex-wrap justify-content-center gap-4 my-5">
 
 			    <div th:if="*{content != null}" style="flex: 1; min-width: 280px; max-width: 320px;">
@@ -170,10 +197,16 @@
     </div>
 
     <div class="d-flex justify-content-between mt-4">
-        <div>
-            <button class="btn btn-outline-secondary rounded-0 px-4">수정</button>
-            <button class="btn btn-outline-danger rounded-0 px-4">삭제</button>
-        </div>
+		<div th:with="currentUser=${#authentication.name}">
+		    <th:block th:if="${currentUser == board.username}">
+		        <a th:href="@{/board/edit/{id}(id=*{id})}" 
+		           class="btn btn-outline-secondary rounded-0 px-4">수정</a>
+		        
+		        <a th:href="@{/board/delete/{id}(id=*{id})}" 
+		           class="btn btn-outline-danger rounded-0 px-4"
+		           onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</a>
+		    </th:block>
+		</div>
         <div>
             <a th:href="@{/board}" class="btn btn-list rounded-0 px-4">목록으로</a>
         </div>
