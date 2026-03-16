@@ -154,6 +154,10 @@ public class BoardService {
 			boardFileService.createBoardFile(board, dto.getImages(), "Board");
 		}
 	}
+	public void deleteBoard(Board board) {
+		boardRepository.delete(board);
+		
+	}
 
 	
 }

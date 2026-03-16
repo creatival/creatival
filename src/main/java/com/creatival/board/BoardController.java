@@ -144,8 +144,50 @@ public class BoardController {
 	
 	@PostMapping("/edit/{id}")
 	public String boardEdit(@Valid @ModelAttribute("updateBoardDTO") UpdateBoardDTO dto,@PathVariable("id") Long boardId, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필수적으로 필요합니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/board/detail/"+boardId;
+		}
+		Board board = boardService.getBoardById(boardId);
+		if(board==null) {
+			redirectAttributes.addFlashAttribute("message", "수정할려는 게시물이 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(!board.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "귀하에게는 수정할 권한이 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/board/detail/"+boardId;
+		}
+		redirectAttributes.addFlashAttribute("message", "수정완료되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
 		boardService.updateBoard(dto, boardId);
 		return "redirect:/board/detail/"+boardId;
+	}
+	
+	@GetMapping("/delete/{id}")
+	public String deeteBoard(@PathVariable("id") Long boardId, Principal principal,RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필수적으로 필요합니다!");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/board/detail/"+boardId;
+		}
+		Board board = boardService.getBoardById(boardId);
+		if(board==null) {
+			redirectAttributes.addFlashAttribute("message", "수정할려는 게시물이 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(!board.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "귀하에게는 삭제할 권한이 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/board/detail/"+boardId;
+		}
+		redirectAttributes.addFlashAttribute("message", "삭제완료되었습니다!");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		boardService.deleteBoard(board);
+		return "redirect:/board";
 	}
 	
 	@GetMapping("/info/{type}")
