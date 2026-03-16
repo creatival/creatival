@@ -8,11 +8,16 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.creatival.board.Enum.BoardType;
+import com.creatival.content.Content;
+import com.creatival.team.Project;
+import com.creatival.team.Team;
 import com.creatival.user.Users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +28,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -30,6 +36,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Entity
+@NoArgsConstructor
 public class Board {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +45,7 @@ public class Board {
 	@Column(nullable = false)
 	private String title;
 	
-	@Column(nullable = false)
+	@Column(columnDefinition = "TEXT")
 	private String boardText;
 	
 	@CreationTimestamp
@@ -47,12 +54,29 @@ public class Board {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private BoardType boardType;
+	
+	@Builder.Default
+	@Column(nullable = false)
+	private Long viewCount=0L;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private Users user;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "content_id")
+	private Content content;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "team_id")
+	private Team team;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "project_id")
+	private Project project;
 	
 	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default

@@ -18,15 +18,16 @@
             position: relative;
         }
 
-        .back-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0; transition: transform 0.2s; }
-        nav.navbar { display: none !important; }
-        body { padding-top: 0 !important; }
+        .back-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0; }
+		nav.navbar { display: none !important; }
+		body { padding-top: 0 !important; }
 
-        .back-btn:hover {
-            color: #ccc;
-            transform: translateX(-5px);
-        }
-        
+		/* 마우스를 올렸을 때 살짝 움직이는 효과 (선택 사항) */
+		.back-btn:hover {
+	    color: #ccc;
+	    transform: translateX(-5px); /* 왼쪽으로 살짝 이동 */
+		}
+		
         .header-logo {
             width: 180px;
             position: absolute;
@@ -67,8 +68,28 @@
         }
 
         /* 1열 전체 사용 요소 */
-        .full-width, .alert, .profile-section, .birthday-section, .email-section, .description-section, .check-box, .bottom-divider, .submit-box {
+        .alert, .profile-section, .birthday-section, .email-section, .check-box, .bottom-divider, .submit-box {
             grid-column: span 2;
+        }
+
+        /* 아이디+중복확인 가로 배치 */
+        .username-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end; /* 라벨 아래 입력창 라인에 맞춤 */
+        }
+        .username-input-wrapper { flex-grow: 1; }
+
+        .btn-check-duplicate {
+            background-color: #555e8f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            height: 48px; /* input 높이와 통일 */
         }
 
         /* 프로필 이미지 */
@@ -83,7 +104,6 @@
         .form-group { display: flex; flex-direction: column; }
         .form-label { font-weight: 600; font-size: 0.95rem; color: #999; margin-bottom: 10px; }
         .form-control { border: 1px solid #ccc; border-radius: 6px; padding: 13px 15px; font-size: 1rem; color: #333; height: 48px; }
-        textarea.form-control { height: auto; resize: none; }
         .form-control::placeholder { color: #ccc; font-size: 0.95rem; }
         .form-control:focus { border-color: #ff5a2d; box-shadow: 0 0 0 0.2rem rgba(255, 90, 45, 0.1); outline: none; }
 
@@ -91,37 +111,41 @@
         .email-group { display: flex; align-items: center; gap: 15px; }
         .email-at { font-size: 1.5rem; color: #ccc; font-weight: 300; }
 
-        .check-box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0 20px 0;
-        }
-        
-        .submit-box {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        
-        .btn-register {
-            background-color: transparent;
-            border: 2px solid #ff5a2d;
-            color: #ff5a2d;
-            font-weight: 700;
-            padding: 15px 0;
-            font-size: 1.2rem;
-            border-radius: 6px;
-            width: 450px !important;
-            transition: 0.3s;
-            cursor: pointer;
-            text-align: center;
-        }
-        .btn-register:hover {
-            background-color: #ff5a2d;
-            color: white;
-        }
+		
+		.check-box {
+		    grid-column: span 2;
+		    display: flex;          /* flex 박스로 변경 */
+		    justify-content: center; /* 가로 중앙 정렬 */
+		    align-items: center;     /* 세로축 일직선 정렬 */
+		    gap: 10px;               /* 체크박스와 글자 사이 간격 */
+		    margin: 10px 0 20px 0;
+		}
+		
+		
+		.submit-box {
+		    grid-column: span 2;
+		    display: flex;
+		    justify-content: center;
+		    margin-top: 10px;
+		}
+		
+		.btn-register {
+		    background-color: transparent;
+		    border: 2px solid #ff5a2d;
+		    color: #ff5a2d;
+		    font-weight: 700;
+		    padding: 15px 0;
+		    font-size: 1.2rem;
+		    border-radius: 6px;
+		    width: 450px !important; /* 중앙 배치를 위해 적절한 너비 고정 */
+		    transition: 0.3s;
+		    cursor: pointer;
+		    text-align: center;
+		}
+		.btn-register:hover {
+		    background-color: #ff5a2d;
+		    color: white;
+		}
     </style>
 
     <div class="signup-header">
@@ -137,12 +161,8 @@
         <p class="sub-title">회원 가입</p>
         <div class="title-divider"></div>
 
-        <form method="post" th:action="@{/user/signUp}" enctype="multipart/form-data" th:object="${signUpRequest}" onsubmit="prepareSubmit()">
+        <form method="post" th:action="@{/user/signUp}" enctype="multipart/form-data" th:object="${signUpRequest}">
             
-            <div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}" th:fragment="formErrorsFragment">
-                <div th:each="err : ${#fields.allErrors()}">[[${err}]]</div>
-            </div>
-
             <div class="profile-section">
                 <div class="profile-circle">
                     <i class="bi bi-person-fill profile-icon" id="profileDefaultIcon"></i>
@@ -153,8 +173,13 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">아이디</label>
-                <input type="text" class="form-control" th:field="*{username}" placeholder="아이디 입력" required>
+                <div class="username-container">
+                    <div class="username-input-wrapper form-group">
+                        <label class="form-label">아이디</label>
+                        <input type="text" class="form-control" th:field="*{username}" placeholder="아이디 입력" required>
+                    </div>
+                    <button type="button" class="btn-check-duplicate">중복 확인</button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -173,7 +198,7 @@
             </div>
 
             <div class="form-group birthday-section">
-                <label class="form-label">생년월일 (선택)</label>
+                <label class="form-label">생년월일</label>
                 <div class="birthday-group">
                     <select class="form-select form-control" id="birthYear">
                         <option value="" selected disabled>년도</option>
@@ -193,37 +218,30 @@
             <div class="form-group email-section">
                 <label class="form-label">이메일 입력</label>
                 <div class="email-group">
-                    <input type="text" id="emailLocalPart" class="form-control flex-grow-1" placeholder="이메일 입력" required>
+                    <input type="text" class="form-control flex-grow-1" placeholder="이메일 입력">
                     <span class="email-at">@</span>
-                    <select class="form-select form-control flex-grow-1" id="emailDomainPart">
+                    <select class="form-select form-control flex-grow-1" id="emailDomain">
                         <option value="gmail.com" selected>gmail.com</option>
                         <option value="naver.com">naver.com</option>
                         <option value="daum.net">daum.net</option>
                     </select>
-                    
-                    <input type="hidden" th:field="*{email}" id="hiddenFullEmail">
                 </div>
             </div>
 
-            <div class="form-group description-section">
-                <label class="form-label">자기소개</label>
-                <textarea th:field="*{description}" class="form-control" rows="3" placeholder="나를 표현하는 짧은 소개를 적어주세요"></textarea>
-            </div>
+			<div class="form-check check-box">
+			    <input class="form-check-input" type="checkbox" th:field="*{creator}" id="isCreator">
+			    <label class="form-check-label" for="isCreator">
+			        크리에이터로 활동하겠습니다.
+			    </label>
+			</div>
 
-            <div class="form-check check-box">
-                <input class="form-check-input" type="checkbox" th:field="*{creator}" id="isCreator">
-                <label class="form-check-label" for="isCreator">
-                    크리에이터로 활동하겠습니다.
-                </label>
-            </div>
+			<div class="bottom-divider"></div>
 
-            <div class="bottom-divider"></div>
-
-            <div class="submit-box">
-                <button type="submit" class="btn-register">
-                    회원 등록하기
-                </button>
-            </div>
+			<div class="submit-box">
+			    <button type="submit" class="btn-register">
+			        회원 등록하기
+			    </button>
+			</div>
         </form>
     </div>
 
@@ -240,12 +258,6 @@
                 defaultIcon.style.display = 'none';
             }
         };
-
-        function prepareSubmit() {
-            const localPart = document.getElementById('emailLocalPart').value;
-            const domainPart = document.getElementById('emailDomainPart').value;
-            document.getElementById('hiddenFullEmail').value = localPart + '@' + domainPart;
-        }
     </script>
 </div>
 </html>

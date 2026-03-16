@@ -1,5 +1,60 @@
 @charset "UTF-8";
 
+
+
+
+.category-item {
+    transition: all 0.3s ease-in-out; /* 부드러운 변화 속도 */
+}
+
+.category-item:hover {
+    transform: translateY(-10px); /* 위로 10px 이동 */
+}
+
+.category-item:hover .bg-light {
+    background-color: #ebebf2 !important; /* 호버 시 배경색 살짝 변경 */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1); /* 그림자 효과 */
+}
+
+.category-item img {
+    transition: transform 0.3s ease;
+}
+
+.category-item:hover img {
+    transform: scale(1.1); /* 아이콘 크기 10% 확대 */
+}
+
+
+/* 카드 공통 호버 효과 */
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.hover-card:hover {
+    transform: translateY(-8px); /* 위로 살짝 이동 */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important; /* 그림자 강조 */
+}
+
+/* 카드 내 이미지 확대 효과 */
+.hover-card .bg-secondary-subtle {
+    overflow: hidden; /* 영역 밖으로 나가는 이미지 숨김 */
+}
+
+.hover-card .bi-image, 
+.hover-card img {
+    transition: transform 0.3s ease;
+}
+
+.hover-card:hover .bi-image,
+.hover-card:hover img {
+    transform: scale(1.08); /* 이미지 살짝 확대 */
+}
+
+
+
+
+
 /*!
 * Start Bootstrap - Modern Business v5.0.7 (https://startbootstrap.com/template-overviews/modern-business)
 * Copyright 2013-2023 Start Bootstrap

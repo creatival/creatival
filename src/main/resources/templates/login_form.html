@@ -1,41 +1,188 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8" />
-	<title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creatival - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* 배경 설정 */
+        body {
+            background-color: #2c3470; /* 이미지의 진남색 */
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        /* 뒤로가기 버튼 */
+		.back-btn {
+		    position: absolute;
+		    top: 70px;    /* 위쪽에서 50px 내려옴 (기존 30px) */
+		    left: 80px;   /* 왼쪽에서 60px 들어옴 (기존 30px) */
+		    color: white;
+		    font-size: 1.8rem; /* 화살표 크기를 조금 더 키움 */
+		    text-decoration: none;
+		    transition: transform 0.2s ease-in-out;
+		    display: inline-block;
+		}
+
+		/* 마우스를 올렸을 때 살짝 움직이는 효과 (선택 사항) */
+		.back-btn:hover {
+		    color: #ccc;
+		    transform: translateX(-5px); /* 왼쪽으로 살짝 이동 */
+		}
+
+        /* 메인 컨테이너 (로고 + 박스) */
+        .login-wrapper {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+		/* 메인 컨테이너 - 위쪽 여백을 줄여 로고를 올림 */
+		.login-wrapper {
+		    width: 100%;
+		    max-width: 600px; /* 로고가 커짐에 따라 전체 폭도 약간 조절 */
+		    text-align: center;
+		    margin-top: -140px; /* 화면 중앙에서 약간 위로 끌어올림 */
+		}
+
+		/* 로고 이미지 - 크기 확대 및 하단 간격 조정 */
+		.logo-img {
+		    width: 400px;      /* 기존 250px -> 350px로 확대 */
+		    height: auto;
+		    margin-bottom: 130px; /* 로고와 흰색 박스 사이의 간격 */
+		    display: block;
+		    margin-left: auto;
+		    margin-right: auto;
+		}
+
+		/* 화이트 로그인 박스 - 로고와 자연스럽게 이어지도록 상단 패딩 유지 */
+		.login-box {
+		    background: white;
+		    padding: 60px 50px;
+		    box-shadow: 0 15px 35px rgba(0,0,0,0.3); /* 박스 그림자도 조금 더 깊게 */
+		}
+
+        /* 화이트 로그인 박스 */
+        .login-box {
+            background: white;
+            padding: 60px 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .login-box h2 {
+            font-family: 'Serif'; /* 이미지와 비슷한 세리프체 */
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+
+        /* 입력창 스타일 (언더라인) */
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            padding-bottom: 5px;
+        }
+
+        .input-group-custom i {
+            color: #aaa;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .input-group-custom input {
+            border: none;
+            width: 100%;
+            outline: none;
+            font-size: 1rem;
+            padding: 5px 0;
+        }
+
+        .input-group-custom input::placeholder {
+            color: #ccc;
+        }
+
+        /* 회원가입 링크 */
+        .signup-link {
+            display: block;
+            text-align: right;
+            font-size: 0.8rem;
+            color: #667eea;
+            text-decoration: none;
+            margin-top: -20px;
+            margin-bottom: 40px;
+        }
+
+        /* 로그인 버튼 */
+        .btn-login {
+            background-color: #707070; /* 이미지의 회색 버튼 */
+            color: white;
+            border: none;
+            padding: 12px 0;
+            width: 180px;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #505050;
+            color: white;
+        }
+
+        /* 에러 메시지 스타일 */
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
-	<div class="container my-5">
-	    <div class="row justify-content-center">
-	        <div class="col-md-4">
-	            <h2 class="text-center mb-4">로그인</h2>
 
-				<div th:if="${param.error}">
-				    <p th:text="${param.message}"></p>
-				</div>	
-				<div th:if="${param.error != null and param.error[0]=='disabled'}">
-					<a th:href=@{/user/activeUser}>계정 활성화하러가기</a>
-				</div>
+    <a href="javascript:history.back()" class="back-btn">
+        <i class="bi bi-arrow-left"></i>
+    </a>
 
-	            <form th:action="@{/user/login}" method="post">
-	                <div class="mb-3">
-	                    <label for="username" class="form-label">사용자 ID</label>
-	                    <input type="text" name="username" id="username" class="form-control" required>
-	                </div>
+    <div class="login-wrapper">
+        <img th:src="@{/images/creatival_logo(White).png}" alt="Creatival Logo" class="logo-img">
 
-	                <div class="mb-3">
-	                    <label for="password" class="form-label">비밀번호</label>
-	                    <input type="password" name="password" id="password" class="form-control" required>
-	                </div>
+        <div class="login-box">
+            <h2>LOG IN</h2>
 
-	                <button type="submit" class="btn btn-primary w-100">로그인</button>
-	                
-	                <div class="mt-3 text-center">
-	                    <small>계정이 없으신가요? <a th:href="@{/user/signUp}">회원가입</a></small>
-	                </div>
-	            </form>
-	        </div>
-	    </div>
-	</div>
+            <div th:if="${param.error}" class="error-msg">
+                <span th:text="${param.message}">로그인 정보가 올바르지 않습니다.</span>
+                <div th:if="${param.error[0]=='disabled'}">
+                    <a th:href="@{/user/activeUser}" class="badge bg-warning text-dark text-decoration-none">계정 활성화하기</a>
+                </div>
+            </div>
+
+            <form th:action="@{/user/login}" method="post">
+                <div class="input-group-custom">
+                    <i class="bi bi-person"></i>
+                    <input type="text" name="username" id="username" placeholder="아이디" required>
+                </div>
+
+                <div class="input-group-custom">
+                    <i class="bi bi-lock"></i>
+                    <input type="password" name="password" id="password" placeholder="비밀번호" required>
+                </div>
+
+                <a th:href="@{/user/signUp}" class="signup-link">아직 계정이 없으신가요?</a>
+
+                <button type="submit" class="btn btn-login">로그인</button>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>

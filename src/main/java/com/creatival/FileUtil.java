@@ -23,6 +23,16 @@ public class FileUtil {
 		System.out.println("saveImage 물리 저장 끝");
 		return fileName;
 	}
+	public String saveVideo(MultipartFile video, String category) throws IOException {
+		String videoUrl=null;
+		String fileName = UUID.randomUUID().toString()+"_"+ video.getOriginalFilename();
+		Path filePath = Paths.get(rootPath+"/videos/"+category, fileName);
+		Files.createDirectories(filePath.getParent());
+		Files.write(filePath, video.getBytes());
+		videoUrl = "/upload/videos/"+category+"/"+fileName; //보안 및 html에서 C:를 안 받기에 가상 경로를 넣어줌
+		System.out.println("saveVideo 물리 저장 끝");
+		return fileName;
+	}
 	public void deleteImage(String fileName, String category) throws IOException {
 	    Path filePath = Paths.get(rootPath + "/images/" + category, fileName);
 

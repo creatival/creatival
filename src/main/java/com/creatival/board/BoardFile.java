@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.creatival.board.Enum.BoardType;
 import com.creatival.user.Users;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +32,10 @@ public class BoardFile {
 	
 	private String fileName;//UUID
 	
-	private String originalName;
+	private String originalFileName;
+	
+	@Column(nullable = false)
+	private String fileType;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "board_id")

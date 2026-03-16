@@ -1,59 +1,355 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
+<div layout:fragment="content">
 
-    <div class="text-center my-5">
-        <h1 class="fw-bold" style="font-size: 2.5rem;">게시글 작성</h1>
-    </div>
+    <style>
+        /* 기존 스타일 유지 및 보수 */
+        :root {
+            --brand-orange: #F05A28;
+            --brand-navy: #2C3E50;
+            --input-focus: #8C94CD;
+            --bg-light: #F8F9FA;
+        }
 
-    <div class="row justify-content-center">
-        <div class="col-lg-9">
-            <div class="border-top border-dark border-2 pt-4">
-                <form>
-                    <div class="mb-4 row">
-                        <label class="col-sm-2 col-form-label fw-bold">카테고리</label>
-                        <div class="col-sm-4">
-                            <select class="form-select shadow-none border-secondary-subtle">
-                                <option selected>유저 게시판</option>
-                                <option>창작자 게시판</option>
-                            </select>
-                        </div>
-                    </div>
+        .write-container {
+            max-width: 850px;
+            margin: 4rem auto 6rem;
+            padding: 0 20px;
+        }
 
-                    <div class="mb-4 row">
-                        <label class="col-sm-2 col-form-label fw-bold">제목</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control shadow-none border-secondary-subtle" placeholder="제목을 입력해주세요.">
-                        </div>
-                    </div>
+        .write-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
 
-                    <div class="mb-4 row">
-                        <label class="col-sm-2 col-form-label fw-bold">작성자</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control-plaintext ps-2 fw-bold text-muted" value="현재 로그인한 사용자명" readonly>
-                        </div>
-                    </div>
+        .write-header h2 {
+            font-weight: 900;
+            font-size: 2rem;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">내용</label>
-                        <textarea class="form-control shadow-none border-secondary-subtle" rows="12" placeholder="내용을 입력해주세요." style="resize: none;"></textarea>
-                    </div>
+        .write-card {
+            background: #fff;
+            border: 1px solid #E1E1E1;
+            padding: 40px;
+            border-radius: 12px;
+        }
 
-                    <div class="mb-5 row">
-                        <label class="col-sm-2 col-form-label fw-bold">파일 첨부</label>
-                        <div class="col-sm-10">
-                            <input class="form-control shadow-none border-secondary-subtle" type="file">
-                        </div>
-                    </div>
+        .form-label {
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-                    <div class="d-flex justify-content-center border-top pt-5 mb-5" style="gap: 15px;">
-                        <button type="button" class="btn btn-outline-secondary rounded-0 px-5 py-2 fw-bold">취소</button>
-                        <button type="submit" class="btn btn-dark rounded-0 px-5 py-2 fw-bold" style="background-color: #3f51b5; border: none;">등록하기</button>
-                    </div>
-                </form>
-            </div>
+        .form-control,
+        .form-select {
+            border: 1.5px solid #EAEAEA;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(140, 148, 205, 0.1);
+        }
+
+        /* 작성자 박스 */
+        .author-box {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-weight: 700;
+            color: #666;
+            display: flex;
+            align-items: center;
+            height: 48px;
+        }
+
+        /* 구분선 스타일 */
+        .section-divider {
+            border-top: 1px dashed #EEE;
+            margin: 1.5rem 0;
+        }
+
+        .content-area {
+            min-height: 250px;
+            resize: none;
+            line-height: 1.6;
+        }
+
+        .file-list { margin-top: 10px; }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            border: 1px solid #eee;
+        }
+        .file-remove { cursor: pointer; color: #dc3545; font-weight: bold; }
+
+        .btn-group-custom {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 3rem;
+        }
+
+        .btn-creativ { padding: 12px 50px; font-weight: 800; border-radius: 8px; }
+        .btn-cancel { background-color: #fff; border: 1.5px solid #D1D1D1; color: #777; }
+        .btn-submit { background-color: var(--brand-navy); border: none; color: #fff; }
+		.preview-box {
+		    font-size: 0.85rem;
+		    margin-top: 8px;
+		    min-height: 20px;
+		    color: #666;
+		    font-weight: 600;
+		    transition: all 0.3s ease;
+		}
+		.preview-box i {
+		    margin-right: 5px;
+		}
+    </style>
+
+    <div class="write-container">
+        <div class="write-header">
+            <h2>게시글 작성</h2>
         </div>
-    </div>
 
+        <form th:action="@{/board/write}" method="post" enctype="multipart/form-data">
+            <div class="write-card">
+                <div class="row">
+                    <div class="col-md-5 mb-4">
+                        <label class="form-label"><i class="bi bi-tag"></i> 카테고리</label>
+                        <select class="form-select" name="boardType">
+                            <option value="NORMAL" selected>유저 게시판</option>
+                            <option value="CREATOR">창작자 게시판</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-7 mb-4">
+                        <label class="form-label"><i class="bi bi-person"></i> 작성자</label>
+                        <div class="author-box">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span th:text="${#authentication.name}">사용자명</span>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+					<div class="row">
+					    <div class="col-md-4 mb-4">
+					        <label class="form-label">관련 컨텐츠 :</label>
+					        <div class="input-group">
+					            <input type="number" class="form-control" name="contentId" id="contentId" placeholder="ID 입력">
+					        </div>
+					        <div id="contentPreview" class="preview-box"></div>
+					    </div>
+					    <div class="col-md-4 mb-4">
+					        <label class="form-label">프로젝트 :</label>
+					        <div class="input-group">
+					            <input type="number" class="form-control" name="projectId" id="projectId" placeholder="ID 입력">
+					        </div>
+					        <div id="projectPreview" class="preview-box"></div>
+					    </div>
+					    <div class="col-md-4 mb-4">
+					        <label class="form-label">팀 :</label>
+					        <div class="input-group">
+					            <input type="number" class="form-control" name="teamId" id="teamId" placeholder="ID 입력">
+					        </div>
+					        <div id="teamPreview" class="preview-box"></div>
+					    </div>
+					</div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="col-12 mb-4">
+                        <label class="form-label">제목</label>
+                        <input type="text" class="form-control" name="title" placeholder="제목을 입력해주세요" required>
+                    </div>
+
+                    <div class="col-12 mb-4">
+                        <label class="form-label">내용</label>
+                        <textarea class="form-control content-area" id="contentArea" name="boardText"
+                            placeholder="나누고 싶은 내용을 자유롭게 적어주세요"></textarea>
+                    </div>
+
+                    <div class="col-12 mb-2">
+						<label class="form-label">파일 첨부</label>
+						<div id="fileInputs">
+						    <input class="form-control file-input" type="file" name="images" accept="image/*,video/*" id="file_init">
+						</div>
+						<div id="fileList" class="file-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group-custom">
+                <button type="button" class="btn btn-creativ btn-cancel" onclick="history.back()">취소</button>
+                <button type="submit" class="btn btn-creativ btn-submit">등록하기</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // 폼 제출 전 검증 및 초기화 로직
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. ID 조회 기능 이벤트 연결
+            setupInputListeners('contentId', 'content');
+            setupInputListeners('projectId', 'project');
+            setupInputListeners('teamId', 'team');
+
+            // 2. 파일 업로드 초기 이벤트 연결
+            const fileInit = document.getElementById("file_init");
+            if (fileInit) {
+                fileInit.addEventListener("change", handleFileSelect);
+            }
+
+            // 3. textarea 자동 높이 조절
+            const textarea = document.getElementById("contentArea");
+            if (textarea) {
+                textarea.addEventListener("input", function() {
+                    this.style.height = "auto";
+                    this.style.height = this.scrollHeight + "px";
+                });
+            }
+
+            // 4. [검증] 폼 제출 시 내용 또는 파일 확인
+            const writeForm = document.querySelector('form[th\\:action*="/board/write"]');
+            if (writeForm) {
+                writeForm.addEventListener('submit', function(e) {
+                    const contentValue = document.getElementById("contentArea").value.trim();
+                    const hasFiles = document.querySelectorAll(".file-item").length > 0;
+
+                    // 내용도 없고 파일도 없는 경우 제출 막기
+                    if (!contentValue && !hasFiles) {
+                        e.preventDefault();
+                        alert("내용을 입력하거나 파일을 하나 이상 첨부해 주세요.");
+                        document.getElementById("contentArea").focus();
+                    }
+                });
+            }
+        });
+
+        /* --- 기능 함수들 --- */
+
+        // 입력창 리스너 설정
+        function setupInputListeners(inputId, type) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('input', (e) => debouncedFetchInfo(type, e.target.value));
+            }
+        }
+
+        // 데이터 조회 (디바운스)
+        let debounceTimer;
+        function debouncedFetchInfo(type, id) {
+            const preview = document.getElementById(type + 'Preview');
+            clearTimeout(debounceTimer);
+            
+            if(!id) { preview.innerText = ""; return; }
+            
+            preview.innerHTML = '<small class="text-muted">조회 중...</small>';
+            
+            debounceTimer = setTimeout(() => {
+                fetch(`/board/info/${type}?id=${id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.name) {
+                            preview.innerHTML = `<span style="color:#F05A28;">●</span> <strong>${data.name}</strong>`;
+                        } else {
+                            preview.innerHTML = `<span style="color:#dc3545;">✕</span> 존재하지 않는 ID`;
+                        }
+                    })
+                    .catch(() => { preview.innerText = "조회 실패"; });
+            }, 300);
+        }
+
+        // 파일 업로드 처리
+        const fileInputsContainer = document.getElementById("fileInputs");
+        const fileList = document.getElementById("fileList");
+        const MAX_FILES = 3;
+
+        function handleFileSelect(e) {
+            const input = e.target;
+            if (!input.files.length) return;
+            
+            const file = input.files[0];
+
+            if (document.querySelectorAll(".file-item").length >= MAX_FILES) {
+                alert("파일은 최대 3개까지만 첨부할 수 있습니다.");
+                input.value = "";
+                return;
+            }
+
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/quicktime'];
+            if (!validTypes.includes(file.type)) {
+                alert("이미지와 영상 파일만 업로드 가능합니다.");
+                input.value = "";
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert("파일 크기는 10MB를 초과할 수 없습니다.");
+                input.value = "";
+                return;
+            }
+
+            // UI 처리: 현재 input 숨기고 ID 부여
+            input.classList.add("d-none");
+            const currentId = "input_" + Date.now();
+            input.id = currentId;
+
+            const item = document.createElement("div");
+            item.className = "file-item";
+            item.setAttribute("data-target-id", currentId);
+            item.innerHTML = `
+                <span><i class="bi bi-file-earmark-arrow-up me-2"></i>${file.name}</span>
+                <span class="file-remove" onclick="removeFile('${currentId}')" style="cursor:pointer; color:#dc3545;">✕</span>
+            `;
+            fileList.appendChild(item);
+
+            // 3개 미만이면 새 input 생성
+            if (document.querySelectorAll(".file-item").length < MAX_FILES) {
+                createNewInput();
+            }
+        }
+
+        function createNewInput() {
+            const newInput = document.createElement("input");
+            newInput.type = "file";
+            newInput.name = "images";
+            newInput.className = "form-control file-input mt-2";
+            newInput.accept = "image/*,video/*";
+            newInput.addEventListener("change", handleFileSelect);
+            fileInputsContainer.appendChild(newInput);
+        }
+
+        function removeFile(targetId) {
+            const targetInput = document.getElementById(targetId);
+            if (targetInput) targetInput.remove();
+            
+            const uiItem = document.querySelector(`[data-target-id="${targetId}"]`);
+            if (uiItem) uiItem.remove();
+
+            // 파일 삭제 후, 화면에 활성화된 input이 하나도 없다면 새로 생성
+            const activeInputs = fileInputsContainer.querySelectorAll('input:not(.d-none)');
+            if (activeInputs.length === 0 && document.querySelectorAll(".file-item").length < MAX_FILES) {
+                createNewInput();
+            }
+        }
+    </script>
+</th:block>
 </html>
