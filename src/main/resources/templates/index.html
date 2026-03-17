@@ -83,7 +83,7 @@
             <div class="row text-center g-4 justify-content-center">
                 
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/art/list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/Illustration_list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box">
                             <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" 
                                  class="category-icon-img" alt="일러스트">
@@ -113,7 +113,7 @@
                 </div>
 
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/Illustration_list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/video_list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box">
                             <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" 
                                  class="category-icon-img" alt="비디오">
@@ -131,9 +131,8 @@
                         <div class="fw-bold">소설</div>
                     </a>
                 </div>
-
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/Illustration_list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/file_list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box">
                             <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" 
                                  class="category-icon-img" alt="파일">
