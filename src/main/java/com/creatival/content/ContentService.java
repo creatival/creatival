@@ -131,7 +131,7 @@ public class ContentService {
 		if(content.isFanWork() && createNovelDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createNovelDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
 		}
-		if(!createNovelDTO.getProjectTag().isBlank() || createNovelDTO.getProjectTag() != null) {
+		if(createNovelDTO.getProjectTag() != null && !createNovelDTO.getProjectTag().isBlank()) {
 			Project project = teamService.getProjectTag(createNovelDTO.getProjectTag());
 			if(project==null) {
 				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
@@ -301,7 +301,7 @@ public class ContentService {
 		if(content.isFanWork() && createArtDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createArtDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
 		}
-		if(!createArtDTO.getProjectTag().isBlank() || createArtDTO.getProjectTag() != null) {
+		if(createArtDTO.getProjectTag() != null && !createArtDTO.getProjectTag().isBlank()) {
 			Project project = teamService.getProjectTag(createArtDTO.getProjectTag());
 			if(project==null) {
 				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
