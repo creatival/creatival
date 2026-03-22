@@ -69,6 +69,21 @@
                    class="form-control"
                    placeholder="원본 작품 ID를 입력하세요">
         </div>
+		
+		<div class="mb-5 text-center">
+		                    <label class="settings-label"><i class="bi bi-hash"></i> 태그 설정</label>
+		                    
+		                    <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+		                        </div>
+
+		                    <div class="input-group tag-input-group shadow-sm">
+		                        <span class="input-group-text bg-white border-end-0 text-muted">#</span>
+		                        <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그를 입력하고 엔터를 누르세요" onkeypress="handleTagKey(event)">
+		                        <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
+		                    </div>
+		                    
+		                    <input type="hidden" name="tagString" id="finalTagString">
+		                </div>
 
         <!-- 이미지 업로드 -->
         <div class="mb-3">
