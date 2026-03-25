@@ -70,4 +70,27 @@ public class ContentFileService {
 
 	    contentFileRepository.delete(contentFile);
 	}
+
+	public void createContentFileVideoForContent(Content content, MultipartFile videoFile, String category) {
+		if(videoFile == null || videoFile.isEmpty()) {
+			new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		try {
+			String fileName = fileUtil.saveVideo(videoFile, category);
+			String fileUrl="/upload/videos/"+category+"/" + fileName;
+			ContentFile contentFile = ContentFile.createForContent("VIDEO", fileUrl, fileName, videoFile.getOriginalFilename(), 0, content);
+			System.out.println("저장된 ID: " + contentFile.getId());
+			contentFileRepository.save(contentFile);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + videoFile.getOriginalFilename(), e);
+		}
+		
+	}
+
+	public void delete(ContentFile contentFile) {
+		contentFileRepository.delete(contentFile);
+		
+	}
 }

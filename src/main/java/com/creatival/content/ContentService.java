@@ -22,15 +22,19 @@ import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
+import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtList;
 import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.ResponseVideoDetailDTO;
+import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
+import com.creatival.content.DTO.UpdateVideoDTO;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
@@ -358,5 +362,107 @@ public class ContentService {
 	            }
 	        }
 	    }
+	}
+	public void createContentVideo(@Valid CreateVideoDTO createVideoDTO, Users user) throws IOException {
+		String imgurl = "/upload/images/thumbnail/";
+		
+		if(createVideoDTO.getThumbnailFile() != null) {
+			imgurl += fileUtil.saveImage(createVideoDTO.getThumbnailFile(), "thumbnail");
+		}
+		Content content = Content.builder()
+				.title(createVideoDTO.getTitle())
+				.description(createVideoDTO.getDescription())
+				.user(user)
+				.visibility(createVideoDTO.getVisibility())
+				.ownerType(createVideoDTO.getOwnerType())
+				.type(ContentType.VIDEO)
+				.isAllowComment(createVideoDTO.isAllowComment())
+				.isFanWork(createVideoDTO.isFanWork())
+				.ThumbnailImgUrl(imgurl)
+				.build();
+		if(content.isFanWork() && createVideoDTO.getOriginalContentId() != null) {
+			content.setOriginalContent(contentRepository.findById(createVideoDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
+		}
+		if(createVideoDTO.getProjectTag() != null && !createVideoDTO.getProjectTag().isBlank()) {
+			Project project = teamService.getProjectTag(createVideoDTO.getProjectTag());
+			if(project==null) {
+				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
+			}
+			TeamMember member = teamService.getMemberForTeamByUser(project.getTeam(), user);
+			if(member == null) {
+				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
+			}
+			content.setProject(project);
+		}
+		contentRepository.save(content);
+		
+		String tagString = createVideoDTO.getTagString();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        // 쉼표로 구분된 문자열을 배열로 변환
+	        String[] tags = tagString.split(",");
+	        
+	        for (String tagName : tags) {
+	            String trimmedTag = tagName.trim();
+	            if (!trimmedTag.isEmpty()) {
+	                // 태그를 저장하고 소설과 연결하는 로직 호출
+	                // 예: tagService.addTagToContent(novel, trimmedTag);
+	            	tagService.createTagForContent(content, tagName, user.getUsername());
+	            }
+	        }
+	    }
+		
+		contentFileService.createContentFileVideoForContent(content, createVideoDTO.getVideoFile(), "video");
+	}
+	public List<ResponseVideoListDTO> getVideoList(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.VIDEO,pageable);
+		
+		return contents.map(content -> ResponseVideoListDTO.from(content)).toList();
+	}
+	public ResponseVideoDetailDTO getVideoDetailById(Long id) {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			return null;
+		} else {
+			Content content = optional.get();
+			List<ContentFile> contentFile = contentFileService.getContentFileByContent(content);
+			System.out.println(contentFile.getFirst().getFileName());
+			return ResponseVideoDetailDTO.from(content,contentFile.getFirst());
+		}
+		
+	}
+	public Content getVideoById(Long id) {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			return null;
+		}
+		return optional.get();
+		
+	}
+	public void updateContentVideo(@Valid UpdateVideoDTO dto) throws IOException {
+		Optional<Content> optional = contentRepository.findById(dto.getId());
+		if(optional.isEmpty()) {
+			throw new IllegalArgumentException("수정할려는 콘텐츠가 없습니다.");
+		}
+		Content content = optional.get();
+		content.setTitle(dto.getTitle());
+		content.setDescription(dto.getDescription());
+		content.setVisibility(dto.getVisibility());
+		content.setAllowComment(dto.isAllowComment());
+		contentRepository.save(content);
+		
+		
+		if(dto.getThumbnailFile() != null && !dto.getThumbnailFile().isEmpty()) {
+			String imgurl = "/upload/images/thumbnail/";
+			imgurl += fileUtil.saveImage(dto.getThumbnailFile(), "thumbnail");
+			content.setThumbnailImgUrl(imgurl);
+		}
+		
+		
+		if(dto.getVideoFile()!=null && !dto.getVideoFile().isEmpty()) {
+			ContentFile contentFile = contentFileService.getContentFileByContent(content).getFirst();
+			contentFileService.delete(contentFile);
+			contentFileService.createContentFileVideoForContent(content, dto.getVideoFile(), "video");
+		}
 	}
 }

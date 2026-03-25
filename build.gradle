@@ -59,6 +59,9 @@ dependencies {
 	
 	// Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+		
+		// Source: https://mvnrepository.com/artifact/org.webjars.npm/ffprobe
+//		implementation 'org.webjars.npm:ffprobe:1.1.0'
 }
 
 tasks.named('test') {

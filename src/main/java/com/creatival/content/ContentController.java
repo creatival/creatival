@@ -16,19 +16,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
+import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtDetail;
 import com.creatival.content.DTO.ResponseArtList;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.ResponseVideoDetailDTO;
+import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
+import com.creatival.content.DTO.UpdateVideoDTO;
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.tag.ResponseTagDTO;
@@ -37,6 +42,7 @@ import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -346,5 +352,130 @@ public class ContentController {
 		Content content = contentService.getArt(id);
 		contentService.delete(content);
 		return "redirect:/content/art/list";
+	}
+	
+	@GetMapping("/video/list")
+	public String videoList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		List<ResponseVideoListDTO> list = contentService.getVideoList(page);
+		model.addAttribute("list", list);
+		return "video_list";
+	}
+	
+	@GetMapping("/video/create")
+	public String createVideo(Model model) {
+		CreateVideoDTO createVideoDTO = new CreateVideoDTO();
+		model.addAttribute("createVideoDTO", createVideoDTO);
+		return "video_write";
+	}
+	
+	@Transactional
+	@PostMapping("/video/create")
+	public String createVideo(@Valid CreateVideoDTO createVideoDTO, RedirectAttributes redirectAttributes, Principal principal) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		try {
+			contentService.createContentVideo(createVideoDTO, user);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 추가되었습니다!");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/video/list";
+		} catch(Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 문의해주시길 바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/create";
+		}
+	}
+	
+	@GetMapping("/video/detail/{id}")
+	public String videoDetail(@PathVariable("id") Long id, Model model) {
+		Content content = contentService.getContent(id);
+		ResponseVideoDetailDTO dto = contentService.getVideoDetailById(id);
+		model.addAttribute("video", dto);
+		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		model.addAttribute("tagList", contentTags);
+		return "video_detail";
+	}
+	
+	@GetMapping("/video/edit/{id}")
+	public String updateVideo(@PathVariable("id") Long id, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getVideoById(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "수정하려는 영상을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/video/detail/"+id;
+		}
+		model.addAttribute("updateVideoDTO", UpdateVideoDTO.from(content, contentFileService.getContentFileByContent(content).getFirst()));
+		return "video_edit";
+	}
+	@PostMapping("/video/edit/{id}")
+	public String updateVideo(@PathVariable("id") Long id,@Valid UpdateVideoDTO dto, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getVideoById(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "수정하려는 영상을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/video/detail/"+id;
+		}
+		try {
+			contentService.updateContentVideo(dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/video/detail/"+id;
+		} catch (IllegalStateException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		} catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 관리자에게 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+	        return "redirect:/content/video/detail/"+id;
+	    }
+	}
+	@PostMapping("/video/delete/{id}")
+	public String deleteVideo(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getVideoById(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "삭제하려는 영상을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 삭제할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/video/detail/"+id;
+		}
+		contentService.delete(content);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/content/video/list";
 	}
 }

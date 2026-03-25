@@ -1,24 +1,25 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div class="container my-5" layout:fragment="content">
     
-    <div class="row g-4">
+    <div class="row g-4" th:if="${video != null}">
         <div class="col-12 col-lg-8">
             
             <div class="ratio ratio-16x9 bg-dark rounded-3 overflow-hidden shadow-sm mb-3">
-                <video controls poster="images/pic.png" class="object-fit-cover">
-                    <source src="dummy.mp4" type="video/mp4">
+                <video controls class="object-fit-cover">
+                    <source th:src="${video.video?.fileUrl}" type="video/mp4">
                     브라우저가 비디오 태그를 지원하지 않습니다.
                 </video>
             </div>
 
-            <h4 class="fw-bold mb-3">유니티로 2D 플랫포머 게임 만들기 1편</h4>
+            <h4 class="fw-bold mb-3" th:text="${video.title}">비디오 제목</h4>
 
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-bottom pb-3 mb-4 gap-3">
                 <div class="d-flex align-items-center">
-                    <img src="https://dummyimage.com/48x48/ced4da/6c757d" class="rounded-circle me-3" alt="채널 로고" style="width: 48px; height: 48px;">
+                    <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/48x48/ced4da/6c757d'}" 
+                         class="rounded-circle me-3" alt="채널 로고" style="width: 48px; height: 48px; object-fit: cover;">
                     <div>
-                        <h6 class="fw-bold mb-0">Creatival_Official</h6>
-                        <span class="text-muted small">팔로워 1.2만명</span>
+                        <h6 class="fw-bold mb-0" th:text="${video.displayname}">디스플레이네임</h6>
+                        <span class="text-muted small" th:text="'@' + ${video.username}">@username</span>
                     </div>
                     <button class="btn btn-dark btn-sm rounded-pill ms-4 px-3 fw-bold">팔로우</button>
                 </div>
@@ -35,20 +36,63 @@
                     <button class="btn btn-light border-secondary-subtle shadow-sm d-flex align-items-center rounded-pill px-3">
                         <i class="bi bi-share me-2"></i>공유
                     </button>
-					<button class="btn btn-outline-secondary rounded-pill px-3"> 수정하기</button>
+					<div class="ms-2 d-flex gap-2">
+					    <a th:href="@{/content/video/edit/{id}(id=${video.id})}" 
+					       class="btn btn-outline-secondary rounded-pill px-3">
+					       <i class="bi bi-pencil-square me-1"></i> 수정하기
+					    </a>
+					    
+					    <button type="button" class="btn btn-outline-danger rounded-pill px-3" 
+					            th:onclick="|confirmDelete(${video.id})|">
+					        <i class="bi bi-trash3 me-1"></i> 삭제하기
+					    </button>
+					</div>
+
+					<form id="deleteForm" method="post" style="display:none;">
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						
+					</form>
                 </div>
             </div>
 
             <div class="bg-light p-3 rounded-3 mb-5 shadow-sm">
-                <p class="fw-bold small mb-2">조회수 1.5만회 • 2023년 10월 24일</p>
-                <p class="mb-0 text-break text-muted">
-                    이번 영상에서는 유니티 엔진을 사용하여 2D 플랫포머 게임을 만드는 첫 번째 단계를 알아봅니다.<br>
-                    캐릭터 이동, 점프 물리 엔진 적용, 그리고 타일맵 구성까지 핵심적인 기초를 다집니다.<br><br>
-                    #유니티 #게임개발 #2D게임 #코딩
+                <p class="fw-bold small mb-2">
+                    조회수 <span th:text="${#numbers.formatInteger(video.viewCount ?: 0, 0, 'COMMA')}">0</span>회 • 
+                    <span th:text="${#temporals.format(video.createdAt, 'yyyy년 MM월 dd일')}">2026년 01월 01일</span>
                 </p>
+                <p class="mb-0 text-break text-muted" style="white-space: pre-wrap;" th:text="${video.description}">
+                    영상 설명이 들어가는 곳입니다.
+                </p>
+				<!-- 태그 (tagList 사용) -->
+						<div class="tag-area">
+							<div class="mb-4">
+				                <div th:each="tag : ${tagList}" class="badge rounded-pill tag-badge">
+				                    <span th:text="'#' + ${tag.tagText}"></span>
+
+				                    <a sec:authorize="isAuthenticated()"
+				                       th:if="${video.username == #authentication.name}"
+				                       th:href="@{/tag/video/deleteContentTag(tagId=${tag.id},contentId=${video.id})}"
+				                       onclick="return confirm('삭제하시겠습니까?');"
+									   >
+				                        <i class="bi bi-x-circle-fill ms-1"></i>
+				                    </a>
+				                </div>
+
+				                <!-- 태그 추가 버튼 -->
+				                <button type="button"
+				                        sec:authorize="isAuthenticated()"
+				                         th:if="${video.username == #authentication.name}"
+				                        class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2"
+				                        style="width:24px;height:24px;"
+				                        data-bs-toggle="modal"
+				                        data-bs-target="#tagAddModal">
+				                    <i class="bi bi-plus"></i>
+				                </button>
+				            </div>
+				           </div>
             </div>
 
-            <div>
+            <div th:if="${video.isAllowComment}">
                 <h5 class="fw-bold mb-4">댓글 124개</h5>
                 
                 <div class="d-flex align-items-start mb-4">
@@ -84,10 +128,10 @@
             <h6 class="fw-bold mb-3">다음 동영상</h6>
             
             <div class="d-flex flex-column gap-3">
-                <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
+                <a href="#" class="text-decoration-none text-dark">
                     <div class="d-flex gap-2 align-items-start">
                         <div class="position-relative bg-dark rounded-2 overflow-hidden flex-shrink-0" style="width: 160px; height: 90px;">
-                            <img src="images/pic.png" class="object-fit-cover w-100 h-100" alt="추천 영상 썸네일">
+                            <img src="https://dummyimage.com/160x90/444/fff" class="object-fit-cover w-100 h-100" alt="추천 영상 썸네일">
                             <span class="badge bg-dark position-absolute bottom-0 end-0 m-1 z-1" style="font-size: 0.7rem;">12:05</span>
                         </div>
                         <div class="overflow-hidden">
@@ -98,10 +142,10 @@
                     </div>
                 </a>
 
-                <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
+                <a href="#" class="text-decoration-none text-dark">
                     <div class="d-flex gap-2 align-items-start">
                         <div class="position-relative bg-dark rounded-2 overflow-hidden flex-shrink-0" style="width: 160px; height: 90px;">
-                            <img src="images/pic.png" class="object-fit-cover w-100 h-100" alt="추천 영상 썸네일">
+                            <img src="https://dummyimage.com/160x90/555/fff" class="object-fit-cover w-100 h-100" alt="추천 영상 썸네일">
                             <span class="badge bg-dark position-absolute bottom-0 end-0 m-1 z-1" style="font-size: 0.7rem;">08:15</span>
                         </div>
                         <div class="overflow-hidden">
@@ -115,6 +159,60 @@
         </div>
 
     </div>
+	<!-- 태그 추가 모달 -->
+	    <div sec:authorize="isAuthenticated()"
+	         class="modal fade"
+	         id="tagAddModal"
+	         tabindex="-1">
 
+	        <div class="modal-dialog modal-dialog-centered modal-sm">
+	            <div class="modal-content">
+	                <form th:action="@{/tag/createContentVideoTag/{id}(id=${video.id})}"
+	                      method="post">
+
+	                    <div class="modal-body">
+	                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
+	                        <div class="input-group">
+	                            <span class="input-group-text">#</span>
+	                            <input type="text"
+	                                   name="tagName"
+	                                   class="form-control"
+	                                   required>
+	                        </div>
+	                    </div>
+
+	                    <div class="modal-footer">
+	                        <button type="submit"
+	                                class="btn btn-primary btn-sm w-100">
+	                            추가
+	                        </button>
+	                    </div>
+
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	<script>
+		function confirmDelete(videoId) {
+		    Swal.fire({
+		        title: '정말로 삭제하시겠습니까?',
+		        text: "삭제된 영상은 다시 복구할 수 없습니다!",
+		        icon: 'warning',
+		        showCancelButton: true,
+		        confirmButtonColor: '#d33', // 삭제 버튼 색상
+		        cancelButtonColor: '#6c757d', // 취소 버튼 색상
+		        confirmButtonText: '삭제',
+		        cancelButtonText: '취소',
+		        reverseButtons: true // 버튼 순서 반전 (취소-확인 순)
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		            // 삭제 폼의 action을 설정하고 제출
+		            const form = document.getElementById('deleteForm');
+		            form.action = '/content/video/delete/' + videoId;
+		            form.submit();
+		        }
+		    })
+		}
+	</script>
 </div>
 </html>
