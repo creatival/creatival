@@ -26,6 +26,7 @@ public class CreateVideoDTO {
 
 	private MultipartFile thumbnailFile;
 	
+	@NotEmpty(message = "영상 파일은 필수 사항입니다.")
 	private MultipartFile videoFile;
 	
 	private boolean allowComment;

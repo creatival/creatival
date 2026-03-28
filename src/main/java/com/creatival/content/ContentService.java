@@ -20,11 +20,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateArtDTO;
+import com.creatival.content.DTO.CreateMusicDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtList;
 import com.creatival.content.DTO.ResponseContentListForProject;
+import com.creatival.content.DTO.ResponseMusicDetailDTO;
+import com.creatival.content.DTO.ResponseMusicListDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
@@ -32,6 +35,7 @@ import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.ResponseVideoDetailDTO;
 import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
+import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.DTO.UpdateVideoDTO;
@@ -463,6 +467,100 @@ public class ContentService {
 			ContentFile contentFile = contentFileService.getContentFileByContent(content).getFirst();
 			contentFileService.delete(contentFile);
 			contentFileService.createContentFileVideoForContent(content, dto.getVideoFile(), "video");
+		}
+	}
+	public void createContentMusic(@Valid CreateMusicDTO createMusicDTO, Users user) throws IOException {
+		String imgurl = "/upload/images/thumbnail/";
+		
+		if(createMusicDTO.getThumbnailFile() != null) {
+			imgurl += fileUtil.saveImage(createMusicDTO.getThumbnailFile(), "thumbnail");
+		}
+		Content content = Content.builder()
+				.title(createMusicDTO.getTitle())
+				.description(createMusicDTO.getDescription())
+				.user(user)
+				.visibility(createMusicDTO.getVisibility())
+				.ownerType(createMusicDTO.getOwnerType())
+				.type(ContentType.MUSIC)
+				.isAllowComment(createMusicDTO.isAllowComment())
+				.isFanWork(createMusicDTO.isFanWork())
+				.ThumbnailImgUrl(imgurl)
+				.build();
+		if(content.isFanWork() && createMusicDTO.getOriginalContentId() != null) {
+			content.setOriginalContent(contentRepository.findById(createMusicDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
+		}
+		if(createMusicDTO.getProjectTag() != null && !createMusicDTO.getProjectTag().isBlank()) {
+			Project project = teamService.getProjectTag(createMusicDTO.getProjectTag());
+			if(project==null) {
+				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
+			}
+			TeamMember member = teamService.getMemberForTeamByUser(project.getTeam(), user);
+			if(member == null) {
+				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
+			}
+			content.setProject(project);
+		}
+		contentRepository.save(content);
+		
+		String tagString = createMusicDTO.getTagString();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        // 쉼표로 구분된 문자열을 배열로 변환
+	        String[] tags = tagString.split(",");
+	        
+	        for (String tagName : tags) {
+	            String trimmedTag = tagName.trim();
+	            if (!trimmedTag.isEmpty()) {
+	                // 태그를 저장하고 소설과 연결하는 로직 호출
+	                // 예: tagService.addTagToContent(novel, trimmedTag);
+	            	tagService.createTagForContent(content, tagName, user.getUsername());
+	            }
+	        }
+	    }
+		
+		contentFileService.createContentFileMusicForContent(content, createMusicDTO.getMusicFile(), "music");
+	}
+	public List<ResponseMusicListDTO> getMusicList(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.MUSIC,pageable);
+		
+		return contents.map(content -> ResponseMusicListDTO.from(content)).toList();
+	}
+	public ResponseMusicDetailDTO getMusicDetailById(Long id) {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			return null;
+		} else {
+			Content content = optional.get();
+			List<ContentFile> contentFile = contentFileService.getContentFileByContent(content);
+			System.out.println(contentFile.getFirst().getFileName());
+			return ResponseMusicDetailDTO.from(content,contentFile.getFirst());
+		}
+	}
+	
+	public void updateContentMusic(@Valid UpdateMusicDTO dto) throws IOException {
+		Optional<Content> optional = contentRepository.findById(dto.getId());
+		if(optional.isEmpty()) {
+			throw new IllegalArgumentException("수정할려는 콘텐츠가 없습니다.");
+		}
+		Content content = optional.get();
+		content.setTitle(dto.getTitle());
+		content.setDescription(dto.getDescription());
+		content.setVisibility(dto.getVisibility());
+		content.setAllowComment(dto.isAllowComment());
+		contentRepository.save(content);
+		
+		
+		if(dto.getThumbnailFile() != null && !dto.getThumbnailFile().isEmpty()) {
+			String imgurl = "/upload/images/thumbnail/";
+			imgurl += fileUtil.saveImage(dto.getThumbnailFile(), "thumbnail");
+			content.setThumbnailImgUrl(imgurl);
+		}
+		
+		
+		if(dto.getMusicFile()!=null && !dto.getMusicFile().isEmpty()) {
+			ContentFile contentFile = contentFileService.getContentFileByContent(content).getFirst();
+			contentFileService.delete(contentFile);
+			contentFileService.createContentFileMusicForContent(content, dto.getMusicFile(), "music");
 		}
 	}
 }

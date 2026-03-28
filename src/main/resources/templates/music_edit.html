@@ -1,0 +1,174 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        /* 기존 스타일 유지 */
+        .preview-wrapper {
+            width: 100%; height: 250px; margin-bottom: 15px;
+            border: 2px dashed #dee2e6; border-radius: 12px;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            background-color: #f8f9fa; position: relative;
+        }
+        .preview-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-placeholder { color: #adb5bd; text-align: center; }
+        .audio-preview-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; }
+        audio { width: 100%; height: 40px; }
+        .tag-badge {
+            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;
+            display: inline-flex; align-items: center; transition: 0.2s;
+        }
+        .tag-badge i { cursor: pointer; margin-left: 6px; font-size: 12px; color: #ff5e3a; }
+        .settings-label { font-size: 0.85rem; color: #6c757d; font-weight: 600; margin-bottom: 8px; display: block; }
+    </style>
+</head>
+
+<div class="container my-5" layout:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-0">음악 정보 수정</h2>
+            <p class="text-muted mb-0 mt-1">기존에 등록된 음악의 상세 정보를 수정합니다.</p>
+        </div>
+        <a th:href="@{/content/music/list}" class="btn btn-outline-secondary">취소 및 돌아가기</a>
+    </div>
+
+    <form th:action="@{/content/music/edit/{id}(id=${updateMusicDTO.id})}" method="post" enctype="multipart/form-data" th:object="${updateMusicDTO}" id="musicForm">
+        <input type="hidden" th:field="*{id}">
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4 text-center">
+                        <div class="preview-wrapper" id="thumbPreviewWrapper">
+                            <div class="preview-placeholder" id="thumbPlaceholder" th:style="${updateMusicDTO.thumbnailFileUrl != null ? 'display:none' : ''}">
+                                <i class="bi bi-image fs-1"></i><br>커버 미리보기
+                            </div>
+                            <img id="thumbPreview" th:src="${updateMusicDTO.thumbnailFileUrl}" th:style="${updateMusicDTO.thumbnailFileUrl != null ? 'display:block' : 'display:none'}">
+                        </div>
+                        <h6 class="fw-bold">앨범 커버 이미지</h6>
+                        <p class="text-muted small mb-3" id="thumbFileName">파일을 선택하지 않으면 기존 이미지가 유지됩니다.</p>
+                        
+                        <input type="file" th:field="*{thumbnailFile}" class="d-none" id="thumbnailFile" accept="image/*" onchange="previewThumbnail(this)">
+                        <button type="button" class="btn btn-outline-success btn-sm px-3" onclick="document.getElementById('thumbnailFile').click()">
+                            이미지 변경
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 text-center">
+                        <h6 class="fw-bold mb-3">음원 파일</h6>
+                        <div class="audio-preview-card mb-3" id="audioPreviewContainer" th:style="${updateMusicDTO.musicUrl != null ? 'display:block' : 'display:none'}">
+                            <audio id="audioPreview" th:src="${updateMusicDTO.musicUrl}" controls></audio>
+                        </div>
+                        <p class="text-muted small mb-3" id="musicFileName">변경시에만 파일을 새로 업로드 하세요.</p>
+                        
+                        <input type="file" th:field="*{musicFile}" class="d-none" id="musicFile" accept="audio/*" onchange="previewMusic(this)">
+                        <button type="button" class="btn btn-primary btn-sm px-3 w-100" onclick="document.getElementById('musicFile').click()">
+                            <i class="bi bi-music-note-beamed me-1"></i>파일 변경하기
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">음악 세부 정보 수정</h5>
+
+                        <div class="mb-4">
+                            <label th:for="title" class="form-label fw-semibold">곡 제목 <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{title}" class="form-control form-control-lg fs-6" placeholder="곡의 제목을 입력하세요" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label th:for="description" class="form-label fw-semibold">설명 및 가사</label>
+                            <textarea th:field="*{description}" class="form-control" rows="5" placeholder="시청자에게 곡에 대해 설명하거나 가사를 적어주세요."></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-block">공개 범위</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public">
+                                    <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
+
+                                    <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
+                                    <label class="btn btn-outline-primary" for="vis-private">비공개</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-block">댓글 설정</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on">
+                                    <label class="btn btn-outline-secondary" for="comment-on">허용</label>
+
+                                    <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
+                                    <label class="btn btn-outline-secondary" for="comment-off">차단</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end border-top pt-4 mt-auto">
+                            <button type="submit" class="btn btn-success px-5 fw-bold shadow">
+                                <i class="bi bi-check-circle me-2"></i>수정 완료
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </form>
+    
+    <script th:inline="javascript">
+        // 1. 초기 태그 로드 (수정 페이지용 추가 로직)
+        let tagArray = [];
+        window.onload = function() {
+            const initialTags = document.getElementById('finalTagString').value;
+            if(initialTags) {
+                tagArray = initialTags.split(',').filter(t => t.trim() !== "");
+                updateTags();
+            }
+        };
+
+        // 2. 썸네일(커버) 미리보기
+        function previewThumbnail(input) {
+            const fileName = document.getElementById('thumbFileName');
+            const preview = document.getElementById('thumbPreview');
+            const placeholder = document.getElementById('thumbPlaceholder');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                fileName.innerText = input.files[0].name;
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 3. 음원 미리보기
+        function previewMusic(input) {
+            const fileName = document.getElementById('musicFileName');
+            const preview = document.getElementById('audioPreview');
+            const container = document.getElementById('audioPreviewContainer');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                fileName.innerText = file.name;
+                const url = URL.createObjectURL(file);
+                preview.src = url;
+                container.style.display = 'block';
+            }
+        }
+
+        // 4. 태그 관리 로직
+    </script>
+</div>
+</html>

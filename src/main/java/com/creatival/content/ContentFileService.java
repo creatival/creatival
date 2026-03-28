@@ -93,4 +93,22 @@ public class ContentFileService {
 		contentFileRepository.delete(contentFile);
 		
 	}
+
+	public void createContentFileMusicForContent(Content content, MultipartFile musicFile, String category) {
+		if(musicFile == null || musicFile.isEmpty()) {
+			new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		try {
+			String fileName = fileUtil.saveMusic(musicFile, category);
+			String fileUrl="/upload/musics/"+category+"/" + fileName;
+			ContentFile contentFile = ContentFile.createForContent("MUSIC", fileUrl, fileName, musicFile.getOriginalFilename(), 0, content);
+			System.out.println("저장된 ID: " + contentFile.getId());
+			contentFileRepository.save(contentFile);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + musicFile.getOriginalFilename(), e);
+		}
+		
+	}
 }

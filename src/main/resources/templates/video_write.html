@@ -121,7 +121,18 @@
                                 </div>
                             </div>
                         </div>
-
+						<div class="row row g-3 mb-4">
+							<div class="col-md-6">
+	                            <label class="form-label fw-semibold d-block">소유자 유형</label>
+	                            <div class="btn-group w-100" role="group">
+	                                <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER" checked>
+	                                <label class="btn btn-outline-primary" for="owner-USER">본인</label>
+	
+	                                <input type="radio" class="btn-check" th:field="*{ownerType}" value="TEAM" id="owner-TEAM">
+	                                <label class="btn btn-outline-primary" for="owner-TEAM">팀</label>
+	                            </div>
+	                        </div>
+						</div>
                         <div class="mb-4">
                             <label class="form-label fw-semibold">태그 설정</label>
                             <div id="tagContainer" class="d-flex flex-wrap gap-2 mb-2"></div>

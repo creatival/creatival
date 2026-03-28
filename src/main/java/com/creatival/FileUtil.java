@@ -33,6 +33,16 @@ public class FileUtil {
 		System.out.println("saveVideo 물리 저장 끝");
 		return fileName;
 	}
+	public String saveMusic(MultipartFile music, String category) throws IOException {
+		String musicUrl=null;
+		String fileName = UUID.randomUUID().toString()+"_"+ music.getOriginalFilename();
+		Path filePath = Paths.get(rootPath+"/musics/"+category, fileName);
+		Files.createDirectories(filePath.getParent());
+		Files.write(filePath, music.getBytes());
+		musicUrl = "/upload/musics/"+category+"/"+fileName; //보안 및 html에서 C:를 안 받기에 가상 경로를 넣어줌
+		System.out.println("saveMusic 물리 저장 끝");
+		return fileName;
+	}
 	public void deleteImage(String fileName, String category) throws IOException {
 	    Path filePath = Paths.get(rootPath + "/images/" + category, fileName);
 
@@ -43,4 +53,5 @@ public class FileUtil {
 	        System.out.println("삭제할 파일이 존재하지 않음: " + fileName);
 	    }
 	}
+	
 }
