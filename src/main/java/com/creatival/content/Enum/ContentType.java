@@ -4,5 +4,6 @@ public enum ContentType {
 	NOVEL,
 	ART,
 	VIDEO,
-	MUSIC
+	MUSIC,
+	FILE
 }

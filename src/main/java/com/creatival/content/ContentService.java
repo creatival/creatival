@@ -20,12 +20,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateArtDTO;
+import com.creatival.content.DTO.CreateFileDTO;
 import com.creatival.content.DTO.CreateMusicDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtList;
+import com.creatival.content.DTO.ResponseContentFileDTO;
 import com.creatival.content.DTO.ResponseContentListForProject;
+import com.creatival.content.DTO.ResponseFileDetailDTO;
+import com.creatival.content.DTO.ResponseFileListDTO;
 import com.creatival.content.DTO.ResponseMusicDetailDTO;
 import com.creatival.content.DTO.ResponseMusicListDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
@@ -35,11 +39,13 @@ import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.ResponseVideoDetailDTO;
 import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
+import com.creatival.content.DTO.UpdateFileDTO;
 import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.DTO.UpdateVideoDTO;
 import com.creatival.content.Enum.ContentType;
+import com.creatival.content.repository.ContentFileRepository;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.content.repository.SeriesRepository;
@@ -562,5 +568,108 @@ public class ContentService {
 			contentFileService.delete(contentFile);
 			contentFileService.createContentFileMusicForContent(content, dto.getMusicFile(), "music");
 		}
+	}
+	public void createContentFile(@Valid CreateFileDTO createFileDTO, Users user) throws IOException {
+		Content content = Content.builder()
+				.title(createFileDTO.getTitle())
+				.description(createFileDTO.getDescription())
+				.user(user)
+				.visibility(createFileDTO.getVisibility())
+				.ownerType(createFileDTO.getOwnerType())
+				.type(ContentType.FILE)
+				.isAllowComment(createFileDTO.isAllowComment())
+				.isFanWork(createFileDTO. isFanWork())
+				.build();
+		if(content.isFanWork() && createFileDTO.getOriginalContentId() != null) {
+			content.setOriginalContent(contentRepository.findById(createFileDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
+		}
+		if(createFileDTO.getProjectTag() != null && !createFileDTO.getProjectTag().isBlank()) {
+			Project project = teamService.getProjectTag(createFileDTO.getProjectTag());
+			if(project==null) {
+				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
+			}
+			TeamMember member = teamService.getMemberForTeamByUser(project.getTeam(), user);
+			if(member == null) {
+				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
+			}
+			content.setProject(project);
+		}
+		contentRepository.save(content);
+		
+		String tagString = createFileDTO.getTagList();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        // 쉼표로 구분된 문자열을 배열로 변환
+	        String[] tags = tagString.split(",");
+	        
+	        for (String tagName : tags) {
+	            String trimmedTag = tagName.trim();
+	            if (!trimmedTag.isEmpty()) {
+	                // 태그를 저장하고 소설과 연결하는 로직 호출
+	                // 예: tagService.addTagToContent(novel, trimmedTag);
+	            	tagService.createTagForContent(content, tagName, user.getUsername());
+	            }
+	        }
+	    }
+		
+		contentFileService.createContentFileFileForContent(content, createFileDTO.getFile(), "file");
+		contentFileService.createContentFileImageForContent(content, createFileDTO.getExtraImg(), "previewImg");
+		
+	}
+	public Page<ResponseFileListDTO> getFileList(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> fileList = contentRepository.findByType(ContentType.FILE, pageable);
+		return fileList.map(file -> ResponseFileListDTO.from(file));
+	}
+	public ResponseFileDetailDTO getfIleDetail(Long id) {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			throw new IllegalArgumentException("보려는 content를 찾을 수 없습니다.");
+		}
+		Content content = optional.get();
+		List<ContentFile> files = contentFileService.getContentFileByContent(content);
+		
+		ContentFile file = files.stream().filter(f -> "FILE".equals(f.getFileType()))
+				.findFirst().orElseThrow(() -> new IllegalStateException("필수 파일이 없습니다."));
+		ContentFile previewImg = files.stream().filter(f -> "ART".equals(f.getFileType()))
+				.findFirst().orElse(null);
+		
+		if(previewImg==null) {
+			return ResponseFileDetailDTO.from(content, file);
+		} else {
+			return ResponseFileDetailDTO.from(content, file, previewImg);
+		}
+		
+	}
+	public void updateContentFile(Long id, @Valid UpdateFileDTO dto) {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			throw new IllegalArgumentException("content를 찾을 수 없습니다.");
+		}
+		Content content = optional.get();
+		content.setTitle(dto.getTitle());
+		content.setDescription(dto.getDescription());
+		content.setAllowComment(dto.isAllowComment());
+		content.setVisibility(dto.getVisibility());
+		
+		List<ContentFile> files = contentFileService.getContentFileByContent(content);
+		if(dto.getFile() != null && !dto.getFile().isEmpty()) {
+			ContentFile file = files.stream().filter(f -> "FILE".equals(f.getFileType()))
+					.findFirst().orElseThrow(() -> new IllegalStateException("필수 파일이 없습니다."));
+			contentFileService.delete(file);
+			contentFileService.createContentFileFileForContent(content, dto.getFile(), "file");
+		}
+		if(dto.getExtraImg() != null && !dto.getExtraImg().isEmpty()) {
+			ContentFile previewImg = files.stream().filter(f -> "ART".equals(f.getFileType()))
+					.findFirst().orElse(null);
+			if(previewImg!=null) {
+				contentFileService.delete(previewImg);
+			}
+			
+			contentFileService.createContentFileImageForContent(content, dto.getExtraImg(), "previewImg");
+		}
+		
+		contentRepository.save(content);
+
+		
 	}
 }

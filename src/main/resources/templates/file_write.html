@@ -14,7 +14,6 @@
             color: #333;
             text-decoration: none;
         }
-        /* 입력창 디자인 커스텀 (디자인 유지) */
         .input-title {
             font-size: 2rem;
             font-weight: bold;
@@ -45,12 +44,12 @@
             border-top: 1px solid #dee2e6;
             margin: 40px 0;
         }
-        /* 파일 선택 박스 스타일 */
         .file-preview-box {
             background-color: #e0e0e0;
             width: 150px;
             height: 100px;
             display: inline-flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             margin: 5px;
@@ -58,6 +57,7 @@
             overflow: hidden;
             transition: background 0.2s;
             vertical-align: top;
+            border: 2px dashed #ccc;
         }
         .file-preview-box:hover {
             background-color: #d0d0d0;
@@ -78,49 +78,134 @@
             background-color: #242a50;
             color: white;
         }
+        .file-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
         
         @media (max-width: 992px) {
             .back-btn { position: static; display: block; margin-bottom: 20px; }
         }
+		.tag-badge {
+		            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
+		            padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;
+		            display: inline-flex; align-items: center; transition: 0.2s;
+		        }
+		        .tag-badge i { cursor: pointer; margin-left: 6px; font-size: 12px; color: #ff5e3a; }
+		        .tag-badge:hover { background-color: #d1dbff; }
+		        .tag-input-group { max-width: 400px; margin: 0 auto; }
     </style>
 
     <main class="py-5">
-        <form th:action="@{/upload}" method="post" enctype="multipart/form-data" class="detail-container">
+        <form th:action="@{/content/file/write}" method="post" enctype="multipart/form-data" class="detail-container" th:object="${createFileDTO}">
             <a href="javascript:history.back()" class="back-btn">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
             <div class="text-center">
-                <input type="text" name="title" class="input-title" placeholder="제목을 입력하세요" required>
+                <input type="text" th:field="*{title}" class="input-title" placeholder="제목을 입력하세요" required>
                 <div class="user-info mt-2">
-                    <span class="user-id">현재 사용자 아이디</span> 
+                    <span class="user-id" th:text="${#authentication.name}">현재 사용자 아이디</span> 
                 </div>
                 <hr class="section-divider">
             </div>
-
+			<div class="row justify-content-center">
+                <input type="file" id="extraImg" name="extraImg" class="d-none" accept="image/*" onchange="previewFile(this, 'extra-preview')">
+                <div id="extra-preview" class="file-preview-box rounded" onclick="document.getElementById('extraImg').click()">
+                    <i class="bi bi-image fs-2 text-white"></i>
+                    <span class="file-label">추가 이미지</span>
+                </div>
+                <p class="small mt-1 text-muted text-center">대표 이미지/썸네일</p>
+            </div>
             <div class="content-area text-center">
-                <textarea name="content" class="input-content" placeholder="내용을 입력하세요 (그거거)" required></textarea>
+                <textarea th:field="*{description}" class="input-content" placeholder="내용을 상세히 입력하세요" required></textarea>
             </div>
 
             <hr class="section-divider">
 
             <div class="text-center mb-5">
-                <p class="small fw-bold mb-3">첨부파일 추가 (클릭하여 파일 선택)</p>
+                <p class="small fw-bold mb-3">파일 첨부</p>
                 
-                <input type="file" id="fileInput" name="files" multiple class="d-none" onchange="handleFileSelect(this)">
-                
-                <div id="preview-list" class="d-flex justify-content-center gap-2 flex-wrap">
-                    <div class="file-preview-box rounded" onclick="document.getElementById('fileInput').click()">
-                        <i class="bi bi-plus-lg fs-2 text-white"></i>
+                <div class="d-flex justify-content-center gap-4 flex-wrap">
+                    <div>
+                        <input type="file" id="mainFile" name="file" class="d-none" onchange="previewFile(this, 'main-preview')">
+                        <div id="main-preview" class="file-preview-box rounded" onclick="document.getElementById('mainFile').click()">
+                            <i class="bi bi-file-earmark-plus fs-2 text-white"></i>
+                            <span class="file-label">주 파일 선택</span>
+                        </div>
+                        <p class="small mt-1 text-muted">메인 콘텐츠 파일</p>
                     </div>
+
+                    
                 </div>
 
-                <div class="mt-4">
-                    <input type="text" name="tags" class="form-control border-0 text-center text-primary" placeholder="#태그 #입력 (쉼표나 공백으로 구분)">
-                </div>
+				<div class="mb-5 text-center">
+	                   <label class="settings-label"><i class="bi bi-hash"></i> 태그 설정</label>
+	                   
+	                   <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+	                       </div>
+
+	                   <div class="input-group tag-input-group shadow-sm">
+	                       <span class="input-group-text bg-white border-end-0 text-muted">#</span>
+	                       <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그를 입력하고 엔터를 누르세요" onkeypress="handleTagKey(event)">
+	                       <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
+	                   </div>
+	                   
+	                   <input type="hidden" name="tagString" id="finalTagString">
+	               </div>
             </div>
 
             <hr class="section-divider">
+
+            <div class="row g-3 mb-4 text-start">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold d-block">공개 범위</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public">
+                        <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
+
+                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
+                        <label class="btn btn-outline-primary" for="vis-private">비공개</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold d-block">댓글 설정</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on">
+                        <label class="btn btn-outline-secondary" for="comment-on">허용</label>
+
+                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
+                        <label class="btn btn-outline-secondary" for="comment-off">차단</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold d-block">소유자 유형</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER">
+                        <label class="btn btn-outline-primary" for="owner-USER">개인</label>
+
+                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="TEAM" id="owner-TEAM">
+                        <label class="btn btn-outline-primary" for="owner-TEAM">팀</label>
+                    </div>
+                </div>
+            </div>
+			<div class="row g-3 mb-4 p-3 bg-light rounded shadow-sm">
+                <div class="col-12 mb-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" th:field="*{fanWork}" id="fanWorkCheck">
+                        <label class="form-check-label fw-bold" for="fanWorkCheck">2차 창작물(팬워크)인 경우 체크</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="settings-label">프로젝트 연결 (선택)</label>
+                    <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="projectTag 입력">
+                </div>
+                <div class="col-md-6">
+                    <label class="settings-label">원본 작품 ID (선택)</label>
+                    <input type="number" th:field="*{originalContentId}" class="form-control form-control-sm" placeholder="ID 입력">
+                </div>
+            </div>
 
             <div class="text-center mt-5">
                 <button type="submit" class="btn btn-action">등록 완료</button>
@@ -129,39 +214,87 @@
     </main>
 
     <script>
-        function handleFileSelect(input) {
-            const previewList = document.getElementById('preview-list');
-            // 기존 미리보기 초기화 (필요에 따라 유지하고 싶으면 append 방식으로 변경 가능)
-            previewList.innerHTML = `
-                <div class="file-preview-box rounded" onclick="document.getElementById('fileInput').click()">
-                    <i class="bi bi-plus-lg fs-2 text-white"></i>
-                </div>
-            `;
-
-            if (input.files) {
-                Array.from(input.files).forEach(file => {
-                    const reader = new FileReader();
+        function previewFile(input, previewId) {
+            const previewBox = document.getElementById(previewId);
+            const file = input.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // 기존 아이콘/텍스트 제거
+                    previewBox.innerHTML = '';
                     
-                    reader.onload = function(e) {
-                        const box = document.createElement('div');
-                        box.className = 'file-preview-box rounded';
-                        
-                        // 이미지 파일이면 썸네일 표시, 아니면 아이콘 표시
-                        if (file.type.startsWith('image/')) {
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            box.appendChild(img);
-                        } else {
-                            box.innerHTML = `<i class="bi bi-file-earmark-arrow-up fs-2 text-white"></i>`;
-                        }
-                        
-                        previewList.prepend(box); // 새 파일을 리스트 앞에 추가
-                    };
-                    
-                    reader.readAsDataURL(file);
-                });
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        previewBox.appendChild(img);
+                    } else {
+                        // 이미지가 아닌 경우 아이콘과 파일명 표시
+                        previewBox.innerHTML = `
+                            <i class="bi bi-file-earmark-check fs-2 text-success"></i>
+                            <span class="file-label" style="font-size: 0.7rem; padding: 0 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;">
+                                ${file.name}
+                            </span>
+                        `;
+                    }
+                };
+                reader.readAsDataURL(file);
             }
         }
+		
+		let tagArray = [];
+
+			    function handleTagKey(e) {
+			        if (e.key === 'Enter') {
+			            e.preventDefault();
+			            addTag();
+			        }
+			    }
+
+			    function addTag() {
+			        const input = document.getElementById('tagInput');
+			        const value = input.value.trim().replace(/#/g, '');
+
+			        if (value && !tagArray.includes(value)) {
+			            if (tagArray.length >= 10) {
+			                alert("태그는 최대 10개까지 등록 가능합니다.");
+			                return;
+			            }
+			            tagArray.push(value);
+			            updateTags();
+			            input.value = '';
+			        }
+			    }
+
+			    function removeTag(tag) {
+			        tagArray = tagArray.filter(t => t !== tag);
+			        updateTags();
+			    }
+
+			    function updateTags() {
+			        const container = document.getElementById('tagContainer');
+			        const hiddenInput = document.getElementById('finalTagString');
+
+			        container.innerHTML = tagArray.map(t => `
+			            <span class="tag-badge shadow-sm">
+			                #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
+			            </span>
+			        `).join('');
+
+			        hiddenInput.value = tagArray.join(',');
+			    }
+
+			    // 3. projectTag / originalContentId 동시 입력 방지
+			    document.getElementById("novelForm").addEventListener("submit", function(e) {
+
+			        const projectTag = document.querySelector("input[name='projectTag']").value.trim();
+			        const originalContentId = document.querySelector("input[name='originalContentId']").value.trim();
+
+			        if (projectTag !== "" && originalContentId !== "") {
+			            alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
+			            e.preventDefault(); // submit 차단
+			        }
+			    });
     </script>
 </div>
 </html>

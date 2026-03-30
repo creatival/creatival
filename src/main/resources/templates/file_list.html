@@ -14,6 +14,13 @@
             margin: 0 auto 8px auto;
             color: #6a76ab;
         }
+		.custom-pagination .page-item.active .page-link {
+		            background: none; color: #333; /* 글자는 검정 */
+		            border-bottom: 3px solid #f05a28; /* 주황-빨강 계열 밑줄 */
+		            border-radius: 0;
+		        }
+		        .custom-pagination .page-item.disabled .page-link { color: #ccc; }
+		        .custom-pagination .page-link:hover { color: #f05a28; }
         .category-text {
             font-size: 0.8rem;
             font-weight: bold;
@@ -87,33 +94,40 @@
         </div>
 
         <div class="text-center mb-4">
-            <a th:href="@{/}" class="text-muted text-decoration-none small mb-3 d-inline-block">파일 올리기</a>
+            <a th:href="@{/content/file/write}" class="text-muted text-decoration-none small mb-3 d-inline-block">파일 올리기</a>
             <h3 class="fw-bold">파일</h3>
         </div>
 
         <div class="mt-4 mb-4">
-            <div th:each="num : ${#numbers.sequence(1, 14)}" class="list-row d-flex justify-content-between align-items-center py-2 px-1">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="small fw-medium">나네참새(아이디)</span>
+            <div th:each="file : ${fileList}" class="list-row d-flex justify-content-between align-items-center py-2 px-1">
+                <div class="d-flex align-items-center gap-2 col-2">
+                    <span class="small fw-medium " th:text="${file.displayname + '(' + file.username + ')'}">나네참새(아이디)</span>
                 </div>
-                <div class="small fw-bold">
+                <a class="small fw-bold col-10 text-center" th:text="${file.title}" th:href="@{/content/file/detail/{id}(id=${file.id})}">
                     제목
-                </div>
+                </a>
             </div>
         </div>
 
-        <div class="pagination-container">
-            <div class="pagination-numbers">
-                <a href="#" class="arrow">&lt;</a>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <a href="#" class="arrow">&gt;</a>
-            </div>
-            
-        </div>
+		<div class="pagination-container" th:if="${!fileList.isEmpty()}">
+		    <div class="pagination-numbers">
+		        <a class="arrow" th:href="@{|?page=${fileList.number - 1}|}" 
+		           th:classappend="${!fileList.hasPrevious} ? 'disabled' : ''"
+		           th:style="${!fileList.hasPrevious} ? 'visibility:hidden' : ''">&lt;</a>
+
+		        <th:block th:each="page: ${#numbers.sequence(0, fileList.totalPages - 1)}">
+		            <a th:if="${page >= fileList.number - 2 and page <= fileList.number + 2}"
+		               th:href="@{|?page=${page}|}"
+		               th:text="${page + 1}"
+		               th:style="${page == fileList.number} ? 'color: #e05238; border-bottom: 2px solid #e05238;' : ''">
+		            </a>
+		        </th:block>
+
+		        <a class="arrow" th:href="@{|?page=${fileList.number + 1}|}" 
+		           th:classappend="${!fileList.hasNext} ? 'disabled' : ''"
+		           th:style="${!fileList.hasNext} ? 'visibility:hidden' : ''">&gt;</a>
+		    </div>
+		</div>
 
     </main>
 </div>

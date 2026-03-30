@@ -47,6 +47,24 @@ public class ContentFileService {
 			sortOrder++;
 		}
 	}
+	@Transactional
+	public void createContentFileImageForContent(Content content ,MultipartFile file, String category) {
+		if(file == null || file.isEmpty()) {
+			throw 	new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		int sortOrder=1;
+			try {
+				String fileName = fileUtil.saveImage(file, category);
+				String fileUrl="/upload/images/"+category+"/" + fileName;
+				ContentFile contentFile = ContentFile.createForContent("ART", fileUrl, fileName, file.getOriginalFilename() , sortOrder, content);
+				System.out.println("저장된 ID: " + contentFile.getId());
+				contentFileRepository.save(contentFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + file.getOriginalFilename(), e);
+			}
+			sortOrder++;
+	}
 	
 	public ContentFile getContentFileThumbnail(Content content) {
 		if(content.getType() == ContentType.NOVEL) {
@@ -108,6 +126,24 @@ public class ContentFileService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + musicFile.getOriginalFilename(), e);
+		}
+		
+	}
+
+	public void createContentFileFileForContent(Content content, MultipartFile file, String category) {
+		if(file == null || file.isEmpty()) {
+			new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		try {
+			String fileName = fileUtil.saveFile(file, category);
+			String fileUrl="/upload/files/"+category+"/" + fileName;
+			ContentFile contentFile = ContentFile.createForContent("FILE", fileUrl, fileName, file.getOriginalFilename(), 0, content);
+			System.out.println("저장된 ID: " + contentFile.getId());
+			contentFileRepository.save(contentFile);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + file.getOriginalFilename(), e);
 		}
 		
 	}

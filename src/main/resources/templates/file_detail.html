@@ -1,6 +1,7 @@
 <html layout:decorate="~{layout}">
 <div class="container" layout:fragment="content">
     <style>
+        /* 디자인은 그대로 유지합니다 */
         .detail-container {
             max-width: 800px;
             margin: 0 auto;
@@ -40,7 +41,6 @@
             color: #444;
             min-height: 150px;
         }
-        /* 파일 박스 및 다운로드 버튼 커스텀 */
         .file-box-wrapper {
             display: flex;
             justify-content: center;
@@ -88,7 +88,6 @@
             margin: 0 8px;
             font-weight: 500;
         }
-        /* 메인 버튼 스타일 */
         .btn-navy {
             background-color: #323b6d;
             color: white;
@@ -108,8 +107,8 @@
     </style>
 
     <main class="py-5">
-        <div class="detail-container">
-            <a th:href="@{/file_list}" class="back-btn">
+        <div class="detail-container" th:if="${fileDetail != null}">
+            <a th:href="@{/content/file/list}" class="back-btn">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -117,21 +116,22 @@
                 <div class="mb-2">
                     <span class="badge bg-light text-dark border fw-normal px-3">이미지</span>
                 </div>
-                <h1 class="detail-title">팀 프로젝트 참고용 UI 디자인 시안</h1>
+                <h1 class="detail-title" th:text="${fileDetail.title}">팀 프로젝트 참고용 UI 디자인 시안</h1>
                 <div class="user-info">
-                    <a href="#" class="user-id">홍길동</a>
+                    <a href="#" class="user-id" th:text="${fileDetail.displayname}">홍길동</a>
                     <span class="mx-2">·</span>
-                    <span>2026.02.26</span>
+                    <span th:text="${#temporals.format(fileDetail.createdAt, 'yyyy.MM.dd')}">2026.02.26</span>
                     <span class="mx-2">·</span>
-                    <span>조회수 124</span>
+                    <span>조회수 <span th:text="${fileDetail.viewCount}">124</span></span>
                 </div>
                 <hr class="section-divider">
             </div>
 
             <div class="content-area text-center">
-                <p>이번 팀 프로젝트의 메인 디자인 시안입니다. <br>전체적인 톤앤매너는 화이트와 그레이를 기본으로 잡았습니다.</p>
-                <div class="mt-4">
-                    <img src="images/pic.png" class="img-fluid rounded-4 shadow-sm" alt="preview" style="max-height: 500px;">
+                <p th:text="${fileDetail.description}">이번 팀 프로젝트의 메인 디자인 시안입니다.</p>
+                
+                <div class="mt-4" th:if="${fileDetail.preview != null}">
+                    <img th:src="${fileDetail.preview.fileUrl}" class="img-fluid rounded-4 shadow-sm" alt="preview" style="max-height: 500px;">
                 </div>
             </div>
 
@@ -140,40 +140,63 @@
             <div class="text-center">
                 <p class="small fw-bold mb-3">첨부파일 (1)</p>
                 <div class="file-box-wrapper">
-                    <div class="file-item">
-                        <a href="#" class="file-preview-box shadow-sm">
+                    <div class="file-item" th:if="${fileDetail.file != null}">
+                        <a th:href="${fileDetail.file.fileUrl}" class="file-preview-box shadow-sm" target="_blank">
                             <i class="bi bi-file-earmark-image fs-2 mb-1"></i>
-                            <span class="small fw-bold">UI_Design_v1.png</span>
-                            <span style="font-size: 0.7rem;">2.4 MB</span>
+                            <span class="small fw-bold" th:text="${fileDetail.file.originalFileName}">파일명.png</span>
                         </a>
-                        <a href="#" class="btn btn-outline-dark btn-download-sm">
+                        <a th:href="${fileDetail.file.fileUrl}" class="btn btn-outline-dark btn-download-sm" download>
                             <i class="bi bi-download me-1"></i> 다운로드
                         </a>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <a href="#" class="tag-link">#디자인</a>
-                    <a href="#" class="tag-link">#UIUX</a>
-                </div>
+				<!-- 태그 (tagList 사용) -->
+				<div class="tag-area mt-3">
+					<div class="mb-4">
+		                <div th:each="tag : ${tagList}" class="badge rounded-pill tag-badge">
+		                    <span th:text="'#' + ${tag.tagText}"></span>
+
+		                    <a sec:authorize="isAuthenticated()"
+		                       th:if="${fileDetail.username == #authentication.name}"
+		                       th:href="@{/tag/file/deleteContentTag(tagId=${tag.id},contentId=${fileDetail.id})}"
+		                       onclick="return confirm('삭제하시겠습니까?');"
+							   >
+		                        <i class="bi bi-x-circle-fill ms-1"></i>
+		                    </a>
+		                </div>
+
+		                <!-- 태그 추가 버튼 -->
+		                <button type="button"
+		                        sec:authorize="isAuthenticated()"
+		                         th:if="${fileDetail.username == #authentication.name}"
+		                        class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2"
+		                        style="width:24px;height:24px;"
+		                        data-bs-toggle="modal"
+		                        data-bs-target="#tagAddModal">
+		                    <i class="bi bi-plus"></i>
+		                </button>
+		            </div>
+	            </div>
             </div>
 
             <hr class="section-divider">
 
             <div class="d-flex justify-content-between align-items-center mb-5">
-                <div>
-                    <a href="#" class="text-muted text-decoration-none small me-3">수정</a>
-                    <a href="#" class="text-danger text-decoration-none small">삭제</a>
+                <div  sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
+                    <a th:href="@{|/content/file/edit/${fileDetail.id}|}" class="text-muted text-decoration-none small me-3">수정</a>
+                    <a th:href="@{|/content/file/delete/${fileDetail.id}|}" class="text-danger text-decoration-none small" 
+                       onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="#" class="btn btn-outline-secondary rounded-pill px-4">
                          팔로우
                     </a>
-                    <a th:href="@{/file_list}" class="btn btn-navy px-4">목록보기</a>
+                    <a th:href="@{/content/file/list}" class="btn btn-navy px-4">목록보기</a>
                 </div>
             </div>
 
             <div id="comments" class="mt-5 pt-4">
-                <h5 class="fw-bold mb-4">댓글 <span class="text-primary">124</span></h5>
+                <h5 class="fw-bold mb-4">댓글 <span class="text-primary" th:text="${fileDetail.viewCount}">0</span></h5>
                 <div class="d-flex align-items-start mb-5">
                     <img src="https://dummyimage.com/45x45/adb5bd/fff" class="rounded-circle me-3" style="width: 45px; height: 45px;">
                     <div class="w-100">
@@ -187,6 +210,39 @@
                 </div>
             </div>
         </div>
+		
     </main>
+	<div sec:authorize="isAuthenticated()"
+	         class="modal fade"
+	         id="tagAddModal"
+	         tabindex="-1">
+
+	        <div class="modal-dialog modal-dialog-centered modal-sm">
+	            <div class="modal-content">
+	                <form th:action="@{/tag/createContentFileTag/{id}(id=${fileDetail.id})}"
+	                      method="post">
+
+	                    <div class="modal-body">
+	                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
+	                        <div class="input-group">
+	                            <span class="input-group-text">#</span>
+	                            <input type="text"
+	                                   name="tagName"
+	                                   class="form-control"
+	                                   required>
+	                        </div>
+	                    </div>
+
+	                    <div class="modal-footer">
+	                        <button type="submit"
+	                                class="btn btn-primary btn-sm w-100">
+	                            추가
+	                        </button>
+	                    </div>
+
+	                </form>
+	            </div>
+	        </div>
+	    </div>
 </div>
 </html>

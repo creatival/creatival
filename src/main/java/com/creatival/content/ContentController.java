@@ -19,12 +19,15 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.content.DTO.CreateArtDTO;
+import com.creatival.content.DTO.CreateFileDTO;
 import com.creatival.content.DTO.CreateMusicDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtDetail;
 import com.creatival.content.DTO.ResponseArtList;
+import com.creatival.content.DTO.ResponseFileDetailDTO;
+import com.creatival.content.DTO.ResponseFileListDTO;
 import com.creatival.content.DTO.ResponseMusicDetailDTO;
 import com.creatival.content.DTO.ResponseMusicListDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
@@ -34,6 +37,7 @@ import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.ResponseVideoDetailDTO;
 import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
+import com.creatival.content.DTO.UpdateFileDTO;
 import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
@@ -550,6 +554,16 @@ public class ContentController {
 			redirectAttributes.addFlashAttribute("icon", "error");
 			return "redirect:/content/music/list";
 		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
 		model.addAttribute("updateMusicDTO", UpdateMusicDTO.from(content, contentFileService.getContentFileByContent(content).getFirst()));
 		return "music_edit";
 	}
@@ -611,5 +625,152 @@ public class ContentController {
 		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
 		redirectAttributes.addFlashAttribute("icon", "success");
 		return "redirect:/content/music/list";
+	}
+	
+	@GetMapping("/file/list")
+	public String fileList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		Page<ResponseFileListDTO> list = contentService.getFileList(page);
+		model.addAttribute("fileList", list);
+		return "file_list";
+	}
+	
+	@GetMapping("/file/detail/{id}")
+	public String fileDetail(Model model, @PathVariable("id") Long id) {
+		ResponseFileDetailDTO dto = contentService.getfIleDetail(id);
+		model.addAttribute("fileDetail", dto);
+		Content content = contentService.getContent(id);
+		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		model.addAttribute("tagList", contentTags);
+		return "file_detail";
+	}
+	
+	@GetMapping("/file/write")
+	public String createFile(Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		model.addAttribute("createFileDTO", new CreateFileDTO());
+		return "file_write";
+	}
+	
+	@PostMapping("/file/write")
+	public String fileWrite(@Valid CreateFileDTO createFileDTO, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		try {
+			contentService.createContentFile(createFileDTO, user);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 생성되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/file/list";
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/write";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 웹 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/write";
+		}
+	}
+	
+	@GetMapping("/file/edit/{id}")
+	public String updateFile(@PathVariable("id") Long id ,Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 음악을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
+		List<ContentFile> files = contentFileService.getContentFileByContent(content);
+		
+		ContentFile file = files.stream().filter(f -> "FILE".equals(f.getFileType()))
+				.findFirst().orElseThrow(() -> new IllegalStateException("필수 파일이 없습니다."));
+		ContentFile previewImg = files.stream().filter(f -> "ART".equals(f.getFileType()))
+				.findFirst().orElse(null);
+		
+		if(previewImg==null) {
+			model.addAttribute("updateFileDTO", UpdateFileDTO.from(content, file));
+		} else {
+			model.addAttribute("updateFileDTO", UpdateFileDTO.from(content, file, previewImg));
+		}
+		
+		return "file_edit";
+	}
+	
+	@PostMapping("/file/edit/{id}")
+	public String updateFile(@Valid UpdateFileDTO dto ,@PathVariable("id") Long id,Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 파일을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		
+		try {
+			contentService.updateContentFile(id, dto);
+			redirectAttributes.addFlashAttribute("message", "수정 완료됐습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/file/detail/" + id;
+		}   catch (IllegalArgumentException e) {
+				redirectAttributes.addFlashAttribute("message", e.getMessage());
+				redirectAttributes.addFlashAttribute("icon", "error");
+				return "redirect:/content/file/edit/" +id;
+			} catch (Exception e) {
+				e.printStackTrace();
+				redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 웹 관리자께 문의바랍니다.");
+				redirectAttributes.addFlashAttribute("icon", "error");
+				return "redirect:/content/file/edit/" +id;
+			}
+	}
+	
+	@GetMapping("/file/delete/{id}")
+	public String deleteFile(@PathVariable("id") Long id, Model model,Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 파일을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/detail/"+id;
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 삭제할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/detail/"+id;
+		}
+		contentService.delete(content);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/content/file/list";
 	}
 }
