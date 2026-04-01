@@ -1,0 +1,57 @@
+<th:block th:fragment="commentItem(comment, depth, category, targetId)">
+    <div th:if="${comment != null}" class="comment-item" th:classappend="${depth > 0} ? 'is-child' : ''">
+        <div class="comment-main">
+            <div class="comment-header d-flex align-items-center gap-2 mb-1">
+                <span class="fw-bold" style="font-size: 0.95rem;" th:text="${comment.displayname}">작성자</span>
+                <span class="text-muted small" th:text="${#temporals.format(comment.createdAt,'yyyy.MM.dd HH:mm')}">시간</span>
+            </div>
+
+            <div class="comment-content mb-2" style="white-space: pre-wrap; font-size: 0.9rem;" th:text="${comment.text}">
+                댓글 내용
+            </div>
+
+            <div class="comment-footer d-flex align-items-center gap-3 mb-2">
+                <span class="text-muted small">좋아요 <span th:text="${comment.likeCount ?: 0}">0</span></span>
+                <div class="action-buttons d-flex gap-2">
+                    <button type="button" class="btn-action" onclick="toggleReplyForm(this)">답글</button>
+                    
+                    <th:block th:if="${comment.username == #authentication.name}">
+                        <button type="button" class="btn-action" onclick="toggleEditForm(this)">수정</button>
+						<button type="button" 
+						        class="btn-action btn-delete" 
+						        th:data-id="${comment.id}"
+						        onclick="confirmDelete(this)">삭제</button>
+                    </th:block>
+                </div>
+            </div>
+
+            <div th:if="${comment.username == #authentication.name}" class="edit-form-container" style="display: none; margin-bottom: 1rem;">
+                <form th:action="@{/comment/content/update/{id}(id=${comment.id})}" method="post" class="p-2 border rounded bg-light">
+                    <input type="hidden" name="targetId" th:value="${targetId}">
+                    <textarea name="text" class="form-control form-control-sm mb-2" rows="2" th:text="${comment.text}"></textarea>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditForm(this)">취소</button>
+                        <button type="submit" class="btn btn-primary btn-sm">저장</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="reply-form-container" style="display: none; margin-bottom: 1rem;">
+                <form th:action="@{/comment/content/reply/write/{id}(id=${comment.id})}" method="post" class="p-2 border rounded bg-light">
+                    <input type="hidden" name="parentId" th:value="${comment.id}">
+                    <textarea name="text" class="form-control form-control-sm mb-2" rows="2" placeholder="답글을 남겨보세요..." required></textarea>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleReplyForm(this)">취소</button>
+                        <button type="submit" class="btn btn-primary btn-sm">등록</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${comment.children != null and !comment.children.isEmpty()}" class="reply-wrapper">
+            <th:block th:each="child : ${comment.children}">
+                <div th:replace="~{ :: commentItem(comment=${child}, depth=${depth + 1}, category=${category}, targetId=${targetId})}"></div>
+            </th:block>
+        </div>
+    </div>
+</th:block>

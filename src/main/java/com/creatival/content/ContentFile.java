@@ -29,15 +29,6 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(
-    name = "content_file",
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_content_file_type",
-            columnNames = {"content_id", "file_type"} // DB 컬럼명을 적어야 함
-        )
-    }
-)
 public class ContentFile {
 	
 	private ContentFile() {

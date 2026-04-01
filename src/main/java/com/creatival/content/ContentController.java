@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.creatival.comment.CommentService;
+import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateFileDTO;
 import com.creatival.content.DTO.CreateMusicDTO;
@@ -63,6 +65,7 @@ public class ContentController {
 	private final UserService userService;
 	private final ContentFileService contentFileService;
 	private final TagService tagService;
+	private final CommentService commentService;
 
 	
 	@GetMapping("/novel_list")
@@ -312,6 +315,8 @@ public class ContentController {
 		model.addAttribute("art", responseArtDetail);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
 		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
 		return "illustration_detail";
 	}
 	
