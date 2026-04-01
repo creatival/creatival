@@ -115,6 +115,60 @@
                     <div sec:authorize="isAnonymous()" class="alert alert-secondary text-center py-5">
                         로그인 후 열람이 가능합니다.
                     </div>
+					<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+					    <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-lg">
+					        <div class="modal-content">
+					            <div class="modal-header">
+					                <h5 class="modal-title fw-bold" id="commentModalLabel">댓글</h5>
+					                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					            </div>
+
+					            <div class="modal-body">
+					                <div class="mb-4" sec:authorize="isAuthenticated()">
+					                    <form action="/content/comment" method="post">
+					                        <div class="form-floating mb-2">
+					                            <textarea class="form-control" placeholder="댓글을 남겨보세요." id="floatingTextarea" style="height: 100px" name="content"></textarea>
+					                            <label for="floatingTextarea" class="text-muted">다양한 의견을 자유롭게 남겨주세요.</label>
+					                        </div>
+					                        <div class="text-end">
+					                            <button type="submit" class="btn btn-dark px-4 rounded-pill">등록</button>
+					                        </div>
+					                    </form>
+					                </div>
+
+					                <div class="pb-3 border-bottom mb-4">
+					                    <span class="fw-bold">전체 댓글</span> <span class="text-primary fw-bold">3</span>개
+					                </div>
+
+					                <div class="comment-list">
+					                    <div class="d-flex mb-4">
+					                        <div class="me-3">
+					                            <i class="bi bi-person-circle fs-2 text-secondary"></i>
+					                        </div>
+					                        <div class="w-100">
+					                            <div class="fw-bold small">독자1 <span class="text-muted fw-normal ms-2">2026.04.01</span></div>
+					                            <p class="mb-1 text-dark">다음 화 너무 기대됩니다!</p>
+					                        </div>
+					                    </div>
+					                    
+					                    <div class="d-flex mb-4">
+					                        <div class="me-3">
+					                            <i class="bi bi-person-circle fs-2 text-secondary"></i>
+					                        </div>
+					                        <div class="w-100">
+					                            <div class="fw-bold small">독자2 <span class="text-muted fw-normal ms-2">2026.04.01</span></div>
+					                            <p class="mb-1 text-dark">작가님 건필하세요!</p>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+
+					            <div class="modal-footer">
+					                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">닫기</button>
+					            </div>
+					        </div>
+					    </div>
+					</div>
 
                 </div>
             </div>
@@ -129,11 +183,11 @@
                         </a>
                         <span th:if="${prevEpisode == null}" class="opacity-50">이전</span>
                     </div>
-                    <div class="col-4 border-start border-end border-white border-opacity-25">
-                        <a href="#comment-section">
-                            <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
-                        </a>
-                    </div>
+					<div class="col-4 border-start border-end border-white border-opacity-25">
+					    <a data-bs-toggle="modal" data-bs-target="#commentModal" style="cursor:pointer;">
+					        <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
+					    </a>
+					</div>
                     <div class="col-4">
                         <a th:if="${nextEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${nextEpisode.id})}">
                             다음 <i class="bi bi-caret-right-fill"></i>
@@ -142,6 +196,7 @@
                     </div>
                 </div>
             </div>
+			
         </div>
 
     </div> </body>
