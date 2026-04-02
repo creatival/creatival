@@ -24,19 +24,29 @@
         .chat-input-wrapper textarea:focus { outline: none; box-shadow: none; border-color: #dee2e6; }
         .btn-dark-custom { background-color: #2c3e50; color: white; transition: 0.2s; }
         .btn-dark-custom:hover { background-color: #1a252f; color: white; }
+
+        /* 후원하기 버튼 커스텀 스타일 */
+        .btn-support {
+            background-color: #3B4371;
+            color: white;
+            border: none;
+            transition: 0.3s;
+        }
+        .btn-support:hover {
+            background-color: #3B4371;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 
     <div class="row mb-5 pb-4 border-bottom align-items-end">
         <div class="col-md-7">
-
             <span class="badge bg-primary mb-2" th:text="${team.status}">모집 중</span>
-
             <h1 class="fw-bold display-5" th:text="${team.name}">팀 이름</h1>
-
             <p class="text-muted mb-0">
                 <i class="bi bi-calendar-check"></i>
-                설립일:
-                <span th:text="${#temporals.format(team.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
+                설립일: <span th:text="${#temporals.format(team.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
             </p>
 
             <div class="tag-area">
@@ -62,33 +72,23 @@
                     </button>
                 </div>
             </div>
-
         </div>
 
         <div class="col-md-5 text-md-end mt-3 mt-md-0">
-            <button class="btn btn-outline-secondary me-2">
-                <i class="bi bi-heart"></i> 1.2k
-            </button>
-            
+            <button class="btn btn-outline-secondary me-2"><i class="bi bi-heart"></i> 1.2k</button>
             <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary me-2" th:if="${team.leaderUsername == #authentication.name}">수정하기</a>
             <a th:href="@{/team/{id}/application(id=${team.id})}" class="btn btn-primary px-4">팀 참여 신청</a>
         </div>
     </div>
 
-
     <div class="row">
-
         <div class="col-lg-8">
-
             <img th:src="${team.bannerImgUrl != null ? team.bannerImgUrl : '/images/default-banner.png'}"
-                 class="img-fluid rounded shadow-sm mb-5"
-                 style="width: 100%; height: 400px; object-fit: cover;">
+                 class="img-fluid rounded shadow-sm mb-5" style="width: 100%; height: 400px; object-fit: cover;">
 
             <section class="mb-5">
                 <h4 class="fw-bold mb-4 border-bottom pb-2">팀 소개</h4>
-                <div class="lh-lg text-secondary" th:text="${team.description}">
-                    팀 소개 내용
-                </div>
+                <div class="lh-lg text-secondary" th:text="${team.description}">팀 소개 내용</div>
             </section>
 
             <section class="mb-5">
@@ -104,9 +104,7 @@
                     <a th:href="@{/team/{tid}/project/{pid}(tid=${team.id}, pid=${project.id})}"
                        class="list-group-item list-group-item-action py-3">
                         <div class="d-flex align-items-center">
-                            <img th:src="${project.bannerImgUrl}"
-                                 class="rounded me-3"
-                                 style="width: 80px; height: 60px; object-fit: cover;">
+                            <img th:src="${project.bannerImgUrl}" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
                             <div class="flex-grow-1">
                                 <h6 class="mb-1 fw-bold" th:text="${project.title}">임시 프로젝트</h6>
                                 <span class="text-muted small" th:text="${#temporals.format(project.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
@@ -128,36 +126,29 @@
                     <h6 class="fw-bold mb-4">전체 의견 <span class="text-indigo">2</span></h6>
                     
                     <div class="chat-list mb-4">
-                        
                         <div class="d-flex mb-3">
-                            <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3" width="40" height="40" alt="프로필">
+                            <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3" width="40" height="40">
                             <div class="w-100">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="fw-bold small">홍시 (팀원)</span>
                                     <span class="text-muted small" style="font-size: 0.75rem;">2026.03.21 21:30</span>
                                 </div>
-                                <div class="p-3 chat-box text-dark small">
-                                    오코바보
-                                </div>
+                                <div class="p-3 chat-box text-dark small">오코바보</div>
                             </div>
                         </div>
 
                         <div class="d-flex mb-3">
-							<img src="https://dummyimage.com/40x40/ced4da/6c757d" 
-							     class="rounded-circle me-3" 
-							     width="40" height="40" 
-							     alt="프로필">
+                            <img src="https://dummyimage.com/40x40/ced4da/6c757d" class="rounded-circle me-3" width="40" height="40">
                             <div class="w-100">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="fw-bold small text-primary" th:text="${#authentication.name}">나의 닉네임 (팀장)</span>
                                     <span class="text-muted small" style="font-size: 0.75rem;">2026.03.21 21:35</span>
                                 </div>
                                 <div class="p-3 chat-box text-dark small">
-                                    좋습니다! 오렌지색으로 포인트를 줘도 예쁠 것 같아요. 내일 회의 때 시안 공유하겠습니다.
+                                    좋습니다! 오렌지색으로 포인트를 줘도 예쁠 것 같아요.
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <div class="chat-input-wrapper mt-4 shadow-sm border">
@@ -166,44 +157,22 @@
                             <button class="btn btn-dark-custom rounded-0 px-4 btn-sm">등록</button>
                         </div>
                     </div>
-
                 </div>
             </section>
-
         </div>
 
-
         <div class="col-lg-4">
-
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-4 border-bottom pb-2">팀 정보</h5>
-
                     <div class="d-flex align-items-center mb-3">
                         <img th:src="${team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
-                             class="rounded-circle me-3"
-                             style="width: 40px; height: 40px; object-fit: cover;">
-
+                             class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
                         <div>
                             <h6 class="mb-0 fw-bold" th:text="${team.name}">Team Creatival</h6>
-                            <small class="text-muted">
-                                설립일:
-                                <span th:text="${#temporals.format(team.createdAt, 'yyyy.MM.dd')}">2025.10.01</span>
-                            </small>
+                            <small class="text-muted">설립일: <span th:text="${#temporals.format(team.createdAt, 'yyyy.MM.dd')}">2025.10.01</span></small>
                         </div>
                     </div>
-
-                    <div class="d-flex align-items-center">
-                        <img th:src="${team.leaderProfileImgUrl != null ? team.leaderProfileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}"
-                             class="rounded-circle me-3"
-                             style="width: 40px; height: 40px; object-fit: cover;">
-
-                        <div>
-                            <p class="mb-0 fw-bold small" th:text="${team.leaderUsername}">팀장 이름</p>
-                            <small class="text-muted">팀 리더</small>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
@@ -215,39 +184,28 @@
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-4 border-bottom pb-2">참여중인 팀원</h5>
-
                     <div class="list-group list-group-flush">
-
-                        <div class="list-group-item px-0 border-0 d-flex align-items-center"
-                             th:each="member : ${memberList}"
-                             th:if="${!#lists.isEmpty(memberList)}">
-
+                        <div class="list-group-item px-0 border-0 d-flex align-items-center" th:each="member : ${memberList}">
                             <img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} : 'https://dummyimage.com/40x40/adb5bd/495057'"
-                                 class="rounded-circle me-3"
-                                 width="40" height="40">
-
+                                 class="rounded-circle me-3" width="40" height="40">
                             <div>
-                                <p class="mb-0 fw-bold small">
-                                    <span th:text="${member.username}">홍길동</span>
-                                    <span th:if="${member.role.name() == 'LEADER'}">(팀장)</span>
-                                </p>
-
+                                <p class="mb-0 fw-bold small"><span th:text="${member.username}">홍길동</span></p>
                                 <small class="text-muted" th:text="${member.position}">포지션</small>
                             </div>
-
                         </div>
-                        <p class="text-muted small mt-2" th:if="${#lists.isEmpty(memberList)}">아직 아무도 없습니다.</p>
-
                     </div>
                 </div>
             </div>
             
             <div class="d-grid gap-2">
                 <button class="btn btn-light border py-3 text-start px-3 shadow-sm">
-                    <i class="bi bi-share me-2"></i> 프로젝트 공유하기
+                    <i class="bi bi-share me-2"></i> 프로젝트 공유하기ㅇ
                 </button>
+                
+				<a th:href="@{/team/{id}/boost(id=${team.id})}" class="btn btn-support py-3 text-start px-3 shadow-sm fw-bold">
+				    <i class="bi bi-heart-fill me-2"></i> 팀 구독하기
+				</a>
             </div>
-
         </div>
     </div>
 
