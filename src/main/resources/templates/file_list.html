@@ -1,120 +1,85 @@
 <html layout:decorate="~{layout}">
 <div class="container" layout:fragment="content">
     
-    <style>
-        .category-icon {
-            width: 60px;
-            height: 60px;
-            background-color: #eaebf3; /* 연한 블루/그레이 배경 */
-            border-radius: 20px; /* 약간 둥근 사각형 혹은 원형 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin: 0 auto 8px auto;
-            color: #6a76ab;
-        }
-        .category-text {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #333;
-        }
-        .list-row {
-            /* 목록의 주황/살구색 실선 */
-            border-bottom: 2px solid #ffcec5; 
-        }
-        .pagination-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 40px;
-        }
-        .pagination-numbers {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #333;
-            border-bottom: 2px solid #e05238; /* 페이징 하단 붉은 선 */
-            padding-bottom: 5px;
-            margin-bottom: 30px;
-        }
-        .pagination-numbers a {
-            text-decoration: none;
-            color: #333;
-        }
-        .pagination-numbers .arrow {
-            font-weight: normal;
-        }
-        .btn-write {
-            background-color: #323b6d; /* 남색 버튼 */
-            color: white;
-            border: none;
-            padding: 10px 40px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        .btn-write:hover {
-            background-color: #242a50;
-            color: white;
-        }
-    </style>
+	<style>
+	        /* 기존 스타일 유지 */
+	        .category-item { transition: all 0.3s ease; text-decoration: none !important; }
+	        .icon-box {
+	            width: 80px; height: 80px; 
+	            background-color: #F8F9FA; border-radius: 22px;
+	            margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;
+	            overflow: hidden; border: 1px solid #eee; transition: all 0.3s ease;
+	        }
+	        .category-icon-img { width: 100%; height: 100%; object-fit: contain; padding: 18px; }
+	        
+	        .category-item:hover { transform: translateY(-8px); }
 
-    <main class="py-5 mx-auto" style="max-width: 650px;">
-        
-        <div class="d-flex justify-content-center gap-4 gap-md-5 mb-5 text-center">
-            <div>
-                <div class="category-icon rounded-circle"><i class="bi bi-palette"></i></div>
-                <div class="category-text">일러스트</div>
-            </div>
-            <div>
-                <div class="category-icon rounded-circle"><i class="bi bi-book"></i></div>
-                <div class="category-text">만화</div>
-            </div>
-            <div>
-                <div class="category-icon rounded-circle"><i class="bi bi-headphones"></i></div>
-                <div class="category-text">음악</div>
-            </div>
-            <div>
-                <div class="category-icon rounded-circle"><i class="bi bi-play-circle"></i></div>
-                <div class="category-text">비디오</div>
-            </div>
-            <div>
-                <div class="category-icon rounded-circle"><i class="bi bi-pen"></i></div>
-                <div class="category-text">소설</div>
-            </div>
-        </div>
+	        .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; }
 
-        <div class="text-center mb-4">
-            <a th:href="@{/}" class="text-muted text-decoration-none small mb-3 d-inline-block">파일 올리기</a>
-            <h3 class="fw-bold">파일</h3>
-        </div>
 
-        <div class="mt-4 mb-4">
-            <div th:each="num : ${#numbers.sequence(1, 14)}" class="list-row d-flex justify-content-between align-items-center py-2 px-1">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="small fw-medium">나네참새(아이디)</span>
-                </div>
-                <div class="small fw-bold">
-                    제목
-                </div>
-            </div>
-        </div>
+	        /* 리스트 전용 스타일 */
+	        .list-row { border-bottom: 2px solid #ffcec5; }
+	    </style>
 
-        <div class="pagination-container">
-            <div class="pagination-numbers">
-                <a href="#" class="arrow">&lt;</a>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <a href="#" class="arrow">&gt;</a>
-            </div>
-            
-        </div>
+		<section class="py-5 bg-white">
+		        <div class="container">
+		            <div class="row text-center g-4 g-md-5 justify-content-center">
+		                
+		                <div class="col-4 col-md-2">
+		                    <a th:href="@{/Illustration_list}" class="category-item d-block">
+		                        <div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
+		                        <div class="fw-bold">일러스트</div>
+		                    </a>
+		                </div>
 
-    </main>
+		                <div class="col-4 col-md-2">
+		                    <a th:href="@{/comic_list}" class="category-item d-block">
+		                        <div class="icon-box"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
+		                        <div class="fw-bold">만화</div>
+		                    </a>
+		                </div>
+
+		                <div class="col-4 col-md-2">
+		                    <a th:href="@{/music_list}" class="category-item d-block">
+		                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
+		                        <div class="fw-bold">음악</div>
+		                    </a>
+		                </div>
+
+		                <div class="col-4 col-md-2">
+		                    <a th:href="@{/video_list}" class="category-item d-block">
+		                        <div class="icon-box"><img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오"></div>
+		                        <div class="fw-bold">비디오</div>
+		                    </a>
+		                </div>
+
+		                <div class="col-4 col-md-2">
+		                    <a th:href="@{/content/novel_list}" class="category-item d-block">
+		                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
+		                        <div class="fw-bold">소설</div>
+		                    </a>
+		                </div>
+
+
+		            </div>
+		        </div>
+		    </section>
+
+		    <main class="pb-5 mx-auto" style="max-width: 650px;">
+		        <div class="text-center mb-4">
+		            <a th:href="@{/}" class="text-muted text-decoration-none small mb-3 d-inline-block">파일 올리기</a>
+		            <h3 class="fw-bold">파일</h3>
+		        </div>
+
+		        <div class="mt-4 mb-4">
+		            <div th:each="num : ${#numbers.sequence(1, 14)}" class="list-row d-flex justify-content-between align-items-center py-2 px-1">
+		                <div class="d-flex align-items-center gap-2">
+		                    <span class="small fw-medium">나네참새(아이디)</span>
+		                </div>
+		                <div class="small fw-bold">제목</div>
+		            </div>
+		        </div>
+		        
+		        </main>
 </div>
 </html>
