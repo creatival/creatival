@@ -161,8 +161,8 @@
 
     <section class="py-5 bg-white">
         <div class="container text-center">
-            <h2 class="fw-bold mb-1"><a th:href="@{team/list}">팀 프로젝트</a></h2>
-            <p class="text-muted mb-5">팀 프로젝트 가입하기</p>
+            <h2 class="fw-bold mb-1">팀 프로젝트</h2>
+            <p class="text-muted mb-5"><a th:href="@{team/list}">팀 프로젝트 가입하기</a></p>
             <div class="row g-4">
                 <div class="col-md-4" th:each="i : ${#numbers.sequence(1,3)}">
                     <div class="card h-100 border-0 shadow-sm text-start hover-card">
@@ -183,7 +183,7 @@
     <section class="py-5 bg-light">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">추천 일러스트</h2>
-            <a th:href="@{/content/art/list}" class="text-muted d-block mb-5">일러스트 페이지로 이동</a>
+            <p class="text-muted mb-5"><a th:href="@{/Illustration_list}">일러스트 페이지로 이동</a></p>
             <div class="row row-cols-2 row-cols-md-4 g-4">
                 <div class="col" th:each="i : ${#numbers.sequence(1,12)}">
                     <div class="card border-0 shadow-sm h-100 hover-card">
@@ -203,10 +203,10 @@
         </div>
     </section>
 
-    <section class="py-5 bg-white">
+    <section class="py-5 bg-light">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">추천 소설</h2>
-            <a th:href="@{/content/novel_list}" class="text-muted d-block mb-5">소설 페이지로 이동</a>
+            <p class="text-muted mb-5"><a th:href="@{/novel_list}">소설 페이지로 이동</a></p>
             <div id="novelCarousel" class="carousel slide" data-bs-ride="false">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
