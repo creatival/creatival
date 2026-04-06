@@ -6,6 +6,7 @@ import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.Enum.Visibility;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public class CreateVideoDTO {
 
 	private MultipartFile thumbnailFile;
 	
-	@NotEmpty(message = "영상 파일은 필수 사항입니다.")
+	@NotNull(message = "영상 파일은 필수 사항입니다.")
 	private MultipartFile videoFile;
 	
 	private boolean allowComment;

@@ -25,6 +25,7 @@ public class ResponseVideoDetailDTO {
 	
 	private Long viewCount;
 	
+	
 	private Long userId;
 	private String username;
 	private String displayname;

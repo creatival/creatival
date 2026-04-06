@@ -195,20 +195,37 @@
                 </div>
             </div>
 
-            <div id="comments" class="mt-5 pt-4">
-                <h5 class="fw-bold mb-4">댓글 <span class="text-primary" th:text="${fileDetail.viewCount}">0</span></h5>
-                <div class="d-flex align-items-start mb-5">
-                    <img src="https://dummyimage.com/45x45/adb5bd/fff" class="rounded-circle me-3" style="width: 45px; height: 45px;">
-                    <div class="w-100">
-                        <div class="border-bottom pb-2">
-                            <textarea class="form-control border-0 shadow-none px-0 bg-transparent" placeholder="댓글을 입력하세요..." rows="1" style="resize: none;"></textarea>
-                        </div>
-                        <div class="d-flex justify-content-end mt-2">
-                            <button class="btn btn-navy btn-sm rounded-pill px-4">등록</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+			<div th:if="${fileDetail.allowComment}" class="comment-section">
+
+					    <h5 class="text-center fw-bold mb-4">댓글</h5>
+
+					    <!-- 댓글 작성 -->
+					    <form th:action="@{/comment/content/write/{id}(id=${fileDetail.id})}"
+					          method="post"
+					          class="d-flex align-items-center justify-content-center mb-5">
+					        
+					        <div class="bg-secondary rounded-circle me-3"
+					             style="width:40px;height:40px;"></div>
+
+					        <input type="text"
+					               name="text"
+					               class="form-control comment-input me-3"
+					               placeholder="댓글 쓰기"
+					               style="max-width:500px;">
+
+					        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-4">작성</button>
+					    </form>
+						
+
+					    <!-- 댓글 목록 -->
+						<div class="comment-list ms-5">
+						    <th:block th:each="comment : ${comments}">
+						        <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${fileDetail.id})}"></div>
+						    </th:block>
+						</div>
+
+						
+					</div>
         </div>
 		
     </main>

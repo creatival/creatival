@@ -672,4 +672,11 @@ public class ContentService {
 
 		
 	}
+	public Episode getEpisodeById(Long targetId) {
+		Optional<Episode> episode = episodeRepository.findById(targetId);
+		if(episode.isEmpty()) {
+			return null;
+		}
+		return episode.get();
+	}
 }

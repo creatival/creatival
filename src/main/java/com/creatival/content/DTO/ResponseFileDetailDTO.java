@@ -29,6 +29,8 @@ public class ResponseFileDetailDTO {
 	private String username;
 	private String displayname;
 	
+	private boolean allowComment;
+	
 	public static ResponseFileDetailDTO from(Content content, ContentFile file) {
 		ResponseFileDetailDTO dto = new ResponseFileDetailDTO();
 		dto.setId(content.getId());
@@ -40,6 +42,7 @@ public class ResponseFileDetailDTO {
 		dto.setUsername(content.getUser().getUsername());
 		dto.setDisplayname(content.getUser().getDisplayName());
 		dto.setFile(ResponseContentFileDTO.from(file));
+		dto.setAllowComment(content.isAllowComment());
 		
 		return dto;
 	}
@@ -56,6 +59,7 @@ public class ResponseFileDetailDTO {
 		dto.setDisplayname(content.getUser().getDisplayName());
 		dto.setFile(ResponseContentFileDTO.from(file));
 		dto.setPreview(ResponseContentFileImageDTO.from(previewImg));
+		dto.setAllowComment(content.isAllowComment());
 		
 		return dto;
 	}

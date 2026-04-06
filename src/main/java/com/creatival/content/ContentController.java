@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import com.creatival.bookmark.BookmarkService;
 import com.creatival.comment.CommentService;
 import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.content.DTO.CreateArtDTO;
@@ -46,6 +46,9 @@ import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.DTO.UpdateVideoDTO;
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.repository.EpisodeRepository;
+import com.creatival.follow.FollowService;
+import com.creatival.like.LikeService;
+import com.creatival.like.TargetType;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.user.UserService;
@@ -61,11 +64,18 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/content")
 public class ContentController {
 
+    private final FollowService followService;
+
+    private final BookmarkService bookmarkService;
+
 	private final ContentService contentService;
 	private final UserService userService;
 	private final ContentFileService contentFileService;
 	private final TagService tagService;
 	private final CommentService commentService;
+	private final LikeService likeService;
+
+
 
 	
 	@GetMapping("/novel_list")
@@ -317,6 +327,8 @@ public class ContentController {
 		model.addAttribute("tagList", contentTags);
 		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
 		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
 		return "illustration_detail";
 	}
 	
@@ -404,12 +416,24 @@ public class ContentController {
 	}
 	
 	@GetMapping("/video/detail/{id}")
-	public String videoDetail(@PathVariable("id") Long id, Model model) {
+	public String videoDetail(@PathVariable("id") Long id, Model model, Principal principal) {
 		Content content = contentService.getContent(id);
 		ResponseVideoDetailDTO dto = contentService.getVideoDetailById(id);
 		model.addAttribute("video", dto);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
 		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
+		
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 		return "video_detail";
 	}
 	
@@ -548,6 +572,10 @@ public class ContentController {
 		model.addAttribute("music", dto);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
 		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
 		return "music_detail";
 	}
 	
@@ -646,6 +674,11 @@ public class ContentController {
 		Content content = contentService.getContent(id);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
 		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
+		System.out.println(dto.isAllowComment());
 		return "file_detail";
 	}
 	

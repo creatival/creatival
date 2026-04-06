@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.creatival.FileUtil;
+import com.creatival.board.Board;
+import com.creatival.board.BoardService;
 import com.creatival.board.repository.BoardFileRepository;
 import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.comment.repository.CommentRepository;
@@ -24,6 +26,16 @@ import lombok.RequiredArgsConstructor;
 public class CommentService {
 	private final CommentRepository commentRepository;
 	private final ContentService contentService;
+	private final BoardService boardService;
+	
+	public int getCountByContent(Long id) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		
+		return commentRepository.countByContent(content);
+	}
 	
 	public List<ResponseCommentDTO> getCommentListByContent(Long id){
 		Content content = contentService.getContent(id);
@@ -34,6 +46,39 @@ public class CommentService {
 		List<ResponseCommentDTO> rootComments = new ArrayList<>();
 		Map<Long, ResponseCommentDTO> map = new HashMap<>();
 		List<Comment> list = commentRepository.findByContent(content);
+		if (list == null || list.isEmpty()) return new ArrayList<>();
+		
+		for(Comment comment : list) {
+			if (comment == null) continue;
+			ResponseCommentDTO dto = ResponseCommentDTO.from(comment);
+			map.put(dto.getId(), dto);
+		}
+		
+		// 간단하게 부모 comment가 존재한다면 가져와서 거기에 자식으로 연결시키는 방식임, map은 index로 활용하기 위함임
+		for(Comment comment : list) {
+			ResponseCommentDTO dto = map.get(comment.getId());
+			if (dto == null) continue;
+			if(comment.getParentComment() != null) {
+				ResponseCommentDTO parentDTO = map.get(comment.getParentComment().getId());
+				if(parentDTO != null) {
+					parentDTO.getChildren().add(dto);
+				}
+			} else {
+				rootComments.add(dto);
+			}
+		}
+		rootComments.removeIf(Objects::isNull);
+		return rootComments;
+	}
+	public List<ResponseCommentDTO> getCommentListByBoard(Long id){
+		Board board = boardService.getBoardById(id);
+		
+		if(board == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 board를 찾을 수 없습니다.");
+		}
+		List<ResponseCommentDTO> rootComments = new ArrayList<>();
+		Map<Long, ResponseCommentDTO> map = new HashMap<>();
+		List<Comment> list = commentRepository.findByBoard(board);
 		if (list == null || list.isEmpty()) return new ArrayList<>();
 		
 		for(Comment comment : list) {
@@ -105,9 +150,34 @@ public class CommentService {
 		
 		if(comment.getContent()!=null) {
 			replyComment.setContent(comment.getContent());
+		} else if(comment.getBoard()!=null) {
+			replyComment.setBoard(comment.getBoard());
 		}
 		
 		commentRepository.save(replyComment);
+	}
+
+	public void createCommentForBoard(Long id, String text, Users user) {
+		Board board = boardService.getBoardById(id);
+		if(board == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		Comment comment = Comment.builder()
+			.text(text)
+			.user(user)
+			.board(board)
+			.build();
+		
+		commentRepository.save(comment);
+	}
+
+	public int getCountByBoard(Long boardId) {
+		Board board = boardService.getBoardById(boardId);
+		if(board == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 board를 찾을 수 없습니다.");
+		}
+		
+		return commentRepository.countByBoard(board);
 	}
 
 }

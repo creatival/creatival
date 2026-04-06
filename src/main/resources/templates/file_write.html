@@ -1,64 +1,54 @@
 <html layout:decorate="~{layout}">
-<div class="container-fluid" layout:fragment="content"> <style>
+<div class="container-fluid" layout:fragment="content">
+    <style>
         .detail-container {
-            /* max-width: 800px; 제거 -> col 클래스로 제어 */
             margin: 0 auto;
             position: relative;
         }
         
-        /* 폭이 넓어졌을 때 뒤로가기 버튼이 너무 멀리 나가지 않게 조정 */
+        /* 뒤로가기 버튼: seungjae 디자인의 위치와 스타일 */
         .back-btn {
             position: absolute;
-            left: 0; /* 폭이 넓으므로 안쪽 왼쪽 끝에 배치 */
+            left: 0;
             top: 0;
             font-size: 1.8rem;
             color: #333;
             text-decoration: none;
             z-index: 10;
         }
-<<<<<<< HEAD
-=======
 
->>>>>>> refs/remotes/origin/seungjae
         .input-title {
-            font-size: 2.2rem; /* 조금 더 시원하게 크기 키움 */
+            font-size: 2.2rem;
             font-weight: bold;
             border: none;
             outline: none;
             width: 100%;
             text-align: center;
             background: transparent;
-            padding: 0 50px; /* 뒤로가기 버튼과 겹치지 않게 여백 */
+            padding: 0 50px;
         }
         
         .input-content {
             border: none;
             outline: none;
             width: 100%;
-            min-height: 300px; /* 입력창 높이 확보 */
+            min-height: 200px;
             text-align: center;
             font-size: 1.15rem;
             font-weight: 500;
             background: transparent;
             resize: none;
         }
-<<<<<<< HEAD
-        .user-info {
-            color: #999;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
+
         .section-divider {
             border: none;
-            border-top: 1px solid #dee2e6;
+            border-top: 2px solid #ffcec5; /* 살구색 테마 라인 */
             margin: 40px 0;
         }
-=======
 
-        /* 파일 프리뷰 박스 - 화면이 넓으니 조금 더 키워도 좋아 */
->>>>>>> refs/remotes/origin/seungjae
+        /* 파일 프리뷰 박스: seungjae의 보라색 테마 및 점선 스타일 */
         .file-preview-box {
-            background-color: #eaebf3; /* 카테고리 아이콘 배경과 통일감 */
+            background-color: #eaebf3;
             width: 160px;
             height: 120px;
             display: inline-flex;
@@ -70,210 +60,160 @@
             overflow: hidden;
             transition: all 0.2s;
             vertical-align: top;
-<<<<<<< HEAD
-            border: 2px dashed #ccc;
-=======
-            border: 2px dashed #6a76ab; /* 점선으로 '추가' 느낌 강조 */
->>>>>>> refs/remotes/origin/seungjae
+            border: 2px dashed #6a76ab;
+            border-radius: 12px;
         }
         .file-preview-box:hover {
             background-color: #daddf0;
             transform: scale(1.02);
         }
-        
-        .section-divider {
-            border: none;
-            border-top: 2px solid #ffcec5; /* 리스트 페이지와 통일된 살구색 선 */
-            margin: 40px 0;
+        .file-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
+
+        .file-label {
+            font-size: 0.8rem;
+            color: #6a76ab;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* 태그 스타일 */
+        .tag-badge {
+            background-color: #eef2ff;
+            color: #3b82f6;
+            border: 1px solid #d1dbff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        .tag-badge i { cursor: pointer; margin-left: 8px; color: #ff5e3a; }
 
         .btn-action {
             background-color: #323b6d;
             color: white;
-            padding: 12px 60px;
+            padding: 12px 80px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
             font-size: 1.1rem;
+            transition: background 0.2s;
         }
-<<<<<<< HEAD
-        .btn-action:hover {
-            background-color: #242a50;
-            color: white;
-        }
-        .file-label {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-=======
+        .btn-action:hover { background-color: #242a50; color: white; }
 
->>>>>>> refs/remotes/origin/seungjae
+        .settings-label { font-weight: bold; font-size: 0.9rem; color: #555; margin-bottom: 8px; display: block; }
+
         @media (max-width: 992px) {
             .back-btn { position: static; display: inline-block; margin-bottom: 20px; }
             .input-title { padding: 0; }
         }
-		.tag-badge {
-		            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
-		            padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;
-		            display: inline-flex; align-items: center; transition: 0.2s;
-		        }
-		        .tag-badge i { cursor: pointer; margin-left: 6px; font-size: 12px; color: #ff5e3a; }
-		        .tag-badge:hover { background-color: #d1dbff; }
-		        .tag-input-group { max-width: 400px; margin: 0 auto; }
     </style>
 
     <main class="py-5">
-<<<<<<< HEAD
-        <form th:action="@{/content/file/write}" method="post" enctype="multipart/form-data" class="detail-container" th:object="${createFileDTO}">
-=======
-        <form th:action="@{/upload}" method="post" enctype="multipart/form-data" 
-              class="detail-container col-11 col-lg-10">
+        <form th:action="@{/content/file/write}" method="post" enctype="multipart/form-data" 
+              class="detail-container col-11 col-lg-10 mx-auto" th:object="${createFileDTO}" id="fileUploadForm">
             
->>>>>>> refs/remotes/origin/seungjae
             <a href="javascript:history.back()" class="back-btn">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
-<<<<<<< HEAD
-            <div class="text-center">
-                <input type="text" th:field="*{title}" class="input-title" placeholder="제목을 입력하세요" required>
-                <div class="user-info mt-2">
-                    <span class="user-id" th:text="${#authentication.name}">현재 사용자 아이디</span> 
-=======
             <div class="text-center pt-2">
-                <input type="text" name="title" class="input-title" placeholder="제목을 입력하세요" required>
+                <input type="text" th:field="*{title}" class="input-title" placeholder="제목을 입력하세요" required>
                 <div class="user-info mt-3">
-                    <span class="user-id fw-medium text-secondary">나네참새(현재 사용자 아이디)</span> 
->>>>>>> refs/remotes/origin/seungjae
+                    <span class="user-id fw-medium text-secondary" th:text="${#authentication.name}">사용자 아이디</span> 
                 </div>
                 <hr class="section-divider">
             </div>
-			<div class="row justify-content-center">
-                <input type="file" id="extraImg" name="extraImg" class="d-none" accept="image/*" onchange="previewFile(this, 'extra-preview')">
-                <div id="extra-preview" class="file-preview-box rounded" onclick="document.getElementById('extraImg').click()">
-                    <i class="bi bi-image fs-2 text-white"></i>
-                    <span class="file-label">추가 이미지</span>
+
+            <div class="text-center mb-4">
+                <input type="file" id="extraImg" name="extraImg" class="d-none" accept="image/*" onchange="previewSingleFile(this, 'extra-preview')">
+                <div id="extra-preview" class="file-preview-box" onclick="document.getElementById('extraImg').click()">
+                    <i class="bi bi-image fs-2" style="color: #6a76ab;"></i>
+                    <span class="file-label">대표 이미지 등록</span>
                 </div>
-                <p class="small mt-1 text-muted text-center">대표 이미지/썸네일</p>
+                <p class="small mt-2 text-muted">리스트에 노출될 썸네일 이미지를 등록해주세요.</p>
             </div>
+
             <div class="content-area text-center">
-<<<<<<< HEAD
-                <textarea th:field="*{description}" class="input-content" placeholder="내용을 상세히 입력하세요" required></textarea>
-=======
-                <textarea name="content" class="input-content" placeholder="내용을 입력하세요" required></textarea>
->>>>>>> refs/remotes/origin/seungjae
+                <textarea th:field="*{description}" class="input-content" placeholder="파일에 대한 상세 설명을 입력하세요" required></textarea>
             </div>
 
             <hr class="section-divider">
 
             <div class="text-center mb-5">
-<<<<<<< HEAD
-                <p class="small fw-bold mb-3">파일 첨부</p>
-=======
                 <p class="small fw-bold mb-3" style="color: #6a76ab;">첨부파일 추가 (클릭하여 파일 선택)</p>
->>>>>>> refs/remotes/origin/seungjae
-                
-<<<<<<< HEAD
-                <div class="d-flex justify-content-center gap-4 flex-wrap">
-                    <div>
-                        <input type="file" id="mainFile" name="file" class="d-none" onchange="previewFile(this, 'main-preview')">
-                        <div id="main-preview" class="file-preview-box rounded" onclick="document.getElementById('mainFile').click()">
-                            <i class="bi bi-file-earmark-plus fs-2 text-white"></i>
-                            <span class="file-label">주 파일 선택</span>
-                        </div>
-                        <p class="small mt-1 text-muted">메인 콘텐츠 파일</p>
-=======
-                <input type="file" id="fileInput" name="files" multiple class="d-none" onchange="handleFileSelect(this)">
-                
                 <div id="preview-list" class="d-flex justify-content-center gap-2 flex-wrap">
-                    <div class="file-preview-box rounded-3" onclick="document.getElementById('fileInput').click()">
-                        <i class="bi bi-plus-lg fs-1 text-primary" style="color: #6a76ab !important;"></i>
->>>>>>> refs/remotes/origin/seungjae
+                    <input type="file" id="mainFile" name="file" class="d-none" onchange="previewSingleFile(this, 'main-preview')">
+                    <div id="main-preview" class="file-preview-box" onclick="document.getElementById('mainFile').click()">
+                        <i class="bi bi-file-earmark-plus fs-2" style="color: #6a76ab;"></i>
+                        <span class="file-label">주 파일 선택</span>
                     </div>
-
-                    
                 </div>
-
-<<<<<<< HEAD
-				<div class="mb-5 text-center">
-	                   <label class="settings-label"><i class="bi bi-hash"></i> 태그 설정</label>
-	                   
-	                   <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3">
-	                       </div>
-
-	                   <div class="input-group tag-input-group shadow-sm">
-	                       <span class="input-group-text bg-white border-end-0 text-muted">#</span>
-	                       <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그를 입력하고 엔터를 누르세요" onkeypress="handleTagKey(event)">
-	                       <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
-	                   </div>
-	                   
-	                   <input type="hidden" name="tagString" id="finalTagString">
-	               </div>
-=======
-                <div class="mt-5 mx-auto" style="max-width: 500px;">
-                    <input type="text" name="tags" class="form-control border-0 text-center text-primary" 
-                           placeholder="#태그 #입력 (쉼표나 공백으로 구분)" 
-                           style="background: #f8f9fa; border-radius: 20px;">
-                </div>
->>>>>>> refs/remotes/origin/seungjae
             </div>
 
-<<<<<<< HEAD
+            <div class="mb-5 text-center">
+                <label class="settings-label"><i class="bi bi-hash"></i> 태그 설정</label>
+                <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+                    </div>
+                <div class="input-group mx-auto shadow-sm" style="max-width: 450px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted">#</span>
+                    <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그 입력 후 엔터" onkeypress="handleTagKey(event)">
+                    <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
+                </div>
+                <input type="hidden" name="tagString" id="finalTagString">
+            </div>
+
             <hr class="section-divider">
 
-            <div class="row g-3 mb-4 text-start">
+            <div class="row g-4 mb-4 text-start bg-light p-4 rounded-4 shadow-sm">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold d-block">공개 범위</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public">
+                    <label class="settings-label">공개 범위</label>
+                    <div class="btn-group w-100">
+                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public" checked>
                         <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
-
                         <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
                         <label class="btn btn-outline-primary" for="vis-private">비공개</label>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold d-block">댓글 설정</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on">
+                    <label class="settings-label">댓글 설정</label>
+                    <div class="btn-group w-100">
+                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on" checked>
                         <label class="btn btn-outline-secondary" for="comment-on">허용</label>
-
                         <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
                         <label class="btn btn-outline-secondary" for="comment-off">차단</label>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold d-block">소유자 유형</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER">
+                    <label class="settings-label">소유자 유형</label>
+                    <div class="btn-group w-100">
+                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER" checked>
                         <label class="btn btn-outline-primary" for="owner-USER">개인</label>
-
                         <input type="radio" class="btn-check" th:field="*{ownerType}" value="TEAM" id="owner-TEAM">
                         <label class="btn btn-outline-primary" for="owner-TEAM">팀</label>
                     </div>
                 </div>
-            </div>
-			<div class="row g-3 mb-4 p-3 bg-light rounded shadow-sm">
-                <div class="col-12 mb-2">
-                    <div class="form-check form-switch">
+
+                <div class="col-12 mt-4 pt-3 border-top">
+                    <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" th:field="*{fanWork}" id="fanWorkCheck">
                         <label class="form-check-label fw-bold" for="fanWorkCheck">2차 창작물(팬워크)인 경우 체크</label>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <label class="settings-label">프로젝트 연결 (선택)</label>
-                    <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="projectTag 입력">
-                </div>
-                <div class="col-md-6">
-                    <label class="settings-label">원본 작품 ID (선택)</label>
-                    <input type="number" th:field="*{originalContentId}" class="form-control form-control-sm" placeholder="ID 입력">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="프로젝트 연결 키워드 (선택)">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" th:field="*{originalContentId}" class="form-control form-control-sm" placeholder="원본 작품 ID (선택)">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-=======
->>>>>>> refs/remotes/origin/seungjae
             <div class="text-center mt-5">
                 <button type="submit" class="btn btn-action">등록 완료</button>
             </div>
@@ -281,120 +221,77 @@
     </main>
 
     <script>
-<<<<<<< HEAD
-        function previewFile(input, previewId) {
+        // 파일 미리보기 함수 (이미지 및 파일명 대응)
+        function previewSingleFile(input, previewId) {
             const previewBox = document.getElementById(previewId);
             const file = input.files[0];
             
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // 기존 아이콘/텍스트 제거
                     previewBox.innerHTML = '';
-                    
                     if (file.type.startsWith('image/')) {
                         const img = document.createElement('img');
                         img.src = e.target.result;
                         previewBox.appendChild(img);
                     } else {
-                        // 이미지가 아닌 경우 아이콘과 파일명 표시
                         previewBox.innerHTML = `
                             <i class="bi bi-file-earmark-check fs-2 text-success"></i>
-                            <span class="file-label" style="font-size: 0.7rem; padding: 0 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;">
+                            <span class="file-label" style="font-size: 0.7rem; padding: 5px; word-break: break-all;">
                                 ${file.name}
                             </span>
                         `;
                     }
                 };
                 reader.readAsDataURL(file);
-=======
-        function handleFileSelect(input) {
-            const previewList = document.getElementById('preview-list');
-            // 기본 '플러스' 박스 유지하면서 앞에 추가
-            const plusBox = `
-                <div class="file-preview-box rounded-3" onclick="document.getElementById('fileInput').click()">
-                    <i class="bi bi-plus-lg fs-1 text-primary" style="color: #6a76ab !important;"></i>
-                </div>`;
-            
-            previewList.innerHTML = plusBox;
-
-            if (input.files) {
-                Array.from(input.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const box = document.createElement('div');
-                        box.className = 'file-preview-box rounded-3';
-                        if (file.type.startsWith('image/')) {	
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            img.style.width = '100%';
-                            img.style.height = '100%';
-                            img.style.objectFit = 'cover';
-                            box.appendChild(img);
-                        } else {
-                            box.innerHTML = `<i class="bi bi-file-earmark-arrow-up fs-1 text-muted"></i>`;
-                        }
-                        previewList.prepend(box);
-                    };
-                    reader.readAsDataURL(file);
-                });
->>>>>>> refs/remotes/origin/seungjae
             }
         }
-		
-		let tagArray = [];
 
-			    function handleTagKey(e) {
-			        if (e.key === 'Enter') {
-			            e.preventDefault();
-			            addTag();
-			        }
-			    }
+        // 태그 관련 로직
+        let tagArray = [];
+        function handleTagKey(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag();
+            }
+        }
 
-			    function addTag() {
-			        const input = document.getElementById('tagInput');
-			        const value = input.value.trim().replace(/#/g, '');
+        function addTag() {
+            const input = document.getElementById('tagInput');
+            const value = input.value.trim().replace(/#/g, '');
+            if (value && !tagArray.includes(value)) {
+                if (tagArray.length >= 10) { alert("태그는 최대 10개까지 가능합니다."); return; }
+                tagArray.push(value);
+                updateTags();
+                input.value = '';
+            }
+        }
 
-			        if (value && !tagArray.includes(value)) {
-			            if (tagArray.length >= 10) {
-			                alert("태그는 최대 10개까지 등록 가능합니다.");
-			                return;
-			            }
-			            tagArray.push(value);
-			            updateTags();
-			            input.value = '';
-			        }
-			    }
+        function removeTag(tag) {
+            tagArray = tagArray.filter(t => t !== tag);
+            updateTags();
+        }
 
-			    function removeTag(tag) {
-			        tagArray = tagArray.filter(t => t !== tag);
-			        updateTags();
-			    }
+        function updateTags() {
+            const container = document.getElementById('tagContainer');
+            const hiddenInput = document.getElementById('finalTagString');
+            container.innerHTML = tagArray.map(t => `
+                <span class="tag-badge shadow-sm">
+                    #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
+                </span>
+            `).join('');
+            hiddenInput.value = tagArray.join(',');
+        }
 
-			    function updateTags() {
-			        const container = document.getElementById('tagContainer');
-			        const hiddenInput = document.getElementById('finalTagString');
-
-			        container.innerHTML = tagArray.map(t => `
-			            <span class="tag-badge shadow-sm">
-			                #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
-			            </span>
-			        `).join('');
-
-			        hiddenInput.value = tagArray.join(',');
-			    }
-
-			    // 3. projectTag / originalContentId 동시 입력 방지
-			    document.getElementById("novelForm").addEventListener("submit", function(e) {
-
-			        const projectTag = document.querySelector("input[name='projectTag']").value.trim();
-			        const originalContentId = document.querySelector("input[name='originalContentId']").value.trim();
-
-			        if (projectTag !== "" && originalContentId !== "") {
-			            alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
-			            e.preventDefault(); // submit 차단
-			        }
-			    });
+        // 폼 제출 검증
+        document.getElementById("fileUploadForm").addEventListener("submit", function(e) {
+            const projectTag = document.querySelector("input[name='projectTag']").value.trim();
+            const originalContentId = document.querySelector("input[name='originalContentId']").value.trim();
+            if (projectTag !== "" && originalContentId !== "") {
+                alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
+                e.preventDefault();
+            }
+        });
     </script>
 </div>
 </html>

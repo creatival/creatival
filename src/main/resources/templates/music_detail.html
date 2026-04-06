@@ -103,8 +103,25 @@
                 </div>
 
                 <div class="tab-pane fade" id="comments" role="tabpanel" tabindex="0" th:if="${music.allowComment}">
-                    <h5 class="fw-bold mb-4">댓글</h5>
-                    <p class="text-center text-muted py-5">댓글 기능은 구현 준비 중입니다.</p>
+	                <h5 class="fw-bold mb-4" th:text="${'댓글 ' + commentCount + '개'}"></h5>
+	                
+	                <div class="d-flex align-items-start mb-4">
+	                    <img src="https://dummyimage.com/40x40/adb5bd/fff" class="rounded-circle me-3 mt-1" alt="내 프로필" style="width: 40px; height: 40px;">
+						<form th:action="@{/comment/content/write/{id}(id=${music.id})}" method="post" class="d-flex align-items-center justify-content-center mb-5 w-100">
+
+							<input type="text" name="text" class="form-control comment-input me-3" placeholder="댓글 쓰기" style="max-width:500px;">
+							<div class="d-flex justify-content-end mt-2 gap-2">
+	                            <button class="btn btn-sm btn-light rounded-pill px-3">취소</button>
+	                            <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">작성</button>
+							</div>
+	                	</form>
+						</div>
+
+					<div class="comment-list">
+					    <th:block th:each="comment : ${comments}">
+					        <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${music.id})}"></div>
+					    </th:block>
+					</div>
                 </div> 
             </div> 
         </div> 

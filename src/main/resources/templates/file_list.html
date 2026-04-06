@@ -1,37 +1,23 @@
 <html layout:decorate="~{layout}">
-<div class="container-fluid" layout:fragment="content"> <style>
-        /* 카테고리 아이콘 스타일: 시안의 둥근 사각형 디자인 적용 */
+<div class="container-fluid" layout:fragment="content">
+    <style>
+        /* 카테고리 아이콘 스타일: seungjae 디자인의 둥근 사각형 적용 */
         .category-icon {
             width: 65px;
             height: 65px;
-            background-color: #eaebf3; /* 시안의 연한 배경색 */
-            border-radius: 20px;       /* 둥근 사각형 곡률 */
+            background-color: #eaebf3;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 10px auto;
             transition: all 0.2s ease-in-out;
         }
-<<<<<<< HEAD
-		.custom-pagination .page-item.active .page-link {
-		            background: none; color: #333; /* 글자는 검정 */
-		            border-bottom: 3px solid #f05a28; /* 주황-빨강 계열 밑줄 */
-		            border-radius: 0;
-		        }
-		        .custom-pagination .page-item.disabled .page-link { color: #ccc; }
-		        .custom-pagination .page-link:hover { color: #f05a28; }
-        .category-text {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #333;
-=======
-        
-        /* 이미지 크기 제어 */
+
         .category-icon img {
-            width: 35px; 
+            width: 35px;
             height: 35px;
             object-fit: contain;
->>>>>>> refs/remotes/origin/seungjae
         }
 
         .shortcut-link:hover .category-icon {
@@ -39,33 +25,53 @@
             transform: translateY(-5px);
         }
 
-        /* 리스트 스타일 */
+        /* 리스트 스타일: 깔끔한 라인과 간격 */
         .list-row {
             border-bottom: 2px solid #ffcec5; /* 시안의 살구색 라인 */
             padding: 12px 10px;
         }
 
-        .list-checkbox {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #999;
-            border-radius: 3px;
-            margin-right: 15px;
+        /* 하단 페이징 라인 디자인 */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
         }
 
-        /* 하단 페이징 라인 */
         .pagination-numbers {
             display: flex;
             gap: 20px;
             font-weight: bold;
             border-bottom: 2px solid #e05238;
             padding-bottom: 5px;
-            margin-bottom: 30px;
+        }
+
+        .pagination-numbers a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .pagination-numbers a.active {
+            color: #e05238;
+        }
+
+        .pagination-numbers a.disabled {
+            visibility: hidden;
+        }
+
+        /* 작성 버튼 스타일 */
+        .btn-write {
+            background-color: #3e467d;
+            color: white;
+            padding: 10px 50px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
         }
     </style>
 
     <main class="py-5 mx-auto col-11 col-lg-10">
-        
         <div class="row text-center g-3 justify-content-center mb-5">
             <div class="col-4 col-md-2">
                 <a th:href="@{/Illustration_list}" class="shortcut-link text-decoration-none text-dark">
@@ -105,78 +111,49 @@
             </div>
         </div>
 
-<<<<<<< HEAD
-        <div class="text-center mb-4">
-            <a th:href="@{/content/file/write}" class="text-muted text-decoration-none small mb-3 d-inline-block">파일 올리기</a>
-            <h3 class="fw-bold">파일</h3>
-=======
         <div class="text-center mb-5">
-            <p class="text-muted small mb-1">홈 페이지로 돌아가기</p>
+            <p class="text-muted small mb-1">파일 목록</p>
             <h2 class="fw-bold">파일</h2>
->>>>>>> refs/remotes/origin/seungjae
         </div>
 
-<<<<<<< HEAD
-        <div class="mt-4 mb-4">
-            <div th:each="file : ${fileList}" class="list-row d-flex justify-content-between align-items-center py-2 px-1">
-                <div class="d-flex align-items-center gap-2 col-2">
-                    <span class="small fw-medium " th:text="${file.displayname + '(' + file.username + ')'}">나네참새(아이디)</span>
-=======
         <div class="mb-5">
-            <div th:each="num : ${#numbers.sequence(1, 15)}" class="list-row d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="list-checkbox"></div> <span class="small fw-medium">나네참새(아이디)</span>
->>>>>>> refs/remotes/origin/seungjae
+            <div th:each="file : ${fileList}" class="list-row d-flex justify-content-between align-items-center w-75  mx-auto">
+                <div class="d-flex align-items-center col-3">
+                    <span class="small fw-medium" th:text="${file.displayname + '(' + file.username + ')'}">사용자(아이디)</span>
                 </div>
-<<<<<<< HEAD
-                <a class="small fw-bold col-10 text-center" th:text="${file.title}" th:href="@{/content/file/detail/{id}(id=${file.id})}">
-=======
-                <div class="small fw-bold text-center" style="flex: 1;">
->>>>>>> refs/remotes/origin/seungjae
-                    제목
-                </a>
+                <div class="text-center" style="flex: 1;">
+                    <a class="small fw-bold text-dark text-decoration-none" 
+                       th:text="${file.title}" 
+                       th:href="@{/content/file/detail/{id}(id=${file.id})}">
+                       파일 제목이 여기에 표시됩니다
+                    </a>
+                </div>
             </div>
         </div>
 
-<<<<<<< HEAD
-		<div class="pagination-container" th:if="${!fileList.isEmpty()}">
-		    <div class="pagination-numbers">
-		        <a class="arrow" th:href="@{|?page=${fileList.number - 1}|}" 
-		           th:classappend="${!fileList.hasPrevious} ? 'disabled' : ''"
-		           th:style="${!fileList.hasPrevious} ? 'visibility:hidden' : ''">&lt;</a>
-
-		        <th:block th:each="page: ${#numbers.sequence(0, fileList.totalPages - 1)}">
-		            <a th:if="${page >= fileList.number - 2 and page <= fileList.number + 2}"
-		               th:href="@{|?page=${page}|}"
-		               th:text="${page + 1}"
-		               th:style="${page == fileList.number} ? 'color: #e05238; border-bottom: 2px solid #e05238;' : ''">
-		            </a>
-		        </th:block>
-
-		        <a class="arrow" th:href="@{|?page=${fileList.number + 1}|}" 
-		           th:classappend="${!fileList.hasNext} ? 'disabled' : ''"
-		           th:style="${!fileList.hasNext} ? 'visibility:hidden' : ''">&gt;</a>
-		    </div>
-		</div>
-=======
         <div class="d-flex flex-column align-items-center">
-            <div class="pagination-numbers">
-                <a href="#" class="text-dark text-decoration-none">&lt;</a>
-                <a href="#" class="text-decoration-none" style="color: #e05238;">1</a>
-                <a href="#" class="text-dark text-decoration-none">2</a>
-                <a href="#" class="text-dark text-decoration-none">3</a>
-                <a href="#" class="text-dark text-decoration-none">4</a>
-                <a href="#" class="text-dark text-decoration-none">5</a>
-                <a href="#" class="text-dark text-decoration-none">&gt;</a>
+            <div class="pagination-container" th:if="${!fileList.isEmpty()}">
+                <div class="pagination-numbers">
+                    <a th:href="@{|?page=${fileList.number - 1}|}" 
+                       th:classappend="${!fileList.hasPrevious} ? 'disabled' : ''">&lt;</a>
+
+                    <th:block th:each="page: ${#numbers.sequence(0, fileList.totalPages - 1)}">
+                        <a th:if="${page >= fileList.number - 2 and page <= fileList.number + 2}"
+                           th:href="@{|?page=${page}|}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == fileList.number} ? 'active' : ''">
+                        </a>
+                    </th:block>
+
+                    <a th:href="@{|?page=${fileList.number + 1}|}" 
+                       th:classappend="${!fileList.hasNext} ? 'disabled' : ''">&gt;</a>
+                </div>
             </div>
             
-			<a th:href="@{/content/file_write}" 
-			   class="btn px-5 py-2 fw-bold" 
-			   style="background-color: #3e467d; color: white; text-decoration: none;">
-			   파일작성
-			</a>
+            <a th:href="@{/content/file/write}" class="btn-write">
+               파일작성
+            </a>
         </div>
->>>>>>> refs/remotes/origin/seungjae
 
     </main>
 </div>
