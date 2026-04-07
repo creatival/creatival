@@ -102,6 +102,48 @@
             color: white;
         }
 
+        /* [신규 추가] 카드형 액션 버튼 스타일 */
+        .action-buttons-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .btn-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 85px;
+            height: 90px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 15px;
+            text-decoration: none !important;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 10px;
+            color: #333;
+        }
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #adb5bd;
+        }
+        .btn-action i {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        .btn-action span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .btn-like i { color: #ff4757; }
+        .btn-follow i { color: #323b6d; }
+        .btn-bookmark i { color: #333; }
+        .btn-share i { color: #2D3278; }
+
         @media (max-width: 992px) {
             .back-btn { position: static; display: block; margin-bottom: 20px; }
         }
@@ -135,6 +177,25 @@
                 </div>
             </div>
 
+            <div class="action-buttons-group">
+                <a href="#" class="btn-action btn-like">
+                    <i class="bi bi-heart-fill"></i>
+                    <span>좋아요</span>
+                </a>
+                <a href="#" class="btn-action btn-follow">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <span>팔로우</span>
+                </a>
+                <a href="#" class="btn-action btn-bookmark">
+                    <i class="bi bi-bookmark-fill"></i>
+                    <span>북마크</span>
+                </a>
+                <a href="#" class="btn-action btn-share">
+                    <i class="bi bi-share-fill"></i>
+                    <span>공유</span>
+                </a>
+            </div>
+
             <hr class="section-divider">
 
             <div class="text-center">
@@ -164,10 +225,7 @@
                     <a href="#" class="text-muted text-decoration-none small me-3">수정</a>
                     <a href="#" class="text-danger text-decoration-none small">삭제</a>
                 </div>
-                <div class="d-flex gap-2">
-                    <a href="#" class="btn btn-outline-secondary rounded-pill px-4">
-                         팔로우
-                    </a>
+                <div>
                     <a th:href="@{/file_list}" class="btn btn-navy px-4">목록보기</a>
                 </div>
             </div>
