@@ -75,35 +75,48 @@
         }
     </style>
 </head>
-
 <div class="container novel-container" layout:fragment="content">
 	
     <div class="row">
-        <div class="col-md-4 novel-sidebar">
-            <div class="novel-thumb-wrapper shadow" 
-                 th:data-bs-toggle="${novel.username == loginUsername ? 'modal' : ''}" 
-                 th:data-bs-target="${novel.username == loginUsername ? '#thumbnailUpdateModal' : ''}">
-                <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" alt="표지">
-                <div class="camera-icon" th:if="${novel.username == loginUsername}"><i class="bi bi-camera-fill"></i></div>
-            </div>
+		<div class="col-md-4 novel-sidebar">
+		    <div class="novel-thumb-wrapper shadow" 
+		         th:data-bs-toggle="${novel.username == loginUsername ? 'modal' : ''}" 
+		         th:data-bs-target="${novel.username == loginUsername ? '#thumbnailUpdateModal' : ''}">
+		        <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" alt="표지">
+		        <div class="camera-icon" th:if="${novel.username == loginUsername}"><i class="bi bi-camera-fill"></i></div>
+		    </div>
 
-            <h3 class="fw-bold mb-1" th:text="${novel.title}">소설 제목</h3>
-            <p class="text-muted mb-3" th:text="${novel.displayname}">작가이름</p>
-            <div class="d-flex justify-content-center gap-3 text-muted small mb-3">
-                <span>조회수 <strong th:text="${novel.viewCount}">0</strong></span>
-                <span>추천 <strong>2681</strong></span>
-            </div>
-			<a th:if="${firstEpisodeId != null}" 
-			   th:href="@{'/content/novel/episode/' + ${firstEpisodeId}}" 
-			   class="first-btn">
-			   첫 화 시청하기
-			</a>
+		    <div class="position-relative mb-3 px-4">
+		        <h3 class="fw-bold mb-1" th:text="${novel.title}">소설 제목</h3>
+		        <p class="text-muted mb-0" th:text="${novel.displayname}">작가이름</p>
+		        
+		        <div class="position-absolute end-0 top-0 text-center" style="cursor: pointer; padding-right: 10px;">
+		            <i class="bi bi-bookmark" style="font-size: 1.5rem; display: block; line-height: 1;"></i>
+		            <span style="font-size: 11px; font-weight: bold; color: #666;">북마크</span>
+		        </div>
+		    </div>
 
-			<button th:if="${firstEpisodeId == null}" 
-			        class="first-btn" style="opacity: 0.5; cursor: default;" disabled>
-			    등록된 회차가 없습니다
-			</button>
-        </div>
+		    <div class="d-flex justify-content-center gap-3 text-muted small mb-3">
+		        <span>조회수 <strong th:text="${novel.viewCount}">0</strong></span>
+		        <span>추천 <strong>2681</strong></span>
+		    </div>
+
+		    <a th:if="${firstEpisodeId != null}" 
+		       th:href="@{'/content/novel/episode/' + ${firstEpisodeId}}" 
+		       class="first-btn">
+		       첫 화 시청하기
+		    </a>
+
+		    <button th:if="${firstEpisodeId == null}" 
+		            class="first-btn" style="opacity: 0.5; cursor: default;" disabled>
+		        등록된 회차가 없습니다
+		    </button>
+
+		    <div class="d-flex justify-content-center gap-2 mt-2" th:if="${novel.username == #authentication.name}">
+		        <a th:href="@{/content/novel_update/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-primary">수정하기</a>
+		        <a th:href="@{/content/novel_delete/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('삭제하시겠습니까?');">삭제하기</a>
+		    </div>
+		</div>
 
         <div class="col-md-8">
             <div class="novel-desc-box shadow-sm">
@@ -112,11 +125,7 @@
                     상태: <strong th:text="${novel.visibility}">PUBLIC</strong> | 
                     댓글: <strong th:text="${novel.allowComment} ? '허용' : '비허용'">허용</strong>
                 </div>
-				<div th:if="${novel.username == #authentication.name}">
-				        <a th:href="@{/content/novel_update/{id}(id=${novel.id})}" class="btn btn-sm btn-light text-primary">수정</a>
-				        <a th:href="@{/content/novel_delete/{id}(id=${novel.id})}" class="btn btn-sm btn-light text-danger" onclick="return confirm('삭제?');">삭제</a>
-				    </div>
-            </div>
+                </div>
 
             <div class="tag-area">
                 <div th:each="tag : ${tagList}" class="tag-item">

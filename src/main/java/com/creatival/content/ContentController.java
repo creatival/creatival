@@ -329,6 +329,13 @@ public class ContentController {
 		model.addAttribute("comments", comments);
 		int commentsCount = commentService.getCountByContent(id);
 		model.addAttribute("commentCount", commentsCount);
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 		return "illustration_detail";
 	}
 	

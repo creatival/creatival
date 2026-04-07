@@ -17,6 +17,8 @@ import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.comment.repository.CommentRepository;
 import com.creatival.content.Content;
 import com.creatival.content.ContentService;
+import com.creatival.team.Team;
+import com.creatival.team.TeamService;
 import com.creatival.user.Users;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class CommentService {
 	private final CommentRepository commentRepository;
 	private final ContentService contentService;
 	private final BoardService boardService;
+	private final TeamService teamService;
 	
 	public int getCountByContent(Long id) {
 		Content content = contentService.getContent(id);
@@ -178,6 +181,39 @@ public class CommentService {
 		}
 		
 		return commentRepository.countByBoard(board);
+	}
+
+	public void createCommentForTeam(Long id, String text, Users user) {
+		Team team = teamService.getTeamById(id);
+		if(team == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		Comment comment = Comment.builder()
+				.text(text)
+				.user(user)
+				.team(team)
+				.build();
+		commentRepository.save(comment);
+		
+	}
+
+	public List<ResponseCommentDTO> getCommentListByTeam(Long id){
+		Team team = teamService.getTeamById(id);
+		
+		if(team == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		List<ResponseCommentDTO> rootComments = new ArrayList<>();
+		List<Comment> list = commentRepository.findTop5ByTeamOrderByCreatedAt(team);
+		if (list == null || list.isEmpty()) return new ArrayList<>();
+		
+		for(Comment comment : list) {
+			if (comment == null) continue;
+			ResponseCommentDTO dto = ResponseCommentDTO.from(comment);
+			rootComments.add(dto);
+		}
+		rootComments.removeIf(Objects::isNull);
+		return rootComments;
 	}
 
 }

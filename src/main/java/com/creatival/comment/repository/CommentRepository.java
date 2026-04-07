@@ -6,6 +6,7 @@ import com.creatival.board.Board;
 import com.creatival.comment.Comment;
 import java.util.List;
 import com.creatival.content.Content;
+import com.creatival.team.Team;
 
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -13,4 +14,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	int countByContent(Content content);
 	List<Comment> findByBoard(Board board);
 	int countByBoard(Board board);
+	List<Comment> findByTeam(Team team);
+	List<Comment> findTop5ByTeamOrderByCreatedAt(Team team);
 }

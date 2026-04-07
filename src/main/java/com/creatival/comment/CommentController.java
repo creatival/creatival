@@ -1,5 +1,6 @@
 package com.creatival.comment;
 
+import java.lang.ProcessBuilder.Redirect;
 import java.security.Principal;
 
 import org.springframework.stereotype.Controller;
@@ -235,6 +236,24 @@ public class CommentController {
 			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 관리자께 문의바랍니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
 			return "redirect:/board/detail/"+comment.getBoard().getId();
+		}
+	}
+	
+	@PostMapping("/team/write/{id}")
+	public String createCommentForTeam(@PathVariable("id") Long id, @RequestParam("text") String text, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/team/"+id;
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		try {
+			commentService.createCommentForTeam(id, text, user);
+			return "redirect:/team/"+id;
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id;
 		}
 	}
 }

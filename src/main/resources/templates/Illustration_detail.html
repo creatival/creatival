@@ -6,45 +6,7 @@
 <div layout:fragment="content">
 
     <style>
-		/* 댓글 전체 아이템 */
-				.comment-item {
-				    margin-bottom: 1rem;
-				    position: relative;
-				}
-
-				/* 대댓글을 감싸는 컨테이너: 왼쪽 실선 */
-				.reply-wrapper {
-				    margin-left: 12px; /* 들여쓰기 */
-				    border-left: 2px solid #edeff1; /* 레딧 특유의 연회색 선 */
-				    padding-left: 20px; /* 선과 내용 사이 간격 */
-				    margin-top: 5px;
-				}
-
-		/* 액션 버튼 스타일 (텍스트 형태) */
-		.btn-action {
-		    background: none;
-		    border: none;
-		    padding: 0;
-		    font-size: 0.8rem;
-		    font-weight: 700;
-		    color: #878a8c;
-		    cursor: pointer;
-		}
-
-		.btn-action:hover {
-		    text-decoration: underline;
-		    color: #1a1a1b;
-		}
-
-		.btn-delete {
-		    color: #ff585b;
-		}
-
-		/* 입력 폼 스타일 */
-		.reply-form-container textarea {
-		    resize: none;
-		    border-radius: 4px;
-		}
+        /* ===== 작품 영역 ===== */
         .art-viewer {
             background-color: #f8f9fa;
             min-height: 500px;
@@ -60,10 +22,48 @@
             object-fit: contain;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             border-radius: 4px;
-			display: block;
-			margin: 0 auto;
+            display: block;
+            margin: 0 auto;
         }
 
+        /* ===== 액션 버튼 (seungjae UI 유지) ===== */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 65px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        .btn-action:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .btn-like i { color: #ff4757; font-size: 1.3rem; }
+        .btn-star i { color: #ffc107; font-size: 1.3rem; }
+        .btn-share i { color: #2D3278; font-size: 1.3rem; }
+        .btn-bookmark i { color: #333; font-size: 1.3rem; }
+
+        .btn-action span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        /* ===== 작가 ===== */
         .artist-avatar {
             width: 45px;
             height: 45px;
@@ -71,22 +71,42 @@
             border-radius: 50%;
         }
 
+        .btn-follow {
+            border: 1px solid #2D3278;
+            color: #2D3278;
+            border-radius: 20px;
+            padding: 5px 18px;
+            font-size: 0.85rem;
+            background: white;
+            font-weight: bold;
+        }
+
+        .btn-follow:hover {
+            background-color: #2D3278;
+            color: white;
+        }
+		/* 팔로우 상태 */
+		.btn-follow.following {
+		    background-color: #2D3278;
+		    color: white;
+		}
+
+		/* 호버 (언팔 느낌) */
+		.btn-follow.following:hover {
+		    background-color: #dc3545;
+		    border-color: #dc3545;
+		}
+
+        /* ===== 태그 ===== */
         .art-tag {
             background-color: #e9ecef;
-            color: #495057;
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.85rem;
             margin-right: 6px;
-            display: inline-block;
         }
 
-        .btn-navy-custom {
-            background-color: #2D3278;
-            color: white;
-            border-radius: 30px;
-        }
-
+        /* ===== 댓글 ===== */
         .comment-section {
             background-color: #f8f9fa;
             border-radius: 15px;
@@ -97,12 +117,38 @@
             border: none !important;
             border-bottom: 1px solid #dee2e6 !important;
             background-color: transparent !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
         }
 
         .comment-input:focus {
             border-bottom: 2px solid #2D3278 !important;
+        }
+
+        /* 🔥 댓글 버튼 (HEAD 스타일 유지) */
+        .btn-text-action {
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #878a8c;
+            cursor: pointer;
+        }
+
+        .btn-text-action:hover {
+            text-decoration: underline;
+            color: #1a1a1b;
+        }
+
+        .reply-wrapper {
+            margin-left: 12px;
+            border-left: 2px solid #edeff1;
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+
+        .btn-navy-custom {
+            background-color: #2D3278;
+            color: white;
+            border-radius: 30px;
         }
     </style>
 
@@ -111,179 +157,111 @@
         <h3 class="fw-bold" th:text="${art.title}">작품 제목</h3>
     </div>
 
-    <!-- 이미지 캐러셀 -->
-    <div class="art-viewer w-100 mb-4">
+    <!-- 이미지 -->
+    <div class="art-viewer mb-4">
         <div class="container" style="max-width: 800px;">
             <div id="artSlider" class="carousel slide">
                 <div class="carousel-inner">
-					
-					<th:block th:if="${art.fileList != null and art.fileList.size() > 1}">
-					    
-					    <button class="carousel-control-prev"
-					            type="button"
-					            data-bs-target="#artSlider"
-					            data-bs-slide="prev">
-					        <span class="carousel-control-prev-icon"></span>
-					    </button>
-
-					    <button class="carousel-control-next"
-					            type="button"
-					            data-bs-target="#artSlider"
-					            data-bs-slide="next">
-					        <span class="carousel-control-next-icon"></span>
-					    </button>
-
-					</th:block>
                     <div th:each="file, iter : ${art.fileList}"
                          class="carousel-item"
                          th:classappend="${iter.first} ? 'active'">
-                        <img th:src="${file.fileUrl}"
-                             class="art-image"
-                             th:alt="${art.title}">
-                    </div>
-
-                    <div th:if="${art.fileList == null or art.fileList.isEmpty()}"
-                         class="carousel-item active">
-                        <img src="https://dummyimage.com/800x500/dee2e6/6c757d.png&text=No+Image"
-                             class="art-image">
+                        <img th:src="${file.fileUrl}" class="art-image">
                     </div>
                 </div>
-				<div class="carousel-indicators" style="position: relative; margin-top: 20px;">
-                    <button th:each="file, iter : ${art.fileList}" type="button" data-bs-target="#artSlider" 
-                            th:data-bs-slide-to="${iter.index}" th:classappend="${iter.first} ? 'active'" style="background-color: #333;"></button>
-                </div>	
             </div>
         </div>
     </div>
 
     <div class="container" style="max-width: 800px;">
 
-        <!-- 설명 + 정보 -->
-        <div class="mb-3">
-            <div class="text-muted small mb-2">
-                <span th:text="${#temporals.format(art.createdAt,'yyyy.MM.dd')}"></span>
-                · 조회수 <span th:text="${art.viewCount}"></span>
-            </div>
-
-            <div class="mb-3"
-                 style="white-space: pre-wrap;"
-                 th:text="${art.description}">
-            </div>
-
-            <!-- 태그 -->
-            <div class="mb-4">
-                <div th:each="tag : ${tagList}" class="art-tag">
-                    <span th:text="'#' + ${tag.tagText}"></span>
-
-                    <a sec:authorize="isAuthenticated()"
-                       th:if="${art.username == #authentication.name}"
-                       th:href="@{/tag/art/deleteContentTag(tagId=${tag.id},contentId=${art.id})}"
-                       onclick="return confirm('삭제하시겠습니까?');">
-                        <i class="bi bi-x-circle-fill ms-1"></i>
-                    </a>
+        <!-- 정보 + 버튼 -->
+        <div class="d-flex justify-content-between mb-4">
+            <div>
+                <div class="text-muted small mb-2">
+                    <span th:text="${#temporals.format(art.createdAt,'yyyy.MM.dd')}"></span>
+                    · 조회수 <span th:text="${art.viewCount}"></span>
                 </div>
 
-                <!-- 태그 추가 버튼 -->
-                <button type="button"
-                        sec:authorize="isAuthenticated()"
-                        th:if="${art.username == #authentication.name}"
-                        class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2"
-                        style="width:24px;height:24px;"
-                        data-bs-toggle="modal"
-                        data-bs-target="#tagAddModal">
-                    <i class="bi bi-plus"></i>
-                </button>
+                <div>
+                    <span th:each="tag : ${tagList}" class="art-tag"
+                          th:text="'#' + ${tag.tagText}"></span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></button>
+                <button class="btn-action btn-star"><i class="bi bi-star-fill"></i><span>즐겨찾기</span></button>
+                <button class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></button>
+                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
             </div>
         </div>
 
-        <!-- 수정/삭제 -->
-        <div class="mb-4"
-             sec:authorize="isAuthenticated()"
-             th:if="${art.username == #authentication.name}">
-            <a th:href="@{/content/art/update/{id}(id=${art.id})}"
-               class="btn btn-outline-primary btn-sm me-2">수정</a>
+        <!-- 설명 -->
+        <div class="mb-4" style="white-space: pre-wrap;" th:text="${art.description}"></div>
 
-            <a th:href="@{/content/art/delete/{id}(id=${art.id})}"
-               onclick="return confirm('삭제하시겠습니까?');"
-               class="btn btn-outline-danger btn-sm">삭제</a>
+        <!-- 작성자 -->
+        <div class="d-flex justify-content-between py-3 border-top border-bottom mb-5">
+            <div class="d-flex align-items-center" th:onclick="|location.href='@{/user/myPage/{id}(id=${art.userId})}'|" style="cursor: pointer;">
+                <img th:src="${art.profileImgUrl}" class="artist-avatar me-3">
+                <h6 th:text="${art.displayname}"></h6>
+            </div>
+            <button id="followBtn" class="btn-follow" th:classappend="${follow.followed} ? ' following'" th:onclick="|toggleFollow(${art.userId}, 'USER')|" th:if="${art.username != #authentication.name}" th:text="${follow.followed} ? '팔로우 중' : '팔로우'"></button>
         </div>
 
-        <!-- 작가 -->
-        <div class="d-flex align-items-center py-3 border-top border-bottom mb-5">
-            <img th:src="${art.profileImgUrl ?: 'https://dummyimage.com/50x50/ced4da/6c757d'}"
-                 class="artist-avatar me-3">
-            <h6 class="fw-bold mb-0"
-                th:text="${art.displayname ?: art.username}">
-            </h6>
+        <!-- 댓글 -->
+        <div th:if="${art.isAllowComment}" class="comment-section">
+
+            <h5 class="text-center fw-bold mb-4">댓글</h5>
+
+            <!-- 입력 -->
+            <form th:action="@{/comment/content/write/{id}(id=${art.id})}"
+                  method="post"
+                  class="d-flex justify-content-center mb-5">
+
+                <input type="text" name="text"
+                       class="form-control comment-input me-3"
+                       placeholder="댓글 쓰기"
+                       style="max-width:500px;">
+
+                <button type="submit" class="btn btn-navy-custom px-4">작성</button>
+            </form>
+
+            <!-- 목록 -->
+            <div class="comment-list">
+                <th:block th:each="comment : ${comments}">
+                    <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${art.id})}"></div>
+                </th:block>
+            </div>
         </div>
-		<!-- 댓글 섹션 -->
-		<div th:if="${art.isAllowComment}" class="comment-section">
 
-		    <h5 class="text-center fw-bold mb-4">댓글</h5>
+        <!-- 연관 작품 -->
+        <h5 class="text-center fw-bold mt-5 mb-4">연관 작품</h5>
+        <div class="row g-2 mb-5">
+            <div class="col-4" th:each="i : ${#numbers.sequence(1,12)}">
+                <div style="aspect-ratio:1/1;background:#eee;border-radius:4px;
+                     display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-image text-muted"></i>
+                </div>
+            </div>
+        </div>
 
-		    <!-- 댓글 작성 -->
-		    <form th:action="@{/comment/content/write/{id}(id=${art.id})}"
-		          method="post"
-		          class="d-flex align-items-center justify-content-center mb-5">
-		        
-		        <div class="bg-secondary rounded-circle me-3"
-		             style="width:40px;height:40px;"></div>
+    </div>
 
-		        <input type="text"
-		               name="text"
-		               class="form-control comment-input me-3"
-		               placeholder="댓글 쓰기"
-		               style="max-width:500px;">
-
-		        <button type="submit" class="btn btn-navy-custom px-4">작성</button>
-		    </form>
-			
-
-		    <!-- 댓글 목록 -->
-			<div class="comment-list">
-			    <th:block th:each="comment : ${comments}">
-			        <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${art.id})}"></div>
-			    </th:block>
-			</div>
-
-			
-		</div>
-
-
-    <!-- 태그 추가 모달 -->
-    <div sec:authorize="isAuthenticated()"
-         class="modal fade"
-         id="tagAddModal"
-         tabindex="-1">
-
-        <div class="modal-dialog modal-dialog-centered modal-sm">
+    <!-- 태그 모달 -->
+    <div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
-                <form th:action="@{/tag/createContentArtTag/{id}(id=${art.id})}"
-                      method="post">
-
+                <form th:action="@{/tag/createContentArtTag/{id}(id=${art.id})}" method="post">
                     <div class="modal-body">
-                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
-                        <div class="input-group">
-                            <span class="input-group-text">#</span>
-                            <input type="text"
-                                   name="tagName"
-                                   class="form-control"
-                                   required>
-                        </div>
+                        <input type="text" name="tagName" class="form-control" placeholder="태그 입력">
                     </div>
-
                     <div class="modal-footer">
-                        <button type="submit"
-                                class="btn btn-primary btn-sm w-100">
-                            추가
-                        </button>
+                        <button class="btn btn-primary w-100">추가</button>
                     </div>
-
                 </form>
             </div>
         </div>
     </div>
-	<!-- JS -->
-	
+
 </div>
 </html>

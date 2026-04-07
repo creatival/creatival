@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.MailService;
+import com.creatival.comment.CommentService;
+import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.content.Content;
 import com.creatival.content.ContentService;
 import com.creatival.content.DTO.ResponseContentListForProject;
@@ -74,7 +76,7 @@ public class TeamController {
 	private final MailService mailService;
 	private final UserTokenService userTokenService;
 	private final ContentService contentService;
-
+	private final CommentService commentService;
 
 
 	
@@ -126,6 +128,9 @@ public class TeamController {
 		
 		List<ResponseProjectListDTO> projects = teamService.getProjectList(team);
 		model.addAttribute("projectList", projects);
+		
+		List<ResponseCommentDTO> comments = commentService.getCommentListByTeam(id);
+		model.addAttribute("comments", comments);
 		return "team_detail";
 	}
 	

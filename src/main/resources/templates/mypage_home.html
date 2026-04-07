@@ -47,6 +47,14 @@
         }
         .btn-deactivate:hover { background-color: #fff0f0; }
 
+		.btn-follow {
+			display: inline-block; background-color: #3B4371; border: none; padding: 8px 25px; 
+			            border-radius: 10px; font-size: 0.9rem; font-weight: 600; color: #F0F2F5; 
+			            cursor: pointer; transition: 0.2s; margin-bottom: 30px;
+		}
+		.btn-follow:hover {
+			background-color: #4a90e2;
+		}
         /* =========================================
            [2. 탭 메뉴]
            ========================================= */
@@ -142,7 +150,7 @@
                     </span>
                 </div>
                 <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">등록된 태그가 없습니다.</span>
-                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-0" 
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-0"  th:if="${user.username == #authentication.name}" 
                         style="width: 24px; height: 24px; line-height: 1;" data-bs-toggle="modal" data-bs-target="#tagAddModal">
                     <i class="bi bi-plus"></i>
                 </button>
@@ -151,13 +159,14 @@
             <p class="profile-intro" th:text="${user.description != null ? user.description : '나를 표현하는 한 줄 소개를 적어보세요.'}">소개글</p>
 
             <div class="d-flex justify-content-center gap-2">
-                <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile">프로필 편집</div>
-                <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate">프로필 비활성화</div>
+                <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile" th:if="${user.username == #authentication.name}">프로필 편집</div>
+                <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate" th:if="${user.username == #authentication.name}">프로필 비활성화</div>
+                <button id="followBtn" class="btn-follow" th:classappend="${follow.followed} ? ' following'" th:onclick="|toggleFollow(${user.id}, 'USER')|" th:if="${user.username != #authentication.name}" th:text="${follow.followed} ? '팔로우 중' : '팔로우'"></button>
             </div>
 
             <div class="tab-menu-wrapper">
                 <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home')">홈</div>
-                <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts')">내 게시물</div>
+                <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts')">게시물</div>
                 <div id="tab-team" class="tab-menu-item" onclick="switchTab('team')">팀</div>
                 <div id="tab-project" class="tab-menu-item" onclick="switchTab('project')">프로젝트</div>
             </div>
@@ -166,7 +175,7 @@
         <section id="content-home" class="tab-content active info-content-area">
             <div class="container">
                 <div class="info-card">
-                    <div class="info-card-header">내 정보 확인</div>
+                    <div class="info-card-header">정보 확인</div>
                     <table class="table-info-custom">
                         <tbody>
                             <tr>
