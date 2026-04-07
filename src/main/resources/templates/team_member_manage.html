@@ -6,172 +6,287 @@
 
 <th:block layout:fragment="content">
 
-<section class="py-5">
-<div class="container px-5">
+<style>
+	/* 미니멀 네이비 & 오렌지 테마 CSS */
+	:root {
+		--brand-navy: #3B4371;
+		--brand-orange: #FF7F50;
+		--bg-light: #F8F9FA;
+		--border-color: #edf2f7;
+	}
 
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<h4 class="fw-bold">팀 멤버 관리</h4>
-		<span class="badge bg-secondary"
+	body {
+		background-color: var(--bg-light);
+	}
+
+	/* 카드 & 테이블 스타일링 */
+	.custom-card {
+		border-radius: 16px;
+		border: 1px solid var(--border-color);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+		background-color: #ffffff;
+		overflow: hidden;
+	}
+
+	.custom-table {
+		margin-bottom: 0;
+	}
+
+	.custom-table thead {
+		background-color: rgba(59, 67, 113, 0.03);
+	}
+
+	.custom-table th {
+		color: var(--brand-navy);
+		font-weight: 600;
+		text-transform: uppercase;
+		font-size: 0.85rem;
+		letter-spacing: 0.5px;
+		padding: 1.2rem 1.5rem;
+		border-bottom: 2px solid var(--border-color);
+	}
+
+	.custom-table td {
+		padding: 1.2rem 1.5rem;
+		vertical-align: middle;
+		border-bottom: 1px solid var(--border-color);
+		color: #4a5568;
+	}
+
+	.custom-table tbody tr:hover {
+		background-color: rgba(59, 67, 113, 0.01);
+		transition: all 0.2s ease;
+	}
+
+	/* 뱃지 커스텀 */
+	.badge-total {
+		background-color: rgba(59, 67, 113, 0.1) !important;
+		color: var(--brand-navy) !important;
+		font-size: 0.9rem;
+		padding: 0.5em 1em;
+		border-radius: 8px;
+	}
+
+	.badge-leader {
+		background-color: var(--brand-orange) !important;
+		color: #fff !important;
+		padding: 0.4em 0.8em;
+		font-weight: 500;
+	}
+
+	.badge-member {
+		background-color: #e2e8f0 !important;
+		color: #64748b !important;
+		padding: 0.4em 0.8em;
+		font-weight: 500;
+	}
+
+	.position-text {
+		font-weight: 600;
+		color: var(--brand-navy);
+	}
+
+	/* 버튼 커스텀 */
+	.btn-action {
+		border-radius: 8px;
+		font-size: 0.85rem;
+		padding: 0.4rem 0.8rem;
+		font-weight: 500;
+		transition: all 0.2s;
+	}
+
+	.btn-outline-navy {
+		color: var(--brand-navy);
+		border: 1px solid var(--brand-navy);
+		background: transparent;
+	}
+	.btn-outline-navy:hover {
+		background-color: var(--brand-navy);
+		color: white;
+	}
+
+	.btn-outline-orange {
+		color: var(--brand-orange);
+		border: 1px solid var(--brand-orange);
+		background: transparent;
+	}
+	.btn-outline-orange:hover {
+		background-color: var(--brand-orange);
+		color: white;
+	}
+
+	/* 모달 커스텀 */
+	.custom-modal-content {
+		border-radius: 16px;
+		border: none;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+	}
+	.custom-modal-header {
+		background-color: var(--brand-navy);
+		color: white;
+		border-top-left-radius: 16px;
+		border-top-right-radius: 16px;
+		padding: 1.5rem;
+	}
+	.custom-modal-header .btn-close {
+		filter: invert(1) grayscale(100%) brightness(200%);
+	}
+	.custom-modal-body {
+		padding: 2rem;
+	}
+</style>
+
+<section class="py-5">
+<div class="container px-4 px-lg-5 max-w-7xl">
+
+	<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+		<h3 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px;">팀 멤버 관리</h3>
+		<span class="badge badge-total"
 		      th:text="'총 ' + ${#lists.size(memberList)} + '명'"></span>
 	</div>
 
-	<div class="card shadow-sm border-0">
+	<div class="card custom-card">
 	<div class="card-body p-0">
+		<div class="table-responsive">
+			<table class="table custom-table">
 
-		<table class="table align-middle mb-0">
+				<thead>
+					<tr>
+						<th>멤버 프로필</th>
+						<th>포지션</th>
+						<th>역할</th>
+						<th>가입일</th>
+						<th class="text-end">관리 옵션</th>
+					</tr>
+				</thead>
 
-			<thead class="table-light">
-				<tr>
-					<th>멤버</th>
-					<th>포지션</th>
-					<th>역할</th>
-					<th>가입일</th>
-					<th class="text-end">관리</th>
-				</tr>
-			</thead>
+				<tbody>
 
-			<tbody>
+					<tr th:each="member : ${memberList}">
 
-				<tr th:each="member : ${memberList}">
-
-					<!-- 멤버 정보 -->
-					<td>
-						<div class="d-flex align-items-center">
-
-							<img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} : 'https://dummyimage.com/40x40/adb5bd/495057'"
-								 class="rounded-circle me-3"
-								 width="40" height="40">
-
-							<div>
-								<div class="fw-bold"
-								     th:text="${member.displayname}">이름</div>
-
-								<small class="text-muted"
-								       th:text="'@' + ${member.username}">@username</small>
+						<td>
+							<div class="d-flex align-items-center">
+								<img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} : 'https://dummyimage.com/40x40/adb5bd/495057'"
+									 class="rounded-circle me-3 border border-2 border-white shadow-sm"
+									 width="48" height="48" style="object-fit: cover;">
+								<div>
+									<div class="fw-bold text-dark" style="font-size: 1.05rem;"
+									     th:text="${member.displayname}">이름</div>
+									<small class="text-secondary"
+									       th:text="'@' + ${member.username}">@username</small>
+								</div>
 							</div>
+						</td>
 
-						</div>
-					</td>
+						<td>
+							<span class="position-text" th:text="${member.position}">Backend</span>
+						</td>
 
-					<!-- 포지션 -->
-					<td th:text="${member.position}">
-						Backend
-					</td>
+						<td>
+							<span class="badge badge-leader rounded-pill shadow-sm"
+							      th:if="${member.role.name() == 'LEADER'}">
+								팀장
+							</span>
+							<span class="badge badge-member rounded-pill"
+							      th:if="${member.role.name() == 'MEMBER'}">
+								멤버
+							</span>
+						</td>
 
-					<!-- 역할 -->
-					<td>
+						<td class="text-secondary" th:text="${#temporals.format(member.joinedAt,'yyyy-MM-dd')}">
+							2025-01-01
+						</td>
 
-						<span class="badge bg-warning text-dark"
-						      th:if="${member.role.name() == 'LEADER'}">
-							팀장
-						</span>
+						<td class="text-end">
+							<div class="d-flex justify-content-end gap-2">
 
-						<span class="badge bg-secondary"
-						      th:if="${member.role.name() == 'MEMBER'}">
-							멤버
-						</span>
+								<form th:action="@{/team/member/role}" method="post" class="m-0">
+									<input type="hidden" name="memberId"
+									       th:value="${member.id}">
+									<button class="btn btn-action btn-outline-orange"
+									        type="submit"
+									        th:if="${leaderUsername == #authentication.name && member.role.name() == 'MEMBER'}"
+									        onclick="return confirm('정말 이 멤버에게 팀장을 위임하시겠습니까?');">
+									    팀장 위임
+									</button>
+								</form>
 
-					</td>
+								<button class="btn btn-action btn-outline-navy"
+								        th:if="${leaderUsername == #authentication.name}"
+								        data-bs-toggle="modal"
+								        data-bs-target="#positionModal"
+								        th:attr="data-member-id=${member.id},
+								                 data-username=${member.username},
+								                 data-position=${member.position}">
+								    포지션 변경
+								</button>
 
-					<!-- 가입일 -->
-					<td th:text="${#temporals.format(member.joinedAt,'yyyy-MM-dd')}">
-						2025-01-01
-					</td>
+								<button class="btn btn-action btn-outline-danger"
+								        th:if="${leaderUsername == #authentication.name && member.username != #authentication.name}"
+								        th:onclick="'removeMember(' + ${member.id} + ')'">
+								    삭제
+								</button>
 
-					<!-- 관리 -->
-					<td class="text-end">
+							</div>
+						</td>
 
-						<div class="btn-group btn-group-sm">
+					</tr>
 
-							<!-- 역할 변경 -->
-							<form th:action="@{/team/member/role}" method="post">
+					<tr th:if="${#lists.isEmpty(memberList)}">
+						<td colspan="5" class="text-center text-muted py-5">
+							<div class="py-4">
+								<i class="bi bi-people text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+								팀에 아직 멤버가 없습니다.
+							</div>
+						</td>
+					</tr>
 
-								<input type="hidden" name="memberId"
-								       th:value="${member.id}">
+				</tbody>
 
-									   <button class="btn btn-outline-primary"
-									           type="submit"
-									           th:if="${leaderUsername == #authentication.name && member.role.name() == 'MEMBER'}"
-									           onclick="return confirm('정말 이 멤버에게 팀장을 위임하시겠습니까?');">
-									       팀장 위임
-									   </button>
-
-							</form>
-
-							<!-- 멤버 삭제 -->
-							<button class="btn btn-outline-danger"
-							        th:if="${leaderUsername == #authentication.name && member.username != #authentication.name}"
-							        th:onclick="'removeMember(' + ${member.id} + ')'">
-							    삭제
-							</button>
-							<!-- 역할 변경 -->
-							<button class="btn btn-outline-success"
-							        th:if="${leaderUsername == #authentication.name}"
-							        data-bs-toggle="modal"
-							        data-bs-target="#positionModal"
-							        th:attr="data-member-id=${member.id},
-							                 data-username=${member.username},
-							                 data-position=${member.position}">
-
-							    포지션 변경
-							</button>
-
-						</div>
-
-					</td>
-
-				</tr>
-
-				<!-- 멤버 없을 때 -->
-				<tr th:if="${#lists.isEmpty(memberList)}">
-					<td colspan="5" class="text-center text-muted py-5">
-						팀에 아직 멤버가 없습니다.
-					</td>
-				</tr>
-
-			</tbody>
-
-		</table>
-
+			</table>
+		</div>
 	</div>
 	</div>
 
 </div>
 </section>
+
 <div class="modal fade" id="positionModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal-content">
 
       <form th:action="@{/team/{id}/member/changePosition(id=${teamId})}" method="post">
 
-        <div class="modal-header">
-          <h5 class="modal-title">포지션 변경</h5>
+        <div class="modal-header custom-modal-header border-0">
+          <h5 class="modal-title fw-bold">포지션 변경</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
-        <div class="modal-body">
+        <div class="modal-body custom-modal-body">
 
             <input type="hidden" name="memberId" id="modalMemberId">
 
-            <div class="mb-3">
-                <label class="form-label">멤버</label>
-                <input type="text" class="form-control" id="modalUsername" name="modalUsername" disabled>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-secondary small mb-1">대상 멤버</label>
+                <input type="text" class="form-control bg-light" id="modalUsername" name="modalUsername" disabled style="border-radius: 8px;">
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">포지션</label>
-                <input type="text" class="form-control" name="position" id="modalPosition">
+            <div class="mb-2">
+                <label class="form-label fw-bold text-secondary small mb-1">새로운 포지션</label>
+                <input type="text" class="form-control" name="position" id="modalPosition" style="border-radius: 8px; border-color: #cbd5e1;">
             </div>
 
         </div>
 
-        <div class="modal-footer">
+        <div class="modal-footer border-0 px-4 pb-4 pt-0">
 			<button type="button"
-			        class="btn btn-secondary"
+			        class="btn btn-light px-4" style="border-radius: 8px; font-weight: 500;"
 			        data-bs-dismiss="modal">
 			    취소
 			</button>
-          <button class="btn btn-success" type="submit">변경</button>
+          <button class="btn px-4 text-white" style="background-color: var(--brand-navy); border-radius: 8px; font-weight: 500;" type="submit">
+          	변경 저장
+          </button>
         </div>
 
       </form>
@@ -180,8 +295,6 @@
   </div>
 </div>
 </th:block>
-
-
 
 <th:block layout:fragment="script">
 
