@@ -1,121 +1,58 @@
 <html layout:decorate="~{layout}">
 <div class="container my-5" layout:fragment="content">
     
-	<div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-	    <div>
-	        <h2 class="fw-bold mb-0">비디오</h2>
-	        <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
-	    </div>
-	    
-	    <div class="d-flex gap-3 align-items-center">
-	        <a th:href="@{/video_write}" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
-	            <i class="bi bi-plus-lg me-2"></i>
-	            <span class="fw-bold">동영상 등록</span>
-	        </a>
+    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">비디오</h2>
+            <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
+        </div>
+        
+        <div class="d-flex gap-3 align-items-center">
+            <a th:href="@{/content/video/create}" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
+                <i class="bi bi-plus-lg me-2"></i>
+                <span class="fw-bold">동영상 등록</span>
+            </a>
 
-	        <div class="d-none d-sm-block">
-	            <div class="btn-group" role="group">
-	                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-	                <label class="btn btn-outline-secondary btn-sm" for="btnradio1">최신순</label>
+            <div class="d-none d-sm-block">
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                    <label class="btn btn-outline-secondary btn-sm" for="btnradio1">최신순</label>
 
-	                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-	                <label class="btn btn-outline-secondary btn-sm" for="btnradio2">인기순</label>
-	            </div>
-	        </div>
-	    </div>
-	</div>
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="btnradio2">인기순</label>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row g-4 mb-5">
-        
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="video : ${list}">
+            <a th:href="@{/content/video/detail/{id}(id=${video.id})}" class="text-decoration-none text-dark">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="ratio ratio-16x9 position-relative bg-dark rounded-top overflow-hidden">
-                        <img src="images/pic.png" class="object-fit-cover" alt="비디오 썸네일">
-                        <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 z-1" style="width: auto; height: fit-content;">10:24</span>
-                    </div>
+                        <img th:src="${video.thumbnailUrl}" class="object-fit-cover" alt="비디오 썸네일">
+                        
+                        </div>
                     
                     <div class="card-body p-3">
                         <div class="d-flex align-items-start">
-                            <img src="https://dummyimage.com/40x40/ced4da/6c757d" class="rounded-circle me-3 mt-1" alt="채널 로고" style="width: 36px; height: 36px;">
+                            <img th:src="${video.profileImgUrl!=null ? video.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}" class="rounded-circle me-3 mt-1" alt="채널 로고" style="width: 36px; height: 36px;">
                             
                             <div class="overflow-hidden">
-                                <h6 class="card-title fw-bold text-truncate mb-1">유니티로 2D 플랫포머 게임 만들기 1편</h6>
-                                <p class="text-muted small mb-0 text-truncate">Creatival_Official</p>
-                                <p class="text-muted small mb-0">조회수 1.5만회 • 3일 전</p>
+                                <h6 class="card-title fw-bold text-truncate mb-1" th:text="${video.title}">유니티로 2D 플랫포머 게임 만들기 1편</h6>
+                                <p class="text-muted small mb-0 text-truncate" th:text="${video.displayname}">Creatival_Official</p>
+                                <p class="text-muted small mb-0">
+                                    조회수 <span th:text="${video.viewCount}">0</span>회 • <span th:text="${video.formattedDate}"></span>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </a>
         </div>
-
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="ratio ratio-16x9 position-relative bg-dark rounded-top overflow-hidden">
-                        <img src="images/pic.png" class="object-fit-cover" alt="비디오 썸네일">
-                        <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 z-1" style="width: auto; height: fit-content;">08:15</span>
-                    </div>
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start">
-                            <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3 mt-1" alt="채널 로고" style="width: 36px; height: 36px;">
-                            <div class="overflow-hidden">
-                                <h6 class="card-title fw-bold text-truncate mb-1">초보자를 위한 일러스트레이터 기초 강좌</h6>
-                                <p class="text-muted small mb-0 text-truncate">그림그리는 영희</p>
-                                <p class="text-muted small mb-0">조회수 8,400회 • 1주 전</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="ratio ratio-16x9 position-relative bg-dark rounded-top overflow-hidden">
-                        <img src="images/pic.png" class="object-fit-cover" alt="비디오 썸네일">
-                        <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 z-1" style="width: auto; height: fit-content;">1:12:05</span>
-                    </div>
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start">
-                            <img src="https://dummyimage.com/40x40/6c757d/343a40" class="rounded-circle me-3 mt-1" alt="채널 로고" style="width: 36px; height: 36px;">
-                            <div class="overflow-hidden">
-                                <h6 class="card-title fw-bold text-truncate mb-1">웹 개발 풀스택 1시간 만에 훑어보기</h6>
-                                <p class="text-muted small mb-0 text-truncate">코딩알려주는 남자</p>
-                                <p class="text-muted small mb-0">조회수 12만회 • 2달 전</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <a th:href="@{/video_detail}" class="text-decoration-none text-dark">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="ratio ratio-16x9 position-relative bg-dark rounded-top overflow-hidden">
-                        <img src="images/pic.png" class="object-fit-cover" alt="비디오 썸네일">
-                        <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 z-1" style="width: auto; height: fit-content;">03:45</span>
-                    </div>
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start">
-                            <img src="https://dummyimage.com/40x40/ced4da/6c757d" class="rounded-circle me-3 mt-1" alt="채널 로고" style="width: 36px; height: 36px;">
-                            <div class="overflow-hidden">
-                                <h6 class="card-title fw-bold text-truncate mb-1">새로운 프로젝트 발표 티저 영상</h6>
-                                <p class="text-muted small mb-0 text-truncate">Team Creatival</p>
-                                <p class="text-muted small mb-0">조회수 2,100회 • 5시간 전</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        
     </div>
 
-    <nav aria-label="Page navigation">
+    <nav aria-label="Page navigation" th:if="${!list.isEmpty()}">
         <ul class="pagination justify-content-center">
             <li class="page-item disabled">
                 <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>

@@ -1,0 +1,253 @@
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<div layout:fragment="content">
+
+    <style>
+        :root {
+            --brand-orange: #F05A28;
+            --brand-navy: #2C3E50;
+            --input-focus: #8C94CD;
+            --bg-light: #F8F9FA;
+        }
+
+        .write-container { max-width: 850px; margin: 4rem auto 6rem; padding: 0 20px; }
+        .write-header { text-align: center; margin-bottom: 3.5rem; }
+        .write-header h2 { font-weight: 900; font-size: 2rem; }
+        .write-card { background: #fff; border: 1px solid #E1E1E1; padding: 40px; border-radius: 12px; }
+        
+        /* 폼 라벨 및 입력창 디자인 복구 */
+        .form-label { font-weight: 800; font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .form-control, .form-select { border: 1.5px solid #EAEAEA; border-radius: 8px; padding: 12px 15px; font-size: 0.95rem; }
+        .author-box { background-color: var(--bg-light); border-radius: 8px; padding: 12px 15px; font-weight: 700; color: #666; display: flex; align-items: center; height: 48px; }
+        .section-divider { border-top: 1px dashed #EEE; margin: 1.5rem 0; }
+        .content-area { min-height: 250px; resize: none; line-height: 1.6; }
+
+        /* 파일 목록 스타일 */
+        .file-list { margin-top: 10px; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 8px; background: #f8f9fa; margin-bottom: 8px; border: 1px solid #eee; }
+        .file-remove { cursor: pointer; color: #dc3545; font-weight: bold; }
+
+        .btn-group-custom { display: flex; justify-content: center; gap: 15px; margin-top: 3rem; }
+        .btn-creativ { padding: 12px 50px; font-weight: 800; border-radius: 8px; }
+        .btn-cancel { background-color: #fff; border: 1.5px solid #D1D1D1; color: #777; }
+        .btn-submit { background-color: var(--brand-navy); border: none; color: #fff; }
+        .preview-box { font-size: 0.85rem; margin-top: 8px; min-height: 20px; color: #666; font-weight: 600; }
+    </style>
+
+    <div class="write-container">
+        <div class="write-header">
+            <h2>게시글 수정</h2>
+        </div>
+
+        <form th:action="@{/board/edit/{id}(id=${id})}" th:object="${updateBoardDTO}" method="post" enctype="multipart/form-data">
+            <div class="write-card">
+                <div class="row">
+                    <div class="col-md-5 mb-4">
+                        <label class="form-label"><i class="bi bi-tag"></i> 카테고리</label>
+                        <select class="form-select" disabled>
+                            <option selected th:text="*{boardType != null and boardType.name() == 'NORMAL' ? '유저 게시판' : '창작자 게시판'}"></option>
+                        </select>
+                        <input type="hidden" th:field="*{boardType}">
+                    </div>
+
+                    <div class="col-md-7 mb-4">
+                        <label class="form-label"><i class="bi bi-person"></i> 작성자</label>
+                        <div class="author-box">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span th:text="${#authentication.name}">사용자명</span>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">관련 컨텐츠 ID</label>
+                            <input type="number" class="form-control" th:field="*{contentId}" id="contentId">
+                            <div id="contentPreview" class="preview-box"></div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">프로젝트 ID</label>
+                            <input type="number" class="form-control" th:field="*{projectId}" id="projectId">
+                            <div id="projectPreview" class="preview-box"></div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">팀 ID</label>
+                            <input type="number" class="form-control" th:field="*{teamId}" id="teamId">
+                            <div id="teamPreview" class="preview-box"></div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="col-12 mb-4">
+                        <label class="form-label">제목</label>
+                        <input type="text" class="form-control" th:field="*{title}" required>
+                    </div>
+
+                    <div class="col-12 mb-4">
+                        <label class="form-label">내용</label>
+                        <textarea class="form-control content-area" id="contentArea" th:field="*{boardText}"></textarea>
+                    </div>
+
+                    <div class="col-12 mb-2">
+                        <label class="form-label">첨부 파일 (기존 파일 포함 최대 3개)</label>
+                        
+                        <div id="existingFiles" class="file-list">
+                            <div th:each="file : *{files}" class="file-item" th:id="'ex_file_' + ${file.id}">
+                                <span><i class="bi bi-file-earmark-check me-2"></i><span th:text="${file.originName}">기존파일명.jpg</span></span>
+                                <span class="file-remove" th:onclick="'removeExistingFile(' + ${file.id} + ')'">✕</span>
+                            </div>
+                        </div>
+
+                        <div id="deleteIdsContainer"></div>
+
+                        <div id="fileInputs" class="mt-3">
+                            <input class="form-control file-input" type="file" name="images" accept="image/*,video/*" id="file_init">
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group-custom">
+                <button type="button" class="btn btn-creativ btn-cancel" onclick="history.back()">취소</button>
+                <button type="submit" class="btn btn-creativ btn-submit">수정완료</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        const MAX_FILES = 3;
+
+        /* --- 1. 파일 관리 관련 함수 --- */
+        function removeExistingFile(fileId) {
+            const item = document.getElementById('ex_file_' + fileId);
+            if (!item) return;
+            item.remove();
+            
+            const container = document.getElementById("deleteIdsContainer");
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "deleteFileIds";
+            input.value = fileId;
+            container.appendChild(input);
+            
+            checkInputVisibility();
+        }
+
+        function handleFileSelect(e) {
+            const input = e.target;
+            if (!input.files.length) return;
+
+            if (getTotalFileCount() >= MAX_FILES) {
+                alert("최대 3개까지만 가능합니다.");
+                input.value = "";
+                return;
+            }
+
+            const file = input.files[0];
+            const currentId = "new_file_" + Date.now();
+            input.id = currentId;
+            input.classList.add("d-none");
+
+            const item = document.createElement("div");
+            item.className = "file-item";
+            item.setAttribute("data-target-id", currentId);
+            item.innerHTML = `
+                <span><i class="bi bi-file-earmark-plus me-2"></i>${file.name} (신규)</span>
+                <span class="file-remove" onclick="removeNewFile('${currentId}')">✕</span>
+            `;
+            document.getElementById("fileList").appendChild(item);
+            checkInputVisibility();
+        }
+
+        function removeNewFile(targetId) {
+            const fileInput = document.getElementById(targetId);
+            if(fileInput) fileInput.remove();
+            const listItem = document.querySelector(`[data-target-id="${targetId}"]`);
+            if(listItem) listItem.remove();
+            checkInputVisibility();
+        }
+
+        function getTotalFileCount() {
+            const existing = document.querySelectorAll("#existingFiles .file-item").length;
+            const newly = document.querySelectorAll("#fileList .file-item").length;
+            return existing + newly;
+        }
+
+        function checkInputVisibility() {
+            const container = document.getElementById("fileInputs");
+            if (getTotalFileCount() >= MAX_FILES) {
+                container.style.display = "none";
+            } else {
+                container.style.display = "block";
+                if (!container.querySelector('input:not(.d-none)')) createNewInput();
+            }
+        }
+
+        function createNewInput() {
+            const inp = document.createElement("input");
+            inp.type = "file"; inp.name = "images"; inp.className = "form-control mt-2";
+            inp.accept = "image/*,video/*";
+            inp.addEventListener("change", handleFileSelect);
+            document.getElementById("fileInputs").appendChild(inp);
+        }
+
+        /* --- 2. AJAX 정보 조회 (디바운스 적용) --- */
+        let debounceTimer;
+        
+        function debouncedFetchInfo(type, id) {
+            const preview = document.getElementById(type + 'Preview');
+            clearTimeout(debounceTimer);
+            
+            if(!id) { preview.innerText = ""; return; }
+            
+            preview.innerHTML = '<small class="text-muted">조회 중...</small>';
+            
+            debounceTimer = setTimeout(() => {
+                // 작성하신 API 경로인 /board/info/{type}?id=사용자입력값 호출
+                fetch(`/board/info/${type}?id=${id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        // 서버 응답의 data.name 필드를 사용
+                        if (data && data.name) {
+                            preview.innerHTML = `<span style="color:#F05A28;">●</span> <strong>${data.name}</strong>`;
+                        } else {
+                            preview.innerHTML = `<span style="color:#dc3545;">✕</span> 존재하지 않는 ID`;
+                        }
+                    })
+                    .catch(() => { 
+                        preview.innerHTML = `<span style="color:#dc3545;">✕</span> 조회 실패`; 
+                    });
+            }, 300);
+        }
+
+        function setupInputListeners(inputId, type) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                // 입력할 때마다 실시간 조회
+                input.addEventListener('input', (e) => debouncedFetchInfo(type, e.target.value));
+                
+                // [추가] 초기 로딩 시 데이터가 있으면 즉시 조회 (수정 페이지 필수 로직)
+                if(input.value) {
+                    debouncedFetchInfo(type, input.value);
+                }
+            }
+        }
+
+        /* --- 3. 초기화 실행 --- */
+        window.onload = function() {
+            // 파일 입력창 상태 초기화
+            checkInputVisibility();
+            document.getElementById("file_init").addEventListener("change", handleFileSelect);
+
+            // AJAX 리스너 설정 및 기존 데이터 로드
+            setupInputListeners("contentId", "content");
+            setupInputListeners("projectId", "project");
+            setupInputListeners("teamId", "team");
+        };
+    </script>
+</th:block>
+</html>

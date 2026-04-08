@@ -12,6 +12,7 @@ import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.Enum.Visibility;
 import com.creatival.tag.TagToContent;
 import com.creatival.tag.TagToUsers;
+import com.creatival.team.Project;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.user.Users;
 import com.creatival.user.userRole;
@@ -100,6 +101,10 @@ public class Content {
 	@JoinColumn(name = "original_content_id")
 	private Content originalContent;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "projectTag")
+	private Project project;
+	
 	@OneToOne(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Series series;
 	
@@ -109,4 +114,6 @@ public class Content {
 	@OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<TagToContent> tagToContent = new ArrayList<>();
+	
+	
 }

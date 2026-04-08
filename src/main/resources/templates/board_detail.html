@@ -1,112 +1,248 @@
-<html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
-<head>
-    <style>
-        /* 기존 리스트 페이지와 통일감을 주는 디자인 요소 */
-        .post-header-top { border-top: 3px solid #2c3e50; }
-        .bg-indigo-light { background-color: #f8f9ff; border-bottom: 1px solid #e9ecef; }
-        .text-indigo { color: #3f51b5; }
-        .comment-section { background-color: #fdfdfd; border-radius: 8px; }
-        .btn-list { background-color: #2c3e50; color: white; }
-        .btn-list:hover { background-color: #1a252f; color: white; }
-        .active-tab { color: #000 !important; border-bottom: 3px solid #ff6b6b !important; font-weight: bold; }
-    </style>
-</head>
-<body>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 
-    <div class="container py-5">
-        
-        <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold">게시판</h1>
-        </div>
+<div layout:fragment="content">
 
-        <div class="d-flex justify-content-center mb-5 border-bottom" style="gap: 40px;">
-            <a href="#" class="nav-link pb-2 active-tab">유저 게시판</a>
-            <a href="#" class="nav-link pb-2 text-muted fw-bold">창작자 게시판</a>
-        </div>
+<style>
+	:root {
+				--board-blue: #3B4371;
+				--board-orange: #FF7F50;
+				--user-blue-line: #4a90e2;
+				--bg-light: #F0F2F5;
+			}
 
-        <div class="post-header-top">
-            <div class="p-4 bg-indigo-light">
-                <div class="mb-2">
-                    <span class="badge bg-primary mb-2" style="background-color: #3f51b5 !important;">자유</span>
-                </div>
-                <h3 class="fw-bold mb-3">게시판 구현 중입니다. 디자인 어떤가요?</h3>
-                <div class="d-flex justify-content-between align-items-center text-muted small">
-                    <div class="d-flex align-items-center">
-                        <span class="fw-bold text-dark me-3">창작자A</span>
-                        <span class="me-3">2026.02.17 14:30</span>
-                        <span>조회수 124</span>
-                    </div>
-                    <div>
-                        <span class="me-2">추천 12</span>
-                        <span>댓글 3</span>
-                    </div>
-                </div>
-            </div>
+.post-header-top { border-top: 3px solid #2c3e50; }
+.bg-indigo-light { background-color: #f8f9ff; border-bottom: 1px solid #e9ecef; }
+.text-indigo { color: #3f51b5; }
+.comment-section { background-color: #fdfdfd; border-radius: 8px; }
+.btn-list { background-color: #2c3e50; color: white; }
+.btn-list:hover { background-color: #1a252f; color: white; }
+.active-tab { color: #000 !important; border-bottom: 3px solid #ff6b6b !important; font-weight: bold; }
+/* 팀/프로젝트 관련 추가 스타일 */
+.team-banner img { width: 100%; height: 120px; object-fit: cover; }
+.team-profile { width: 60px; height: 60px; margin-top: -30px; object-fit: cover; }
+.nav-tabs-board {
+			display: flex;
+			justify-content: center;
+			gap: 40px;
+			margin-bottom: 30px;
+			border-bottom: 1px solid #eee;
+			position: relative;
+		}
+	.board-tab {
+				background: none;
+				border: none;
+				font-size: 1.1rem;
+				font-weight: 700;
+				color: #aaa;
+				padding: 0 10px 15px 10px;
+				cursor: pointer;
+				transition: color 0.3s;
+				}
+	.board-tab.active {
+				color: #000;
+			}
+		.board-tab.active.user {
+			color: #000;
+			border-bottom: 2px solid var(--board-blue);
+		}
+		.board-tab.active.creator {
+			color: #000;
+			border-bottom: 2px solid var(--board-orange);
+		}
+</style>
 
-            <div class="py-5 px-4 min-vh-50 border-bottom">
-                <p>안녕하세요! 현재 Creatival 게시판 페이지를 제작 중입니다.</p>
-                <p>Bootstrap 5를 기반으로 깔끔하고 전문적인 느낌을 주려고 노력했는데, 보시기에 가독성이 어떤지 궁금합니다.</p>
-                <p>특히 인디고 컬러와 포인트 컬러의 조합이 괜찮은가요? 의견 부탁드립니다!</p>
-                
-                <div class="my-4 text-center">
-                    <div class="bg-light d-inline-block p-5 border text-muted">
-                        [ 업로드된 이미지 영역 ]
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="container py-5" th:if="${board != null}" th:object="${board}">
 
-        <div class="d-flex justify-content-between mt-4">
-            <div>
-                <button class="btn btn-outline-secondary rounded-0 px-4">수정</button>
-                <button class="btn btn-outline-danger rounded-0 px-4">삭제</button>
-            </div>
-            <div>
-                <button class="btn btn-list rounded-0 px-4">목록으로</button>
-            </div>
-        </div>
-
-        <div class="comment-section mt-5 p-4 border">
-            <h5 class="fw-bold mb-4">댓글 <span class="text-indigo">3</span></h5>
-            
-            <div class="mb-4 pb-3 border-bottom">
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="fw-bold">작가나루</span>
-                    <span class="text-muted small">2026.02.17 15:10</span>
-                </div>
-                <p class="mb-1">깔끔하고 보기 좋습니다! 특히 폰트 크기가 적당해서 가독성이 좋네요.</p>
-            </div>
-
-            <div class="mb-4 pb-3 border-bottom">
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="fw-bold">닉네임</span>
-                    <span class="text-muted small">2026.02.17 16:05</span>
-                </div>
-                <p class="mb-1">상단 인디고 포인트 컬러가 신뢰감을 주는 것 같습니다.</p>
-            </div>
-
-            <div class="mt-4 shadow-sm">
-                <textarea class="form-control border-bottom-0 rounded-0" rows="3" placeholder="댓글을 입력해주세요."></textarea>
-                <div class="d-flex justify-content-end border p-2 bg-light">
-                    <button class="btn btn-dark rounded-0 px-4 btn-sm" style="background-color: #2c3e50;">등록</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-5 border-top border-bottom">
-            <div class="row py-3 border-bottom mx-0 align-items-center">
-                <div class="col-2 text-muted small px-4">다음글 ▲</div>
-                <div class="col-10 text-truncate"><a href="#" class="text-decoration-none text-dark">새로운 일러스트 업데이트 소식</a></div>
-            </div>
-            <div class="row py-3 mx-0 align-items-center">
-                <div class="col-2 text-muted small px-4">이전글 ▼</div>
-                <div class="col-10 text-truncate"><a href="#" class="text-decoration-none text-dark">공지사항 드립니다. 확인 부탁드려요.</a></div>
-            </div>
-        </div>
-
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">게시판</h1>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+	<div class="nav-tabs-board" th:if="${board != null}">
+	    <a th:href="@{/board(type='NORMAL')}" 
+	       class="board-tab" 
+	       th:classappend="${board.boardType != null && board.boardType.name() == 'NORMAL'} ? 'active user' : ''">
+	       유저 게시판
+	    </a>
+	    
+	    <a th:href="@{/board(type='CREATOR')}" 
+	       class="board-tab" 
+	       th:classappend="${board.boardType != null && board.boardType.name() == 'CREATOR'} ? 'active creator' : ''">
+	       창작자 게시판
+	    </a>
+	    
+	    <div id="tabIndicator" class="tab-indicator"></div>
+	</div>
+
+    <div class="post-header-top">
+
+        <div class="p-4 bg-indigo-light">
+            <div class="mb-2">
+				<span class="badge mb-2"
+				      th:text="*{boardType}"
+				      th:style="'background-color: ' + (*{boardType.name() == 'NORMAL'} ? 'var(--board-blue)' : 'var(--board-orange)') + ' !important;'">
+				</span>
+            </div>
+
+            <h3 class="fw-bold mb-3" th:text="*{title}">제목 없음</h3>
+
+            <div class="d-flex justify-content-between align-items-center text-muted small">
+                <div class="d-flex align-items-center">
+                    <span class="fw-bold text-dark me-3" th:text="*{displayname}">작성자</span>
+                    <span class="me-3" th:text="*{createdAt != null} ? ${#temporals.format(board.createdAt,'yyyy.MM.dd HH:mm')} : '-'"></span>
+                    <span th:text="'조회수 ' + *{viewCount}"></span>
+                </div>
+                <div>
+                    <span class="me-2">추천 0</span>
+                    <span>댓글 0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="py-5 px-4 min-vh-50 border-bottom">
+            <p th:text="*{boardText}"></p>
+			<div th:if="${fileList != null && !fileList.empty}" 
+			     class="row g-3 mb-5 justify-content-center">
+			    
+			    <div th:each="file, iterStat : ${fileList}" th:if="${iterStat.index < 3}" 
+			         class="col-12 col-md-10 col-lg-8"> 
+			        
+			        <div class="shadow-sm rounded overflow-hidden bg-light border mx-auto" 
+			             style="max-width: 800px; max-height: 500px;"> 
+			            
+			            <th:block th:if="${file.fileType == 'IMAGE'}">
+			                <img th:src="${file.fileUrl}" 
+			                     class="img-fluid d-block mx-auto" 
+			                     style="cursor: zoom-in; width: 100%; height: auto; max-height: 500px; object-fit: contain;" 
+			                     onclick="window.open(this.src)">
+			            </th:block>
+
+			            <th:block th:if="${file.fileType == 'VIDEO'}">
+			                <div class="ratio ratio-16x9">
+			                    <video controls class="w-100 h-100 bg-black">
+			                        <source th:src="${file.fileUrl}">
+			                        브라우저가 비디오를 지원하지 않습니다.
+			                    </video>
+			                </div>
+			            </th:block>
+			            
+			        </div>
+			    </div>
+			</div>
+			<div class="d-flex flex-wrap justify-content-center gap-4 my-5">
+
+			    <div th:if="*{content != null}" style="flex: 1; min-width: 280px; max-width: 320px;">
+			        <div class="mb-2">
+			            <span class="px-3 py-1 rounded-pill text-white small fw-bold" 
+			                  style="background-color: var(--orange, #fd7e14); font-size: 0.75rem;">
+			                콘텐츠
+			            </span>
+			        </div>
+			        <div class="card h-100 shadow-sm border-0 position-relative overflow-hidden">
+			            <a th:href="*{content.contentUrl}">
+			                <img th:src="*{content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}"
+			                     class="card-img-top" style="height:180px; object-fit:cover;">
+			            </a>
+			            <div class="card-body p-3 text-center">
+			                <h6 class="card-title fw-bold text-truncate mb-0" th:text="*{content.title + '(' + content.type + ')'}"></h6>
+							<p class="text-truncate mb-0" th:text="*{'창작자 :' + content.username + '(' + content.displayname + ')'}"></p>
+			            </div>
+			        </div>
+			    </div>
+
+			    <div th:if="*{team != null}" style="flex: 1; min-width: 280px; max-width: 320px;">
+			        <div class="mb-2">
+			            <span class="px-3 py-1 rounded-pill text-white small fw-bold" 
+			                  style="background-color: var(--orange, #fd7e14); font-size: 0.75rem;">
+			                팀
+			            </span>
+			        </div>
+			        <div class="card h-100 shadow-sm rounded border-0 overflow-hidden position-relative">
+			            <a th:href="@{/team/{id}(id=*{team.id})}">
+			                <div class="team-banner">
+			                    <img th:src="*{team.bannerImgUrl != null ? team.bannerImgUrl : '/images/default-banner.png'}" 
+			                         style="width: 100%; height: 180px; object-fit: cover;">
+			                </div>
+			            </a>
+			            <div class="card-body p-3 text-center">
+			                <img th:src="*{team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
+			                     class="rounded-circle border border-white shadow"
+			                     style="width: 60px; height: 60px; margin-top: -45px; object-fit: cover; position: relative; z-index: 1;">
+			                <h6 class="card-title fw-bold text-truncate mt-2 mb-0" th:text="*{team.name}"></h6>
+			            </div>
+			        </div>
+			    </div>
+
+			    <div th:if="*{project != null}" style="flex: 1; min-width: 280px; max-width: 320px;">
+			        <div class="mb-2">
+			            <span class="px-3 py-1 rounded-pill text-white small fw-bold" 
+			                  style="background-color: var(--orange, #fd7e14); font-size: 0.75rem;">
+			                프로젝트
+			            </span>
+			        </div>
+			        <a th:href="@{/team/{tid}/project/{pid}(tid=*{team != null ? team.id : 0}, pid=*{project.id})}"
+			           class="text-decoration-none text-dark">
+			            <div class="card h-100 shadow-sm border rounded overflow-hidden">
+			                <img th:src="*{project.bannerImgUrl != null ? project.bannerImgUrl : '/images/default-project.png'}"
+			                     class="card-img-top" style="width: 100%; height: 180px; object-fit: cover;">
+			                <div class="card-body p-3 text-center">
+			                    <h6 class="fw-bold text-truncate mb-0" th:text="*{project.title}"></h6>
+								<p class="text-truncate mb-0" th:text="*{'소속 :' + project.teamName}"></p>
+			                </div>
+			            </div>
+			        </a>
+			    </div>
+
+			</div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+		<div th:with="currentUser=${#authentication.name}">
+		    <th:block th:if="${currentUser == board.username}">
+		        <a th:href="@{/board/edit/{id}(id=*{id})}" 
+		           class="btn btn-outline-secondary rounded-0 px-4">수정</a>
+		        
+		        <a th:href="@{/board/delete/{id}(id=*{id})}" 
+		           class="btn btn-outline-danger rounded-0 px-4"
+		           onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</a>
+		    </th:block>
+		</div>
+        <div>
+            <a th:href="@{/board}" class="btn btn-list rounded-0 px-4">목록으로</a>
+        </div>
+    </div>
+
+    <div class="comment-section mt-5 p-4 border">
+        <h5 class="fw-bold mb-4">댓글 <span class="text-indigo">0</span></h5>
+        <div class="mt-4 shadow-sm">
+            <textarea class="form-control border-bottom-0 rounded-0" rows="3" placeholder="댓글을 입력해주세요."></textarea>
+            <div class="d-flex justify-content-end border p-2 bg-light">
+                <button class="btn btn-dark rounded-0 px-4 btn-sm" style="background-color:#2c3e50;">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 border-top border-bottom">
+        <div class="row py-3 border-bottom mx-0 align-items-center">
+            <div class="col-2 text-muted small px-4">다음글 ▲</div>
+            <div class="col-10 text-truncate">
+                <a href="#" class="text-decoration-none text-dark">다음 글 제목이 이곳에 표시됩니다.</a>
+            </div>
+        </div>
+        <div class="row py-3 mx-0 align-items-center">
+            <div class="col-2 text-muted small px-4">이전글 ▼</div>
+            <div class="col-10 text-truncate">
+                <a href="#" class="text-decoration-none text-dark">이전 글 제목이 이곳에 표시됩니다.</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="container py-5 text-center" th:if="${board == null}">
+    <p>게시글 데이터를 불러올 수 없습니다.</p>
+    <a th:href="@{/board}" class="btn btn-primary">목록으로 돌아가기</a>
+</div>
+
+</div>
 </html>

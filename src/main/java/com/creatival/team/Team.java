@@ -85,4 +85,8 @@ public class Team {
 	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<TeamApplication> teamApplications = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Project> teamProjects = new ArrayList<>();
 }

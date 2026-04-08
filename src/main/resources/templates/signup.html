@@ -1,0 +1,263 @@
+<html layout:decorate="~{layout}">
+<div class="container-fluid p-0" layout:fragment="content">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .signup-header {
+            background-color: #2c3470;
+            padding: 15px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            position: relative;
+        }
+
+        .back-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0; }
+		nav.navbar { display: none !important; }
+		body { padding-top: 0 !important; }
+
+		/* 마우스를 올렸을 때 살짝 움직이는 효과 (선택 사항) */
+		.back-btn:hover {
+	    color: #ccc;
+	    transform: translateX(-5px); /* 왼쪽으로 살짝 이동 */
+		}
+		
+        .header-logo {
+            width: 180px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .container.mt-5 {
+            background-color: #ffffff;
+            max-width: 850px !important; 
+            padding: 60px 80px;
+            margin-top: 40px !important;
+            margin-bottom: 60px !important;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        h2.main-title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px !important;
+            letter-spacing: -2px;
+            line-height: 1.2;
+            color: #000;
+        }
+
+        .brand-creat { color: #2c3470; }
+        .brand-ival { color: #ff5a2d; }
+        .sub-title { text-align: center; color: #888; font-size: 1.1rem; margin-bottom: 30px; }
+        .title-divider { border-top: 1px solid #ddd; width: 100%; margin-bottom: 40px; }
+
+        /* 입력창 레이아웃: 2열 정렬 */
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px 40px;
+        }
+
+        /* 1열 전체 사용 요소 */
+        .alert, .profile-section, .birthday-section, .email-section, .check-box, .bottom-divider, .submit-box {
+            grid-column: span 2;
+        }
+
+        /* 아이디+중복확인 가로 배치 */
+        .username-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end; /* 라벨 아래 입력창 라인에 맞춤 */
+        }
+        .username-input-wrapper { flex-grow: 1; }
+
+        .btn-check-duplicate {
+            background-color: #555e8f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            height: 48px; /* input 높이와 통일 */
+        }
+
+        /* 프로필 이미지 */
+        .profile-section { display: flex; justify-content: center; margin-bottom: 10px; position: relative; }
+        .profile-circle { width: 130px; height: 130px; background-color: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #ddd; }
+        .profile-icon { font-size: 4rem; color: #adb5bd; }
+        #imagePreview { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .camera-icon-label { position: absolute; bottom: 0; right: calc(50% - 65px); background-color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .camera-icon { font-size: 1.2rem; color: #888; }
+        #profileImageInput { display: none; }
+
+        .form-group { display: flex; flex-direction: column; }
+        .form-label { font-weight: 600; font-size: 0.95rem; color: #999; margin-bottom: 10px; }
+        .form-control { border: 1px solid #ccc; border-radius: 6px; padding: 13px 15px; font-size: 1rem; color: #333; height: 48px; }
+        .form-control::placeholder { color: #ccc; font-size: 0.95rem; }
+        .form-control:focus { border-color: #ff5a2d; box-shadow: 0 0 0 0.2rem rgba(255, 90, 45, 0.1); outline: none; }
+
+        .birthday-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .email-group { display: flex; align-items: center; gap: 15px; }
+        .email-at { font-size: 1.5rem; color: #ccc; font-weight: 300; }
+
+		
+		.check-box {
+		    grid-column: span 2;
+		    display: flex;          /* flex 박스로 변경 */
+		    justify-content: center; /* 가로 중앙 정렬 */
+		    align-items: center;     /* 세로축 일직선 정렬 */
+		    gap: 10px;               /* 체크박스와 글자 사이 간격 */
+		    margin: 10px 0 20px 0;
+		}
+		
+		
+		.submit-box {
+		    grid-column: span 2;
+		    display: flex;
+		    justify-content: center;
+		    margin-top: 10px;
+		}
+		
+		.btn-register {
+		    background-color: transparent;
+		    border: 2px solid #ff5a2d;
+		    color: #ff5a2d;
+		    font-weight: 700;
+		    padding: 15px 0;
+		    font-size: 1.2rem;
+		    border-radius: 6px;
+		    width: 450px !important; /* 중앙 배치를 위해 적절한 너비 고정 */
+		    transition: 0.3s;
+		    cursor: pointer;
+		    text-align: center;
+		}
+		.btn-register:hover {
+		    background-color: #ff5a2d;
+		    color: white;
+		}
+    </style>
+
+    <div class="signup-header">
+        <button class="back-btn" onclick="history.back()"><i class="bi bi-arrow-left"></i></button>
+        <img th:src="@{/images/creatival_logo(White).png}" alt="Logo" class="header-logo">
+        <div></div>
+    </div>
+
+    <div class="container mt-5">
+        <h2 class="main-title mb-1">
+            <span class="brand-creat">creat</span><span class="brand-ival">ival</span>에 가입하여 더 많은 서비스를 이용해 보세요.
+        </h2>
+        <p class="sub-title">회원 가입</p>
+        <div class="title-divider"></div>
+
+        <form method="post" th:action="@{/user/signUp}" enctype="multipart/form-data" th:object="${signUpRequest}">
+            
+            <div class="profile-section">
+                <div class="profile-circle">
+                    <i class="bi bi-person-fill profile-icon" id="profileDefaultIcon"></i>
+                    <img id="imagePreview" alt="Profile Preview">
+                </div>
+                <label for="profileImageInput" class="camera-icon-label"><i class="bi bi-camera-fill camera-icon"></i></label>
+                <input type="file" th:field="*{profileImg}" id="profileImageInput" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <div class="username-container">
+                    <div class="username-input-wrapper form-group">
+                        <label class="form-label">아이디</label>
+                        <input type="text" class="form-control" th:field="*{username}" placeholder="아이디 입력" required>
+                    </div>
+                    <button type="button" class="btn-check-duplicate">중복 확인</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">닉네임</label>
+                <input type="text" th:field="*{displayName}" class="form-control" placeholder="닉네임 입력" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">비밀번호</label>
+                <input type="password" class="form-control" th:field="*{password}" placeholder="8~16자 영문/숫자 조합" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">비밀번호 재확인</label>
+                <input type="password" th:field="*{password2}" class="form-control" placeholder="비밀번호 한 번 더 입력" required>
+            </div>
+
+            <div class="form-group birthday-section">
+                <label class="form-label">생년월일</label>
+                <div class="birthday-group">
+                    <select class="form-select form-control" id="birthYear">
+                        <option value="" selected disabled>년도</option>
+                        <option th:each="year : ${#numbers.sequence(1950, 2024)}" th:value="${year}" th:text="${year}"></option>
+                    </select>
+                    <select class="form-select form-control" id="birthMonth">
+                        <option value="" selected disabled>월</option>
+                        <option th:each="month : ${#numbers.sequence(1, 12)}" th:value="${month}" th:text="${month}"></option>
+                    </select>
+                    <select class="form-select form-control" id="birthDay">
+                        <option value="" selected disabled>일</option>
+                        <option th:each="day : ${#numbers.sequence(1, 31)}" th:value="${day}" th:text="${day}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group email-section">
+                <label class="form-label">이메일 입력</label>
+                <div class="email-group">
+                    <input type="text" class="form-control flex-grow-1" placeholder="이메일 입력">
+                    <span class="email-at">@</span>
+                    <select class="form-select form-control flex-grow-1" id="emailDomain">
+                        <option value="gmail.com" selected>gmail.com</option>
+                        <option value="naver.com">naver.com</option>
+                        <option value="daum.net">daum.net</option>
+                    </select>
+                </div>
+            </div>
+
+			<div class="form-check check-box">
+			    <input class="form-check-input" type="checkbox" th:field="*{creator}" id="isCreator">
+			    <label class="form-check-label" for="isCreator">
+			        크리에이터로 활동하겠습니다.
+			    </label>
+			</div>
+
+			<div class="bottom-divider"></div>
+
+			<div class="submit-box">
+			    <button type="submit" class="btn-register">
+			        회원 등록하기
+			    </button>
+			</div>
+        </form>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('profileImageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const defaultIcon = document.getElementById('profileDefaultIcon');
+
+        imageInput.onchange = () => {
+            const [file] = imageInput.files;
+            if (file) {
+                imagePreview.src = URL.createObjectURL(file);
+                imagePreview.style.display = 'block';
+                defaultIcon.style.display = 'none';
+            }
+        };
+    </script>
+</div>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <style>
+        /* 이미지 및 비디오 미리보기 영역 스타일 */
+        .preview-wrapper {
+            width: 100%; height: 200px; margin-bottom: 15px;
+            border: 2px dashed #dee2e6; border-radius: 12px;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            background-color: #f8f9fa; position: relative;
+        }
+        .preview-wrapper img, .preview-wrapper video { 
+            width: 100%; height: 100%; object-fit: cover;; 
+        }
+        .preview-placeholder { color: #adb5bd; text-align: center; }
+
+        /* 태그 UI 스타일 */
+        .tag-badge {
+            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;
+            display: inline-flex; align-items: center; transition: 0.2s;
+        }
+        .tag-badge i { cursor: pointer; margin-left: 6px; font-size: 12px; color: #ff5e3a; }
+        
+        .settings-label { font-size: 0.85rem; color: #6c757d; font-weight: 600; margin-bottom: 8px; display: block; }
+    </style>
+</head>
+
+<div class="container my-5" layout:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-0">새 동영상 업로드</h2>
+            <p class="text-muted mb-0 mt-1">크리에이터님의 멋진 영상을 공유해 주세요.</p>
+        </div>
+        <a th:href="@{/content/video/list}" class="btn btn-outline-secondary">취소 및 돌아가기</a>
+    </div>
+
+    <form th:action="@{/content/video/edit/{id}(id=${updateVideoDTO.id})}" method="post" enctype="multipart/form-data" th:object="${updateVideoDTO}" id="videoForm">
+
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4 text-center border-2 rounded">
+                        <div class="preview-wrapper" id="videoPreviewWrapper">
+                            <div class="preview-placeholder d-none" id="videoPlaceholder">
+                                <i class="bi bi-film fs-1"></i><br>동영상 미리보기
+                            </div>
+                            <video id="videoPreview" th:src="*{videoUrl}" controls></video>
+                        </div>
+                        <h6 class="fw-bold">동영상 파일 <span class="text-danger">*</span></h6>
+                        <p class="text-muted small mb-3" id="videoFileName">MP4, WebM (최대 1GB)</p>
+                        
+                        <input type="file" name="videoFile" class="d-none" id="videoFile" accept="video/mp4,video/webm" onchange="previewVideo(this)">
+                        <button type="button" class="btn btn-primary btn-sm px-3" onclick="document.getElementById('videoFile').click()">
+                            컴퓨터에서 찾기
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 text-center border-2 rounded">
+                        <div class="preview-wrapper" id="thumbPreviewWrapper">
+                            <div class="preview-placeholder d-none" id="thumbPlaceholder">
+                                <i class="bi bi-image fs-1"></i><br>썸네일 미리보기
+                            </div>
+                            <img id="thumbPreview" th:src="*{thumbnailFileUrl}">
+                        </div>
+                        <h6 class="fw-bold">썸네일 업로드</h6>
+                        <p class="text-muted small mb-3" id="thumbFileName">16:9 비율 권장 (JPG, PNG)</p>
+                        
+                        <input type="file" th:field="*{thumbnailFile}" class="d-none" id="thumbnailFile" accept="image/jpeg,image/png" onchange="previewThumbnail(this)">
+                        <button type="button" class="btn btn-outline-success btn-sm px-3" onclick="document.getElementById('thumbnailFile').click()">
+                            이미지 선택
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">세부 정보</h5>
+
+                        <div class="mb-4">
+                            <label th:for="title" class="form-label fw-semibold">제목 <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{title}" class="form-control form-control-lg fs-6" placeholder="동영상을 설명할 수 있는 매력적인 제목을 입력하세요" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label th:for="description" class="form-label fw-semibold">설명</label>
+                            <textarea th:field="*{description}" class="form-control" rows="5" placeholder="시청자에게 동영상에 대해 설명해 주세요."></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-block">공개 범위</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public" checked>
+                                    <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
+
+                                    <input type="radio" class="btn-check" th:field="*{visibility}" value="FOLLOWER" id="vis-follower">
+                                    <label class="btn btn-outline-primary" for="vis-follower">팔로워</label>
+
+                                    <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
+                                    <label class="btn btn-outline-primary" for="vis-private">비공개</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-block">댓글 설정</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on" checked>
+                                    <label class="btn btn-outline-secondary" for="comment-on">허용</label>
+
+                                    <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
+                                    <label class="btn btn-outline-secondary" for="comment-off">차단</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end border-top pt-4 mt-auto">
+                            <button type="submit" class="btn btn-primary px-5 fw-bold shadow">
+                                <i class="bi bi-upload me-2"></i>동영상 게시
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </form>
+    
+    <script th:inline="javascript">
+        // 1. 비디오 미리보기
+        function previewVideo(input) {
+            const fileName = document.getElementById('videoFileName');
+            const preview = document.getElementById('videoPreview');
+            const placeholder = document.getElementById('videoPlaceholder');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                fileName.innerText = file.name;
+                const url = URL.createObjectURL(file);
+                preview.src = url;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+        }
+
+        // 2. 썸네일 미리보기
+        function previewThumbnail(input) {
+            const fileName = document.getElementById('thumbFileName');
+            const preview = document.getElementById('thumbPreview');
+            const placeholder = document.getElementById('thumbPlaceholder');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                fileName.innerText = input.files[0].name;
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 3. 태그 관리 로직
+        let tagArray = [];
+        function handleTagKey(e) { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }
+
+        function addTag() {
+            const input = document.getElementById('tagInput');
+            const value = input.value.trim().replace(/#/g, '');
+            if (value && !tagArray.includes(value)) {
+                if (tagArray.length >= 10) { alert("태그는 최대 10개까지 가능합니다."); return; }
+                tagArray.push(value);
+                updateTags();
+                input.value = '';
+            }
+        }
+
+        function removeTag(tag) {
+            tagArray = tagArray.filter(t => t !== tag);
+            updateTags();
+        }
+
+        function updateTags() {
+            const container = document.getElementById('tagContainer');
+            const hiddenInput = document.getElementById('finalTagString');
+            container.innerHTML = tagArray.map(t => `
+                <span class="tag-badge">
+                    #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
+                </span>
+            `).join('');
+            hiddenInput.value = tagArray.join(',');
+        }
+
+        // 4. 유효성 검사 (프로젝트 태그 vs 원본 ID 동시 입력 방지)
+        document.getElementById("videoForm").addEventListener("submit", function(e) {
+            const projectTag = document.querySelector("input[name='projectTag']").value.trim();
+            const originalId = document.querySelector("input[name='originalContentId']").value.trim();
+
+            if (projectTag !== "" && originalId !== "") {
+                alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
+                e.preventDefault();
+            }
+        });
+    </script>
+</div>
+</html>

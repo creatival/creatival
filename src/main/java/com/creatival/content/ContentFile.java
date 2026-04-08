@@ -15,6 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +29,15 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Entity
+@Table(
+    name = "content_file",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_content_file_type",
+            columnNames = {"content_id", "file_type"} // DB 컬럼명을 적어야 함
+        )
+    }
+)
 public class ContentFile {
 	
 	private ContentFile() {

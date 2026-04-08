@@ -1,6 +1,8 @@
 package com.creatival.team;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,20 +13,30 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.creatival.FileUtil;
+import com.creatival.MailService;
 import com.creatival.content.Enum.Visibility;
 import com.creatival.tag.Tag;
 import com.creatival.tag.TagService;
 import com.creatival.team.Enum.ApplicationStatus;
 import com.creatival.team.Enum.TeamRole;
+import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
+import com.creatival.team.dto.ResponseCheckoutListDTO;
+import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
+import com.creatival.team.dto.UpdateProjectDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
+import com.creatival.team.repository.*;
+import com.creatival.token.UserToken;
+import com.creatival.token.UserTokenService;
+import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +44,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class TeamService {
+
+    private final CheckoutRepository checkoutRepository;
+
+    private final UserTokenService userTokenService;
+
+    private final MailService mailService;
 	private final FileUtil fileUtil;
 	private final TeamRepository teamRepository;
 	private final TagService tagService;
 	private final TeamMemberRepository teamMemberRepository;
 	private final TeamApplicationRepository teamApplicationRepository;
+	private final ProjectRepository projectRepository;
+	private final UserService userService;
+
+
 	
 	public Team getTeamById(Long id) {
 		return teamRepository.findById(id).get();
@@ -84,6 +106,10 @@ public class TeamService {
 		Page<Team> teams = teamRepository.findByVisibility(Visibility.PUBLIC, pageable);
 		return teams.map(team -> ResponseTeamListDTO.from(team));
 	}
+	
+	
+	
+	
 
 	public ResponseTeamDetailDTO getTeamDetail(Long id) {
 		Optional<Team> team = teamRepository.findById(id);
@@ -223,6 +249,188 @@ public class TeamService {
 			return;
 		}
 		teamRepository.delete(team.get());
+		
+	}
+
+	public void createProject(@Valid CreateProjectDTO createProjectDTO, Team team) throws IOException {
+		String banner = "/upload/images/banner/";
+		if(createProjectDTO.getBannerImg() != null) {
+			banner += fileUtil.saveImage(createProjectDTO.getBannerImg(), "banner");
+		}
+		Project project = Project.builder()
+				.title(createProjectDTO.getTitle())
+				.description(createProjectDTO.getDescription())
+				.visibility(createProjectDTO.getVisibility())
+				.endDate(createProjectDTO.getEndDate())
+				.bannerImgUrl(banner)
+				.projectTag(createProjectDTO.getProjectTag())
+				.team(team)
+				.build();
+		projectRepository.save(project);
+		
+		if (createProjectDTO.getTags() != null) {
+		    for (String tagName : createProjectDTO.getTags()) {
+
+		        tagService.createTagForProject(project, tagName, team.getUser());
+		    }
+		}
+	}
+	
+	public List<ResponseProjectListDTO> getProjectList(Team team) {
+		List<Project> projects = projectRepository.findByTeamAndVisibility(team,Visibility.PUBLIC);
+		System.out.println("조회된 프로젝트 개수: " + projects.size());
+		return projects.stream().map(project -> ResponseProjectListDTO.from(project)).toList();
+	}
+	
+	public Page<ResponseProjectListDTO> getProjectList(int page, Team team) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Project> projects = projectRepository.findByTeamAndVisibility(team, Visibility.PUBLIC, pageable);
+		return projects.map(project -> ResponseProjectListDTO.from(project));
+	}
+
+	public Project getProjectById(Long projectId) {
+		Optional<Project> project = projectRepository.findById(projectId);
+		return project.isPresent() ? project.get() : null;
+	}
+
+	public void updateProject(@Valid UpdateProjectDTO dto, Team team, Long projectId) throws IOException {
+		String banner = "/upload/images/banner/";
+		System.out.println(dto.getId());
+		Optional<Project> optional = projectRepository.findById(projectId);
+		if(optional.isEmpty()) {
+			throw new IllegalStateException("수정할려는 프로젝트를 찾을 수 없습니다.");
+		}
+		Project project = optional.get();
+		
+		project.setTitle(dto.getTitle());
+		project.setDescription(dto.getDescription());
+		project.setEndDate(dto.getEndDate());
+		project.setVisibility(dto.getVisibility());
+		project.setStatus(dto.getStatus());
+		
+		if(dto.getBannerImg() != null && !dto.getBannerImg().isEmpty()) {
+			banner += fileUtil.saveImage(dto.getBannerImg(), "banner");
+			project.setBannerImgUrl(banner);
+		}
+		
+		projectRepository.save(project);
+		
+	}
+
+	public TeamMember getMemberForTeamByUser(Team team, Users user) {
+		Optional<TeamMember> teamMember = teamMemberRepository.findByTeamAndUser(team, user);
+		if(teamMember.isEmpty()) {
+			return null;
+		}
+		return teamMember.get();
+	}
+
+	public void memberChangePosition(TeamMember member, String position) {
+		member.setPosition(position);
+		teamMemberRepository.save(member);
+	}
+
+	public TeamMember getMemberForTeamById(Long memberId) {
+		Optional<TeamMember> teamMember = teamMemberRepository.findById(memberId);
+		if(teamMember.isEmpty()) {
+			return null;
+		}
+		return teamMember.get();
+	}
+
+	public void deleteMember(TeamMember member, String message) throws MessagingException {
+		teamMemberRepository.delete(member);
+		mailService.deleteTeamMemberMail(member.getUser().getEmail(), member, message);
+	}
+
+	public void leaveTeam(TeamMember member, String message) throws MessagingException {
+		teamMemberRepository.delete(member);
+		mailService.leaveTeamMemberMail(member.getTeam().getUser().getEmail(), member, message);
+		
+	}
+	//Leader은 바뀔 팀의 기존 리더를 의미함
+	public void changeTeamLeader(TeamMember member, TeamMember leader, Team team) {
+		member.setRole(TeamRole.LEADER);
+		member.setPosition("팀장");
+		
+		leader.setRole(TeamRole.MEMBER);
+		leader.setPosition("팀원");
+		
+		team.setUser(member.getUser());
+		
+		teamMemberRepository.save(member);
+		teamMemberRepository.save(leader);
+		
+		teamRepository.save(team);
+	}
+	
+	public String createChangeTeamLeaderLink(Users user, Team team) {
+		UserToken token = userTokenService.createUserToken(user);
+		
+		return "http://localhost:8080/team/member/changeLeader?token=" + token.getToken() + "&teamId="+team.getId();
+	}
+
+	public Project getProjectTag(String projectTag) {
+		Optional<Project> project = projectRepository.findByProjectTag(projectTag);
+		if(project.isPresent()) {
+			return project.get();
+		}
+		return null;
+		
+	}
+	
+	public void createCheckout(Project project, String title, LocalDateTime deadline) {
+		Checkout checkout = new Checkout();
+		checkout.setTitle(title);
+		checkout.setProject(project);
+		
+		int max = checkoutRepository.findMaxSortOrder(project.getId());
+
+		checkout.setSortOrder(max + 1);
+		
+		if(deadline != null) {
+			checkout.setDeadline(deadline);
+		}
+		
+		checkoutRepository.save(checkout);
+	}
+	
+	public List<ResponseCheckoutListDTO> getCheckoutByProject(Project project) {
+		List<Checkout> list = checkoutRepository.findByProjectOrderBySortOrder(project);
+		return list.stream().map(checkout -> ResponseCheckoutListDTO.from(checkout)).toList();
+	}
+	@Transactional
+	public void updateCheck(Long id, boolean checked) {
+		Checkout check = checkoutRepository.findById(id)
+	            .orElseThrow();
+
+	    check.setChecked(checked);
+		
+	}
+
+	@Transactional
+	public void updateCheckSecure(Long checkId, boolean checked, String username) {
+	    Checkout checkout = checkoutRepository.findById(checkId)
+	            .orElseThrow(() -> new IllegalArgumentException("항목을 찾을 수 없습니다."));
+
+	    // 체크리스트가 속한 프로젝트의 팀장 이름과 현재 로그인한 유저 이름 비교
+	    if (!checkout.getProject().getTeam().getUser().getUsername().equals(username)) {
+	    	throw new IllegalArgumentException("수정 권한이 없습니다.");
+	    }
+
+	    checkout.setChecked(checked); // 더티 체킹으로 업데이트
+	}
+
+	public Checkout getCheckoutById(Long id) {
+		Optional<Checkout> checkout = checkoutRepository.findById(id);
+		if(checkout.isPresent()) {
+			return checkout.get();
+		}
+		return null;
+	}
+
+	public void deleteCheck(Checkout checkout) {
+		checkoutRepository.delete(checkout);
 		
 	}
 }

@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.Enum.Visibility;
+import com.creatival.team.Project;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,8 @@ public class CreateNovelDTO {
 	private boolean fanWork;
 
 	private Long originalContentId;
+	
+	private String projectTag;
 
 	//series 관련 필드
 	private boolean end;

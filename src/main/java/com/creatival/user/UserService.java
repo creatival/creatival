@@ -19,6 +19,7 @@ import com.creatival.tag.Tag;
 import com.creatival.tag.TagService;
 import com.creatival.token.UserToken;
 import com.creatival.token.UserTokenRepository;
+import com.creatival.token.UserTokenService;
 import com.creatival.user.DTO.RequestSignUp;
 import com.creatival.user.DTO.RequestUpdateUser;
 import com.creatival.user.DTO.ResponseProfile;
@@ -30,12 +31,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class UserService {
 
-    private final UserTokenRepository userTokenRepository;
     private final String imgPath="/upload/images/user/";
     private final FileUtil fileUtil;
 	private final  UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-
+	private final UserTokenService userTokenService;
 
 
 
@@ -132,8 +132,7 @@ public class UserService {
 	}
 	
 	public String createActiveUserMailLink(Users user) {
-		UserToken token = UserToken.create(user);
-		userTokenRepository.save(token);
+		UserToken token = userTokenService.createUserToken(user);
 		
 		return "http://localhost:8080/user/active/confirm?token=" + token.getToken();
 	}
@@ -146,12 +145,21 @@ public class UserService {
 	public void userAllDelete(List<Users> users) {
 		for(Users user : users) {
 			System.out.println("삭제됨, 삭제 대상 : " + user.getUsername());
-			userRepository.delete(user);
+			user.setUsername("deleted_"+UUID.randomUUID());
+			user.setEmail("deleted_"+UUID.randomUUID());
+			user.setDisplayName("deleted_"+UUID.randomUUID());
+			user.setPassword("deleted_"+UUID.randomUUID());
+			user.setProfileImgUrl("deleted_"+UUID.randomUUID());
+			
+			userRepository.save(user);
 		}
 	}
 	
 	public List<Users> getAllByIsDeleted(LocalDateTime threshold) {
 		List<Users> list = userRepository.findByIsDeletedTrueAndDeletedAtBefore(threshold);
 		return list;
+	}
+	public Users getUserById(Long userId) {
+		return userRepository.findById(userId).get();
 	}
 }

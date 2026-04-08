@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="kr"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}">
+
+<th:block layout:fragment="content">
+
+<section class="py-5">
+<div class="container px-5">
+
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h4 class="fw-bold">팀 멤버 관리</h4>
+		<span class="badge bg-secondary"
+		      th:text="'총 ' + ${#lists.size(memberList)} + '명'"></span>
+	</div>
+
+	<div class="card shadow-sm border-0">
+	<div class="card-body p-0">
+
+		<table class="table align-middle mb-0">
+
+			<thead class="table-light">
+				<tr>
+					<th>멤버</th>
+					<th>포지션</th>
+					<th>역할</th>
+					<th>가입일</th>
+					<th class="text-end">관리</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr th:each="member : ${memberList}">
+
+					<!-- 멤버 정보 -->
+					<td>
+						<div class="d-flex align-items-center">
+
+							<img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} : 'https://dummyimage.com/40x40/adb5bd/495057'"
+								 class="rounded-circle me-3"
+								 width="40" height="40">
+
+							<div>
+								<div class="fw-bold"
+								     th:text="${member.displayname}">이름</div>
+
+								<small class="text-muted"
+								       th:text="'@' + ${member.username}">@username</small>
+							</div>
+
+						</div>
+					</td>
+
+					<!-- 포지션 -->
+					<td th:text="${member.position}">
+						Backend
+					</td>
+
+					<!-- 역할 -->
+					<td>
+
+						<span class="badge bg-warning text-dark"
+						      th:if="${member.role.name() == 'LEADER'}">
+							팀장
+						</span>
+
+						<span class="badge bg-secondary"
+						      th:if="${member.role.name() == 'MEMBER'}">
+							멤버
+						</span>
+
+					</td>
+
+					<!-- 가입일 -->
+					<td th:text="${#temporals.format(member.joinedAt,'yyyy-MM-dd')}">
+						2025-01-01
+					</td>
+
+					<!-- 관리 -->
+					<td class="text-end">
+
+						<div class="btn-group btn-group-sm">
+
+							<!-- 역할 변경 -->
+							<form th:action="@{/team/member/role}" method="post">
+
+								<input type="hidden" name="memberId"
+								       th:value="${member.id}">
+
+									   <button class="btn btn-outline-primary"
+									           type="submit"
+									           th:if="${leaderUsername == #authentication.name && member.role.name() == 'MEMBER'}"
+									           onclick="return confirm('정말 이 멤버에게 팀장을 위임하시겠습니까?');">
+									       팀장 위임
+									   </button>
+
+							</form>
+
+							<!-- 멤버 삭제 -->
+							<button class="btn btn-outline-danger"
+							        th:if="${leaderUsername == #authentication.name && member.username != #authentication.name}"
+							        th:onclick="'removeMember(' + ${member.id} + ')'">
+							    삭제
+							</button>
+							<!-- 역할 변경 -->
+							<button class="btn btn-outline-success"
+							        th:if="${leaderUsername == #authentication.name}"
+							        data-bs-toggle="modal"
+							        data-bs-target="#positionModal"
+							        th:attr="data-member-id=${member.id},
+							                 data-username=${member.username},
+							                 data-position=${member.position}">
+
+							    포지션 변경
+							</button>
+
+						</div>
+
+					</td>
+
+				</tr>
+
+				<!-- 멤버 없을 때 -->
+				<tr th:if="${#lists.isEmpty(memberList)}">
+					<td colspan="5" class="text-center text-muted py-5">
+						팀에 아직 멤버가 없습니다.
+					</td>
+				</tr>
+
+			</tbody>
+
+		</table>
+
+	</div>
+	</div>
+
+</div>
+</section>
+<div class="modal fade" id="positionModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form th:action="@{/team/{id}/member/changePosition(id=${teamId})}" method="post">
+
+        <div class="modal-header">
+          <h5 class="modal-title">포지션 변경</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+            <input type="hidden" name="memberId" id="modalMemberId">
+
+            <div class="mb-3">
+                <label class="form-label">멤버</label>
+                <input type="text" class="form-control" id="modalUsername" name="modalUsername" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">포지션</label>
+                <input type="text" class="form-control" name="position" id="modalPosition">
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+			<button type="button"
+			        class="btn btn-secondary"
+			        data-bs-dismiss="modal">
+			    취소
+			</button>
+          <button class="btn btn-success" type="submit">변경</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+</th:block>
+
+
+
+<th:block layout:fragment="script">
+
+<script>
+
+	function removeMember(memberId){
+
+		Swal.fire({
+			title: '멤버를 삭제하시겠습니까?',
+			text: '삭제 사유를 입력해주세요.',
+			icon: 'warning',
+			input: 'text',
+			inputPlaceholder: '탈퇴 사유 입력',
+			showCancelButton: true,
+			confirmButtonText: '탈퇴',
+			cancelButtonText: '취소',
+			inputValidator: (value) => {
+				if (!value) {
+					return '탈퇴 사유를 입력해주세요!'
+				}
+			}
+		}).then((result)=>{
+
+			if(result.isConfirmed){
+
+				const message = encodeURIComponent(result.value)
+
+				location.href = "/team/member/delete/" + memberId + "?message=" + message
+
+			}
+
+		});
+
+	}
+
+
+</script>
+<script>
+	
+	const positionModal = document.getElementById('positionModal')
+	
+	positionModal.addEventListener('show.bs.modal', function (event) {
+	
+	    const button = event.relatedTarget
+	
+	    const memberId = button.getAttribute('data-member-id')
+	    const username = button.getAttribute('data-username')
+	    const position = button.getAttribute('data-position')
+	
+	    document.getElementById("modalMemberId").value = memberId
+	    document.getElementById("modalUsername").value = username
+	    document.getElementById("modalPosition").value = position
+	
+	})
+
+</script>
+</th:block>
+
+</html>

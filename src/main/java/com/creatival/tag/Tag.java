@@ -11,6 +11,7 @@ import com.creatival.content.ContentFile;
 import com.creatival.content.Episode;
 import com.creatival.user.Users;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,13 +41,21 @@ public class Tag {
 	
 	private String tagText;
 	
-	@OneToMany(mappedBy = "tag")
+	@OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default()
 	private List<TagToUsers> tagToUsers = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "tag")
+	@OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<TagToContent> tagToContent = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<TagToTeam> tagToTeam = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<TagToProject> tagToProject = new ArrayList<>();
 	
 	@CreationTimestamp
 	private LocalDateTime createdAt;

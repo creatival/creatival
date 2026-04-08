@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.creatival.content.Content;
 import com.creatival.content.ContentFileService;
 import com.creatival.content.ContentService;
+import com.creatival.team.Team;
+import com.creatival.team.TeamService;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
@@ -26,6 +28,7 @@ public class TagController {
 	private final TagService tagService;
 	private final UserService userService;
 	private final ContentService contentService;
+	private final TeamService teamService;
 	
 	@PostMapping("/createUserTag")
 	public String createTagForUser(@RequestParam("tagName") String tagName, Principal principal) {
@@ -43,6 +46,21 @@ public class TagController {
 	public String createTagForArt(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
 		createTagForContent(tagName, id, principal.getName());
 		return "redirect:/content/art/detail/"+id;
+	}
+	@PostMapping("/createContentVideoTag/{id}")
+	public String createTagForVideo(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
+		createTagForContent(tagName, id, principal.getName());
+		return "redirect:/content/video/detail/"+id;
+	}
+	@PostMapping("/createContentMusicTag/{id}")
+	public String createTagForMusic(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
+		createTagForContent(tagName, id, principal.getName());
+		return "redirect:/content/music/detail/"+id;
+	}
+	@PostMapping("/createContentFileTag/{id}")
+	public String createTagForFile(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
+		createTagForContent(tagName, id, principal.getName());
+		return "redirect:/content/file/detail/"+id;
 	}
 	
 	private void createTagForContent(String tagName, Long id, String username) {
@@ -73,5 +91,38 @@ public class TagController {
 		tagService.deleteMappingForContent(contentId, tagId);
 		
 		return "redirect:/content/art/detail/"+contentId;
+	}
+	@GetMapping("/video/deleteContentTag")
+	public String deleteContentVideoTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
+		tagService.deleteMappingForContent(contentId, tagId);
+		
+		return "redirect:/content/video/detail/"+contentId;
+	}
+	@GetMapping("/music/deleteContentTag")
+	public String deleteContentMusicTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
+		tagService.deleteMappingForContent(contentId, tagId);
+		
+		return "redirect:/content/music/detail/"+contentId;
+	}
+	@GetMapping("/file/deleteContentTag")
+	public String deleteContentFileTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
+		tagService.deleteMappingForContent(contentId, tagId);
+		
+		return "redirect:/content/file/detail/"+contentId;
+	}
+	
+	@GetMapping("/team/deleteTeamTag")
+	public String deleteTeamTag(@RequestParam("tagId") Long tagId, @RequestParam("teamId") Long teamId) {
+		tagService.deleteMappingForTeam(teamId, tagId);
+		
+		return "redirect:/team/"+teamId;
+	}
+	
+	@PostMapping("/team/createTeamTag/{id}")
+	public String createTeamTag(@RequestParam("tagName") String tagName,@PathVariable("id") Long id, Principal principal) {
+		Users user = userService.getUserByUsername(principal.getName());
+		Team team = teamService.getTeamById(id);
+		tagService.createTagForTeam(team, tagName, user);
+		return "redirect:/team/"+id;
 	}
 }

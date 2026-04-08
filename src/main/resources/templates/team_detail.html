@@ -2,11 +2,12 @@
 <html lang="kr"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
 
 <div class="container my-5" layout:fragment="content">
     <style>
-        /* ===== 카드형 액션 버튼 스타일 (아까처럼) ===== */
+        /* ===== 카드형 액션 버튼 스타일 (HEAD 디자인 유지) ===== */
         .action-buttons-group {
             display: flex;
             gap: 10px;
@@ -44,26 +45,50 @@
             font-weight: 700;
         }
         
-        /* 아이콘 개별 색상 */
-		.btn-like i { color: #ff4757; }
-		        .btn-follow i { color: #ffc107; }
-		        .btn-bookmark i { color: #2D3278; }
-		        .btn-share i { color: #333; }
+        .btn-like i { color: #ff4757; }
+        .btn-follow i { color: #ffc107; }
+        .btn-bookmark i { color: #2D3278; }
+        .btn-share i { color: #333; }
 
-        /* 상태 배지 스타일 보정 */
+        /* 상태 배지 및 태그 스타일 */
         .badge-status { padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+        .tag-badge { 
+            background-color: #f8f9fa; border: 1px solid #dee2e6; 
+            padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;
+            display: inline-flex; align-items: center; margin-right: 5px;
+        }
+        .tag-badge i { cursor: pointer; color: #ff4757; margin-left: 5px; }
     </style>
 
     <div class="row mb-5 pb-4 border-bottom align-items-end">
         <div class="col-md-7">
             <span class="badge bg-primary mb-2 badge-status" th:text="${team.status}">모집 중</span>
             <h1 class="fw-bold display-5" th:text="${team.name}">팀 이름</h1>
-            <p class="text-muted mb-0 small">
+            <p class="text-muted mb-3 small">
                 <i class="bi bi-calendar-check me-1"></i>설립일:
                 <span th:text="${#temporals.format(team.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
             </p>
-            <div class="mt-2">
-                <span class="badge bg-light text-dark border me-1 fw-normal" th:each="tag : ${tagList}" th:text="'#' + ${tag.tagText}">#게임</span>
+
+            <div class="tag-area mb-2">
+                <div th:each="tag : ${tagList}" class="tag-badge">
+                    <span th:text="'#' + ${tag.tagText}"></span>
+                    <a sec:authorize="isAuthenticated()"
+                       th:if="${team.leaderUsername == #authentication.name}"
+                       th:href="@{/tag/team/deleteTeamTag(tagId=${tag.id},teamId=${team.id})}"
+                       onclick="return confirm('삭제하시겠습니까?');">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </a>
+                </div>
+
+                <button type="button"
+                        sec:authorize="isAuthenticated()"
+                        th:if="${team.leaderUsername == #authentication.name}"
+                        class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-1"
+                        style="width:24px;height:24px; vertical-align: middle;"
+                        data-bs-toggle="modal"
+                        data-bs-target="#tagAddModal">
+                    <i class="bi bi-plus"></i>
+                </button>
             </div>
         </div>
 
@@ -88,9 +113,11 @@
             </div>
 
             <div class="text-md-end">
-                <a th:href="@{/team/{id}/delete(id=${team.id})}" class="btn btn-outline-danger btn-sm me-1" th:if="${team.leaderUsername == #authentication.name}" onclick="return confirm('정말 팀을 해체하시겠습니까?');">팀 해체</a>
-                <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary btn-sm me-1" th:if="${team.leaderUsername == #authentication.name}">수정하기</a>
-                <a th:href="@{/team/{id}/application(id=${team.id})}" class="btn btn-primary px-4 fw-bold">팀 참여 신청</a>
+                <th:block th:if="${team.leaderUsername == #authentication.name}">
+                    <a th:href="@{/team/{id}/delete(id=${team.id})}" class="btn btn-outline-danger btn-sm me-1" onclick="return confirm('정말 팀을 해체하시겠습니까?');">팀 해체</a>
+                    <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary btn-sm me-1"><i class="bi bi-pencil-square me-1"></i> 수정하기</a>
+                </th:block>
+                <a th:href="@{/team/{id}/application(id=${team.id})}" class="btn btn-primary px-4 fw-bold shadow-sm">팀 참여 신청</a>
             </div>
         </div>
     </div>
@@ -109,15 +136,26 @@
             <section class="mb-5">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
                     <h4 class="fw-bold mb-0">프로젝트</h4>
-                    <a th:href="@{/team_project_list}" class="text-decoration-none small">전체 보기 ></a>
+                    <div>
+                        <a sec:authorize="isAuthenticated()" th:if="${team.leaderUsername == #authentication.name}"
+                           th:href="@{/team/{id}/project/create(id=${team.id})}" class="btn btn-sm btn-outline-primary me-2">프로젝트 등록</a>
+                        <a th:href="@{/team/{id}/project/list(id=${team.id})}" class="text-decoration-none small">전체 보기 ></a>
+                    </div>
                 </div>
+                
                 <div class="list-group list-group-flush shadow-sm rounded border">
-                    <a th:href="@{/team_project_detail}" class="list-group-item list-group-item-action py-3">
+                    <div th:if="${#lists.isEmpty(projectList)}" class="list-group-item py-4 text-center text-muted">
+                        진행 중인 프로젝트가 없습니다.
+                    </div>
+                    <a th:each="project : ${projectList}" 
+                       th:href="@{/team/{tid}/project/{pid}(tid=${team.id}, pid=${project.id})}"
+                       class="list-group-item list-group-item-action py-3">
                         <div class="d-flex align-items-center">
-                            <img src="/images/pic.png" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
+                            <img th:src="${project.bannerImgUrl != null ? project.bannerImgUrl : '/images/pic.png'}"
+                                 class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
                             <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold">임시 프로젝트</h6>
-                                <span class="text-muted small">2026.02.12</span>
+                                <h6 class="mb-1 fw-bold" th:text="${project.title}">프로젝트 제목</h6>
+                                <span class="text-muted small" th:text="${#temporals.format(project.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
                             </div>
                             <div class="text-end text-muted small d-none d-md-block">
                                 <span><i class="bi bi-heart"></i> 1.2k</span>
@@ -136,7 +174,7 @@
                         <img th:src="${team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
                              class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
                         <div>
-                            <h6 class="mb-0 fw-bold" th:text="${team.name}">Team Creatival</h6>
+                            <h6 class="mb-0 fw-bold" th:text="${team.name}">Team Name</h6>
                             <small class="text-muted">설립일: <span th:text="${#temporals.format(team.createdAt, 'yyyy.MM.dd')}">2025.10.01</span></small>
                         </div>
                     </div>
@@ -144,16 +182,19 @@
                         <img th:src="${team.leaderProfileImgUrl != null ? team.leaderProfileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}"
                              class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
                         <div>
-                            <p class="mb-0 fw-bold small" th:text="${team.leaderUsername}">팀장 이름</p>
+                            <p class="mb-0 fw-bold small" th:text="${team.leaderUsername}">리더명</p>
                             <small class="text-muted">팀 리더</small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="d-grid mb-4">
+            <div class="d-grid gap-2 mb-4" th:if="${team.leaderUsername == #authentication.name}">
                 <a th:href="@{/team/{id}/teamApplicationManage(id=${team.id})}" class="btn btn-outline-dark py-2 fw-bold shadow-sm">
                    <i class="bi bi-people-fill me-2"></i>신청 현황 관리
+                </a>
+                <a th:href="@{/team/{id}/teamMemberManage(id=${team.id})}" class="btn btn-outline-secondary py-2 fw-bold shadow-sm">
+                    <i class="bi bi-person-gear me-2"></i>멤버 관리
                 </a>
             </div>
 
@@ -161,12 +202,15 @@
                 <div class="card-body">
                     <h5 class="fw-bold mb-4 border-bottom pb-2">참여중인 팀원</h5>
                     <div class="list-group list-group-flush">
+                        <div th:if="${#lists.isEmpty(memberList)}" class="py-3 text-center text-muted small">
+                            참여 중인 멤버가 없습니다.
+                        </div>
                         <div class="list-group-item px-0 border-0 d-flex align-items-center" th:each="member : ${memberList}">
                             <img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} : 'https://dummyimage.com/40x40/adb5bd/495057'"
                                  class="rounded-circle me-3" width="40" height="40">
                             <div>
                                 <p class="mb-0 fw-bold small">
-                                    <span th:text="${member.username}">홍길동</span>
+                                    <span th:text="${member.username}">이름</span>
                                     <span th:if="${member.role.name() == 'LEADER'}" class="text-primary">(팀장)</span>
                                 </p>
                                 <small class="text-muted" th:text="${member.position}">포지션</small>
@@ -183,7 +227,26 @@
             </div>
         </div>
     </div>
-    
+
+    <div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <form th:action="@{/tag/team/createTeamTag/{id}(id=${team.id})}" method="post">
+                    <div class="modal-body">
+                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
+                        <div class="input-group">
+                            <span class="input-group-text">#</span>
+                            <input type="text" name="tagName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script th:inline="javascript">
         $(function() {
             const msg = /*[[${message}]]*/ null;
@@ -191,7 +254,7 @@
             if (msg) {
                 Swal.fire({
                     icon: status,
-                    title: status === 'error' ? '접근 거부' : '완료',
+                    title: status === 'error' ? '알림' : '완료',
                     text: msg,
                     confirmButtonColor: status === 'error' ? '#d33' : '#3085d6'
                 });

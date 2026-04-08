@@ -27,7 +27,6 @@ public class CreateTeamDTO {
 
     private Visibility visibility;
 
-    // 파일은 URL이 아니라 MultipartFile로 받는 게 맞음
     private MultipartFile profileImage;
 
     private MultipartFile bannerImage;
