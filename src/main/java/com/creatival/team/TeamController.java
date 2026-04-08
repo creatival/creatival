@@ -115,7 +115,7 @@ public class TeamController {
 	}
 	
 	@GetMapping("/{id}")
-	public String teamDetail(Model model,@PathVariable("id") Long id) {
+	public String teamDetail(Model model,@PathVariable("id") Long id, Principal principal) {
 		ResponseTeamDetailDTO dto = teamService.getTeamDetail(id);
 		model.addAttribute("team", dto);
 		
@@ -126,7 +126,13 @@ public class TeamController {
 		List<ResponseTeamMember> members = teamService.getMemberForTeam(team);
 		model.addAttribute("memberList", members);
 		
-		List<ResponseProjectListDTO> projects = teamService.getProjectList(team);
+		Users user = null;
+		
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		
+		List<ResponseProjectListDTO> projects = teamService.getProjectList(team, user);
 		model.addAttribute("projectList", projects);
 		
 		List<ResponseCommentDTO> comments = commentService.getCommentListByTeam(id);
@@ -648,5 +654,18 @@ public class TeamController {
 		redirectAttributes.addFlashAttribute("message", "성공적으로 조정되었습니다.");
 		redirectAttributes.addFlashAttribute("icon", "success");
 		return "redirect:/team/"+checkout.getProject().getTeam().getId()+"/project/"+checkout.getProject().getId();
+	}
+	
+	@GetMapping("/{id}/comments")
+	public String teamComments(@PathVariable("id") Long id, @RequestParam(name = "page",defaultValue = "0") int page, Model model) {
+		Team team = teamService.getTeamById(id);
+
+	    Page<ResponseCommentDTO> commentPage = commentService.getCommentsByTeam(id, page);
+
+	    model.addAttribute("team", ResponseTeamDetailDTO.from(team));
+	    model.addAttribute("commentList", commentPage.getContent());
+	    model.addAttribute("totalPages", commentPage.getTotalPages());
+
+	    return "team_comments";
 	}
 }

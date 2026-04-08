@@ -207,7 +207,7 @@ public class CommentController {
 			return "redirect:/board/detail/"+comment.getBoard().getId();
 		}
 		
-		if(!comment.getUser().getUsername().equals(principal.getName()) || !comment.getContent().getUser().getUsername().equals(principal.getName())) {
+		if(!comment.getUser().getUsername().equals(principal.getName()) || !comment.getBoard().getUser().getUsername().equals(principal.getName())) {
 			redirectAttributes.addFlashAttribute("message", "작성자 본인 혹은 콘텐츠 생성자만 삭제할 수 있습니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
 			return "redirect:/board/detail/"+comment.getBoard().getId();
@@ -255,5 +255,61 @@ public class CommentController {
 			redirectAttributes.addFlashAttribute("icon", "error");
 			return "redirect:/team/"+id;
 		}
+	}
+	@PostMapping("/team/update/{id}")
+	public String updateCommentForTeam(@PathVariable("id") Long id,@RequestParam("text") String text, Principal principal, RedirectAttributes redirectAttributes) {
+		Comment comment = commentService.getCommentById(id);
+		if(comment== null) {
+			redirectAttributes.addFlashAttribute("message", "수정할려는 댓글을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "댓글을 수정하기 위해서는 로그인이 필수입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+comment.getTeam().getId() + "/comments";
+		}
+		
+		if(!comment.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "작성자 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+comment.getTeam().getId() + "/comments";
+		}
+		try {
+			redirectAttributes.addFlashAttribute("message", "수정 완료되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			commentService.updateCommentForContent(id, text);
+			return "redirect:/team/"+comment.getTeam().getId() + "/comments";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+comment.getTeam().getId() + "/comments";	
+		}
+	}
+	@GetMapping("/team/delete/{id}")
+	public String deleteCommentForTeam(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Comment comment = commentService.getCommentById(id);
+		if(comment== null) {
+			redirectAttributes.addFlashAttribute("message", "수정할려는 댓글을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "댓글을 수정하기 위해서는 로그인이 필수입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+comment.getTeam().getId() + "/comments";
+		}
+		
+		if(!comment.getUser().getUsername().equals(principal.getName()) || !comment.getTeam().getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "작성자 본인만 삭제할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+comment.getTeam().getId() + "/comments";
+		}
+		
+		commentService.delete(comment);
+		redirectAttributes.addFlashAttribute("message", "삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/team/"+comment.getTeam().getId() + "/comments";
 	}
 }

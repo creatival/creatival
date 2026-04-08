@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.creatival.FileUtil;
@@ -19,6 +23,7 @@ import com.creatival.content.Content;
 import com.creatival.content.ContentService;
 import com.creatival.team.Team;
 import com.creatival.team.TeamService;
+import com.creatival.team.repository.TeamRepository;
 import com.creatival.user.Users;
 
 import lombok.RequiredArgsConstructor;
@@ -215,5 +220,16 @@ public class CommentService {
 		rootComments.removeIf(Objects::isNull);
 		return rootComments;
 	}
+
+	public Page<ResponseCommentDTO> getCommentsByTeam(Long id, int page) {
+		Team team = teamService.getTeamById(id);
+		if(team==null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+		Page<Comment> pages = commentRepository.findByTeam(team, pageable);
+	    return pages.map(comment -> ResponseCommentDTO.from(comment));
+	}
+		
 
 }

@@ -3,6 +3,7 @@ package com.creatival.team;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -276,8 +277,15 @@ public class TeamService {
 		}
 	}
 	
-	public List<ResponseProjectListDTO> getProjectList(Team team) {
-		List<Project> projects = projectRepository.findByTeamAndVisibility(team,Visibility.PUBLIC);
+	public List<ResponseProjectListDTO> getProjectList(Team team, Users user) {
+		TeamMember member = getMemberForTeamByUser(team, user);
+		List<Project> projects = new ArrayList<>();
+		if(member != null) {
+			projects = projectRepository.findByTeam(team);
+		} else {
+			projects = projectRepository.findByTeamAndVisibility(team,Visibility.PUBLIC);
+		}
+		
 		System.out.println("조회된 프로젝트 개수: " + projects.size());
 		return projects.stream().map(project -> ResponseProjectListDTO.from(project)).toList();
 	}
