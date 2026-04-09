@@ -1,13 +1,35 @@
 package com.creatival;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.creatival.comment.CommentService;
+import com.creatival.content.ContentService;
+import com.creatival.tag.TagService;
+import com.creatival.team.TeamService;
+import com.creatival.team.repository.TeamMemberRepository;
+import com.creatival.team.repository.TeamRepository;
+import com.creatival.token.UserTokenService;
+import com.creatival.user.UserService;
+
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Controller
 public class MainController {
+	
+	private final TeamService teamService;
+	private final ContentService contentService;
+	
 	@GetMapping("/")
-	public String index() {
+	public String index(Model model) {
+		model.addAttribute("topProjects", teamService.getTop3Projects());
+		model.addAttribute("topArt", contentService.getTopArt(6));
+		model.addAttribute("topNovel", contentService.getTopNovel(6));
 		return "index";
 	}
 	

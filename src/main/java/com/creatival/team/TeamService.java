@@ -25,6 +25,7 @@ import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseCheckoutListDTO;
 import com.creatival.team.dto.ResponseHistoryDTO;
+import com.creatival.team.dto.ResponseProjectDeatilDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
@@ -484,5 +485,10 @@ public class TeamService {
 		}
 		historyRepository.delete(optional.get());
 		
+	}
+	
+	public List<ResponseProjectDeatilDTO> getTop3Projects() {
+		List<Project> projects = projectRepository.findTop3ByOrderByLikeCountDesc();
+		return projects.stream().map(project -> ResponseProjectDeatilDTO.from(project)).toList();
 	}
 }

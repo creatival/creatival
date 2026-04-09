@@ -679,4 +679,19 @@ public class ContentService {
 		}
 		return episode.get();
 	}
+	
+	//index 용
+	
+	public List<ResponseArtList> getTopArt(int qty) {
+		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.ART,pageable);
+		
+		return contents.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content))).toList();
+	}
+	public List<ResponseNovelList> getTopNovel(int qty) {
+		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.NOVEL,pageable);
+		
+		return contents.map(content -> ResponseNovelList.from(content, content.getSeries())).toList();
+	}
 }

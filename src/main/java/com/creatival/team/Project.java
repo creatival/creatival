@@ -76,6 +76,9 @@ public class Project {
 	@Column(nullable = false)
 	private Visibility visibility;
 	
+	@Builder.Default
+	private Long likeCount=0L;
+	
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<TagToProject> tagToProject = new ArrayList<>();

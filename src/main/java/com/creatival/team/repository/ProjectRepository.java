@@ -16,4 +16,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	Page<Project> findByTeamAndVisibility(Team team, Visibility visibility, Pageable pageable);
 	Optional<Project> findByProjectTag(String projectTag);
 	List<Project> findByTeam(Team team);
+	List<Project> findTop3ByOrderByLikeCountDesc();
 }

@@ -189,6 +189,7 @@
             </div>
 
             <div class="action-buttons">
+                <button class="btn-action btn-like" th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"><i class="bi bi-heart-fill"></i><span>수정하기</span></button>
                 <button class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></button>
                 <button class="btn-action btn-star"><i class="bi bi-star-fill"></i><span>즐겨찾기</span></button>
                 <button class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></button>

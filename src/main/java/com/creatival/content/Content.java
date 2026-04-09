@@ -89,6 +89,9 @@ public class Content {
 	@Column(nullable = false)
 	private Long viewCount=0L;
 	
+	@Builder.Default
+	private Long likeCount=0L;
+	
 	@CreationTimestamp
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
