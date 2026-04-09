@@ -1,7 +1,7 @@
-<html layout:decorate="~{layout}">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div class="container-fluid" layout:fragment="content">
     <style>
-        /* 카테고리 아이콘 스타일: seungjae 디자인의 둥근 사각형 적용 */
+        /* [통합] 카테고리 아이콘 스타일 */
         .category-icon {
             width: 65px;
             height: 65px;
@@ -13,7 +13,7 @@
             margin: 0 auto 10px auto;
             transition: all 0.2s ease-in-out;
         }
-
+        
         .category-icon img {
             width: 35px;
             height: 35px;
@@ -25,16 +25,22 @@
             transform: translateY(-5px);
         }
 
-        /* 리스트 스타일: 깔끔한 라인과 간격 */
+        /* [통합] 리스트 스타일 (HEAD의 가독성 유지) */
         .list-row {
             border-bottom: 2px solid #ffcec5; /* 시안의 살구색 라인 */
             padding: 12px 10px;
+            transition: background-color 0.2s;
+        }
+        .list-row:hover {
+            background-color: #fff9f8;
         }
 
-        /* 하단 페이징 라인 디자인 */
+        /* [seungjae] 페이징 강조 디자인 적용 */
         .pagination-container {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
             margin-bottom: 30px;
         }
 
@@ -49,17 +55,20 @@
         .pagination-numbers a {
             text-decoration: none;
             color: #333;
+            transition: color 0.2s;
         }
 
+        /* 현재 페이지 강조 (주황색 밑줄 포인트) */
         .pagination-numbers a.active {
             color: #e05238;
         }
 
+        /* 화살표 버튼 위치 고정 (seungjae 디테일) */
         .pagination-numbers a.disabled {
             visibility: hidden;
         }
 
-        /* 작성 버튼 스타일 */
+        /* [HEAD] 작성 버튼 스타일 (클래스화) */
         .btn-write {
             background-color: #3e467d;
             color: white;
@@ -68,6 +77,11 @@
             border-radius: 5px;
             text-decoration: none;
             display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-write:hover {
+            background-color: #2e355d;
+            color: white;
         }
     </style>
 
@@ -104,7 +118,7 @@
                 </a>
             </div>
             <div class="col-4 col-md-2">
-                <a th:href="@{/content/file_list}" class="shortcut-link text-decoration-none text-dark">
+                <a th:href="@{/content/file/list}" class="shortcut-link text-decoration-none text-dark">
                     <div class="category-icon"><img th:src="@{/images/folder.png}" alt="파일"></div>
                     <div class="small fw-bold">파일</div>
                 </a>
@@ -117,7 +131,7 @@
         </div>
 
         <div class="mb-5">
-            <div th:each="file : ${fileList}" class="list-row d-flex justify-content-between align-items-center w-75  mx-auto">
+            <div th:each="file : ${fileList}" class="list-row d-flex justify-content-between align-items-center w-75 mx-auto">
                 <div class="d-flex align-items-center col-3">
                     <span class="small fw-medium" th:text="${file.displayname + '(' + file.username + ')'}">사용자(아이디)</span>
                 </div>
@@ -128,6 +142,7 @@
                        파일 제목이 여기에 표시됩니다
                     </a>
                 </div>
+                <div class="col-3"></div>
             </div>
         </div>
 
@@ -150,7 +165,7 @@
                 </div>
             </div>
             
-            <a th:href="@{/content/file/write}" class="btn-write">
+            <a th:href="@{/content/file/write}" class="btn-write mt-4">
                파일작성
             </a>
         </div>
