@@ -188,13 +188,19 @@
                 </div>
             </div>
 
-            <div class="action-buttons">
-                <button class="btn-action btn-like" th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"><i class="bi bi-heart-fill"></i><span>수정하기</span></button>
-                <button class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></button>
-                <button class="btn-action btn-star"><i class="bi bi-star-fill"></i><span>즐겨찾기</span></button>
-                <button class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></button>
-                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
-            </div>
+			<div class="action-buttons">
+			    <button class="btn-action" 
+			            th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"
+			            th:if="${art.username == #authentication.name}">
+			        <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
+			        <span>수정하기</span>
+			    </button>
+
+			    <button class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></button>
+			    <button class="btn-action btn-star"><i class="bi bi-star-fill"></i><span>즐겨찾기</span></button>
+			    <button class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></button>
+			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
+			</div>
         </div>
 
         <!-- 설명 -->
