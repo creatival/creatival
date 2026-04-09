@@ -24,6 +24,7 @@ import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseCheckoutListDTO;
+import com.creatival.team.dto.ResponseHistoryDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
@@ -58,6 +59,7 @@ public class TeamService {
 	private final TeamApplicationRepository teamApplicationRepository;
 	private final ProjectRepository projectRepository;
 	private final UserService userService;
+	private final  HistoryRepository historyRepository;
 
 
 	
@@ -439,6 +441,48 @@ public class TeamService {
 
 	public void deleteCheck(Checkout checkout) {
 		checkoutRepository.delete(checkout);
+		
+	}
+
+	public List<ResponseHistoryDTO> getHistoryByProject(Project project) {
+		List<History> list = historyRepository.findByProjectOrderByCreatedAtDesc(project);
+		return list.stream().map(history -> ResponseHistoryDTO.from(history)).toList();
+	}
+	public ResponseHistoryDTO getHistoryByProjectTop(Project project) {
+		Optional<History> history = historyRepository.findTop1ByProjectOrderByCreatedAtDesc(project);
+		if(history.isEmpty()) {
+			return null;
+		}
+		return ResponseHistoryDTO.from(history.get());
+	}
+
+	@Transactional
+	public void createTeamService(Project project, String versionTag, String title, String text) {
+		History history = History.builder()
+				.versionTag(versionTag)
+				.title(title)
+				.text(text)
+				.user(project.getTeam().getUser())
+				.project(project)
+				.build();
+		historyRepository.save(history);
+		
+	}
+
+	public History getHistoryById(long historyId) {
+		Optional<History> history = historyRepository.findById(historyId);
+		if(history.isEmpty()) {
+			return null;
+		}
+		return history.get();
+	}
+
+	public void deleteHistory(long historyId) {
+		Optional<History> optional = historyRepository.findById(historyId);
+		if(optional.isEmpty()) {
+			throw new IllegalArgumentException("삭제할 대상이 없습니다.");
+		}
+		historyRepository.delete(optional.get());
 		
 	}
 }

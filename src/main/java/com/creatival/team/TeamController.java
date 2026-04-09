@@ -40,6 +40,7 @@ import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseCheckoutListDTO;
+import com.creatival.team.dto.ResponseHistoryDTO;
 import com.creatival.team.dto.ResponseProjectDeatilDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
@@ -339,6 +340,7 @@ public class TeamController {
 		model.addAttribute("dto", ResponseProjectDeatilDTO.from(project));
 		model.addAttribute("contentList", contents);
 		model.addAttribute("checkList", checkouts);
+		model.addAttribute("log", teamService.getHistoryByProjectTop(project));
 		return "team_project_detail";
 	}
 	
@@ -667,5 +669,107 @@ public class TeamController {
 	    model.addAttribute("totalPages", commentPage.getTotalPages());
 
 	    return "team_comments";
+	}
+	
+	@GetMapping("{tid}/project/{pid}/history")
+	public String projectHistory(@PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId,Model model, RedirectAttributes redirectAttributes, Principal principal) {
+		Team team = teamService.getTeamById(teamId);
+		if(team == null) {
+			redirectAttributes.addFlashAttribute("message", "존재하지 않는 팀입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Project project = teamService.getProjectById(projectId);
+		if(project == null) {
+			redirectAttributes.addFlashAttribute("message", "존재하지 않는 프로젝트입니다..");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal !=null) {
+			if(project.getTeam().getUser().getUsername().equals(principal.getName())) {
+				model.addAttribute("isLeader", true);
+			}
+		}
+		
+		model.addAttribute("projectId", projectId);
+		List<ResponseHistoryDTO> list = teamService.getHistoryByProject(project);
+		model.addAttribute("logs", list);
+		
+		return "team_log";
+	}
+	@PostMapping("/project/{id}/history/create")
+	public String createHistory(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes,
+			@RequestParam("versionTag") String versionTag, @RequestParam("updateTitle") String title, @RequestParam("text") String text) {
+		
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		Project project = teamService.getProjectById(id);
+		if(project == null) {
+			redirectAttributes.addFlashAttribute("message", "수정이력을 작성하려는 프로젝트가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(!project.getTeam().getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 버전을 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
+		}
+		try {
+			teamService.createTeamService(project, versionTag, title, text);
+			redirectAttributes.addFlashAttribute("message", "버전이 성공적으로 기록되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 반복 발생시 웹 관리자에게 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
+		}
+		
+	}
+	@PostMapping("/project/{pid}/history/{lID}/delete")
+	public String deleteHistory(@PathVariable("pid") long projectId, @PathVariable("lID") long historyId, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Project project = teamService.getProjectById(projectId);
+		if(project==null) {
+			redirectAttributes.addFlashAttribute("message", "수정이력을 삭제하려는 프로젝트가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		History history = teamService.getHistoryById(historyId);
+		if(history==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 수정이력이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		if(!project.getTeam().getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 버전을 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
+		}
+		
+		try {
+			teamService.deleteHistory(historyId);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
+		}
+		
 	}
 }
