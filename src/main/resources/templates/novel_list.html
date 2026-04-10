@@ -8,15 +8,48 @@
 
     <style>
         /* 1. 상단 카테고리 아이콘 */
-        .category-icon {
-            width: 70px; height: 70px;
-            background-color: #f1f3f5;
-            border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; margin: 0 auto;
-        }
-        .category-icon:hover { background-color: #e9ecef; transform: translateY(-3px); }
-        .category-icon img { width: 40px; height: auto; }
+		.category-item { 
+		        transition: all 0.3s ease; 
+		        text-decoration: none !important;
+		    }
+		    
+		    .icon-box {
+		        width: 80px; 
+		        height: 80px; 
+		        background-color: #F8F9FA; /* 기본 연회색 배경 */
+		        border-radius: 22px;
+		        margin: 0 auto 12px; 
+		        display: flex; 
+		        align-items: center; 
+		        justify-content: center;
+		        overflow: hidden;
+		        border: 1px solid #eee;
+		        transition: all 0.3s ease;
+		    }
+
+		    .category-icon-img {
+		        width: 100%;       
+		        height: 100%;      
+		        object-fit: contain; 
+		        padding: 18px; /* 아이콘 크기 통일 */
+		        transition: transform 0.3s ease;
+		    }
+
+		    /* 호버 시 디자인 변경: Creatival 오렌지색 적용 */
+		    .category-item:hover { 
+		        transform: translateY(-8px); 
+		    }
+		    
+		    .category-item:hover .category-icon-img {
+		        transform: scale(1.1); /* 아이콘 살짝 확대 */
+		    }
+
+		    .category-item .fw-bold {
+		        color: #3B4371; /* 브랜드 네이비 */
+		        font-size: 0.95rem;
+		        transition: color 0.3s ease;
+		    }
+
 
         /* 2. 썸네일 카드 (3:4 비율) */
         .novel-card { transition: transform 0.2s; border: none; background: none; }
@@ -58,48 +91,59 @@
 <body class="d-flex flex-column h-100">
     <div layout:fragment="content">
         
-        <section class="py-5">
-            <div class="container">
-                <div class="row text-center g-3 justify-content-center">
-                    <div class="col-4 col-md-2">
-                        <a th:href="@{/Illustration_list}" class="text-decoration-none text-dark">
-                            <div class="category-icon mb-2"><img th:src="@{/images/paint.png}" alt="일러스트"></div>
-                            <div class="small fw-bold">일러스트</div>
-                        </a>
-                    </div>
-                    <div class="col-4 col-md-2">
-                        <a th:href="@{/content/comic_list}" class="text-decoration-none text-dark">
-                            <div class="category-icon mb-2"><img th:src="@{/images/comic.png}" alt="만화"></div>
-                            <div class="small fw-bold">만화</div>
-                        </a>
-                    </div>
-                    <div class="col-4 col-md-2">
-                        <a th:href="@{/content/music_list}" class="text-decoration-none text-dark">
-                            <div class="category-icon mb-2"><img th:src="@{/images/sing.png}" alt="음원"></div>
-                            <div class="small fw-bold">음원</div>
-                        </a>
-                    </div>
-                    <div class="col-4 col-md-2">
-                        <a th:href="@{/content/video_list}" class="text-decoration-none text-dark">
-                            <div class="category-icon mb-2"><img th:src="@{/images/yutu.png}" alt="비디오"></div>
-                            <div class="small fw-bold">비디오</div>
-                        </a>
-                    </div>
-                    <div class="col-4 col-md-2">
-                        <a th:href="@{/content/novel_list}" class="text-decoration-none text-dark">
-                            <div class="category-icon mb-2"><img th:src="@{/images/git.png}" alt="웹소설"></div>
-                            <div class="small fw-bold">웹소설</div>
-                        </a>
-                    </div>
-                    <div class="col-4 col-md-2">
-                        <a th:href="@{/content/file_list}" class="text-decoration-none text-dark">
-                            <div class="category-icon mb-2"><img th:src="@{/images/folder.png}" alt="파일"></div>
-                            <div class="small fw-bold">파일</div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
+		<section class="py-5 bg-white">
+		    <div class="container">
+		        <div class="row text-center g-4 justify-content-center">
+		            
+		            <div class="col-4 col-md-2">
+		                <a th:href="@{/Illustration_list}" class="category-item d-block">
+		                    <div class="icon-box">
+		                        <img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트">
+		                    </div>
+		                    <div class="fw-bold">일러스트</div>
+		                </a>
+		            </div>
+
+		            <div class="col-4 col-md-2">
+		                <a th:href="@{/comic_list}" class="category-item d-block">
+		                    <div class="icon-box">
+		                        <img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화">
+		                    </div>
+		                    <div class="fw-bold">만화</div>
+		                </a>
+		            </div>
+
+		            <div class="col-4 col-md-2">
+		                <a th:href="@{/music_list}" class="category-item d-block">
+		                    <div class="icon-box">
+		                        <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
+		                    </div>
+		                    <div class="fw-bold">음악</div>
+		                </a>
+		            </div>
+
+		            <div class="col-4 col-md-2">
+		                <a th:href="@{/video_list}" class="category-item d-block">
+		                    <div class="icon-box">
+		                        <img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오">
+		                    </div>
+		                    <div class="fw-bold">비디오</div>
+		                </a>
+		            </div>
+
+
+		            <div class="col-4 col-md-2">
+		                <a th:href="@{/file_list}" class="category-item d-block">
+		                    <div class="icon-box">
+		                        <img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일">
+		                    </div>
+		                    <div class="fw-bold">파일</div>
+		                </a>
+		            </div>
+
+		        </div>
+		    </div>
+		</section>
 
         <div class="container text-center mb-5">
 			<div class="mb-2">
@@ -139,6 +183,7 @@
                 </div>
             </div>
 
+			
             <nav class="mt-5" th:if="${!paging.isEmpty()}">
                 <ul class="pagination justify-content-center custom-pagination">
                     <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
@@ -156,35 +201,7 @@
             </nav>
         </div>
 
-        <footer class="full-footer">
-            <div class="container py-5">
-                <div class="row mb-4">
-                    <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-                        <h6 class="fw-bold mb-3">footer 내용</h6>
-                        <ul class="list-unstyled small opacity-75">
-                            <li>footer 내용</li>
-                            <li>footer 내용</li>
-                            <li>footer 내용</li>
-                            <li>footer 내용</li>
-                            <li>footer 내용</li>
-                        </ul>
-                    </div>
-                </div>
-                <hr class="footer-line">
-                <div class="row align-items-center">
-                    <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-                        <span>이용 약관</span>
-                        <span>개인 정보 보호 정책</span>
-                    </div>
-                    <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-                        © 2026 creatival All rights reserved.
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <img th:src="@{/images/creatival-Photoroom.png}" alt="logo" width="140">
-                    </div>
-                </div>
-            </div>
-        </footer>
+       
 
     </div>
 </body>
