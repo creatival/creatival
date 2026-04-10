@@ -12,6 +12,7 @@ import com.creatival.comment.dto.ResponseCommentDTO;
 
 import java.util.List;
 import com.creatival.content.Content;
+import com.creatival.content.Episode;
 import com.creatival.team.Team;
 
 
@@ -23,4 +24,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	List<Comment> findByTeam(Team team);
 	List<Comment> findTop5ByTeamOrderByCreatedAt(Team team);
 	Page<Comment> findByTeam(Team team, Pageable pageable);
+	List<Comment> findByEpisode(Episode episode);
+	int countByEpisode(Episode episode);
 }

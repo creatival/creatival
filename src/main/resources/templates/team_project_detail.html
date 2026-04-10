@@ -75,22 +75,9 @@
         
         <div class="col-md-5 mt-4 mt-md-0">
             <div class="action-buttons-group">
-                <a href="#" class="btn-action btn-like">
-                    <i class="bi bi-heart-fill"></i>
-                    <span>1.2k</span>
-                </a>
-                <a href="#" class="btn-action btn-follow">
-                    <i class="bi bi-person-plus-fill"></i>
-                    <span>팔로우</span>
-                </a>
-                <a href="#" class="btn-action btn-bookmark">
-                    <i class="bi bi-bookmark-fill"></i>
-                    <span>북마크</span>
-                </a>
-                <a href="#" class="btn-action btn-share">
-                    <i class="bi bi-share-fill"></i>
-                    <span>공유</span>
-                </a>
+				<button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${dto.id},'PROJECT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
+			    <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn"  class="btn-action btn-bookmark"><i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span></button>
+			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>	
             </div>
 
             <div class="text-md-end">
@@ -161,6 +148,13 @@
                         <div>
                             <h6 class="mb-0 fw-bold" th:text="${dto.teamName != null ? dto.teamName : 'Team Creatival'}"></h6>
                             <small class="text-muted">설립일: <span th:text="${dto.teamCreatedAt != null ? #temporals.format(dto.teamCreatedAt,'yyyy.MM.dd') : '2025.10.01'}"></span></small>
+                        </div>
+                    </div>
+					<div class="d-flex align-items-center mb-3">
+					                       
+                        <div>
+                            <p class="mb-0 mt-1 fw-bold small" >좋아요 현황</p>
+                            <i id="likeIcon" class="bi text-danger bi-heart-fill"></i> <small class="text-danger"th:text="|  ${like.count}|" id="likeCount">좋아요 개수</small><small class="text-danger">개</small>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-3">

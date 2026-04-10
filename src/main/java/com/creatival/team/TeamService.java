@@ -491,4 +491,40 @@ public class TeamService {
 		List<Project> projects = projectRepository.findTop3ByOrderByLikeCountDesc();
 		return projects.stream().map(project -> ResponseProjectDeatilDTO.from(project)).toList();
 	}
+
+	public List<ResponseTeamListDTO> getTeamListByUser(Users user) {
+		List<Team> teamList = new ArrayList<>();
+		List<TeamMember> members = teamMemberRepository.findByUser(user);
+		for(TeamMember member : members) {
+			teamList.add(member.getTeam());
+		}
+		return teamList.stream().map(team -> ResponseTeamListDTO.from(team)).toList();
+	}
+
+	public void upLikeCount(Long targetId) {
+		Team team = getTeamById(targetId);
+		if(team == null) {
+			return;
+		}
+		team.setLikeCount(team.getLikeCount()+1);
+		teamRepository.save(team);
+	}
+	public void downLikeCount(Long targetId) {
+		Team team = getTeamById(targetId);
+		if(team == null) {
+			return;
+		}
+		team.setLikeCount(team.getLikeCount()-1);
+		teamRepository.save(team);
+	}
+
+	public void upLikeCountForProject(Long targetId) {
+		Project project = getProjectById(targetId);
+		if(project==null) {
+			return;
+		}
+		project.setLikeCount(project.getLikeCount()+1);
+		projectRepository.save(project);
+		
+	}
 }

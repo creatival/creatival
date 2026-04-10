@@ -180,6 +180,7 @@
                 <div class="text-muted small mb-2">
                     <span th:text="${#temporals.format(art.createdAt,'yyyy.MM.dd')}"></span>
                     · 조회수 <span th:text="${art.viewCount}"></span>
+					· 좋아요 <span th:text="${like.count}" id="likeCount">0</span>
                 </div>
 
                 <div>
@@ -196,9 +197,8 @@
 			        <span>수정하기</span>
 			    </button>
 
-			    <button class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></button>
-			    <button class="btn-action btn-star"><i class="bi bi-star-fill"></i><span>즐겨찾기</span></button>
-			    <button class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></button>
+			    <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
+			    <button th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|" id="bookmarkBtn"  class="btn-action btn-bookmark"><i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span></button>
 			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
 			</div>
         </div>

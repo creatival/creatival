@@ -8,7 +8,7 @@
         </div>
         
         <div class="d-flex gap-3 align-items-center">
-            <a th:href="@{/content/video/create}" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
+            <a onclick="return requireLoginAction(() => location.href='/content/video/create')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
                 <i class="bi bi-plus-lg me-2"></i>
                 <span class="fw-bold">동영상 등록</span>
             </a>

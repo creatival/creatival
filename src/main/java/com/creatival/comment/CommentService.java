@@ -21,6 +21,7 @@ import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.comment.repository.CommentRepository;
 import com.creatival.content.Content;
 import com.creatival.content.ContentService;
+import com.creatival.content.Episode;
 import com.creatival.team.Team;
 import com.creatival.team.TeamService;
 import com.creatival.team.repository.TeamRepository;
@@ -160,6 +161,8 @@ public class CommentService {
 			replyComment.setContent(comment.getContent());
 		} else if(comment.getBoard()!=null) {
 			replyComment.setBoard(comment.getBoard());
+		} else if(comment.getEpisode()!=null) {
+			replyComment.setEpisode(comment.getEpisode());
 		}
 		
 		commentRepository.save(replyComment);
@@ -218,6 +221,7 @@ public class CommentService {
 			rootComments.add(dto);
 		}
 		rootComments.removeIf(Objects::isNull);
+		
 		return rootComments;
 	}
 
@@ -229,6 +233,74 @@ public class CommentService {
 		Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
 		Page<Comment> pages = commentRepository.findByTeam(team, pageable);
 	    return pages.map(comment -> ResponseCommentDTO.from(comment));
+	}
+
+	public List<ResponseCommentDTO> getCommentListByEpisode(Long episodeId) {
+	Episode episode = contentService.getEpisodeById(episodeId);
+		
+		if(episode == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		List<ResponseCommentDTO> rootComments = new ArrayList<>();
+		Map<Long, ResponseCommentDTO> map = new HashMap<>();
+		List<Comment> list = commentRepository.findByEpisode(episode);
+		if (list == null || list.isEmpty()) return new ArrayList<>();
+		
+		for(Comment comment : list) {
+			if (comment == null) continue;
+			ResponseCommentDTO dto = ResponseCommentDTO.from(comment);
+			map.put(dto.getId(), dto);
+		}
+		
+		// 간단하게 부모 comment가 존재한다면 가져와서 거기에 자식으로 연결시키는 방식임, map은 index로 활용하기 위함임
+		for(Comment comment : list) {
+			ResponseCommentDTO dto = map.get(comment.getId());
+			if (dto == null) continue;
+			if(comment.getParentComment() != null) {
+				ResponseCommentDTO parentDTO = map.get(comment.getParentComment().getId());
+				if(parentDTO != null) {
+					parentDTO.getChildren().add(dto);
+				}
+			} else {
+				rootComments.add(dto);
+			}
+		}
+		rootComments.removeIf(Objects::isNull);
+		for (Comment comment : list) {
+		    System.out.println(
+		        "commentId=" + comment.getId() +
+		        ", parent=" + (
+		            comment.getParentComment() == null
+		                ? null
+		                : comment.getParentComment().getId()
+		        )
+		    );
+		}
+		return rootComments;
+	}
+
+	public int getCountByEpisode(Long episodeId) {
+		Episode episode = contentService.getEpisodeById(episodeId);
+		if(episode == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		
+		return commentRepository.countByEpisode(episode);
+	}
+
+	public void createCommentForEpisode(Long id, String text, Users user) {
+		Episode episode = contentService.getEpisodeById(id);
+		if(episode == null) {
+			throw new IllegalArgumentException("댓글을 입력하려는 content를 찾을 수 없습니다.");
+		}
+		Comment comment = Comment.builder()
+			.text(text)
+			.user(user)
+			.episode(episode)
+			.build();
+		
+		commentRepository.save(comment);
+		
 	}
 		
 

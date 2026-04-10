@@ -13,7 +13,7 @@
             </div>
             
             <h4 class="fw-bold mb-1" th:text="${music.title}">곡 제목</h4>
-            <p class="text-muted mb-4" th:text="${music.displayname}">아티스트명</p>
+            <a class="text-muted mb-4" th:href="@{/user/myPage/{id}(id=${music.userId})}" th:text="${music.displayname}">아티스트명</a>
 
             <audio controls class="w-100 shadow-sm rounded-pill mb-3" style="height: 50px;">
                 <source th:src="${music.music.fileUrl}" type="audio/mpeg">
@@ -21,18 +21,18 @@
             </audio>
 
             <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
-                <button class="btn btn-outline-danger rounded-pill px-3">
-                    <i class="bi bi-heart me-1"></i> <span th:text="${music.viewCount}">0</span>
+                <button id="likeBtn" class="btn btn-outline-danger rounded-pill px-3" th:onclick="|toggleLikeHeart(${music.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
+                    <i class="bi me-1" id="likeIcon" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i> <span th:text="${like.count}" id="likeCount">0</span>
                 </button>
 
-                <button class="btn btn-primary rounded-pill px-3">팔로우</button>
+                <button id="followBtn" class="btn btn-primary rounded-pill px-3" th:onclick="|toggleFollow(${music.userId},'USER')|">팔로우</button>
 
                 <button class="btn btn-outline-secondary rounded-pill px-2">
                     <i class="bi bi-share"></i>
                 </button>
-                <button class="btn btn-outline-secondary rounded-pill px-2">
-                    <i class="bi bi-bookmark-fill"></i>
-                </button>
+				<button th:onclick="|toggleBookmark(${music.id}, 'CONTENT')|" id="bookmarkBtn" class="btn btn-outline-secondary rounded-pill px-2">
+					<i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? 'bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+				</button>
 
                 <div class="w-100 mt-2 d-flex justify-content-center gap-2" 
                      th:if="${music.username == #authentication.name}">

@@ -14,21 +14,22 @@
             <h4 class="fw-bold mb-3" th:text="${video.title}">비디오 제목</h4>
 
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-bottom pb-3 mb-4 gap-3">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center" th:onclick="|location.href='@{/user/myPage/{id}(id=${video.userId})}'|" style="cursor: pointer;">
                     <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/48x48/ced4da/6c757d'}" 
                          class="rounded-circle me-3" alt="채널 로고" style="width: 48px; height: 48px; object-fit: cover;">
                     <div>
                         <h6 class="fw-bold mb-0" th:text="${video.displayname}">디스플레이네임</h6>
                         <span class="text-muted small" th:text="'@' + ${video.username}">@username</span>
                     </div>
-                    <button th:onclick="|toggleFollow(${video.userId}, 'USER')|" 
-                            id="followBtn" 
-                            type="button" 
-                            class="btn btn-dark btn-sm rounded-pill ms-4 px-3 fw-bold">
-                        <i id="followIcon" class="bi me-1" th:classappend="${follow.followed ? ' bi-person-check' : ' bi-person-add'}"></i>
-                        <span th:text="${follow.followed ? '팔로잉' : '팔로우'}">팔로우</span>
-                    </button>
+                    
                 </div>
+				<button th:onclick="|toggleFollow(${video.userId}, 'USER')|" 
+                        id="followBtn" 
+                        type="button" 
+                        class="btn btn-dark btn-sm rounded-pill px-3 fw-bold">
+                    <i id="followIcon" class="bi me-1" th:classappend="${follow.followed ? ' bi-person-check' : ' bi-person-add'}"></i>
+                    <span th:text="${follow.followed ? '팔로잉' : '팔로우'}">팔로우</span>
+                </button>
 
                 <div class="d-flex gap-2">
                     <div class="btn-group shadow-sm" role="group">
@@ -65,7 +66,7 @@
 
             <div class="bg-light p-3 rounded-3 mb-5 shadow-sm">
                 <p class="fw-bold small mb-2">
-                    조회수 <span th:text="${#numbers.formatInteger(video.viewCount ?: 0, 0, 'COMMA')}">0</span>회 • 
+                    조회수 <span th:text="${video.viewCount != null ? #numbers.formatInteger(video.viewCount, 0, 'COMMA') : '0'}">0</span>회 • 
                     <span th:text="${#temporals.format(video.createdAt, 'yyyy년 MM월 dd일')}">2026년 01월 01일</span>
                 </p>
                 <p class="mb-3 text-break text-muted" style="white-space: pre-wrap;" th:text="${video.description}">

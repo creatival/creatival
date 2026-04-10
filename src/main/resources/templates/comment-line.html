@@ -17,10 +17,13 @@
                     
                     <th:block th:if="${comment.username == #authentication.name}">
                         <button type="button" class="btn-action" onclick="toggleEditForm(this)">수정</button>
-						<button type="button" 
-						        class="btn-action btn-delete" 
+						<button type="button"
+						        class="btn-action btn-delete"
 						        th:data-id="${comment.id}"
-						        onclick="confirmDelete(this)">삭제</button>
+						        th:data-category="${category}"
+						        onclick="confirmDelete(this)">
+						    삭제
+						</button>
                     </th:block>
                 </div>
             </div>
@@ -129,20 +132,19 @@
 			 * 댓글 삭제 확인 및 요청
 			 * Thymeleaf Exception 방지를 위해 data-attribute를 사용합니다.
 			 */
-			function confirmDelete(button) {
-			    const id = button.dataset.id;
-			    const category = button.dataset.category;
+			 function confirmDelete(button) {
+			     const id = button.dataset.id;
+			     const category = button.dataset.category;
 
-			    if (!id) {
-			        console.error("삭제에 필요한 데이터(ID)가 없습니다.");
-			        return;
-			    }
+			     if (!id || !category) {
+			         console.error("삭제에 필요한 데이터가 없습니다.");
+			         return;
+			     }
 
-			    if (confirm("정말 삭제하시겠습니까?")) {
-			        // 백엔드 컨트롤러의 매핑 주소와 일치해야 합니다.
-			        location.href = `/comment/content/delete/${id}`;
-			    }
-			}
+			     if (confirm("정말 삭제하시겠습니까?")) {
+			         location.href = `/comment/${category}/delete/${id}`;
+			     }
+			 }
 		</script>
 </th:block>
 

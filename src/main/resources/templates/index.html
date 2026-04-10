@@ -75,17 +75,17 @@
             <div class="carousel-inner rounded shadow-sm">
                 <div class="carousel-item active">
                     <div class="d-flex align-items-center justify-content-center bg-secondary-subtle" style="height: 400px;">
-                        <img src="/images/placeholder.png" alt="슬라이드 1">
+                        <img th:src="@{/images/banner.png}" alt="슬라이드 1">
                     </div>
                 </div>
                 <div class="carousel-item">
                     <div class="d-flex align-items-center justify-content-center bg-secondary-subtle" style="height: 400px;">
-                        <img src="/images/placeholder.png" alt="슬라이드 2">
+                        <img th:src="@{/images/banner2.png}" alt="슬라이드 1">
                     </div>
                 </div>
 				<div class="carousel-item">
 				     <div class="d-flex align-items-center justify-content-center bg-secondary-subtle" style="height: 400px;">
-				         <img src="/images/placeholder.png" alt="슬라이드 3">
+				         <img th:src="@{/images/banner3.png}" alt="슬라이드 1">
 				     </div>
 				</div>
             </div>
@@ -173,7 +173,7 @@
             <p class="text-muted mb-5">팀 프로젝트 가입하기</p>
             <div class="row g-4">
                 <div class="col-md-4" th:each="project : ${topProjects}">
-                    <div class="card h-100 border-0 shadow-sm text-start hover-card">
+                    <div class="card h-100 border-0 shadow-sm text-start hover-card" th:onclick="|location.href='@{/team/{tid}/project/{pid}(tid=${project.teamId},pid=${project.id})}'|">
 						<img th:if="${project.bannerImgUrl!=null}" th:src="${project.bannerImgUrl}" alt="" />
                         <div class="bg-secondary-subtle d-flex align-items-center justify-content-center" style="height: 200px;" th:if=${project.bannerImgUrl==null}>
                             <i class="bi bi-image text-white fs-1"></i>
@@ -195,7 +195,7 @@
             <a th:href="@{/content/art/list}" class="text-muted d-block mb-5">일러스트 페이지로 이동</a>
             <div class="row row-cols-2 row-cols-md-4 g-4">
                 <div class="col" th:each="art : ${topArt}">
-                    <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="card border-0 shadow-sm h-100 hover-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
                         <img th:src="${art.thumbnailUrl}" alt="" />
                         <div class="card-body p-3 text-start">
                             <h6 class="fw-bold mb-2" th:text="${art.title}">일러스트 명</h6>
@@ -224,7 +224,7 @@
                             <div class="carousel-item active">
                                 <div class="row row-cols-3 g-4 justify-content-center">
                                     <div class="col" th:each="novel : ${topNovel}">
-                                        <div class="card novel-card border-0">
+                                        <div class="card novel-card border-0" th:onclick="|location.href='@{/content/novel/detail/{id}(id=${novel.id})}'|">
                                             <a th:href="@{|/content/novel_detail/${novel.id}|}" class="text-decoration-none text-dark">
                                                 <div class="novel-card-img-wrapper">
                                                     <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" 
@@ -266,14 +266,14 @@
 	                            <div class="carousel-item active">
 	                                <div class="row row-cols-3 g-4 justify-content-center">
 	                                    <div class="col" th:each="novel : ${topNovel}">
-	                                        <div class="card novel-card border-0">
+	                                        <div class="card novel-card border-0" th:onclick="|location.href='@{/content/novel/detail/{id}(id=${novel.id})}'|">
 	                                            <a th:href="@{|/content/novel_detail/${novel.id}|}" class="text-decoration-none text-dark">
 	                                                <div class="novel-card-img-wrapper">
 	                                                    <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" 
 	                                                         class="w-100 h-100" style="object-fit: cover;" alt="소설표지">
 	                                                </div>
 	                                                <div class="novel-card-info text-center">
-	                                                    <h6 class="fw-bold mb-1 text-truncate" th:text="${novel.title}">소설명</h6>
+	                                                    <h6 class="fw-bold mb-1 text-truncate" th:text="${novel.title}">소설</h6>
 	                                                    <p class="text-muted small mb-0 text-truncate" th:text="${novel.displayname}">작가이름</p>
 	                                                </div>
 	                                            </a>
@@ -303,14 +303,14 @@
 		    <div class="bg-light py-5">
 		        <div class="container text-center">
 		            <div class="row row-cols-2 row-cols-md-4 g-4">
-		                <div class="col" th:each="art : ${topArt}">
-		                    <div class="card border-0 shadow-sm h-100 hover-card bg-white">
-		                        <img th:src="${art.thumbnailUrl}" class="card-img-top" alt="" />
+		                <div class="col" th:each="video : ${topVideo}">
+		                    <div class="card border-0 shadow-sm h-100 hover-card bg-white" th:onclick="|location.href='@{/content/video/detail/{id}(id=${video.id})}'|">
+		                        <img th:src="${video.thumbnailUrl}" class="card-img-top" alt="" />
 		                        <div class="card-body p-3 text-start">
-		                            <h6 class="fw-bold mb-2" th:text="${art.title}">음악 명</h6>
+		                            <h6 class="fw-bold mb-2" th:text="${video.title}">영상 이름</h6>
 		                            <div class="d-flex align-items-center">
 		                                <div class="bg-secondary rounded-circle me-2" style="width: 24px; height: 24px;"></div>
-		                                <span class="small text-muted" th:text="|${art.username}(${art.displayname})|">작가이름</span>
+		                                <span class="small text-muted" th:text="|${video.username}(${video.displayname})|">작가이름</span>
 		                            </div>
 		                        </div>
 		                    </div>
@@ -329,14 +329,14 @@
 		    <div class="bg-light py-5">
 		        <div class="container text-center">
 		            <div class="row row-cols-2 row-cols-md-4 g-4">
-		                <div class="col" th:each="art : ${topArt}">
-		                    <div class="card border-0 shadow-sm h-100 hover-card bg-white">
-		                        <img th:src="${art.thumbnailUrl}" class="card-img-top" alt="" />
+		                <div class="col" th:each="music : ${topMusic}">
+		                    <div class="card border-0 shadow-sm h-100 hover-card bg-white" th:onclick="|location.href='@{/content/music/detail/{id}(id=${music.id})}'|">
+		                        <img th:src="${music.thumbnailUrl}" class="card-img-top" alt="" />
 		                        <div class="card-body p-3 text-start">
-		                            <h6 class="fw-bold mb-2" th:text="${art.title}">음악 명</h6>
+		                            <h6 class="fw-bold mb-2" th:text="${music.title}">음악 명</h6>
 		                            <div class="d-flex align-items-center">
 		                                <div class="bg-secondary rounded-circle me-2" style="width: 24px; height: 24px;"></div>
-		                                <span class="small text-muted" th:text="|${art.username}(${art.displayname})|">작가이름</span>
+		                                <span class="small text-muted" th:text="|${music.username}(${music.displayname})|">작가이름</span>
 		                            </div>
 		                        </div>
 		                    </div>
@@ -373,7 +373,7 @@
                     © 2026 creatival All rights reserved.
                 </div>
                 <div class="col-md-4 text-end">
-                    <img th:src="@{/images/creatival-Photoroom.png}" alt="logo" width="140">
+                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
                 </div>
             </div>
         </div>

@@ -94,29 +94,16 @@
 
         <div class="col-md-5 mt-4 mt-md-0">
             <div class="action-buttons-group mb-3">
-                <a href="#" class="btn-action btn-like">
-                    <i class="bi bi-heart-fill"></i>
-                    <span>1.2k</span>
-                </a>
-                <a href="#" class="btn-action btn-follow">
-                    <i class="bi bi-person-plus-fill"></i>
-                    <span>팔로우</span>
-                </a>
-                <a href="#" class="btn-action btn-bookmark">
-                    <i class="bi bi-bookmark-fill"></i>
-                    <span>북마크</span>
-                </a>
-                <a href="#" class="btn-action btn-share">
-                    <i class="bi bi-share-fill"></i>
-                    <span>공유</span>
-                </a>
+				<button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${team.id},'TEAM')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
+			    <button th:onclick="|toggleBookmark(${team.id}, 'TEAM')|" id="bookmarkBtn"  class="btn-action btn-bookmark"><i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span></button>
+			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>	
             </div>
 
             <div class="text-md-end">
                 <th:block th:if="${team.leaderUsername == #authentication.name}">
                     <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary btn-sm me-1"><i class="bi bi-pencil-square me-1"></i> 수정하기</a>
                 </th:block>
-                <a th:href="@{/team/{id}/application(id=${team.id})}" class="btn btn-primary px-4 fw-bold shadow-sm">팀 참여 신청</a>
+                <a onclick="return requireLoginAction(() => location.href='/team/{id}/application(id=${team.id})')"  class="btn btn-primary px-4 fw-bold shadow-sm">팀 참여 신청</a>
             </div>
         </div>
     </div>
@@ -157,7 +144,7 @@
                                 <span class="text-muted small" th:text="${#temporals.format(project.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
                             </div>
                             <div class="text-end text-muted small d-none d-md-block">
-                                <span><i class="bi bi-heart"></i> 1.2k</span>
+                                <span class="d-flex"><i class="bi bi-heart-fill text-danger me-1"></i> <div th:text="| ${project.likeCount}|"></div></span>
                             </div>
                         </div>
                     </a>
@@ -183,6 +170,13 @@
                         <div>
                             <p class="mb-0 fw-bold small" th:text="${team.leaderUsername}">리더명</p>
                             <small class="text-muted">팀 리더</small>
+                        </div>
+                    </div>
+					<div class="d-flex align-items-center">
+                       
+                        <div>
+                            <p class="mb-0 mt-3 fw-bold small" >좋아요 현황</p>
+                            <i id="likeIcon" class="bi text-danger" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i> <small class="text-danger"th:text="|  ${like.count}|" id="likeCount">좋아요 개수</small><small class="text-danger">개</small>
                         </div>
                     </div>
                 </div>
@@ -309,19 +303,6 @@
         </div>
     </div>
 
-    <script th:inline="javascript">
-        $(function() {
-            const msg = /*[[${message}]]*/ null;
-            const status = /*[[${status}]]*/ 'success';
-            if (msg) {
-                Swal.fire({
-                    icon: status,
-                    title: status === 'error' ? '알림' : '완료',
-                    text: msg,
-                    confirmButtonColor: status === 'error' ? '#d33' : '#3085d6'
-                });
-            }
-        });
-    </script>
+ 
 </div>
 </html>

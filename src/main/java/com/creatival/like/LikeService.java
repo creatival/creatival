@@ -64,6 +64,7 @@ public class LikeService {
 		Optional<Likes> optional = likeRepository.findByUserAndTargetTypeAndTargetId(user, type, targetId);
 		if(optional.isPresent()) {
 			likeRepository.delete(optional.get());
+			downLike(targetId, type);
 			return false;
 		} else {
 			Likes like = Likes.builder()
@@ -72,8 +73,91 @@ public class LikeService {
 					.targetType(type)
 					.build();
 			likeRepository.save(like);
+			upLike(targetId, type);
 			return true;
 		}
+	}
+
+	private void upLike(Long targetId, TargetType type) {
+		switch (type) {
+			case CONTENT : {
+				if(contentService.getContent(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				contentService.upLikeCount(targetId);
+				break;
+			}
+			case BOARD : {
+				if(boardService.getBoardById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				break;
+			}
+			case TEAM : {
+				if(teamService.getTeamById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				teamService.upLikeCount(targetId);
+				break;
+			}
+			case PROJECT : {
+				if(teamService.getProjectById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				teamService.upLikeCountForProject(targetId);
+				break;
+			}
+			case EPISODE : {
+				if(contentService.getEpisodeById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				break;
+			}
+			default : {
+				throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+			}
+		}
+	}
+
+	private void downLike(Long targetId, TargetType type) {
+		switch (type) {
+			case CONTENT : {
+				if(contentService.getContent(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				contentService.downLikeCount(targetId);
+				break;
+			}
+			case BOARD : {
+				if(boardService.getBoardById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				break;
+			}
+			case TEAM : {
+				if(teamService.getTeamById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				teamService.downLikeCount(targetId);
+				break;
+			}
+			case PROJECT : {
+				if(teamService.getProjectById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				break;
+			}
+			case EPISODE : {
+				if(contentService.getEpisodeById(targetId)==null) {
+					throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+				}
+				break;
+			}
+			default : {
+				throw new IllegalArgumentException("정보가 잘 못 되었습니다.");
+			}
+		}
+		
 	}
 
 	public Long count(TargetType type, Long targetId) {

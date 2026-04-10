@@ -165,7 +165,7 @@
                 </div>
             </div>
             
-            <a th:href="@{/content/file/write}" class="btn-write mt-4">
+            <a onclick="return requireLoginAction(() => location.href='/content/file/write')" class="btn-write mt-4">
                파일작성
             </a>
         </div>

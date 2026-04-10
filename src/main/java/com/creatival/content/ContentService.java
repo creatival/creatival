@@ -45,6 +45,7 @@ import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.DTO.UpdateVideoDTO;
 import com.creatival.content.Enum.ContentType;
+import com.creatival.content.Enum.Visibility;
 import com.creatival.content.repository.ContentFileRepository;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
@@ -126,11 +127,7 @@ public class ContentService {
 	// 소설 라인 // 
 	@Transactional
 	public void createCotentNovel(CreateNovelDTO createNovelDTO, Users user) throws IOException {
-		String imgurl = "/upload/images/thumbnail/";
 		
-		if(createNovelDTO.getThumbnailFile() != null) {
-			imgurl += fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
-		}
 		Content content = Content.builder()
 				.title(createNovelDTO.getTitle())
 				.description(createNovelDTO.getDescription())
@@ -140,8 +137,13 @@ public class ContentService {
 				.type(ContentType.NOVEL)
 				.isAllowComment(createNovelDTO.isAllowComment())
 				.isFanWork(createNovelDTO.isFanWork())
-				.ThumbnailImgUrl(imgurl)
 				.build();
+		String imgurl = "/upload/images/thumbnail/";
+		
+		if(createNovelDTO.getThumbnailFile() != null && !createNovelDTO.getThumbnailFile().isEmpty()) {
+			imgurl += fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
+			content.setThumbnailImgUrl(imgurl);
+		}
 		if(content.isFanWork() && createNovelDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createNovelDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
 		}
@@ -459,14 +461,17 @@ public class ContentService {
 		content.setDescription(dto.getDescription());
 		content.setVisibility(dto.getVisibility());
 		content.setAllowComment(dto.isAllowComment());
-		contentRepository.save(content);
-		
 		
 		if(dto.getThumbnailFile() != null && !dto.getThumbnailFile().isEmpty()) {
 			String imgurl = "/upload/images/thumbnail/";
 			imgurl += fileUtil.saveImage(dto.getThumbnailFile(), "thumbnail");
 			content.setThumbnailImgUrl(imgurl);
 		}
+		
+		contentRepository.save(content);
+		
+		
+		
 		
 		
 		if(dto.getVideoFile()!=null && !dto.getVideoFile().isEmpty()) {
@@ -553,14 +558,15 @@ public class ContentService {
 		content.setDescription(dto.getDescription());
 		content.setVisibility(dto.getVisibility());
 		content.setAllowComment(dto.isAllowComment());
-		contentRepository.save(content);
-		
-		
 		if(dto.getThumbnailFile() != null && !dto.getThumbnailFile().isEmpty()) {
 			String imgurl = "/upload/images/thumbnail/";
 			imgurl += fileUtil.saveImage(dto.getThumbnailFile(), "thumbnail");
 			content.setThumbnailImgUrl(imgurl);
 		}
+		contentRepository.save(content);
+		
+		
+		
 		
 		
 		if(dto.getMusicFile()!=null && !dto.getMusicFile().isEmpty()) {
@@ -693,5 +699,79 @@ public class ContentService {
 		Page<Content> contents = contentRepository.findByType(ContentType.NOVEL,pageable);
 		
 		return contents.map(content -> ResponseNovelList.from(content, content.getSeries())).toList();
+	}
+	public List<ResponseVideoListDTO> getTopVideo(int qty) {
+		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.VIDEO,pageable);
+		
+		return contents.map(content -> ResponseVideoListDTO.from(content)).toList();
+	}
+	public List<ResponseVideoListDTO> getTopMusic(int qty) {
+		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.MUSIC,pageable);
+		
+		return contents.map(content -> ResponseVideoListDTO.from(content)).toList();
+	}
+	
+	public List<ResponseArtList> getArtByUser(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeOrderByCreatedAtDesc(user, ContentType.ART);
+		return contents.stream().map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content))).toList();
+	}
+	
+	public List<ResponseNovelList> getNovelByUser(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeOrderByCreatedAtDesc(user, ContentType.NOVEL);
+		return contents.stream().map(content -> ResponseNovelList.from(content, content.getSeries())).toList();
+	}
+	
+	public List<ResponseMusicListDTO> getMusicByUser(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeOrderByCreatedAtDesc(user, ContentType.MUSIC);
+		return contents.stream().map(content -> ResponseMusicListDTO.from(content)).toList();
+	}
+	public List<ResponseVideoListDTO> getVideoByUser(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeOrderByCreatedAtDesc(user, ContentType.MUSIC);
+		return contents.stream().map(content -> ResponseVideoListDTO.from(content)).toList();
+	}
+	
+	
+	// only public
+	
+	public List<ResponseArtList> getArtByUserOnlyPublic(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(user, ContentType.ART,Visibility.PUBLIC);
+		return contents.stream().map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content))).toList();
+	}
+	
+	
+	public List<ResponseNovelList> getNovelByUserOnlyPublic(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(user, ContentType.NOVEL,Visibility.PUBLIC);
+		return contents.stream().map(content -> ResponseNovelList.from(content, content.getSeries())).toList();
+	}
+	
+	public List<ResponseMusicListDTO> getMusicByUserOnlyPublic(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(user, ContentType.MUSIC,Visibility.PUBLIC);
+		return contents.stream().map(content -> ResponseMusicListDTO.from(content)).toList();
+	}
+	public List<ResponseVideoListDTO> getVideoByUserOnlyPublic(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(user, ContentType.VIDEO,Visibility.PUBLIC);
+		return contents.stream().map(content -> ResponseVideoListDTO.from(content)).toList();
+	}
+	public void upViewCount(Content content) {
+		content.setViewCount(content.getViewCount()+1);
+		contentRepository.save(content);
+	}
+	public void downLikeCount(Long targetId) {
+		Content content = getContent(targetId);
+		if(content ==null) {
+			return;
+		}
+		content.setLikeCount(content.getLikeCount()-1);
+		contentRepository.save(content);
+	}
+	public void upLikeCount(Long targetId) {
+		Content content = getContent(targetId);
+		if(content==null) {
+			return;
+		}
+		content.setLikeCount(content.getLikeCount()+1);
+		contentRepository.save(content);
 	}
 }

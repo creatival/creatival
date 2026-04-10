@@ -90,6 +90,7 @@ public class Content {
 	private Long viewCount=0L;
 	
 	@Builder.Default
+	@Column(nullable = false)
 	private Long likeCount=0L;
 	
 	@CreationTimestamp
