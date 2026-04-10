@@ -1,8 +1,8 @@
-<html layout:decorate="~{layout}">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div class="container" layout:fragment="content">
     <style>
         /* =========================================
-           [1. 프로필 섹션 (공통)]
+           [1. 프로필 섹션]
            ========================================= */
         .profile-section { text-align: center; padding: 50px 0 0 0; background-color: #fff; }
         .profile-img-container { 
@@ -22,309 +22,188 @@
         }
 
         .profile-nickname { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; color: #222; }
+        .profile-intro { color: #777; font-size: 0.95rem; margin: 20px auto; max-width: 500px; }
         
-        .custom-tag-badge {
-            background-color: #A3C9F1 !important; color: #333 !important;
-            border: none; padding: 6px 12px; font-weight: 600; font-size: 0.85rem;
-            cursor: default;
+        /* 버튼 그룹 */
+        .profile-btn-group { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        
+        .btn-edit-profile, .btn-deactivate { 
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 160px; height: 42px; border-radius: 10px; font-size: 0.9rem; 
+            font-weight: 600; cursor: pointer; transition: 0.2s; 
         }
+        .btn-edit-profile { background-color: #e9e9e9; border: none; color: #444; }
+        .btn-edit-profile:hover { background-color: #ddd; }
+        .btn-deactivate { background-color: #fff; border: 1px solid #ff5a2d; color: #ff5a2d; }
+        .btn-deactivate:hover { background-color: rgba(255, 90, 45, 0.05); }
+
+        /* 팔로우 버튼 */
+        .btn-follow {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 340px; height: 46px; background-color: #3B4371; color: #fff;
+            border: none; border-radius: 30px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: 0.2s; margin-bottom: 40px;
+        }
+        .btn-follow:hover { background-color: #2a3152; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-follow.following { background-color: #f8f9fa; color: #333; border: 1px solid #ddd; }
+
+        /* 태그 */
+        .custom-tag-badge { background-color: #A3C9F1 !important; color: #333 !important; padding: 6px 12px; font-weight: 600; font-size: 0.85rem; }
         .tag-delete-btn { color: #555; cursor: pointer; margin-left: 5px; transition: 0.2s; }
         .tag-delete-btn:hover { color: #ff5a5a; }
 
-        .profile-intro { color: #777; font-size: 0.95rem; margin: 20px auto; max-width: 500px; }
-        
-        .btn-edit-profile { 
-            display: inline-block; background-color: #E9E9E9; border: none; padding: 8px 25px; 
-            border-radius: 10px; font-size: 0.9rem; font-weight: 600; color: #444; 
-            cursor: pointer; transition: 0.2s; margin-bottom: 30px;
-        }
-        .btn-edit-profile:hover { background-color: #ddd; }
-        
-        .btn-deactivate { 
-            display: inline-block; background-color: #fff; border: 1px solid #ffeded; padding: 8px 25px; 
-            border-radius: 10px; font-size: 0.9rem; font-weight: 600; color: #ff5a5a; 
-            cursor: pointer; transition: 0.2s; margin-bottom: 30px;
-        }
-        .btn-deactivate:hover { background-color: #fff0f0; }
-
-		.btn-follow {
-			display: inline-block; background-color: #3B4371; border: none; padding: 8px 25px; 
-			            border-radius: 10px; font-size: 0.9rem; font-weight: 600; color: #F0F2F5; 
-			            cursor: pointer; transition: 0.2s; margin-bottom: 30px;
-		}
-		.btn-follow:hover {
-			background-color: #4a90e2;
-		}
         /* =========================================
-           [2. 탭 메뉴]
+           [2. 탭 메뉴 & 인디케이터]
            ========================================= */
-        .tab-menu-wrapper { 
-            display: flex; justify-content: center; gap: 50px; 
-            border-bottom: 1px solid #ddd; height: 50px; align-items: center; 
-        }
-        .tab-menu-item { 
-            cursor: pointer; color: #777; font-size: 1.15rem; font-weight: 600; 
-            height: 100%; display: flex; align-items: center; padding: 0 10px; 
-            position: relative; box-sizing: border-box; transition: 0.2s;
-        }
-        .tab-menu-item:hover { color: #000; }
+        .tab-menu-wrapper { display: flex; justify-content: center; gap: 40px; border-bottom: 1px solid #ddd; height: 50px; align-items: center; position: relative; }
+        .tab-menu-item { cursor: pointer; color: #777; font-size: 1.05rem; font-weight: 600; height: 100%; display: flex; align-items: center; padding: 0 5px; transition: color 0.2s; }
         .tab-menu-item.active { font-weight: 800; color: #000; }
-        .tab-menu-item.active::after { 
-            content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; 
-            height: 4px; background-color: #ff5a2d; border-radius: 2px 2px 0 0; 
-        }
+        .tab-indicator { position: absolute; bottom: -1px; height: 4px; background-color: #ff5a2d; border-radius: 2px 2px 0 0; transition: all 0.3s ease; }
 
-        /* [JS 탭 전환용 핵심 스타일] */
-        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .tab-content.active { display: block; opacity: 1; }
+        .tab-content { display: none; padding-top: 40px; }
+        .tab-content.active { display: block; }
 
-        /* =========================================
-           [3-1. 홈 탭 스타일]
-           ========================================= */
-        .info-content-area { padding: 60px 0 100px 0; background-color: #fff; }
-        .info-card { max-width: 800px; margin: 0 auto; border: 1px solid #eee; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .info-card-header { background-color: #3B4371; color: #fff; padding: 15px 25px; font-weight: 700; font-size: 1.1rem; text-align: left; }
-        .table-info-custom { width: 100%; border-collapse: collapse; margin-bottom: 0; }
-        .table-info-custom th { background-color: #F9F9F9; width: 30%; padding: 18px 25px; font-weight: 700; color: #555; border-bottom: 1px solid #eee; text-align: left; }
-        .table-info-custom td { padding: 18px 25px; color: #333; border-bottom: 1px solid #eee; text-align: left; }
-        .btn-home-back { display: inline-block; background-color: #E9E9E9; padding: 12px 35px; border-radius: 10px; color: #444; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-home-back:hover { background-color: #ddd; }
+        /* 애니메이션 */
+        .slide-in-right { animation: slideInRight 0.4s ease forwards; }
+        .slide-in-left { animation: slideInLeft 0.4s ease forwards; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* =========================================
-           [3-2. 내 게시물 탭 & 공통 헤더 스타일]
-           ========================================= */
-        .section-header { max-width: 1100px; margin: 60px auto 20px; padding: 0 15px; text-align: center; }
-        .section-title { font-size: 1.6rem; font-weight: 800; color: #000; }
-        .content-box-gray { padding: 50px 0; background: #F4F4F4; border-radius: 12px; margin-bottom: 30px; border: 1px solid #eee; }
-        .grid-container { max-width: 1050px; margin: 0 auto; padding: 0 15px; }
-        .content-card { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #eee; cursor: pointer; transition: transform 0.2s; }
+        /* 공통 섹션 스타일 */
+        .content-box-gray { padding: 50px 0; background: #F4F4F4; border-radius: 12px; margin-bottom: 30px; }
+        .section-header { text-align: center; margin-bottom: 25px; }
+        .section-title { font-size: 1.4rem; font-weight: 800; }
+        .content-card { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #eee; cursor: pointer; transition: 0.2s; }
         .content-card:hover { transform: translateY(-3px); }
-        .card-img-placeholder { background: #E9E9E9; display: flex; align-items: center; justify-content: center; color: #ccc; width: 100%; }
-        .card-label { padding: 12px 5px; font-size: 0.85rem; font-weight: 700; text-align: center; color: #333; }
-        .illu-img { aspect-ratio: 1 / 1; }
-        .novel-img { aspect-ratio: 3 / 4.2; }
-        .video-img { aspect-ratio: 16 / 9; }
-        .row-cols-custom-6 > * { flex: 0 0 auto; width: 16.666666%; }
-        .row-cols-custom-4 > * { flex: 0 0 auto; width: 25%; }
+        .card-img-placeholder { background: #E9E9E9; display: flex; align-items: center; justify-content: center; color: #ccc; width: 100%; aspect-ratio: 1/1; }
+        .card-label { padding: 10px; font-size: 0.85rem; font-weight: 700; text-align: center; }
 
-        /* =========================================
-           [3-3. 팀 탭 스타일]
-           ========================================= */
-        .team-box-gray { padding: 80px 0; background: #F4F4F4; border-radius: 12px; margin-bottom: 50px; border: 1px solid #eee; }
-        .team-grid { max-width: 900px; margin: 0 auto; padding: 0 15px; }
-        .team-link { display: block; cursor: pointer; transition: transform 0.2s ease; }
-        .team-link:hover { transform: translateY(-10px); }
-        .team-circle { width: 160px; height: 160px; background-color: #dbdbdb; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
-        /* =========================================
-           [3-4. 프로젝트 탭 스타일]
-           ========================================= */
-        .project-list-bg { padding: 60px 0 100px 0; background-color: #fff; }
-        .project-grid { max-width: 850px; margin: 0 auto; }
-        .pj-card { background-color: white; border: 1px solid #eee; border-radius: 25px; overflow: hidden; width: 100%; max-width: 350px; margin: 0 auto; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.2s ease; cursor: pointer; }
-        .pj-card:hover { transform: translateY(-5px); }
-        .pj-card-img { background-color: #E9E9E9; height: 170px; display: flex; align-items: center; justify-content: center; }
-        .pj-card-body { padding: 25px; text-align: center; }
-        .pj-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; }
-        .pj-desc { font-size: 0.85rem; color: #888; margin-bottom: 18px; }
-        .pj-tag-group { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; }
-        .pj-inner-tag { font-size: 0.75rem; color: #6A9CFD; font-weight: bold; }
-        .btn-pj-apply { background-color: #3B4371; color: white; border: none; border-radius: 8px; padding: 10px 0; font-size: 0.9rem; font-weight: 600; width: 100%; cursor: pointer; }
+        /* 정보 테이블 */
+        .info-card { max-width: 800px; margin: 0 auto; border: 1px solid #eee; border-radius: 15px; overflow: hidden; }
+        .info-card-header { background-color: #3B4371; color: #fff; padding: 15px 25px; font-weight: 700; }
+        .table-info-custom { width: 100%; }
+        .table-info-custom th { background-color: #F9F9F9; width: 30%; padding: 15px 25px; border-bottom: 1px solid #eee; text-align: left; }
+        .table-info-custom td { padding: 15px 25px; border-bottom: 1px solid #eee; }
     </style>
 
-    <main class="flex-grow-1" style="background: #fff; padding-bottom: 100px;">
-        
+    <main style="background: #fff; padding-bottom: 100px;">
         <section class="profile-section">
-            <div class="profile-img-container" data-bs-toggle="modal" data-bs-target="#imageUpdateModal" title="클릭하여 이미지 변경">
-                <img th:src="${user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/130x130/ced4da/6c757d'}" class="profile-img" alt="프로필 이미지">
+            <div class="profile-img-container" data-bs-toggle="modal" data-bs-target="#imageUpdateModal">
+                <img th:src="${user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/130x130/ced4da/6c757d'}" class="profile-img">
                 <div class="camera-icon"><i class="bi bi-camera-fill"></i></div>
             </div>
 
-            <h2 class="profile-nickname" th:text="|${user.displayName} (${user.username})|">닉네임(아이디)</h2>
+            <h2 class="profile-nickname" th:text="|${user.displayName} (${user.username})|">닉네임</h2>
             
-            <div class="d-flex justify-content-center align-items-center gap-2 mb-2">			   
+            <div class="d-flex justify-content-center align-items-center gap-2 mb-2">              
                 <div th:each="tag : ${tagList}" class="badge rounded-pill custom-tag-badge d-flex align-items-center">
                     <span th:text="'#' + ${tag.tagText}">#태그명</span>
-                    <span th:onclick="|if(confirm('삭제하시겠습니까?')) location.href='@{/tag/deleteUserTag(tagId=${tag.id})}'|" class="tag-delete-btn">
+                    <span th:if="${user.username == #authentication.name}" th:onclick="|if(confirm('삭제하시겠습니까?')) location.href='@{/tag/deleteUserTag(tagId=${tag.id})}'|" class="tag-delete-btn">
                         <i class="bi bi-x-circle-fill"></i>
                     </span>
                 </div>
-                <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">등록된 태그가 없습니다.</span>
-                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-0"  th:if="${user.username == #authentication.name}" 
-                        style="width: 24px; height: 24px; line-height: 1;" data-bs-toggle="modal" data-bs-target="#tagAddModal">
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-0" th:if="${user.username == #authentication.name}" 
+                        style="width: 24px; height: 24px;" data-bs-toggle="modal" data-bs-target="#tagAddModal">
                     <i class="bi bi-plus"></i>
                 </button>
             </div>
 
-            <p class="profile-intro" th:text="${user.description != null ? user.description : '나를 표현하는 한 줄 소개를 적어보세요.'}">소개글</p>
+            <p class="profile-intro" th:text="${user.description != null ? user.description : '나를 표현하는 한 줄 소개를 적어보세요.'}"></p>
 
-            <div class="d-flex justify-content-center gap-2">
-                <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile" th:if="${user.username == #authentication.name}">프로필 편집</div>
-                <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate" th:if="${user.username == #authentication.name}">프로필 비활성화</div>
-                <button id="followBtn" class="btn-follow" th:classappend="${follow.followed} ? ' following'" th:onclick="|toggleFollow(${user.id}, 'USER')|" th:if="${user.username != #authentication.name}" th:text="${follow.followed} ? '팔로우 중' : '팔로우'"></button>
+            <div class="profile-btn-group" th:if="${user.username == #authentication.name}">
+                <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile">프로필 편집</div>
+                <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate">프로필 비활성화</div>
             </div>
+            
+            <button th:if="${user.username != #authentication.name}" id="followBtn" class="btn-follow" 
+                    th:classappend="${follow != null && follow.followed} ? ' following'" 
+                    th:onclick="|toggleFollow(${user.id}, 'USER')|" 
+                    th:text="${follow != null && follow.followed} ? '팔로우 중' : '팔로우'">
+            </button>
 
             <div class="tab-menu-wrapper">
-                <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home')">홈</div>
-                <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts')">게시물</div>
-                <div id="tab-team" class="tab-menu-item" onclick="switchTab('team')">팀</div>
-                <div id="tab-project" class="tab-menu-item" onclick="switchTab('project')">프로젝트</div>
+                <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home', 0)">홈</div>
+                <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts', 1)">게시물</div>
+                <div id="tab-team" class="tab-menu-item" onclick="switchTab('team', 2)">팀</div>
+                <div id="tab-project" class="tab-menu-item" onclick="switchTab('project', 3)">프로젝트</div>
+                <div id="tab-interests" class="tab-menu-item" onclick="switchTab('interests', 4)">관심 콘텐츠</div>
+                <div class="tab-indicator" id="tabIndicator"></div>
             </div>
         </section>
         
-        <section id="content-home" class="tab-content active info-content-area">
+        <section id="content-home" class="tab-content active">
             <div class="container">
                 <div class="info-card">
                     <div class="info-card-header">정보 확인</div>
                     <table class="table-info-custom">
                         <tbody>
-                            <tr>
-                                <th>이메일</th>
-                                <td th:text="${user.email}">user@example.com</td>
-                            </tr>
-                            <tr th:if="${user.createdAt}">
-                                <th>가입일</th>
-                                <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-02-12</td>
-                            </tr>
-                            <tr th:if="${user.role}">
-                                <th>역할</th>
-                                <td th:text="${user.role}">역할</td>
-                            </tr>
-                            <tr>
-                                <th>창작자 여부</th>
-                                <td th:text="${user.isCreator ? '예' : '아니요'}">아니요</td>
-                            </tr>
-                            <tr>
-                                <th>창작자 인증</th>
-                                <td th:text="${user.isVerification ? '예' : '아니요'}">아니요</td>
-                            </tr>
+                            <tr><th>이메일</th><td th:text="${user.email}"></td></tr>
+                            <tr><th>가입일</th><td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}"></td></tr>
+                            <tr><th>창작자 여부</th><td th:text="${user.isCreator ? '예' : '아니요'}"></td></tr>
                         </tbody>
                     </table>
-                </div>
-                <div class="text-center mt-5">
-                    <div th:onclick="|location.href='@{/}'|" class="btn-home-back">홈으로 돌아가기</div>
                 </div>
             </div>
         </section>
 
         <section id="content-posts" class="tab-content">
-            <div class="section-header"><h3 class="section-title">일러스트 · 만화</h3></div>
-            <section class="content-box-gray">
-                <div class="grid-container">
-                    <div class="row row-cols-custom-6 g-3">
-                        <div class="col" th:each="i : ${#numbers.sequence(1, 18)}">
-                            <div class="content-card">
-                                <div class="card-img-placeholder illu-img"><i class="bi bi-image fs-4"></i></div>
-                                <div class="card-label">일러스트 명</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="section-header"><h3 class="section-title">소설</h3></div>
-            <section class="content-box-gray">
-                <div class="grid-container">
-                    <div class="row row-cols-custom-6 g-3">
-                        <div class="col" th:each="i : ${#numbers.sequence(1, 12)}">
-                            <div class="content-card">
-                                <div class="card-img-placeholder novel-img"><i class="bi bi-book fs-4"></i></div>
-                                <div class="card-label">소설 명</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="section-header"><h3 class="section-title">동영상</h3></div>
-            <section class="content-box-gray">
-                <div class="grid-container">
-                    <div class="row row-cols-custom-4 g-3">
-                        <div class="col" th:each="i : ${#numbers.sequence(1, 8)}">
-                            <div class="content-card">
-                                <div class="card-img-placeholder video-img" style="background: #bbb;">
-                                    <i class="bi bi-play-circle-fill fs-2 text-white"></i>
-                                </div>
-                                <div class="card-label">동영상 명</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </section>
-
-        <section id="content-team" class="tab-content">
-            <div class="section-header"><h3 class="section-title">현재 가입한 팀</h3></div>
-            <section class="team-box-gray">
-                <div class="container team-grid">
-                    <div class="row row-cols-1 row-cols-md-3 g-5">
-                        <div class="col text-center" th:each="i : ${#numbers.sequence(1, 6)}">
-                            <div class="team-link" onclick="location.href='#'">
-                                <div class="team-circle"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </section>
-
-        <section id="content-project" class="tab-content project-list-bg">
-            <div class="container project-grid">
-                <div class="row row-cols-1 row-cols-md-2 g-5">
+            <div class="section-header"><h3 class="section-title">내 창작물</h3></div>
+            <div class="container">
+                <div class="row row-cols-2 row-cols-md-4 g-3">
                     <div class="col" th:each="i : ${#numbers.sequence(1, 4)}">
-                        <div class="pj-card" onclick="location.href='#'">
-                            <div class="pj-card-img"><i class="bi bi-image text-muted fs-1"></i></div>
-                            <div class="pj-card-body">
-                                <div class="pj-title">프로젝트명</div>
-                                <div class="pj-desc">프로젝트 내용</div>
-                                <div class="pj-tag-group">
-                                    <span class="pj-inner-tag">#태그</span>
-                                    <span class="pj-inner-tag">#태그</span>
-                                    <span class="pj-inner-tag">#태그</span>
-                                </div>
-                                <button class="btn-pj-apply">신청하기</button>
-                            </div>
+                        <div class="content-card">
+                            <div class="card-img-placeholder"><i class="bi bi-image fs-4"></i></div>
+                            <div class="card-label">작품 제목</div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <section id="content-team" class="tab-content">
+            <div class="section-header"><h3 class="section-title">소속 팀</h3></div>
+            <div class="container text-center">준비 중입니다.</div>
+        </section>
+
+        <section id="content-project" class="tab-content">
+            <div class="section-header"><h3 class="section-title">참여 프로젝트</h3></div>
+            <div class="container text-center">준비 중입니다.</div>
+        </section>
+
+        <section id="content-interests" class="tab-content">
+            <div class="section-header"><h3 class="section-title">관심 콘텐츠</h3></div>
+            <div class="container text-center">좋아요 및 북마크한 작품이 표시됩니다.</div>
+        </section>
+
     </main>
 
-    <div class="modal fade" id="imageUpdateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="imageUpdateModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 20px;">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">프로필 이미지 변경</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
                 <form th:action="@{/user/updateProfileImg}" method="post" enctype="multipart/form-data">
-                    <div class="modal-body text-center">
-                        <img id="imagePreview" src="https://dummyimage.com/150x150/ced4da/6c757d" class="rounded-circle mb-3 border" width="150" height="150" style="object-fit: cover;">
+                    <div class="modal-body text-center p-4">
+                        <h5 class="fw-bold mb-3">프로필 이미지 변경</h5>
+                        <img id="imagePreview" src="https://dummyimage.com/150x150/ced4da/6c757d" class="rounded-circle mb-3 border" width="150" height="150">
                         <input class="form-control" type="file" id="profileImageInput" name="profileImg" accept="image/*" required>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer border-0">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">취소</button>
-                        <button type="submit" class="btn btn-primary" style="background-color: #3B4371; border: none;">변경하기</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #3B4371;">변경하기</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="tagAddModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="tagAddModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content" style="border-radius: 15px;">
-                <div class="modal-header">
-                    <h6 class="modal-title fw-bold">새 태그 추가</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <div class="modal-content">
                 <form th:action="@{/tag/createUserTag}" method="post">
                     <div class="modal-body">
+                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
                         <div class="input-group">
                             <span class="input-group-text">#</span>
-                            <input type="text" name="tagName" class="form-control" placeholder="태그명" required maxlength="20">
+                            <input type="text" name="tagName" class="form-control" placeholder="태그명" required>
                         </div>
                     </div>
                     <div class="modal-footer p-2">
@@ -336,39 +215,49 @@
     </div>
 
     <script>
-        // 1. 탭 전환 자바스크립트 함수
-        function switchTab(tabId) {
-            // 모든 탭 콘텐츠 숨기기
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.remove('active'));
+        let currentIndex = 0;
 
-            // 모든 탭 메뉴 활성화 해제
-            const tabs = document.querySelectorAll('.tab-menu-item');
-            tabs.forEach(tab => tab.classList.remove('active'));
+        document.addEventListener("DOMContentLoaded", () => {
+            const activeTab = document.querySelector('.tab-menu-item.active');
+            if (activeTab) updateIndicator(activeTab);
+        });
 
-            // 선택된 탭과 콘텐츠만 활성화
-            document.getElementById('content-' + tabId).classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active');
+        function switchTab(tabId, index) {
+            if (currentIndex === index) return;
+            const direction = index > currentIndex ? 1 : -1; 
+            currentIndex = index;
+
+            document.querySelectorAll('.tab-menu-item').forEach(tab => tab.classList.remove('active'));
+            const clickedTab = document.getElementById('tab-' + tabId);
+            clickedTab.classList.add('active');
+            updateIndicator(clickedTab);
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active', 'slide-in-right', 'slide-in-left');
+            });
+
+            const activeContent = document.getElementById('content-' + tabId);
+            activeContent.classList.add('active');
+            activeContent.classList.add(direction === 1 ? 'slide-in-right' : 'slide-in-left');
         }
 
-        // 2. 이미지 미리보기 로직
-        const imageInput = document.getElementById('profileImageInput');
-        const imagePreview = document.getElementById('imagePreview');
-        if(imageInput) {
-            imageInput.onchange = () => {
-                const [file] = imageInput.files;
-                if (file) { imagePreview.src = URL.createObjectURL(file); }
-            }
+        function updateIndicator(tabElement) {
+            const indicator = document.getElementById('tabIndicator');
+            indicator.style.width = tabElement.offsetWidth + 'px';
+            indicator.style.left = tabElement.offsetLeft + 'px';
         }
-        
-        // 3. 업로드 폼 중복 클릭 방지
-        const profileForm = document.querySelector('#imageUpdateModal form');
-        if(profileForm) {
-            profileForm.onsubmit = function() {
-                const submitBtn = this.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> 업로드 중...`;
-            };
+
+        // 이미지 미리보기
+        document.getElementById('profileImageInput').onchange = (e) => {
+            const [file] = e.target.files;
+            if (file) document.getElementById('imagePreview').src = URL.createObjectURL(file);
+        }
+
+        // 팔로우 토글 함수 (실제 API 연결 필요)
+        function toggleFollow(id, type) {
+            // 여기에 fetch API 등을 이용한 팔로우 로직을 구현하세요.
+            console.log(id, type, "팔로우 토글");
+            location.reload(); // 임시 새로고침
         }
     </script>
 </div>

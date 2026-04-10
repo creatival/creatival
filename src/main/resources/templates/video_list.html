@@ -1,6 +1,58 @@
-<html layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 <div class="container my-5" layout:fragment="content">
-    
+
+    <style>
+        .category-item { transition: all 0.3s ease; text-decoration: none !important; }
+        .icon-box {
+            width: 80px; height: 80px; background-color: #F8F9FA;
+            border-radius: 22px; margin: 0 auto 12px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border: 1px solid #eee; transition: all 0.3s ease;
+        }
+        .category-icon-img {
+            width: 100%; height: 100%; object-fit: contain;
+            padding: 18px; transition: transform 0.3s ease;
+        }
+        .category-item:hover { transform: translateY(-8px); }
+        .category-item:hover .category-icon-img { transform: scale(1.1); }
+        .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; }
+    </style>
+
+    <section class="py-4 bg-white mb-4 border-bottom">
+        <div class="row text-center g-4 justify-content-center">
+            <div class="col-4 col-md-2">
+                <a th:href="@{/Illustration_list}" class="category-item d-block">
+                    <div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
+                    <div class="fw-bold">일러스트</div>
+                </a>
+            </div>
+            <div class="col-4 col-md-2">
+                <a th:href="@{/comic_list}" class="category-item d-block">
+                    <div class="icon-box"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
+                    <div class="fw-bold">만화</div>
+                </a>
+            </div>
+            <div class="col-4 col-md-2">
+                <a th:href="@{/music_list}" class="category-item d-block">
+                    <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
+                    <div class="fw-bold">음악</div>
+                </a>
+            </div>
+            <div class="col-4 col-md-2">
+                <a th:href="@{/content/novel_list}" class="category-item d-block">
+                    <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
+                    <div class="fw-bold">소설</div>
+                </a>
+            </div>
+            <div class="col-4 col-md-2">
+                <a th:href="@{/file_list}" class="category-item d-block">
+                    <div class="icon-box"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
+                    <div class="fw-bold">파일</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
         <div>
             <h2 class="fw-bold mb-0">비디오</h2>
@@ -10,39 +62,40 @@
         <div class="d-flex gap-3 align-items-center">
             <a th:href="@{/content/video/create}" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
                 <i class="bi bi-plus-lg me-2"></i>
-                <span class="fw-bold">동영상 등록</span>
+                <span class="fw-bold">비디오 등록</span>
             </a>
 
             <div class="d-none d-sm-block">
                 <div class="btn-group" role="group">
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-                    <label class="btn btn-outline-secondary btn-sm" for="btnradio1">최신순</label>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm" for="btnradio2">인기순</label>
+                    <input type="radio" class="btn-check" name="sort" id="latest" checked>
+                    <label class="btn btn-outline-secondary btn-sm" for="latest">최신순</label>
+                    <input type="radio" class="btn-check" name="sort" id="popular">
+                    <label class="btn btn-outline-secondary btn-sm" for="popular">인기순</label>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-4 mb-5">
+        <div class="col-12 text-center py-5" th:if="${list.isEmpty()}">
+            <p class="text-muted">등록된 비디오가 없습니다.</p>
+        </div>
+
         <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="video : ${list}">
             <a th:href="@{/content/video/detail/{id}(id=${video.id})}" class="text-decoration-none text-dark">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="ratio ratio-16x9 position-relative bg-dark rounded-top overflow-hidden">
-                        <img th:src="${video.thumbnailUrl}" class="object-fit-cover" alt="비디오 썸네일">
-                        
-                        </div>
-                    
+                <div class="card h-100 border-0 shadow-sm video-card">
+                    <div class="ratio ratio-16x9 bg-dark rounded-top overflow-hidden">
+                        <img th:src="${video.thumbnailUrl}" class="object-fit-cover" alt="썸네일">
+                    </div>
                     <div class="card-body p-3">
                         <div class="d-flex align-items-start">
-                            <img th:src="${video.profileImgUrl!=null ? video.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}" class="rounded-circle me-3 mt-1" alt="채널 로고" style="width: 36px; height: 36px;">
-                            
+                            <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}" 
+                                 class="rounded-circle me-2" alt="프로필" style="width: 32px; height: 32px; object-fit: cover;">
                             <div class="overflow-hidden">
-                                <h6 class="card-title fw-bold text-truncate mb-1" th:text="${video.title}">유니티로 2D 플랫포머 게임 만들기 1편</h6>
-                                <p class="text-muted small mb-0 text-truncate" th:text="${video.displayname}">Creatival_Official</p>
+                                <h6 class="card-title fw-bold text-truncate mb-1" th:text="${video.title}">비디오 제목</h6>
+                                <p class="text-muted small mb-0 text-truncate" th:text="${video.displayname}">작성자</p>
                                 <p class="text-muted small mb-0">
-                                    조회수 <span th:text="${video.viewCount}">0</span>회 • <span th:text="${video.formattedDate}"></span>
+                                    조회수 <span th:text="${video.viewCount}">0</span>회 • <span th:text="${video.formattedDate}">방금 전</span>
                                 </p>
                             </div>
                         </div>
@@ -54,15 +107,10 @@
 
     <nav aria-label="Page navigation" th:if="${!list.isEmpty()}">
         <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
-            </li>
-            <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+            <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
             <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">다음</a>
-            </li>
+            <li class="page-item"><a class="page-link" href="#">다음</a></li>
         </ul>
     </nav>
 

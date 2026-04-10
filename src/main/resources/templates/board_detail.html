@@ -3,6 +3,26 @@
 <div layout:fragment="content">
 
 <style>
+	
+	/* 인디케이터(밑줄 막대) 기본 스타일 추가 */
+
+	/* 상세 페이지용 콘텐츠 슬라이드 효과 (필요 시) */
+	.post-header-top.slide-in-right { animation: slideInRight 0.4s ease forwards; }
+	.post-header-top.slide-in-left { animation: slideInLeft 0.4s ease forwards; }
+
+	@keyframes slideInRight {
+	    from { opacity: 0; transform: translateX(30px); }
+	    to { opacity: 1; transform: translateX(0); }
+	}
+	@keyframes slideInLeft {
+	    from { opacity: 0; transform: translateX(-30px); }
+	    to { opacity: 1; transform: translateX(0); }
+	}
+	
+		
+
+
+
 	:root {
 				--board-blue: #3B4371;
 				--board-orange: #FF7F50;
@@ -10,45 +30,55 @@
 				--bg-light: #F0F2F5;
 			}
 
-.post-header-top { border-top: 3px solid #2c3e50; }
-.bg-indigo-light { background-color: #f8f9ff; border-bottom: 1px solid #e9ecef; }
-.text-indigo { color: #3f51b5; }
-.comment-section { background-color: #fdfdfd; border-radius: 8px; }
-.btn-list { background-color: #2c3e50; color: white; }
-.btn-list:hover { background-color: #1a252f; color: white; }
-.active-tab { color: #000 !important; border-bottom: 3px solid #ff6b6b !important; font-weight: bold; }
-/* 팀/프로젝트 관련 추가 스타일 */
-.team-banner img { width: 100%; height: 120px; object-fit: cover; }
-.team-profile { width: 60px; height: 60px; margin-top: -30px; object-fit: cover; }
-.nav-tabs-board {
-			display: flex;
-			justify-content: center;
-			gap: 40px;
-			margin-bottom: 30px;
-			border-bottom: 1px solid #eee;
-			position: relative;
+		.post-header-top { border-top: 3px solid #2c3e50; }
+		.bg-indigo-light { background-color: #f8f9ff; border-bottom: 1px solid #e9ecef; }
+		.text-indigo { color: #3f51b5; }
+		.comment-section { background-color: #fdfdfd; border-radius: 8px; }
+		.btn-list { background-color: #2c3e50; color: white; }
+		.btn-list:hover { background-color: #1a252f; color: white; }
+		.active-tab { color: #000 !important; border-bottom: 3px solid #ff6b6b !important; font-weight: bold; }
+		/* 팀/프로젝트 관련 추가 스타일 */
+		.team-banner img { width: 100%; height: 120px; object-fit: cover; }
+		.team-profile { width: 60px; height: 60px; margin-top: -30px; object-fit: cover; }
+		.nav-tabs-board {
+		    display: flex;
+		    justify-content: center;
+		    gap: 40px;
+		    margin-bottom: 30px;
+		    border-bottom: 2px solid #eee; /* 회색 가이드 라인 */
+		    position: relative;
 		}
-	.board-tab {
-				background: none;
-				border: none;
-				font-size: 1.1rem;
-				font-weight: 700;
-				color: #aaa;
-				padding: 0 10px 15px 10px;
-				cursor: pointer;
-				transition: color 0.3s;
+		.board-tab {
+		    background: none;
+		    border: none;
+		    font-size: 1.1rem;
+		    font-weight: 700;
+		    color: #aaa;
+		    padding: 0 10px 15px 10px;
+		    cursor: pointer;
+		    text-decoration: none;
+		    transition: color 0.3s ease;
+		    position: relative;
+		}
+	
+				.tab-indicator {
+				    position: absolute;
+				    bottom: -2px; /* 가이드 라인 위에 딱 붙임 */
+				    height: 3px;
+				    border-radius: 3px 3px 0 0;
+				    z-index: 10;
+				    /* 위치, 너비, 색상 모두 부드럽게 전환 */
+				    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+				                width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+				                background-color 0.3s ease;
+				    pointer-events: none; /* 클릭 방해 금지 */
 				}
-	.board-tab.active {
-				color: #000;
-			}
-		.board-tab.active.user {
-			color: #000;
-			border-bottom: 2px solid var(--board-blue);
-		}
-		.board-tab.active.creator {
-			color: #000;
-			border-bottom: 2px solid var(--board-orange);
-		}
+		
+	.board-tab.active.user,
+	.board-tab.active.creator {
+	    border-bottom: none !important;
+	}
+		
 </style>
 
 <div class="container py-5" th:if="${board != null}" th:object="${board}">
@@ -251,6 +281,9 @@
     <p>게시글 데이터를 불러올 수 없습니다.</p>
     <a th:href="@{/board}" class="btn btn-primary">목록으로 돌아가기</a>
 </div>
+
+
+	
 
 </div>
 </html>
