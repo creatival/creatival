@@ -254,24 +254,27 @@
             <div class="col-md-6">
                 <div class="lineage-box">
                     <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품</h6>
-                    <a href="#" class="lineage-card">
-                        <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
+                    <a href="#" class="lineage-card" th:if="${parentContent!=null}">
+                        <img th:src="${parentContent.thumbnailUrl}" class="lineage-img" alt="원본">
                         <div class="overflow-hidden">
-                            <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
-                            <div class="small text-muted text-truncate">@OriginalArtist</div>
+                            <div class="fw-bold text-dark text-truncate mb-1" th:text="${parentContent.title}">여름날의 바다 (Original)</div>
+                            <div class="small text-muted text-truncate" th:text="|${parentContent.type}|">type</div>
+                            <div class="small text-muted text-truncate" th:text="|${parentContent.username}(${parentContent.displayname})|">@OriginalArtist</div>
                         </div>
                     </a>
+					<p class="text-muted text-center ">해당 컨텐츠는 원본 컨텐츠입니다.</p>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="lineage-box">
                     <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품</h6>
-                    <div class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
-                        <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,2)}">
-                            <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
+                    <div class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"  th:each="childContent : ${childContents}" th:href="childContent">
+                        <a  class="lineage-card" th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(childContent.type)},id=${childContent.id})}">
+                            <img th:src="${childContent.thumbnailUrl}" class="lineage-img" alt="파생">
                             <div class="overflow-hidden">
-                                <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
-                                <div class="small text-muted text-truncate">@RemixCreator</div>
+                                <div class="fw-bold text-dark text-truncate mb-1" th:text="${childContent.title}">여름날의 바다 (리마스터)</div>
+								<div class="small text-muted text-truncate" th:text="|${childContent.type}|">type</div>
+                                <div class="small text-muted text-truncate" th:text="|${childContent.username}(${childContent.displayname})|">@RemixCreator</div>
                             </div>
                         </a>
                     </div>

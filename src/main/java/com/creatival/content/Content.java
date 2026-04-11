@@ -105,6 +105,9 @@ public class Content {
 	@JoinColumn(name = "original_content_id")
 	private Content originalContent;
 	
+	@OneToMany(mappedBy = "originalContent")
+	private List<Content> childContents;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "projectTag")
 	private Project project;

@@ -2,6 +2,7 @@ package com.creatival.content;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtDetail;
 import com.creatival.content.DTO.ResponseArtList;
+import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.content.DTO.ResponseFileDetailDTO;
 import com.creatival.content.DTO.ResponseFileListDTO;
 import com.creatival.content.DTO.ResponseMusicDetailDTO;
@@ -45,6 +47,7 @@ import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.DTO.UpdateVideoDTO;
+import com.creatival.content.Enum.ContentType;
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.follow.FollowService;
@@ -104,7 +107,7 @@ public class ContentController {
 			System.out.println("오류 발생");
 			return "novel_write";
 		}
-		if (createNovelDTO.getOriginalContentId()!=null && createNovelDTO.getProjectTag() !=null) {
+		if (createNovelDTO.getOriginalContentId()!=null && (createNovelDTO.getProjectTag() !=null || createNovelDTO.getProjectTag().isEmpty())) {
 			bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 content에 속하거나 하나만 할 수 있습니다");
 			return "illustration_write";
 		}
@@ -319,7 +322,7 @@ public class ContentController {
 		if (createArtDTO.getImages() == null || createArtDTO.getImages().isEmpty()) {
 	        System.out.println("이미지 리스트가 비어있습니다.");
 	    }
-		if (createArtDTO.getOriginalContentId()!=null && createArtDTO.getProjectTag() !=null) {
+		if (createArtDTO.getOriginalContentId()!=null && (createArtDTO.getProjectTag() !=null && !createArtDTO.getProjectTag().isEmpty())) {
 			bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 content에 속하거나 하나만 할 수 있습니다");
 			return "illustration_write";
 		}
@@ -350,6 +353,28 @@ public class ContentController {
 		
 		model.addAttribute("art", responseArtDetail);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		
+		if(content.getOriginalContent()!=null) {
+			Content parentContent = content.getOriginalContent();
+			if(parentContent.getType()==ContentType.ART) {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(content, contentFileService.getContentFileThumbnail(content).getFileUrl()));
+			} else {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
+			}
+			
+		}
+		List<ResponseContentListForProject> childContentList=new ArrayList<>();
+		List<Content> childContents = content.getChildContents();
+		for(Content childContent : childContents) {
+			if(childContent.getType()==ContentType.ART) {
+				childContentList.add(ResponseContentListForProject.fromArt(childContent, contentFileService.getContentFileThumbnail(childContent).getFileUrl()));
+			} else {
+				childContentList.add(ResponseContentListForProject.fromNovel(childContent));
+			}
+		}
+		model.addAttribute("childContents", childContentList);
+		
+		
 		model.addAttribute("tagList", contentTags);
 		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
 		model.addAttribute("comments", comments);
