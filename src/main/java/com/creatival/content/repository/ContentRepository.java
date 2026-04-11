@@ -38,5 +38,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 	
 	List<Content> findByUserAndTypeOrderByCreatedAtDesc(Users user, ContentType contentType);
 	List<Content> findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(Users user,ContentType contentType, Visibility visibility );
+	List<Content> findTop4ByUserAndTypeOrderByCreatedAtDesc(Users user, ContentType type);
 	
 }

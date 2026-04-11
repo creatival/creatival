@@ -18,6 +18,7 @@ public class ResponseArtList {
 	private String title;
 	
 	private Long viewCount;
+	private Long likeCount;
 	
 	private Long userId;
 	private String username;
@@ -30,6 +31,7 @@ public class ResponseArtList {
 				.id(content.getId())
 				.title(content.getTitle())
 				.viewCount(content.getViewCount())
+				.likeCount(content.getLikeCount())
 				.userId(content.getUser().getId())
 				.username(content.getUser().getUsername())
 				.displayname(content.getUser().getDisplayName())

@@ -1,10 +1,14 @@
 package com.creatival.like;
 
 import java.security.Principal;
+import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.creatival.MailService;
 import com.creatival.content.ContentService;
+import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.like.dto.CreateLikeDTO;
 import com.creatival.like.dto.LikeDTO;
 import com.creatival.tag.TagService;
@@ -37,5 +42,11 @@ public class LikeController {
 	public LikeDTO toggle(Principal principal,@RequestBody CreateLikeDTO createLikeDTO) {
 		Users user = userService.getUserByUsername(principal.getName());
 		return new LikeDTO(likeService.toggle(createLikeDTO.getType(), createLikeDTO.getTargetId(), user), likeService.count(createLikeDTO.getType(), createLikeDTO.getTargetId()));
+	}
+	
+	@GetMapping("/{id}/liked-contents")
+	public ResponseEntity<List<ResponseContentListForProject>> getLikedContents(@PathVariable("id") Long id) {
+		List<ResponseContentListForProject>list = likeService.getAllLikedContents(id);
+		return ResponseEntity.ok(list);
 	}
 }

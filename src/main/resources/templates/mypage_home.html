@@ -24,7 +24,6 @@
         .profile-nickname { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; color: #222; }
         .profile-intro { color: #777; font-size: 0.95rem; margin: 20px auto; max-width: 500px; }
         
-        /* 버튼 그룹 */
         .profile-btn-group { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
         
         .btn-edit-profile, .btn-deactivate { 
@@ -37,7 +36,6 @@
         .btn-deactivate { background-color: #fff; border: 1px solid #ff5a2d; color: #ff5a2d; }
         .btn-deactivate:hover { background-color: rgba(255, 90, 45, 0.05); }
 
-        /* 팔로우 버튼 */
         .btn-follow {
             display: inline-flex; align-items: center; justify-content: center;
             width: 340px; height: 46px; background-color: #3B4371; color: #fff;
@@ -47,7 +45,6 @@
         .btn-follow:hover { background-color: #2a3152; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-follow.following { background-color: #f8f9fa; color: #333; border: 1px solid #ddd; }
 
-        /* 태그 */
         .custom-tag-badge { background-color: #A3C9F1 !important; color: #333 !important; padding: 6px 12px; font-weight: 600; font-size: 0.85rem; }
         .tag-delete-btn { color: #555; cursor: pointer; margin-left: 5px; transition: 0.2s; }
         .tag-delete-btn:hover { color: #ff5a5a; }
@@ -63,20 +60,19 @@
         .tab-content { display: none; padding-top: 40px; }
         .tab-content.active { display: block; }
 
-        /* 애니메이션 */
         .slide-in-right { animation: slideInRight 0.4s ease forwards; }
         .slide-in-left { animation: slideInLeft 0.4s ease forwards; }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
         /* =========================================
-           [3. 콘텐츠 그리드 (작성자님 버전 기반)]
+           [3. 콘텐츠 그리드]
            ========================================= */
         .content-box-gray { padding: 40px 0; background: #F8F9FA; border-radius: 12px; margin-bottom: 40px; }
         .section-header { text-align: left; margin-bottom: 20px; border-left: 5px solid #3B4371; padding-left: 15px; }
         .section-title { font-size: 1.3rem; font-weight: 800; color: #333; }
         
-        .content-card { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #eee; cursor: pointer; transition: 0.2s; height: 100%; }
+        .content-card { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #eee; cursor: pointer; transition: 0.2s; height: 100%; display: block; text-decoration: none !important; }
         .content-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
         
         .card-img-placeholder { width: 100%; position: relative; overflow: hidden; background: #eee; }
@@ -85,7 +81,6 @@
         
         .card-label { padding: 10px; font-size: 0.85rem; font-weight: 700; text-align: center; color: #333; }
         
-        /* 매체별 비율 설정 */
         .illu-img { aspect-ratio: 3 / 4; }
         .comic-img { aspect-ratio: 1 / 1; }
         .music-img { aspect-ratio: 1 / 1; }
@@ -100,7 +95,6 @@
         .team-profile { width: 70px; height: 70px; object-fit: cover; margin-top: -35px; border: 3px solid #fff; }
         .hover-shadow:hover { transform: translateY(-5px); transition: 0.3s; box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
 
-        /* 정보 테이블 */
         .info-card { max-width: 800px; margin: 0 auto; border: 1px solid #eee; border-radius: 15px; overflow: hidden; }
         .info-card-header { background-color: #3B4371; color: #fff; padding: 15px 25px; font-weight: 700; }
         .table-info-custom { width: 100%; border-collapse: collapse; }
@@ -166,97 +160,92 @@
             </div>
         </section>
 
-		<section id="content-posts" class="tab-content container">
-		            
-		            <div th:if="${not #lists.isEmpty(arts)}">
-		                <div class="section-header"><h3 class="section-title">일러스트</h3></div>
-		                <div class="content-box-gray px-3">
-		                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-		                        <div class="col" th:each="art : ${arts}">
-		                            <div class="content-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
-		                                <div class="card-img-placeholder illu-img">
-		                                    <img th:src="${art.thumbnailUrl}" alt="" />
-		                                    <i class="bi bi-image fs-4"></i>
-		                                </div>
-		                                <div class="card-label text-truncate" th:text="${art.title}">일러스트 명</div>
-		                            </div>
-		                        </div>
-		                    </div>
-		                </div>
-		            </div>
-
-		            <div th:if="${not #lists.isEmpty(comics)}"> <div class="section-header"><h3 class="section-title">만화</h3></div>
-		                <div class="content-box-gray px-3">
-		                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-		                        <div class="col" th:each="comic : ${comics}">
-		                            <div class="content-card">
-		                                <div class="card-img-placeholder comic-img">
-		                                    <img th:if="${comic.thumbnailUrl != null}" th:src="${comic.thumbnailUrl}" alt="" />
-		                                    <i class="bi bi-journal-richtext fs-4"></i>
-		                                </div>
-		                                <div class="card-label text-truncate" th:text="${comic.title}">만화 명</div>
-		                            </div>
-		                        </div>
-		                    </div>
-		                </div>
-		            </div>
-
-		            <div th:if="${not #lists.isEmpty(novels)}">
-		                <div class="section-header"><h3 class="section-title">소설</h3></div>
-		                <div class="content-box-gray px-3">
-		                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-		                        <div class="col" th:each="novel : ${novels}">
-		                            <div class="content-card" th:onclick="|location.href='@{/content/novel_detail/{id}(id=${novel.id})}'|">
-		                                <div class="card-img-placeholder novel-img">
-		                                    <img th:if="${novel.thumbnailUrl != null}" th:src="${novel.thumbnailUrl}" alt="" />
-		                                    <i class="bi bi-book fs-4"></i>
-		                                </div>
-		                                <div class="card-label text-truncate" th:text="${novel.title}">소설 명</div>
-		                            </div>
-		                        </div>
-		                    </div>
-		                </div>
-		            </div>
-
-		            <div th:if="${not #lists.isEmpty(musics)}">
-		                <div class="section-header"><h3 class="section-title">음악</h3></div>
-		                <div class="content-box-gray px-3">
-		                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-		                        <div class="col" th:each="music : ${musics}">
-		                            <div class="content-card" th:onclick="|location.href='@{/content/music/detail/{id}(id=${music.id})}'|">
-		                                <div class="card-img-placeholder music-img">
-		                                    <img th:if="${music.thumbnailUrl != null}" th:src="${music.thumbnailUrl}" alt="" />
-		                                    <i class="bi bi-music-note-beamed fs-4"></i>
-		                                </div>
-		                                <div class="card-label text-truncate" th:text="${music.title}">음악 명</div>
-		                            </div>
-		                        </div>
-		                    </div>
-		                </div>
-		            </div>
-
-		            <div th:if="${not #lists.isEmpty(videos)}">
-		                <div class="section-header"><h3 class="section-title">동영상</h3></div>
-		                <div class="content-box-gray px-3">
-		                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-		                        <div class="col" th:each="video : ${videos}">
-		                            <div class="content-card" th:onclick="|location.href='@{/content/video/detail/{id}(id=${video.id})}'|">
-		                                <div class="card-img-placeholder video-img">
-		                                    <img th:if="${video.thumbnailUrl != null}" th:src="${video.thumbnailUrl}" alt="" />
-		                                    <i class="bi bi-play-btn fs-4"></i>
-		                                </div>
-		                                <div class="card-label text-truncate" th:text="${video.title}">동영상 명</div>
-		                            </div>
-		                        </div>
-		                    </div>
-		                </div>
-		            </div>
-
-		            <div th:if="${#lists.isEmpty(arts) and #lists.isEmpty(novels) and #lists.isEmpty(musics) and #lists.isEmpty(videos)}" class="text-center py-5 text-muted">
-		                <i class="bi bi-folder2-open display-4"></i>
-		                <p class="mt-3">아직 업로드한 게시물이 없습니다.</p>
-		            </div>
-		        </section>
+        <section id="content-posts" class="tab-content container">
+            <div th:if="${not #lists.isEmpty(arts)}">
+                <div class="section-header"><h3 class="section-title">일러스트</h3></div>
+                <div class="content-box-gray px-3">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                        <div class="col" th:each="art : ${arts}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
+                                <div class="card-img-placeholder illu-img">
+                                    <img th:src="${art.thumbnailUrl}" alt="" />
+                                    <i class="bi bi-image fs-4"></i>
+                                </div>
+                                <div class="card-label text-truncate" th:text="${art.title}">일러스트 명</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${not #lists.isEmpty(comics)}">
+                <div class="section-header"><h3 class="section-title">만화</h3></div>
+                <div class="content-box-gray px-3">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                        <div class="col" th:each="comic : ${comics}">
+                            <div class="content-card">
+                                <div class="card-img-placeholder comic-img">
+                                    <img th:if="${comic.thumbnailUrl != null}" th:src="${comic.thumbnailUrl}" alt="" />
+                                    <i class="bi bi-journal-richtext fs-4"></i>
+                                </div>
+                                <div class="card-label text-truncate" th:text="${comic.title}">만화 명</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${not #lists.isEmpty(novels)}">
+                <div class="section-header"><h3 class="section-title">소설</h3></div>
+                <div class="content-box-gray px-3">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                        <div class="col" th:each="novel : ${novels}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/novel_detail/{id}(id=${novel.id})}'|">
+                                <div class="card-img-placeholder novel-img">
+                                    <img th:if="${novel.thumbnailUrl != null}" th:src="${novel.thumbnailUrl}" alt="" />
+                                    <i class="bi bi-book fs-4"></i>
+                                </div>
+                                <div class="card-label text-truncate" th:text="${novel.title}">소설 명</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${not #lists.isEmpty(musics)}">
+                <div class="section-header"><h3 class="section-title">음악</h3></div>
+                <div class="content-box-gray px-3">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                        <div class="col" th:each="music : ${musics}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/music/detail/{id}(id=${music.id})}'|">
+                                <div class="card-img-placeholder music-img">
+                                    <img th:if="${music.thumbnailUrl != null}" th:src="${music.thumbnailUrl}" alt="" />
+                                    <i class="bi bi-music-note-beamed fs-4"></i>
+                                </div>
+                                <div class="card-label text-truncate" th:text="${music.title}">음악 명</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${not #lists.isEmpty(videos)}">
+                <div class="section-header"><h3 class="section-title">동영상</h3></div>
+                <div class="content-box-gray px-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                        <div class="col" th:each="video : ${videos}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/video/detail/{id}(id=${video.id})}'|">
+                                <div class="card-img-placeholder video-img">
+                                    <img th:if="${video.thumbnailUrl != null}" th:src="${video.thumbnailUrl}" alt="" />
+                                    <i class="bi bi-play-btn fs-4"></i>
+                                </div>
+                                <div class="card-label text-truncate" th:text="${video.title}">동영상 명</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(arts) and #lists.isEmpty(novels) and #lists.isEmpty(musics) and #lists.isEmpty(videos)}" class="text-center py-5 text-muted">
+                <i class="bi bi-folder2-open display-4"></i>
+                <p class="mt-3">아직 업로드한 게시물이 없습니다.</p>
+            </div>
+        </section>
 
         <section id="content-team" class="tab-content container">
             <div class="section-header"><h3 class="section-title">소속 팀</h3></div>
@@ -284,11 +273,79 @@
             <div class="container text-center py-5 text-muted">준비 중인 기능입니다.</div>
         </section>
 
-        <section id="content-interests" class="tab-content container">
-            <div class="section-header"><h3 class="section-title">좋아요 및 북마크</h3></div>
-            <div class="container text-center py-5 text-muted">관심 있는 작품들을 모아보세요.</div>
+        <section id="content-interests" class="tab-content">
+            <div class="section-header d-flex justify-content-between align-items-center container">
+                <h3 class="section-title">좋아요 표시한 작품</h3>
+                <button type="button" class="btn btn-sm btn-outline-secondary" th:onclick="|loadLikedContents()|">더보기 <i class="bi bi-plus"></i></button>
+            </div>              
+            <section class="content-box-gray">
+                <div class="grid-container px-3 container">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3" id="likedSummaryGrid">
+                        <div class="col" th:each="content : ${likeContentPreview}">
+                            <a class="content-card" th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}">
+                                 <div class="card-img-placeholder illu-img">
+                                     <img th:src="${content.thumbnailUrl}" alt="" />
+                                 </div>
+                                 <div class="card-label text-truncate" th:text="${content.title}">작품명</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-header d-flex justify-content-between align-items-center container">
+                <h3 class="section-title">북마크</h3>
+                <button type="button" class="btn btn-sm btn-outline-secondary" th:onclick="|loadBookmarkedContents()|">더보기 <i class="bi bi-plus"></i></button>
+            </div>
+            <section class="content-box-gray">
+                <div class="grid-container container">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3" id="bookmarkSummaryGrid">
+                        <div class="col" th:each="content : ${bookmarkContentPreview}">
+                            <a class="content-card" th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}">
+								<div class="card-img-placeholder video-img">
+	                                 <img th:src="${content.thumbnailUrl}" alt="" />
+	                             </div>
+								<div class="card-label text-truncate" th:text="${content.title}">작품명</div>
+                            </a>
+                        </div>
+                        <div th:if="${#lists.isEmpty(bookmarkContentPreview)}" class="text-center w-100 py-4 text-muted">저장된 북마크가 없습니다.</div>
+                    </div>
+                </div>
+            </section>
         </section>
     </main>
+
+    <div class="modal fade" id="likedArtsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header border-0">
+                    <h5 class="fw-bold">좋아요 표시한 전체 작품</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row row-cols-2 row-cols-md-4 g-3" id="likedArtsModalBody">
+                        <div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="bookmarkedModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header border-0">
+                    <h5 class="fw-bold">북마크 보관함</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row row-cols-2 row-cols-md-4 g-3" id="bookmarkedModalBody">
+                        <div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="imageUpdateModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -327,7 +384,7 @@
         </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
         let currentIndex = 0;
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -366,9 +423,76 @@
         }
 
         function toggleFollow(id, type) {
-            // 비동기 팔로우 로직 (fetch API)
-            console.log(id, type, "팔로우 시도");
             location.reload(); 
+        }
+
+        /* [공통: API 데이터로 카드 생성 함수] */
+        function createContentCard(content) {
+            const typePath = content.type ? content.type.toLowerCase() : 'art';
+            const detailPath = `/content/${typePath}/detail/${content.id}`;
+            return `
+                <div class="col">
+                    <a href="${detailPath}" class="content-card" style="text-decoration:none;">
+                        <div class="card-img-placeholder illu-img">
+                            <img src="${content.thumbnailUrl || 'https://dummyimage.com/150x200'}" 
+                                 style="width:100%; height:100%; object-fit:cover;" 
+                                 alt="${content.title}">
+                        </div>
+                        <div class="card-info mt-2 text-center">
+                            <div class="card-label text-truncate px-2" title="${content.title}" style="font-weight: bold; color:#333;">
+                                ${content.title}(${content.type})
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        /* [좋아요 데이터 로드] */
+        function loadLikedContents() {
+            const modalElement = document.getElementById('likedArtsModal');
+            let likedModal = bootstrap.Modal.getInstance(modalElement);
+            if (!likedModal) likedModal = new bootstrap.Modal(modalElement);
+            likedModal.show();
+
+            const userId = [[${user.id}]];
+            const modalBody = document.getElementById('likedArtsModalBody');
+            modalBody.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>';
+            
+            fetch(`/like/${userId}/liked-contents`) 
+                .then(res => res.json())
+                .then(data => {
+                    modalBody.innerHTML = ''; 
+                    if (!data || data.length === 0) {
+                        modalBody.innerHTML = '<p class="text-center w-100 text-muted">좋아요 한 컨텐츠가 없습니다.</p>';
+                    } else {
+                        data.forEach(content => modalBody.insertAdjacentHTML('beforeend', createContentCard(content)));
+                    }
+                }).catch(err => modalBody.innerHTML = '<p class="text-center w-100 text-danger py-5">오류가 발생했습니다.</p>');
+        }
+
+        /* [북마크 데이터 로드 - 좋아요와 동일한 설계] */
+        function loadBookmarkedContents() {
+            const modalElement = document.getElementById('bookmarkedModal');
+            let bookmarkModal = bootstrap.Modal.getInstance(modalElement);
+            if (!bookmarkModal) bookmarkModal = new bootstrap.Modal(modalElement);
+            bookmarkModal.show();
+
+            const userId = [[${user.id}]];
+            const modalBody = document.getElementById('bookmarkedModalBody');
+            modalBody.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>';
+            
+            // 북마크용 API 경로 (서버에 해당 엔드포인트 구현 필요)
+            fetch(`/bookmark/${userId}/bookmarked-contents`) 
+                .then(res => res.json())
+                .then(data => {
+                    modalBody.innerHTML = ''; 
+                    if (!data || data.length === 0) {
+                        modalBody.innerHTML = '<p class="text-center w-100 text-muted">저장된 북마크가 없습니다.</p>';
+                    } else {
+                        data.forEach(content => modalBody.insertAdjacentHTML('beforeend', createContentCard(content)));
+                    }
+                }).catch(err => modalBody.innerHTML = '<p class="text-center w-100 text-danger py-5">데이터를 불러올 수 없습니다.</p>');
         }
     </script>
 </div>

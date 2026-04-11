@@ -50,6 +50,8 @@ import com.creatival.content.repository.ContentFileRepository;
 import com.creatival.content.repository.ContentRepository;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.content.repository.SeriesRepository;
+import com.creatival.like.LikeService;
+import com.creatival.like.Likes;
 import com.creatival.tag.TagService;
 import com.creatival.team.Project;
 import com.creatival.team.TeamMember;
@@ -77,7 +79,6 @@ public class ContentService {
 	private final EpisodeRepository episodeRepository;
 	private final UserService userService;
 	private final FileUtil fileUtil;
-
 
 	
 	//공통 라인 //
@@ -774,4 +775,15 @@ public class ContentService {
 		content.setLikeCount(content.getLikeCount()+1);
 		contentRepository.save(content);
 	}
+	public List<ResponseArtList> getAutherArt(Users user) {
+		List<Content> list = contentRepository.findTop4ByUserAndTypeOrderByCreatedAtDesc(user, ContentType.ART);
+		return list.stream().map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content))).toList();
+	}
+	public Page<ResponseArtList> getMoreArt(int page) {
+		Pageable pageable = PageRequest.of(page, 8, Sort.by("id").descending());
+		Page<Content> pages = contentRepository.findByType(ContentType.ART, pageable);
+		return pages.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content)));
+	}
+	
+	
 }

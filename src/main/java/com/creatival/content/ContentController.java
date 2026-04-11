@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -363,6 +364,8 @@ public class ContentController {
 			}
 			
 		}
+		List<ResponseArtList> anotherArt  = contentService.getAutherArt(content.getUser());
+		model.addAttribute("anotherArt", anotherArt);
 		List<ResponseContentListForProject> childContentList=new ArrayList<>();
 		List<Content> childContents = content.getChildContents();
 		for(Content childContent : childContents) {
@@ -890,5 +893,14 @@ public class ContentController {
 		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
 		redirectAttributes.addFlashAttribute("icon", "success");
 		return "redirect:/content/file/list";
+	}
+	
+	@GetMapping("/art/more")
+	public String getMoreArts(@RequestParam(name = "page", defaultValue = "0") int page, Model model) throws InterruptedException {
+		Thread.sleep(500);
+		Page<ResponseArtList> arts = contentService.getMoreArt(page);
+	    
+	    model.addAttribute("moreArts", arts);
+	    return "illustration-fragments :: artLoop"; 
 	}
 }
