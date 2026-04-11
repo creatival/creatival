@@ -1,4 +1,5 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
 <div class="container-fluid p-0" layout:fragment="content">
     
     <style>
@@ -206,7 +207,7 @@
     <section class="py-5 bg-light">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">추천 소설</h2>
-            <p class="text-muted mb-5"><a th:href="@{/novel_list}">소설 페이지로 이동</a></p>
+            <p class="text-muted mb-5"><a th:href="@{/content/novel_list}">소설 페이지로 이동</a></p>
             <div id="novelCarousel" class="carousel slide" data-bs-ride="false">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
