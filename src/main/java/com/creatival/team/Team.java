@@ -27,6 +27,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -68,6 +69,9 @@ public class Team {
 	@UpdateTimestamp
 	@Column(nullable = true)
 	private LocalDateTime updatedAt;
+	
+	@Builder.Default
+	private Long likeCount=0L;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

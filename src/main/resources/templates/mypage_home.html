@@ -101,6 +101,33 @@
         }
         .btn-deactivate:hover { background-color: rgba(255, 90, 45, 0.05); }
 
+		.btn-follow {
+			display: inline-block; background-color: #3B4371; border: none; padding: 8px 25px; 
+			            border-radius: 10px; font-size: 0.9rem; font-weight: 600; color: #F0F2F5; 
+			            cursor: pointer; transition: 0.2s; margin-bottom: 30px;
+		}
+		.btn-follow:hover {
+			background-color: #4a90e2;
+		}
+		.team-card {
+		    background-color: #fff;
+		    border-radius: 12px;
+		    padding: 20px 15px;
+		    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+		    transition: transform 0.2s, box-shadow 0.2s;
+		    cursor: pointer;
+		}
+
+		.team-card:hover {
+		    transform: translateY(-5px);
+		    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+		}
+
+		.team-name h5 {
+		    font-size: 1.1rem;
+		    font-weight: 600;
+		    color: #333;
+		}
         /* =========================================
            [2. 탭 메뉴 & 슬라이드 애니메이션]
            ========================================= */
@@ -166,11 +193,45 @@
         .grid-container { max-width: 1050px; margin: 0 auto; padding: 0 15px; }
         .content-card { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #eee; cursor: pointer; transition: transform 0.2s; }
         .content-card:hover { transform: translateY(-3px); }
-        .card-img-placeholder { background: #E9E9E9; display: flex; align-items: center; justify-content: center; color: #ccc; width: 100%; }
+        
+        /* [수정] flex 정렬 제거, 상대 배치로 변경하여 이미지를 꽉 채우기 위함 */
+        .card-img-placeholder { 
+            background: #E9E9E9; 
+            width: 100%; 
+            position: relative; /* 중요: 자식 절대 배치의 기준점 */
+            overflow: hidden; /* 영역 밖 내용 자름 */
+            color: #ccc; 
+            /* display: flex 속성 제거 */
+        }
+        
+        /* [추가] 이미지 배치 및 비율 유지( object-fit: cover ) 규칙 */
+        .card-img-placeholder img {
+            position: absolute; /* container의 (0,0) 기준 배치 */
+            top: 0; left: 0;
+            width: 100%; height: 100%; /* container 꽉 채움 */
+            object-fit: cover; /* 중요: 비율을 유지하며 자르고 꽉 채움 (stretching 방지) */
+        }
+        
+        /* [추가] placeholder 아이콘을 중앙에 배치하고 이미지 뒤에 배치 */
+        .card-img-placeholder i {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%); /* 정확히 중앙 정렬 */
+            z-index: -1; /* 이미지 뒤에 배치 (이미지가 로딩되면 가려짐) */
+        }
+        
         .card-label { padding: 12px 5px; font-size: 0.85rem; font-weight: 700; text-align: center; color: #333; }
-        .illu-img { aspect-ratio: 1 / 1; }
+        
+        /* [수정] 일러스트 비율을 square(1/1)에서 portrait (3:4) 로 변경. screenshot visual을 고려함 */
+        .illu-img { aspect-ratio: 3 / 4; }
+        
+        /* 만화와 음악 비율은 square(1/1)로 유지 (from previous turn) */
+        .comic-img { aspect-ratio: 1 / 1; }
+        .music-img { aspect-ratio: 1 / 1; }
+        
         .novel-img { aspect-ratio: 3 / 4.2; }
         .video-img { aspect-ratio: 16 / 9; }
+        
         .row-cols-custom-6 > * { flex: 0 0 auto; width: 16.666666%; }
         .row-cols-custom-4 > * { flex: 0 0 auto; width: 25%; }
 
@@ -182,7 +243,32 @@
         .team-link { display: block; cursor: pointer; transition: transform 0.2s ease; }
         .team-link:hover { transform: translateY(-10px); }
         .team-circle { width: 160px; height: 160px; background-color: #dbdbdb; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+		/* 배너 영역 */
+		.team-banner {
+		    height: 120px;
+		    overflow: hidden;
+		}
 
+		.team-banner img {
+		    width: 100%;
+		    height: 100%;
+		    object-fit: cover;
+		}
+
+		/* 프로필 이미지 */
+		.team-profile {
+		    width: 70px;
+		    height: 70px;
+		    object-fit: cover;
+		    margin-top: -40px;
+		}
+
+		/* 카드 호버 효과 */
+		.hover-shadow:hover {
+		    transform: translateY(-5px);
+		    transition: all 0.3s ease;
+		    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+		}
         /* =========================================
            [3-4. 프로젝트 탭 스타일]
            ========================================= */
@@ -217,7 +303,7 @@
                     </span>
                 </div>
                 <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">등록된 태그가 없습니다.</span>
-                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-0" 
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-0"  th:if="${user.username == #authentication.name}" 
                         style="width: 24px; height: 24px; line-height: 1;" data-bs-toggle="modal" data-bs-target="#tagAddModal">
                     <i class="bi bi-plus"></i>
                 </button>
@@ -225,27 +311,41 @@
 
             <p class="profile-intro" th:text="${user.description != null ? user.description : '나를 표현하는 한 줄 소개를 적어보세요.'}">소개글</p>
 
+<<<<<<< HEAD
             <div class="profile-btn-group">
                 <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile">프로필 편집</div>
                 <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate">프로필 비활성화</div>
+=======
+            <div class="d-flex justify-content-center gap-2">
+                <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile" th:if="${user.username == #authentication.name}">프로필 편집</div>
+                <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate" th:if="${user.username == #authentication.name}">프로필 비활성화</div>
+                <button id="followBtn" class="btn-follow" th:classappend="${follow.followed} ? ' following'" th:onclick="|toggleFollow(${user.id}, 'USER')|" th:if="${user.username != #authentication.name}" th:text="${follow.followed} ? '팔로우 중' : '팔로우'"></button>
+>>>>>>> refs/remotes/origin/jinhoe
             </div>
 				
 			<button type="button" class="btn-follow">팔로우</button>
 			
             <div class="tab-menu-wrapper">
+<<<<<<< HEAD
                 <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home', 0)">홈</div>
                 <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts', 1)">내 게시물</div>
                 <div id="tab-team" class="tab-menu-item" onclick="switchTab('team', 2)">팀</div>
                 <div id="tab-project" class="tab-menu-item" onclick="switchTab('project', 3)">프로젝트</div>
                 <div id="tab-interests" class="tab-menu-item" onclick="switchTab('interests', 4)">관심 콘텐츠</div>
                 <div class="tab-indicator" id="tabIndicator"></div>
+=======
+                <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home')">홈</div>
+                <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts')">게시물</div>
+                <div id="tab-team" class="tab-menu-item" onclick="switchTab('team')">팀</div>
+                <div id="tab-project" class="tab-menu-item" onclick="switchTab('project')">프로젝트</div>
+>>>>>>> refs/remotes/origin/jinhoe
             </div>
         </section>
         
         <section id="content-home" class="tab-content active info-content-area">
             <div class="container">
                 <div class="info-card">
-                    <div class="info-card-header">내 정보 확인</div>
+                    <div class="info-card-header">정보 확인</div>
                     <table class="table-info-custom">
                         <tbody>
                             <tr>
@@ -278,14 +378,36 @@
         </section>
 
         <section id="content-posts" class="tab-content">
-            <div class="section-header"><h3 class="section-title">일러스트 · 만화</h3></div>
+            <div class="section-header"><h3 class="section-title">일러스트</h3></div>
             <section class="content-box-gray">
                 <div class="grid-container">
+<<<<<<< HEAD
                     <div class="row row-cols-custom-4 g-3">
                         <div class="col" th:each="i : ${#numbers.sequence(1, 8)}">
+=======
+                    <div class="row row-cols-custom-6 g-3">
+                        <div class="col" th:each="art : ${arts}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
+                                <div class="card-img-placeholder illu-img">
+                                    <img th:src="${art.thumbnailUrl}" alt="" />
+                                    <i class="bi bi-image fs-4"></i>
+                                </div>
+                                <div class="card-label" th:text="${art.title}">일러스트 명</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-header"><h3 class="section-title">만화</h3></div>
+            <section class="content-box-gray">
+                <div class="grid-container">
+                    <div class="row row-cols-custom-6 g-3">
+                        <div class="col" th:each="i : ${#numbers.sequence(1, 6)}">
+>>>>>>> refs/remotes/origin/jinhoe
                             <div class="content-card">
-                                <div class="card-img-placeholder illu-img"><i class="bi bi-image fs-4"></i></div>
-                                <div class="card-label">일러스트 명</div>
+                                <div class="card-img-placeholder comic-img"><i class="bi bi-journal-richtext fs-4"></i></div>
+                                <div class="card-label">만화 명</div>
                             </div>
                         </div>
                     </div>
@@ -295,11 +417,37 @@
             <div class="section-header"><h3 class="section-title">소설</h3></div>
             <section class="content-box-gray">
                 <div class="grid-container">
+<<<<<<< HEAD
                     <div class="row row-cols-custom-4 g-3">
                         <div class="col" th:each="i : ${#numbers.sequence(1, 4)}">
                             <div class="content-card">
                                 <div class="card-img-placeholder novel-img"><i class="bi bi-book fs-4"></i></div>
                                 <div class="card-label">소설 명</div>
+=======
+                    <div class="row row-cols-custom-6 g-3">
+                        <div class="col" th:each="novel : ${novels}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/novel_detail/{id}(id=${novel.id})}'|">
+                                <div class="card-img-placeholder novel-img">
+									<img th:if="${novel.thumbnailUrl != null}" th:src="${novel.thumbnailUrl}" alt="" />
+								</div>
+                                <div class="card-label" th:text="${novel.title}">소설 명</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-header"><h3 class="section-title">음악</h3></div>
+            <section class="content-box-gray">
+                <div class="grid-container">
+                    <div class="row row-cols-custom-6 g-3">
+                        <div class="col" th:each="music : ${musics}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/music/detail/{id}(id=${music.id})}'|">
+                                <div class="card-img-placeholder music-img">
+									<img th:if="${music.thumbnailUrl != null}" th:src="${music.thumbnailUrl}" alt="" />
+								</div>
+                                <div class="card-label" th:text="${music.title}">음악 명</div>
+>>>>>>> refs/remotes/origin/jinhoe
                             </div>
                         </div>
                     </div>
@@ -309,13 +457,19 @@
             <div class="section-header"><h3 class="section-title">동영상</h3></div>
             <section class="content-box-gray">
                 <div class="grid-container">
+<<<<<<< HEAD
                     <div class="row row-cols-1 row-cols-md-3 g-3">
                         <div class="col" th:each="i : ${#numbers.sequence(1, 3)}">
                             <div class="content-card">
+=======
+                    <div class="row row-cols-custom-4 g-3">
+                        <div class="col" th:each="video : ${videos}">
+                            <div class="content-card" th:onclick="|location.href='@{/content/video/detail/{id}(id=${video.id})}'|">
+>>>>>>> refs/remotes/origin/jinhoe
                                 <div class="card-img-placeholder video-img" style="background: #bbb;">
-                                    <i class="bi bi-play-circle-fill fs-2 text-white"></i>
+                                    <img th:if="${video.thumbnailUrl != null}" th:src="${video.thumbnailUrl}" alt="" />
                                 </div>
-                                <div class="card-label">동영상 명</div>
+                                <div class="card-label" th:text="${video.title}">동영상 명</div>
                             </div>
                         </div>
                     </div>
@@ -323,20 +477,34 @@
             </section>
         </section>
 
-        <section id="content-team" class="tab-content">
-            <div class="section-header"><h3 class="section-title">현재 가입한 팀</h3></div>
-            <section class="team-box-gray">
-                <div class="container team-grid">
-                    <div class="row row-cols-1 row-cols-md-3 g-5">
-                        <div class="col text-center" th:each="i : ${#numbers.sequence(1, 6)}">
-                            <div class="team-link" onclick="location.href='#'">
-                                <div class="team-circle"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </section>
+		<section id="content-team" class="tab-content">
+		    <div class="section-header">
+		        <h3 class="section-title">현재 가입한 팀</h3>
+		    </div>
+		    <section class="team-box-gray">
+		        <div class="container team-grid">
+		            <div class="row row-cols-1 row-cols-md-3 g-5">
+		                <div class="col" th:each="team : ${myTeams}">
+						    <div class="card h-100 shadow-sm rounded border-0 hover-shadow overflow-hidden position-relative" style="cursor: pointer;"
+						         th:onclick="|location.href='@{/team/{id}(id=${team.id})}'|">
+
+						        <div class="team-banner">
+						            <img th:src="${team.bannerImgUrl != null ? team.bannerImgUrl : '/images/default-banner.png'}" alt="팀 배너">
+						        </div>
+
+						        <div class="card-body p-2 text-center">
+						            <img th:src="${team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
+						                 class="rounded-circle border border-white shadow team-profile" alt="팀 프로필">
+
+						            <h6 class="card-title fw-bold text-truncate mt-2 mb-1" th:text="${team.name}">팀 이름</h6>
+						            <div class="text-muted small text-truncate" th:text="${team.leaderUsername}">리더 이름</div>
+						        </div>
+						    </div>
+						</div>
+		                </div>
+		        </div>
+		    </section>
+		</section>
 
         <section id="content-project" class="tab-content project-list-bg">
             <div class="container project-grid">

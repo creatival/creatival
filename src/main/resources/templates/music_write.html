@@ -1,54 +1,247 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        /* 미리보기 영역 스타일 */
+        .preview-wrapper {
+            width: 100%; height: 250px; margin-bottom: 15px;
+            border: 2px dashed #dee2e6; border-radius: 12px;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            background-color: #f8f9fa; position: relative;
+        }
+        .preview-wrapper img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .preview-placeholder { color: #adb5bd; text-align: center; }
+
+        /* 오디오 미리보기 스타일 */
+        .audio-preview-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; }
+        audio { width: 100%; height: 40px; }
+
+        /* 태그 UI */
+        .tag-badge {
+            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;
+            display: inline-flex; align-items: center; transition: 0.2s;
+        }
+        .tag-badge i { cursor: pointer; margin-left: 6px; font-size: 12px; color: #ff5e3a; }
+        
+        .settings-label { font-size: 0.85rem; color: #6c757d; font-weight: 600; margin-bottom: 8px; display: block; }
+    </style>
+</head>
+
 <div class="container my-5" layout:fragment="content">
-    
-    <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
-            <h3 class="fw-bold mb-4 border-bottom pb-3">음악 등록</h3>
-            
-            <form action="/music/upload" method="post" enctype="multipart/form-data" class="bg-white p-4 rounded-3 shadow-sm border">
-                
-                <div class="mb-4">
-                    <label for="musicTitle" class="form-label fw-bold">곡 제목 <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="musicTitle" name="title" placeholder="곡 제목을 입력하세요" required>
-                </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label for="artistName" class="form-label fw-bold">아티스트 <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="artistName" name="artist" placeholder="아티스트명" required>
-                    </div>
-                    <div class="col-md-6 mt-3 mt-md-0">
-                        <label for="genre" class="form-label fw-bold">장르</label>
-                        <select class="form-select" id="genre" name="genre">
-                            <option value="">장르 선택</option>
-                            <option value="pop">팝 (Pop)</option>
-                            <option value="hiphop">힙합 (Hip-Hop)</option>
-                            <option value="indie">인디 (Indie)</option>
-                            <option value="classic">클래식 (Classic)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-4 p-3 bg-light rounded border">
-                    <label for="coverFile" class="form-label fw-bold"><i class="bi bi-image me-1"></i> 앨범 커버 이미지 <span class="text-danger">*</span></label>
-                    <input class="form-control mb-3" type="file" id="coverFile" name="coverImage" accept="image/*" required>
-                    
-                    <label for="audioFile" class="form-label fw-bold"><i class="bi bi-music-note-beamed me-1"></i> 음원 파일 (MP3) <span class="text-danger">*</span></label>
-                    <input class="form-control" type="file" id="audioFile" name="audioFile" accept="audio/*" required>
-                </div>
-
-                <div class="mb-4">
-                    <label for="lyrics" class="form-label fw-bold">곡 설명 및 가사</label>
-                    <textarea class="form-control" id="lyrics" name="description" rows="5" placeholder="곡에 대한 설명이나 가사를 입력해주세요."></textarea>
-                </div>
-
-                <div class="d-flex justify-content-end gap-2 mt-4">
-                    <a th:href="@{/music_list}" class="btn btn-secondary px-4">취소</a>
-                    <button type="submit" class="btn btn-primary px-4 fw-bold">등록하기</button>
-                </div>
-            </form>
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-0">새 음악 업로드</h2>
+            <p class="text-muted mb-0 mt-1">당신의 멋진 선율을 세상에 공유해 보세요.</p>
         </div>
+        <a th:href="@{/content/music/list}" class="btn btn-outline-secondary">취소 및 돌아가기</a>
     </div>
 
+    <form th:action="@{/content/music/write}" method="post" enctype="multipart/form-data" th:object="${createMusicDTO}" id="musicForm">
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4 text-center">
+                        <div class="preview-wrapper" id="thumbPreviewWrapper">
+                            <div class="preview-placeholder" id="thumbPlaceholder">
+                                <i class="bi bi-image fs-1"></i><br>커버 미리보기
+                            </div>
+                            <img id="thumbPreview">
+                        </div>
+                        <h6 class="fw-bold">앨범 커버 이미지</h6>
+                        <p class="text-muted small mb-3" id="thumbFileName">1:1 비율 권장 (JPG, PNG)</p>
+                        
+                        <input type="file" th:field="*{thumbnailFile}" class="d-none" id="thumbnailFile" accept="image/*" onchange="previewThumbnail(this)">
+                        <button type="button" class="btn btn-outline-success btn-sm px-3" onclick="document.getElementById('thumbnailFile').click()">
+                            이미지 선택
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 text-center">
+                        <h6 class="fw-bold mb-3">음원 파일 <span class="text-danger">*</span></h6>
+                        <div class="audio-preview-card mb-3" id="audioPreviewContainer" style="display: none;">
+                            <audio id="audioPreview" controls></audio>
+                        </div>
+                        <p class="text-muted small mb-3" id="musicFileName">MP3, WAV, FLAC</p>
+                        
+                        <input type="file" th:field="*{musicFile}" class="d-none" id="musicFile" accept="audio/*" onchange="previewMusic(this)" required>
+                        <button type="button" class="btn btn-primary btn-sm px-3 w-100" onclick="document.getElementById('musicFile').click()">
+                            <i class="bi bi-music-note-beamed me-1"></i>파일 불러오기
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">음악 세부 정보</h5>
+
+                        <div class="mb-4">
+                            <label th:for="title" class="form-label fw-semibold">곡 제목 <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{title}" class="form-control form-control-lg fs-6" placeholder="곡의 제목을 입력하세요" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label th:for="description" class="form-label fw-semibold">설명 및 가사</label>
+                            <textarea th:field="*{description}" class="form-control" rows="5" placeholder="시청자에게 곡에 대해 설명하거나 가사를 적어주세요."></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-block">공개 범위</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public" checked>
+                                    <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
+
+                                    <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
+                                    <label class="btn btn-outline-primary" for="vis-private">비공개</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-block">댓글 설정</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on" checked>
+                                    <label class="btn btn-outline-secondary" for="comment-on">허용</label>
+
+                                    <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
+                                    <label class="btn btn-outline-secondary" for="comment-off">차단</label>
+                                </div>
+                            </div>
+                        </div>
+						<div class="row row g-3 mb-4">
+							<div class="col-md-6">
+	                            <label class="form-label fw-semibold d-block">소유자 유형</label>
+	                            <div class="btn-group w-100" role="group">
+	                                <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER" checked>
+	                                <label class="btn btn-outline-primary" for="owner-USER">본인</label>
+	
+	                                <input type="radio" class="btn-check" th:field="*{ownerType}" value="TEAM" id="owner-TEAM">
+	                                <label class="btn btn-outline-primary" for="owner-TEAM">팀</label>
+	                            </div>
+	                        </div>
+						</div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">태그 설정</label>
+                            <div id="tagContainer" class="d-flex flex-wrap gap-2 mb-2"></div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">#</span>
+                                <input type="text" id="tagInput" class="form-control" placeholder="태그 입력 후 엔터" onkeypress="handleTagKey(event)">
+                                <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
+                            </div>
+                            <input type="hidden" th:field="*{tagString}" id="finalTagString">
+                        </div>
+
+                        <div class="row g-3 mb-4 p-3 bg-light rounded shadow-sm">
+                            <div class="col-12 mb-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:field="*{fanWork}" id="fanWorkCheck">
+                                    <label class="form-check-label fw-bold" for="fanWorkCheck">2차 창작물(팬워크)인 경우 체크</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="settings-label">프로젝트 연결 (선택)</label>
+                                <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="projectTag 입력">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="settings-label">원본 작품 ID (선택)</label>
+                                <input type="number" th:field="*{originalContentId}" class="form-control form-control-sm" placeholder="ID 입력">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end border-top pt-4 mt-auto">
+                            <button type="submit" class="btn btn-primary px-5 fw-bold shadow">
+                                <i class="bi bi-upload me-2"></i>음악 게시
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </form>
+    
+    <script th:inline="javascript">
+        // 1. 썸네일(커버) 미리보기
+        function previewThumbnail(input) {
+            const fileName = document.getElementById('thumbFileName');
+            const preview = document.getElementById('thumbPreview');
+            const placeholder = document.getElementById('thumbPlaceholder');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                fileName.innerText = input.files[0].name;
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 2. 음원 미리보기
+        function previewMusic(input) {
+            const fileName = document.getElementById('musicFileName');
+            const preview = document.getElementById('audioPreview');
+            const container = document.getElementById('audioPreviewContainer');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                fileName.innerText = file.name;
+                const url = URL.createObjectURL(file);
+                preview.src = url;
+                container.style.display = 'block';
+            }
+        }
+
+        // 3. 태그 관리 로직
+        let tagArray = [];
+        function handleTagKey(e) { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }
+
+        function addTag() {
+            const input = document.getElementById('tagInput');
+            const value = input.value.trim().replace(/#/g, '');
+            if (value && !tagArray.includes(value)) {
+                if (tagArray.length >= 10) { alert("태그는 최대 10개까지 가능합니다."); return; }
+                tagArray.push(value);
+                updateTags();
+                input.value = '';
+            }
+        }
+
+        function removeTag(tag) {
+            tagArray = tagArray.filter(t => t !== tag);
+            updateTags();
+        }
+
+        function updateTags() {
+            const container = document.getElementById('tagContainer');
+            const hiddenInput = document.getElementById('finalTagString');
+            container.innerHTML = tagArray.map(t => `
+                <span class="tag-badge">
+                    #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
+                </span>
+            `).join('');
+            hiddenInput.value = tagArray.join(',');
+        }
+
+        // 4. 유효성 검사 (프로젝트 태그 vs 원본 ID 동시 입력 방지)
+        document.getElementById("musicForm").addEventListener("submit", function(e) {
+            const projectTag = document.querySelector("input[name='projectTag']").value.trim();
+            const originalId = document.querySelector("input[name='originalContentId']").value.trim();
+
+            if (projectTag !== "" && originalId !== "") {
+                alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
+                e.preventDefault();
+            }
+        });
+    </script>
 </div>
 </html>

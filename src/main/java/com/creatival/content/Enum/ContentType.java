@@ -2,5 +2,8 @@ package com.creatival.content.Enum;
 
 public enum ContentType {
 	NOVEL,
-	ART
+	ART,
+	VIDEO,
+	MUSIC,
+	FILE
 }

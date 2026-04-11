@@ -381,7 +381,7 @@
 				<div class="tab-content active" id="content-user">
 
 					<div class="board-top-actions">
-						<a th:href="@{/board/write}" class="btn-write">글 작성</a>
+						<a onclick="return requireLoginAction(() => location.href='/board/write')" class="btn-write">글 작성</a>
 
 						<nav th:if="${!boardList.isEmpty()}">
 						    <ul class="pagination custom-pagination mb-0">

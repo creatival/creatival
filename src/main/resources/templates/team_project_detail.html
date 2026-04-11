@@ -7,36 +7,85 @@
 	  			<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
 	  	</head>
 <div class="container my-5" layout:fragment="content">
-	<meta name="_csrf" th:content="${_csrf.token}">
-	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+    
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <style>
+        /* ===== [공통] 카드형 액션 버튼 스타일 ===== */
+        .action-buttons-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+        .btn-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 75px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            text-decoration: none !important;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 8px;
+            color: #333;
+        }
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+            border-color: #adb5bd;
+            color: #111;
+        }
+        .btn-action i {
+            font-size: 1.5rem;
+            margin-bottom: 3px;
+            line-height: 1;
+        }
+        .btn-action span {
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+        /* 아이콘별 포인트 컬러 */
+        .btn-like i { color: #ff4757; }
+        .btn-follow i { color: #ffc107; }
+        .btn-bookmark i { color: #2D3278; }
+        .btn-share i { color: #333; }
+
+        /* 진행도 바 애니메이션 */
+        .progress { background-color: #e9ecef; border-radius: 10px; }
+        
+        /* 팀원 리스트 추방 버튼 스타일 */
+        .btn-expel {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+    </style>
+
     <div class="row mb-5 pb-4 border-bottom align-items-end">
-
-        <div class="col-md-8">
-
-            <span class="badge bg-primary mb-2"
-                  th:text="${dto.status != null ? dto.status : '모집 중'}">
-            </span>
-
-            <h1 class="fw-bold display-5"
-                th:text="${dto.title != null ? dto.title : 'Platformer Game 개발 프로젝트'}">
-            </h1>
-
+        <div class="col-md-7">
+            <span class="badge bg-primary mb-2" th:text="${dto.status != null ? dto.status : '모집 중'}"></span>
+            <h1 class="fw-bold display-5" th:text="${dto.title != null ? dto.title : 'Platformer Game 개발 프로젝트'}"></h1>
             <p class="text-muted mb-0">
-
-                <i class="bi bi-calendar-check"></i>
-                시작일:
-                <span th:text="${dto.createdAt != null ? #temporals.format(dto.createdAt,'yyyy.MM.dd') : '2026.02.12'}"></span>
-
-                |
-
-                <i class="bi bi-calendar-event"></i>
-                종료일:
-                <span th:text="${dto.endDate != null ? #temporals.format(dto.endDate,'yyyy.MM.dd') : '미정'}"></span>
-
+                <i class="bi bi-calendar-check me-1"></i> 시작일: <span th:text="${dto.createdAt != null ? #temporals.format(dto.createdAt,'yyyy.MM.dd') : '2026.02.12'}"></span> | 
+                <i class="bi bi-calendar-event me-1"></i> 종료일: <span th:text="${dto.endDate != null ? #temporals.format(dto.endDate,'yyyy.MM.dd') : '미정'}"></span> |
+                <i class="bi bi-folder me-1"></i> 카테고리: 게임 개발
             </p>
-
         </div>
+        
+        <div class="col-md-5 mt-4 mt-md-0">
+            <div class="action-buttons-group">
+				<button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${dto.id},'PROJECT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
+			    <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn"  class="btn-action btn-bookmark"><i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span></button>
+			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>	
+            </div>
 
+<<<<<<< HEAD
 
         <div class="col-md-4 text-md-end mt-3 mt-md-0">
 			
@@ -54,400 +103,285 @@
                 수정하기
             </a>
 
+=======
+            <div class="text-md-end">
+                <a th:href="@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}"
+                   sec:authorize="isAuthenticated()"
+                   class="btn btn-outline-secondary btn-sm me-1">수정하기</a>
+            </div>
+>>>>>>> refs/remotes/origin/jinhoe
         </div>
     </div>
 
 
     <div class="row">
-
         <div class="col-lg-8">
-
             <img th:src="${dto.bannerImgUrl != null ? dto.bannerImgUrl : '/images/pic.png'}"
                  class="img-fluid rounded shadow-sm mb-5"
                  alt="프로젝트 대표 이미지"
                  style="width:100%; height:400px; object-fit:cover;">
 
-
             <section class="mb-5">
-
-                <h4 class="fw-bold mb-4 border-bottom pb-2">
-                    프로젝트 소개
-                </h4>
-
-                <div class="lh-lg text-secondary"
-                     th:text="${dto.description != null ? dto.description : '프로젝트 설명이 없습니다.'}">
+                <h4 class="fw-bold mb-4 border-bottom pb-2">프로젝트 소개</h4>
+                <div class="lh-lg text-secondary" th:text="${dto.description != null ? dto.description : ''}">
+					<p>이 프로젝트는 고전적인 플랫폼 게임의 재미를 현대적으로 재해석하는 것을 목표로 합니다. 현재 기본적인 물리 엔진과 캐릭터 컨트롤러가 구현된 상태이며, 함께 맵 디자인과 아트워크를 완성해나갈 팀원을 찾고 있습니다.</p><ul class=\'mt-3\'><li>사용 엔진: Unity 2026</li><li>주요 목표: 5개 스테이지 및 보스전 구현</li><li>모집 기간: 상시 모집</li></ul>
                 </div>
-
             </section>
 
-
             <section class="mb-5">
-
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
-
-                    <h4 class="fw-bold mb-0">
-                        프로젝트 콘텐츠
-                    </h4>
-
-                    <a th:href="@{/Illustration_list}"
-                       class="btn btn-sm btn-outline-secondary">
-                        전체 보기
-                    </a>
-
+                    <h4 class="fw-bold mb-0">프로젝트 콘텐츠</h4>
+                    <a th:href="@{/Illustration_list}" class="btn btn-sm btn-link text-decoration-none">전체 보기 ></a>
                 </div>
-
-				<div class="row g-4">
-
-				    <div class="col-6 col-md-4 col-lg-4"
-				         th:each="content : ${contentList}">
-
-				        <div class="card h-100 shadow-sm border-0 position-relative overflow-hidden">
-
-				            <button class="btn btn-sm position-absolute top-0 end-0 m-2 text-white"
-				                    style="background: rgba(0,0,0,0.4); border-radius:50%; width:32px; height:32px;">
-				                <i class="bi bi-heart"></i>
-				            </button>
-
-				            <a th:href="${content.contentUrl}">
-
-				                <img th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}"
-				                     class="card-img-top"
-				                     style="height:200px; object-fit:cover;">
-
-				            </a>
-
-				            <div class="card-body p-3">
-
-				                <h6 class="card-title fw-bold text-truncate mb-2"
-				                    th:text="${content.title}">
-				                </h6>
-								<span th:if="${content.type != null}" th:switch="${content.type.name()}" class="text-secondary">
-								    <span th:case="'ART'">일러스트</span>
-								    <span th:case="'NOVEL'">소설</span>
-								</span>
-
-				                <div class="d-flex align-items-center">
-
-				                    <img th:src="${content.profileImgUrl != null ? content.profileImgUrl : 'https://dummyimage.com/20x20/ced4da/6c757d'}"
-				                         class="rounded-circle me-2"
-				                         style="width:20px;height:20px;object-fit:cover;">
-
-				                    <span class="small text-muted"
-				                          th:text="${content.username}">
-				                    </span>
-
-				                </div>
-
-				                <div class="mt-2 pt-2 border-top d-flex gap-3 text-muted"
-				                     style="font-size:0.85rem">
-
-				                    <span>
-				                        <i class="bi bi-eye"></i>
-				                        <span th:text="${content.viewCount}"></span>
-				                    </span>
-
-				                    <span>
-				                        <i class="bi bi-heart-fill text-danger"></i>
-				                        <span th:text="${content.likeCount}"></span>
-				                    </span>
-
-				                </div>
-
-				            </div>
-				        </div>
-				    </div>
-
-				</div>
-
+                
+                <div class="row g-4">
+                    <div class="col-6 col-md-4 col-lg-4" th:each="content : ${contentList}">
+                        <div class="card h-100 shadow-sm border-0 position-relative overflow-hidden">
+                            <button class="btn btn-sm position-absolute top-0 end-0 m-2 text-white z-1" style="background: rgba(0,0,0,0.4); border-radius: 50%; width: 32px; height: 32px;">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                            <a th:href="${content.contentUrl}">
+                                <img th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}" class="card-img-top" alt="콘텐츠 이미지" style="height: 200px; object-fit: cover;">
+                            </a>
+                            <div class="card-body p-3">
+                                <h6 class="card-title fw-bold text-truncate mb-2" th:text="${content.title}">여름날의 추억</h6>
+                                <span th:if="${content.type != null}" th:switch="${content.type.name()}" class="badge bg-light text-dark border mb-2">
+                                    <span th:case="'ART'">일러스트</span>
+                                    <span th:case="'NOVEL'">소설</span>
+                                </span>
+                                <div class="d-flex align-items-center mb-2">
+                                    <img th:src="${content.profileImgUrl != null ? content.profileImgUrl : 'https://dummyimage.com/20x20/ced4da/6c757d'}" class="rounded-circle me-2" style="width:20px;height:20px;object-fit:cover;">
+                                    <span class="small text-muted" th:text="${content.username}">SummerRain</span>
+                                </div>
+                                <div class="mt-2 pt-2 border-top d-flex gap-3 text-muted small">
+                                    <span><i class="bi bi-eye"></i> <span th:text="${content.viewCount}">850</span></span>
+                                    <span><i class="bi bi-heart-fill text-danger"></i> <span th:text="${content.likeCount}">120</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
-
         </div>
-
-
 
         <div class="col-lg-4">
-
             <div class="card shadow-sm border-0 mb-4">
-
                 <div class="card-body">
-
-                    <h5 class="fw-bold mb-4 border-bottom pb-2">
-                        프로젝트 정보
-                    </h5>
-
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">프로젝트 정보</h5>
                     <div class="d-flex align-items-center mb-3">
-
-                        <img th:src="${dto.profileImgUrl != null ? dto.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}"
-                             class="rounded-circle me-3"
-                             style="width:40px;height:40px;object-fit:cover;">
-
+                        <img th:src="${dto.profileImgUrl != null ? dto.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}" class="rounded-circle me-3" style="width:40px;height:40px;object-fit:cover;">
                         <div>
-
-                            <h6 class="mb-0 fw-bold"
-                                th:text="${dto.teamName != null ? dto.teamName : 'Team Creatival'}">
-                            </h6>
-
-                            <small class="text-muted">
-                                설립일:
-                                <span th:text="${dto.teamCreatedAt != null ? #temporals.format(dto.teamCreatedAt,'yyyy.MM.dd') : '2025.10.01'}"></span>
-                            </small>
-
+                            <h6 class="mb-0 fw-bold" th:text="${dto.teamName != null ? dto.teamName : 'Team Creatival'}"></h6>
+                            <small class="text-muted">설립일: <span th:text="${dto.teamCreatedAt != null ? #temporals.format(dto.teamCreatedAt,'yyyy.MM.dd') : '2025.10.01'}"></span></small>
                         </div>
-
+                    </div>
+					<div class="d-flex align-items-center mb-3">
+					                       
+                        <div>
+                            <p class="mb-0 mt-1 fw-bold small" >좋아요 현황</p>
+                            <i id="likeIcon" class="bi text-danger bi-heart-fill"></i> <small class="text-danger"th:text="|  ${like.count}|" id="likeCount">좋아요 개수</small><small class="text-danger">개</small>
+                        </div>
                     </div>
                     <div class="d-flex align-items-center mb-3">
                         <div>
-
-                            <h6 class="mb-0 fw-bold">
-								프로젝트 태그
-                            </h6>
-
-                            <small class="badge rounded-pill tag-badge">
-                     			프로젝트 태그:
-                                <span th:text="${dto.projectTag != null ? dto.projectTag : 'null'}"></span>
-                            </small>
-
+                            <h6 class="mb-0 fw-bold">프로젝트 태그</h6>
+							<small class="badge rounded-pill tag-badge">
+	                     			프로젝트 태그:
+	                                <span th:text="${dto.projectTag != null ? dto.projectTag : 'null'}"></span>
+	                            </small>
                         </div>
-
                     </div>
-
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="w-100">
+                            <h6 class="mb-0 fw-bold mb-2">프로젝트 버전</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge" style="background-color: #4a90e2;" th:text="${log != null ? log.versionTag + ' : ' + log.title : 'v 1.0.0'}">v 1.2.3</span>
+                                <a th:href="@{/team/{tid}/project/{pid}/history(tid=${dto.teamId}, pid=${dto.id})}" class="small text-decoration-none">버전 역사 보기</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-
-
 			<div class="card shadow-sm border-0 mb-4">
-			    <div class="card-body">
+						    <div class="card-body">
 
-			        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
-			            <h5 class="fw-bold mb-0">
-			                프로젝트 진행도
-			            </h5>
+						        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+						            <h5 class="fw-bold mb-0">
+						                프로젝트 진행도
+						            </h5>
 
-			            <a class="btn btn-sm btn-outline-primary"
-			               sec:authorize="isAuthenticated()"
-			               data-bs-toggle="modal"
-			               data-bs-target="#createCheckModal">
-			                계획 추가하기
-			            </a>
-			        </div>
+						            <a class="btn btn-sm btn-outline-primary"
+						               sec:authorize="isAuthenticated()"
+						               data-bs-toggle="modal"
+						               data-bs-target="#createCheckModal">
+						                계획 추가하기
+						            </a>
+						        </div>
 
-			        <!-- 전체 공정률 -->
-					<div class="mb-4">
-					    <div class="d-flex justify-content-between mb-1">
-					        <small class="text-muted small">
-					            전체 공정률
-					        </small>
+						        <!-- 전체 공정률 -->
+								<div class="mb-4">
+								    <div class="d-flex justify-content-between mb-1">
+								        <small class="text-muted small">
+								            전체 공정률
+								        </small>
 
-					        <small id="progressText"
-					               class="fw-bold text-primary"
-					               th:text="${(dto.totalProgress != null ? dto.totalProgress : 0) + '%'}">
-					        </small>
-					    </div>
+								        <small id="progressText"
+								               class="fw-bold text-primary"
+								               th:text="${(dto.totalProgress != null ? dto.totalProgress : 0) + '%'}">
+								        </small>
+								    </div>
 
-					    <div class="progress" style="height:8px">
-					        <div id="progressBar"
-					             class="progress-bar progress-bar-striped progress-bar-animated"
-					             role="progressbar"
-					             th:style="'width:' + ${(dto.totalProgress != null ? dto.totalProgress : 0)} + '%'">
-					        </div>
-					    </div>
-					</div>
+								    <div class="progress" style="height:8px">
+								        <div id="progressBar"
+								             class="progress-bar progress-bar-striped progress-bar-animated"
+								             role="progressbar"
+								             th:style="'width:' + ${(dto.totalProgress != null ? dto.totalProgress : 0)} + '%'">
+								        </div>
+								    </div>
+								</div>
 
-			        <!-- 체크리스트 -->
-					<div class="list-group" th:if="${checkList != null}" id="checkList">
+						        <!-- 체크리스트 -->
+								<div class="list-group" th:if="${checkList != null}" id="checkList">
 
-					    <div class="list-group-item d-flex justify-content-between align-items-center"
-					         th:each="check : ${checkList}">
+								    <div class="list-group-item d-flex justify-content-between align-items-center"
+								         th:each="check : ${checkList}">
 
-					        <div>
-					            <!-- 제목 -->
-					            <div class="fw-semibold"
-					                 th:text="${check.title}">
-					            </div>
+								        <div>
+								            <!-- 제목 -->
+								            <div class="fw-semibold"
+								                 th:text="${check.title}">
+								            </div>
 
-					            <!-- 마감일 -->
-					            <small class="text-muted">
-					                마감일 :
-					                <span th:if="${check.deadline != null}"
-					                      th:text="${#temporals.format(check.deadline,'yyyy-MM-dd HH:mm')}">
-					                </span>
+								            <!-- 마감일 -->
+								            <small class="text-muted">
+								                마감일 :
+								                <span th:if="${check.deadline != null}"
+								                      th:text="${#temporals.format(check.deadline,'yyyy-MM-dd HH:mm')}">
+								                </span>
 
-					                <span th:if="${check.deadline == null}">
-					                    미정
-					                </span>
-					            </small>
-					        </div>
+								                <span th:if="${check.deadline == null}">
+								                    미정
+								                </span>
+								            </small>
+								        </div>
 
-					        <!-- 체크박스 -->
-					        <div>
-					            <!-- 팀장만 체크 가능 -->
-								<input type="checkbox"
-								       class="form-check-input progress-check"
-								       th:data-id="${check.id}" 
-								       th:checked="${check.checked}"
-								       th:disabled="${dto.leaderUsername != #authentication.name}" />
-									   <a th:if="${dto.leaderUsername == #authentication.name}"
-									              th:href="@{/team/check/delete/{cid}(cid=${check.id})}"
-									              class="text-danger me-3"
-									              onclick="return confirm('이 계획을 정말 삭제하시겠습니까?');"
-									              style="text-decoration: none;">
-									               <i class="bi bi-x-circle-fill"></i>
-									           </a>
-					        </div>
+								        <!-- 체크박스 -->
+								        <div>
+								            <!-- 팀장만 체크 가능 -->
+											<input type="checkbox"
+											       class="form-check-input progress-check"
+											       th:data-id="${check.id}" 
+											       th:checked="${check.checked}"
+											       th:disabled="${dto.leaderUsername != #authentication.name}" />
+												   <a th:if="${dto.leaderUsername == #authentication.name}"
+												              th:href="@{/team/check/delete/{cid}(cid=${check.id})}"
+												              class="text-danger me-3"
+												              onclick="return confirm('이 계획을 정말 삭제하시겠습니까?');"
+												              style="text-decoration: none;">
+												               <i class="bi bi-x-circle-fill"></i>
+												           </a>
+								        </div>
 
-					    </div>
+								    </div>
 
-					</div>
+								</div>
 
-			    </div>
-			</div>
-
+						    </div>
+						</div>
 
             <div class="d-grid gap-2">
-
-                <button class="btn btn-light border py-3 text-start px-3">
-
-                    <i class="bi bi-share me-2"></i>
-                    프로젝트 공유하기
-
+                <button class="btn btn-light border py-3 text-start px-3 shadow-sm">
+                    <i class="bi bi-megaphone me-2"></i> 프로젝트 홍보 및 공유
                 </button>
-
             </div>
 
-			<div class="modal fade"
-			     id="createCheckModal"
-			     tabindex="-1"
-			     aria-labelledby="createCheckModalLabel"
-			     aria-hidden="true"
-			     sec:authorize="isAuthenticated()">
-
-			    <div class="modal-dialog modal-dialog-centered">
-			        <div class="modal-content">
-
-			            <div class="modal-header">
-			                <h5 class="modal-title fw-bold" id="createCheckModalLabel">
-			                    새로운 진행 계획 추가
-			                </h5>
-			                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			            </div>
-
-			            <form th:action="@{/team/createCheck/{id}(id=${dto.id})}" method="post">
-			                
-			                <div class="modal-body">
-
-			                    <div class="mb-3">
-			                        <label class="form-label fw-semibold">계획 제목</label>
-			                        <input type="text"
-			                               name="title"
-			                               class="form-control"
-			                               placeholder="예: 캐릭터 원화 완성"
-			                               required>
-			                    </div>
-
-			                    <div class="mb-3">
-			                        <label class="form-label fw-semibold">마감 기한 (선택)</label>
-			                        <input type="datetime-local"
-			                               name="deadline"
-			                               class="form-control">
-			                        <div class="form-text">계획을 완료해야 하는 날짜와 시간을 선택하세요.</div>
-			                    </div>
-
-			                </div>
-
-			                <div class="modal-footer">
-			                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">취소</button>
-			                    <button type="submit" class="btn btn-primary">계획 추가</button>
-			                </div>
-
-			            </form>
-
-			        </div>
-			    </div>
-			</div>
+            <div class="modal fade" id="createCheckModal" tabindex="-1" aria-labelledby="createCheckModalLabel" aria-hidden="true" sec:authorize="isAuthenticated()">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="createCheckModalLabel">새로운 진행 계획 추가</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form th:action="@{/team/createCheck/{id}(id=${dto.id})}" method="post">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">계획 제목</label>
+                                    <input type="text" name="title" class="form-control" placeholder="예: 캐릭터 원화 완성" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">마감 기한 (선택)</label>
+                                    <input type="datetime-local" name="deadline" class="form-control">
+                                    <div class="form-text">계획을 완료해야 하는 날짜와 시간을 선택하세요.</div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">취소</button>
+                                <button type="submit" class="btn btn-primary">계획 추가</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-	<script>
 
-	document.addEventListener("DOMContentLoaded", function () {
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tokenMeta = document.querySelector('meta[name="_csrf"]');
+        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        
+        // 보안 메타 태그가 없을 경우를 대비한 예외 처리
+        const token = tokenMeta ? tokenMeta.content : '';
+        const header = headerMeta ? headerMeta.content : '';
 
-	    const checkboxes = document.querySelectorAll(".progress-check");
-	    const progressBar = document.getElementById("progressBar");
-	    const progressText = document.getElementById("progressText");
+        const checkboxes = document.querySelectorAll(".progress-check");
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
 
-	    function updateProgress() {
+        function updateProgress() {
+            const total = checkboxes.length;
+            let checked = 0;
 
-	        const total = checkboxes.length;
-	        let checked = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) checked++;
+            });
 
-	        checkboxes.forEach(cb => {
-	            if (cb.checked) checked++;
-	        });
+            const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+            progressBar.style.width = percent + "%";
+            progressText.innerText = percent + "%";
+        }
 
-	        const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+        // 초기 페이지 로드 시 진행률 세팅
+        updateProgress();
 
-	        progressBar.style.width = percent + "%";
-	        progressText.innerText = percent + "%";
-	    }
-		updateProgress();
+        // 체크박스 변경 이벤트 바인딩
+        checkboxes.forEach(cb => {
+            cb.addEventListener("change", function () {
+                // 1. 화면 UI 즉시 업데이트
+                updateProgress();
 
-	    checkboxes.forEach(cb => {
-	        cb.addEventListener("change", updateProgress);
-	    });
+                // 2. 서버로 AJAX (Fetch API) 전송
+                const checkId = this.dataset.id;
+                const isChecked = this.checked;
 
-	});
-	</script>
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-
-		    const token = document.querySelector('meta[name="_csrf"]').content;
-		    const header = document.querySelector('meta[name="_csrf_header"]').content;
-
-		    const checkboxes = document.querySelectorAll(".progress-check");
-		    const progressBar = document.getElementById("progressBar");
-		    const progressText = document.getElementById("progressText");
-
-		    function updateProgress() {
-
-		        const total = checkboxes.length;
-		        let checked = 0;
-
-		        checkboxes.forEach(cb => {
-		            if (cb.checked) checked++;
-		        });
-
-		        const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
-
-		        progressBar.style.width = percent + "%";
-		        progressText.innerText = percent + "%";
-		    }
-
-		    checkboxes.forEach(cb => {
-
-		        cb.addEventListener("change", function () {
-
-		            updateProgress();
-
-		            const checkId = this.dataset.id;
-		            const checked = this.checked;
-
-		            fetch("/team/check/update", {
-		                method: "POST",
-		                headers: {
-		                    "Content-Type": "application/json",
-		                    [header]: token
-		                },
-		                body: JSON.stringify({
-		                    id: checkId,
-		                    checked: checked
-		                })
-		            });
-
-		        });
-
-		    });
-
-		});
-	</script>
+                fetch("/team/check/update", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(header && token ? { [header]: token } : {}) // CSRF 헤더 동적 추가
+                    },
+                    body: JSON.stringify({
+                        id: checkId,
+                        checked: isChecked
+                    })
+                }).catch(error => {
+                    console.error("진행상태 업데이트 중 오류가 발생했습니다:", error);
+                    // 실패 시 체크박스 상태 원복 로직 추가 가능
+                });
+            });
+        });
+    });
+    </script>
 </div>
 </html>

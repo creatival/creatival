@@ -246,13 +246,21 @@
     </div>
 
     <div class="comment-section mt-5 p-4 border">
-        <h5 class="fw-bold mb-4">댓글 <span class="text-indigo">0</span></h5>
+        <h5 class="fw-bold mb-4">댓글 <span class="text-indigo" th:text="${commentCount}">0</span></h5>
         <div class="mt-4 shadow-sm">
-            <textarea class="form-control border-bottom-0 rounded-0" rows="3" placeholder="댓글을 입력해주세요."></textarea>
-            <div class="d-flex justify-content-end border p-2 bg-light">
-                <button class="btn btn-dark rounded-0 px-4 btn-sm" style="background-color:#2c3e50;">등록</button>
-            </div>
+			<form th:action="@{/comment/board/write/{id}(id=${board.id})}" method="post" class="align-items-center justify-content-center mb-5">
+	            <textarea class="form-control border-bottom-0 rounded-0" rows="3" placeholder="댓글을 입력해주세요." name="text"></textarea>
+	            <div class="d-flex justify-content-end border p-2 bg-light">
+	                <button type="submit" class="btn btn-dark rounded-0 px-4 btn-sm" style="background-color:#2c3e50;">등록</button>
+	            </div>
+			</form>
         </div>
+		
+		<div class="comment-list">
+		    <th:block th:each="comment : ${comments}">
+		        <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='board', targetId=${board.id})}"></div>
+		    </th:block>
+		</div>
     </div>
 
     <div class="mt-5 border-top border-bottom">

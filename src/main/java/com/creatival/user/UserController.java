@@ -18,13 +18,20 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.creatival.MailService;
+import com.creatival.content.ContentService;
+import com.creatival.follow.FollowService;
+import com.creatival.like.TargetType;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
+import com.creatival.team.TeamService;
 import com.creatival.token.UserToken;
 import com.creatival.token.UserTokenService;
 import com.creatival.user.DTO.RequestSignUp;
@@ -46,6 +53,9 @@ public class UserController {
 	private final UserService userService;
 	private final UserTokenService userTokenService;
 	private final TagService tagService;
+	private final FollowService followService;
+	private final TeamService teamService;
+	private final ContentService contentService;
 	
 	@GetMapping("/signUp")
 	public String signup(Model model) {
@@ -83,11 +93,40 @@ public class UserController {
 	}
 	
 	@GetMapping("/myPage")
-	public String myPage(Model model, Principal principal) {
+	public String myPage(Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
 		Users user = userService.getUserByUsername(principal.getName());
 		model.addAttribute("user", ResponseProfile.from(user));
 		List<ResponseTagDTO> userTags = tagService.getTagForUser(user);
 		model.addAttribute("tagList", userTags);
+		model.addAttribute("myTeams", teamService.getTeamListByUser(user));
+		model.addAttribute("arts", contentService.getArtByUser(user));
+		model.addAttribute("novels", contentService.getNovelByUser(user));
+		model.addAttribute("musics", contentService.getMusicByUser(user));
+		model.addAttribute("videos", contentService.getVideoByUser(user));
+		return "mypage_home";
+	}
+	
+	@GetMapping("/myPage/{id}")
+	public String profilePage(Model model, @PathVariable("id") Long id, Principal principal) {
+		Users user = userService.getUserById(id);
+		model.addAttribute("user", ResponseProfile.from(user));
+		List<ResponseTagDTO> userTags = tagService.getTagForUser(user);
+		model.addAttribute("tagList", userTags);
+		
+		Users loginUser =null;
+		if(principal != null) {
+			loginUser = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("follow", followService.getFollow(loginUser, TargetType.USER, user.getId()));
+		model.addAttribute("myTeams", teamService.getTeamListByUser(user));
+		model.addAttribute("arts", contentService.getArtByUserOnlyPublic(user));
+		model.addAttribute("novels", contentService.getNovelByUserOnlyPublic(user));
+		model.addAttribute("musics", contentService.getMusicByUserOnlyPublic(user));
+		model.addAttribute("videos", contentService.getVideoByUserOnlyPublic(user));
 		return "mypage_home";
 	}
 	

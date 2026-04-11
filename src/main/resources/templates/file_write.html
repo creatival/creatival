@@ -1,126 +1,164 @@
 <html layout:decorate="~{layout}">
-<div class="container" layout:fragment="content">
+<div class="container-fluid" layout:fragment="content">
     <style>
-        .detail-container {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-        }
+        .detail-container { margin: 0 auto; position: relative; }
+        
+        /* 뒤로가기 버튼: seungjae 디자인 */
         .back-btn {
-            position: absolute;
-            left: -50px;
-            top: 10px;
-            font-size: 1.5rem;
-            color: #333;
-            text-decoration: none;
+            position: absolute; left: 0; top: 0; font-size: 1.8rem;
+            color: #333; text-decoration: none; z-index: 10;
         }
-        /* 입력창 디자인 커스텀 (디자인 유지) */
+
         .input-title {
-            font-size: 2rem;
-            font-weight: bold;
-            border: none;
-            outline: none;
-            width: 100%;
-            text-align: center;
-            background: transparent;
-        }
-        .input-content {
-            border: none;
-            outline: none;
-            width: 100%;
-            min-height: 200px;
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: 500;
-            background: transparent;
-            resize: none;
-        }
-        .user-info {
-            color: #999;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-        .section-divider {
-            border: none;
-            border-top: 1px solid #dee2e6;
-            margin: 40px 0;
-        }
-        /* 파일 선택 박스 스타일 */
-        .file-preview-box {
-            background-color: #e0e0e0;
-            width: 150px;
-            height: 100px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin: 5px;
-            cursor: pointer;
-            overflow: hidden;
-            transition: background 0.2s;
-            vertical-align: top;
-        }
-        .file-preview-box:hover {
-            background-color: #d0d0d0;
-        }
-        .file-preview-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .btn-action {
-            background-color: #323b6d;
-            color: white;
-            padding: 10px 40px;
-            border: none;
-            border-radius: 4px;
-        }
-        .btn-action:hover {
-            background-color: #242a50;
-            color: white;
+            font-size: 2.2rem; font-weight: bold; border: none; outline: none;
+            width: 100%; text-align: center; background: transparent; padding: 0 50px;
         }
         
+        .input-content {
+            border: none; outline: none; width: 100%; min-height: 300px;
+            text-align: center; font-size: 1.15rem; font-weight: 500;
+            background: transparent; resize: none;
+        }
+
+        .section-divider { border: none; border-top: 2px solid #ffcec5; margin: 40px 0; }
+
+        /* 파일 프리뷰 박스: HEAD의 명확한 점선 + seungjae의 라운딩 결합 */
+        .file-preview-box {
+            background-color: #eaebf3; width: 160px; height: 120px;
+            display: inline-flex; flex-direction: column; align-items: center;
+            justify-content: center; margin: 8px; cursor: pointer;
+            overflow: hidden; transition: all 0.2s; vertical-align: top;
+            border: 2px dashed #6a76ab; border-radius: 15px;
+        }
+        
+        .file-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        .file-preview-box:hover { background-color: #daddf0; transform: scale(1.02); }
+
+        .file-label { font-size: 0.8rem; color: #6a76ab; font-weight: bold; margin-top: 5px; }
+
+        /* 태그 스타일: seungjae 디자인 적용 */
+        .tag-badge {
+            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
+            padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;
+            display: inline-flex; align-items: center; transition: 0.2s;
+        }
+        .tag-badge i { cursor: pointer; margin-left: 8px; color: #ff5e3a; font-size: 14px; }
+        .tag-badge:hover { background-color: #d1dbff; }
+
+        .btn-action {
+            background-color: #323b6d; color: white; padding: 12px 80px;
+            border: none; border-radius: 8px; font-weight: bold;
+            font-size: 1.1rem; transition: background 0.2s;
+        }
+        .btn-action:hover { background-color: #242a50; color: white; }
+
+        .settings-label { font-weight: bold; font-size: 0.9rem; color: #555; margin-bottom: 8px; display: block; }
+
         @media (max-width: 992px) {
-            .back-btn { position: static; display: block; margin-bottom: 20px; }
+            .back-btn { position: static; display: inline-block; margin-bottom: 20px; }
+            .input-title { padding: 0; }
         }
     </style>
 
     <main class="py-5">
-        <form th:action="@{/upload}" method="post" enctype="multipart/form-data" class="detail-container">
+        <form th:action="@{/content/file/write}" method="post" enctype="multipart/form-data" 
+              class="detail-container col-11 col-lg-10 mx-auto" th:object="${createFileDTO}" id="fileUploadForm">
+            
             <a href="javascript:history.back()" class="back-btn">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
-            <div class="text-center">
-                <input type="text" name="title" class="input-title" placeholder="제목을 입력하세요" required>
-                <div class="user-info mt-2">
-                    <span class="user-id">현재 사용자 아이디</span> 
+            <div class="text-center pt-2">
+                <input type="text" th:field="*{title}" class="input-title" placeholder="제목을 입력하세요" required>
+                <div class="user-info mt-3">
+                    <span class="user-id fw-medium text-secondary" th:text="${#authentication.name}">사용자 아이디</span> 
                 </div>
                 <hr class="section-divider">
             </div>
 
+            <div class="text-center mb-4">
+                <input type="file" id="extraImg" name="extraImg" class="d-none" accept="image/*" onchange="previewSingleFile(this, 'extra-preview')">
+                <div id="extra-preview" class="file-preview-box" onclick="document.getElementById('extraImg').click()">
+                    <i class="bi bi-image fs-2" style="color: #6a76ab;"></i>
+                    <span class="file-label">대표 이미지 등록</span>
+                </div>
+                <p class="small mt-2 text-muted">설명을 위한 이미지를 등록해주세요.(필수 아님)</p>
+            </div>
+
             <div class="content-area text-center">
-                <textarea name="content" class="input-content" placeholder="내용을 입력하세요 (그거거)" required></textarea>
+                <textarea th:field="*{description}" class="input-content" placeholder="파일에 대한 상세 설명을 입력하세요" required></textarea>
             </div>
 
             <hr class="section-divider">
 
             <div class="text-center mb-5">
-                <p class="small fw-bold mb-3">첨부파일 추가 (클릭하여 파일 선택)</p>
-                
-                <input type="file" id="fileInput" name="files" multiple class="d-none" onchange="handleFileSelect(this)">
-                
+                <p class="small fw-bold mb-3" style="color: #6a76ab;">첨부파일 추가 (클릭하여 파일 선택)</p>
                 <div id="preview-list" class="d-flex justify-content-center gap-2 flex-wrap">
-                    <div class="file-preview-box rounded" onclick="document.getElementById('fileInput').click()">
-                        <i class="bi bi-plus-lg fs-2 text-white"></i>
+                    <input type="file" id="mainFile" name="file" class="d-none" onchange="previewSingleFile(this, 'main-preview')">
+                    <div id="main-preview" class="file-preview-box" onclick="document.getElementById('mainFile').click()">
+                        <i class="bi bi-file-earmark-plus fs-2" style="color: #6a76ab;"></i>
+                        <span class="file-label">주 파일 선택</span>
                     </div>
-                </div>
-
-                <div class="mt-4">
-                    <input type="text" name="tags" class="form-control border-0 text-center text-primary" placeholder="#태그 #입력 (쉼표나 공백으로 구분)">
                 </div>
             </div>
 
+            <div class="mb-5 text-center">
+                <label class="settings-label"><i class="bi bi-hash"></i> 태그 설정</label>
+                <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
+                <div class="input-group mx-auto shadow-sm" style="max-width: 450px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted">#</span>
+                    <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그 입력 후 엔터" onkeypress="handleTagKey(event)">
+                    <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
+                </div>
+                <input type="hidden" name="tagString" id="finalTagString">
+            </div>
+
             <hr class="section-divider">
+
+            <div class="row g-4 mb-4 text-start bg-light p-4 rounded-4 shadow-sm">
+                <div class="col-md-4">
+                    <label class="settings-label">공개 범위</label>
+                    <div class="btn-group w-100">
+                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public" checked>
+                        <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
+                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
+                        <label class="btn btn-outline-primary" for="vis-private">비공개</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="settings-label">댓글 설정</label>
+                    <div class="btn-group w-100">
+                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on" checked>
+                        <label class="btn btn-outline-secondary" for="comment-on">허용</label>
+                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
+                        <label class="btn btn-outline-secondary" for="comment-off">차단</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="settings-label">소유자 유형</label>
+                    <div class="btn-group w-100">
+                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER" checked>
+                        <label class="btn btn-outline-primary" for="owner-USER">개인</label>
+                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="TEAM" id="owner-TEAM">
+                        <label class="btn btn-outline-primary" for="owner-TEAM">팀</label>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-4 pt-3 border-top">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" th:field="*{fanWork}" id="fanWorkCheck">
+                        <label class="form-check-label fw-bold" for="fanWorkCheck">2차 창작물(팬워크)인 경우 체크</label>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="프로젝트 연결 키워드 (선택)">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" th:field="*{originalContentId}" class="form-control form-control-sm" placeholder="원본 작품 ID (선택)">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="text-center mt-5">
                 <button type="submit" class="btn btn-action">등록 완료</button>
@@ -129,39 +167,75 @@
     </main>
 
     <script>
-        function handleFileSelect(input) {
-            const previewList = document.getElementById('preview-list');
-            // 기존 미리보기 초기화 (필요에 따라 유지하고 싶으면 append 방식으로 변경 가능)
-            previewList.innerHTML = `
-                <div class="file-preview-box rounded" onclick="document.getElementById('fileInput').click()">
-                    <i class="bi bi-plus-lg fs-2 text-white"></i>
-                </div>
-            `;
-
-            if (input.files) {
-                Array.from(input.files).forEach(file => {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const box = document.createElement('div');
-                        box.className = 'file-preview-box rounded';
-                        
-                        // 이미지 파일이면 썸네일 표시, 아니면 아이콘 표시
-                        if (file.type.startsWith('image/')) {
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            box.appendChild(img);
-                        } else {
-                            box.innerHTML = `<i class="bi bi-file-earmark-arrow-up fs-2 text-white"></i>`;
-                        }
-                        
-                        previewList.prepend(box); // 새 파일을 리스트 앞에 추가
-                    };
-                    
-                    reader.readAsDataURL(file);
-                });
+        // 파일 미리보기 (이미지 및 파일명 대응)
+        function previewSingleFile(input, previewId) {
+            const previewBox = document.getElementById(previewId);
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewBox.innerHTML = '';
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        previewBox.appendChild(img);
+                    } else {
+                        previewBox.innerHTML = `
+                            <i class="bi bi-file-earmark-check fs-2 text-success"></i>
+                            <span class="file-label" style="font-size: 0.7rem; padding: 5px; word-break: break-all;">
+                                ${file.name}
+                            </span>`;
+                    }
+                };
+                reader.readAsDataURL(file);
             }
         }
+
+        // 태그 로직 (HEAD 기능 + seungjae 전송방지 디테일)
+        let tagArray = [];
+        function handleTagKey(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // 폼 전송 방지 (중요)
+                addTag();
+            }
+        }
+
+        function addTag() {
+            const input = document.getElementById('tagInput');
+            const value = input.value.trim().replace(/#/g, '');
+            if (value && !tagArray.includes(value)) {
+                if (tagArray.length >= 10) { alert("태그는 최대 10개까지 가능합니다."); return; }
+                tagArray.push(value);
+                updateTags();
+                input.value = '';
+            }
+        }
+
+        function removeTag(tag) {
+            tagArray = tagArray.filter(t => t !== tag);
+            updateTags();
+        }
+
+        function updateTags() {
+            const container = document.getElementById('tagContainer');
+            const hiddenInput = document.getElementById('finalTagString');
+            container.innerHTML = tagArray.map(t => `
+                <span class="tag-badge shadow-sm">
+                    #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
+                </span>`).join('');
+            hiddenInput.value = tagArray.join(',');
+        }
+
+        // 폼 제출 검증 (HEAD의 핵심 데이터 무결성 로직)
+        document.getElementById("fileUploadForm").addEventListener("submit", function(e) {
+            const projectTag = document.querySelector("input[name='projectTag']").value.trim();
+            const originalContentId = document.querySelector("input[name='originalContentId']").value.trim();
+            
+            if (projectTag !== "" && originalContentId !== "") {
+                alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
+                e.preventDefault();
+            }
+        });
     </script>
 </div>
 </html>

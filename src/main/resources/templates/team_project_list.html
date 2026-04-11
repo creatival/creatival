@@ -37,20 +37,12 @@
 		    <div class="col" th:each="project : ${paging}">
 		        <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
 		            
-		            <a th:href="@{/team/{tid}/project/{pid}/detail(tid=${teamId}, pid=${project.id})}">
+		            <a th:href="@{/team/{tid}/project/{pid}(tid=${teamId}, pid=${project.id})}">
 		                <img th:src="${project.bannerImgUrl}" class="card-img-top comic-card-img" alt="프로젝트 썸네일">
 		            </a>
 		            
 		            <div class="card-body p-2">
 		                <h6 class="card-title fw-bold text-truncate" th:text="${project.title}">프로젝트 제목</h6>
-		                
-		                <div class="d-flex justify-content-between align-items-center fs-7">
-		                    <a class="btn btn-primary" th:href="@{/team/{tid}/project/{pid}/edit(tid=${teamId}, pid=${project.id})}">수정</a>
-		                    
-		                    <form th:action="@{/team/{tid}/project/{pid}/delete(tid=${teamId}, pid=${project.id})}" method="post">
-		                        <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
-		                    </form>
-		                </div>
 		            </div>
 		        </div>
 		    </div>

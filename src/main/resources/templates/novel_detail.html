@@ -76,37 +76,69 @@
         .custom-pagination .active .page-link { 
             background: none !important; color: #ff5e3a !important; border-bottom: 3px solid #ff5e3a; 
         }
+
+        /* ===== [신규] 버튼 액션 디자인 ===== */
+        .action-buttons { display: flex; gap: 12px; margin-top: 25px; }
+        .btn-action {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 75px; height: 80px; background: white; border: 1px solid #dee2e6;
+            border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s ease; cursor: pointer; padding: 10px;
+        }
+        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); border-color: #adb5bd; }
+        .btn-action i { font-size: 1.6rem; margin-bottom: 4px; line-height: 1; }
+        .btn-action span { font-size: 12px; font-weight: bold; color: #555; }
+        
+        .btn-like i { color: #ff4757; }
+        .btn-share i { color: #2f3e75; }
     </style>
 </head>
 
 <div class="container novel-container" layout:fragment="content">
 	
     <div class="row">
-        <div class="col-md-4 novel-sidebar">
-            <div class="novel-thumb-wrapper shadow" 
-                 th:data-bs-toggle="${novel.username == loginUsername ? 'modal' : ''}" 
-                 th:data-bs-target="${novel.username == loginUsername ? '#thumbnailUpdateModal' : ''}">
-                <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" alt="표지">
-                <div class="camera-icon" th:if="${novel.username == loginUsername}"><i class="bi bi-camera-fill"></i></div>
-            </div>
+		<div class="col-md-4 novel-sidebar">
+		    <div class="novel-thumb-wrapper shadow" 
+		         th:data-bs-toggle="${novel.username == loginUsername ? 'modal' : ''}" 
+		         th:data-bs-target="${novel.username == loginUsername ? '#thumbnailUpdateModal' : ''}">
+		        <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" alt="표지">
+		        <div class="camera-icon" th:if="${novel.username == loginUsername}"><i class="bi bi-camera-fill"></i></div>
+		    </div>
 
-            <h3 class="fw-bold mb-1" th:text="${novel.title}">소설 제목</h3>
-            <p class="text-muted mb-3" th:text="${novel.displayname}">작가이름</p>
-            <div class="d-flex justify-content-center gap-3 text-muted small mb-3">
-                <span>조회수 <strong th:text="${novel.viewCount}">0</strong></span>
-                <span>추천 <strong>2681</strong></span>
-            </div>
-			<a th:if="${firstEpisodeId != null}" 
-			   th:href="@{'/content/novel/episode/' + ${firstEpisodeId}}" 
-			   class="first-btn">
-			   첫 화 시청하기
-			</a>
+		    <div class="position-relative mb-3 px-4 text-center">
+		        <h3 class="fw-bold mb-1" th:text="${novel.title}">소설 제목</h3>
+		        <p class="text-muted mb-3" th:text="${novel.displayname}">작가이름</p>				
+				
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                    <button class="btn btn-primary rounded-pill px-4"> 팔로우 </button>
+                    <div class="text-center" style="cursor: pointer;" th:onclick="|toggleBookmark(${novel.id}, 'CONTENT')|" id="bookmarkBtn">
+                       	<i id="bookmarkIcon" class="bi" style="font-size: 1.5rem; display: block; line-height: 1;" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+                        <span style="font-size: 11px; font-weight: bold; color: #666;">북마크</span>
+                    </div>
+                </div>
+		    </div>
 
-			<button th:if="${firstEpisodeId == null}" 
-			        class="first-btn" style="opacity: 0.5; cursor: default;" disabled>
-			    등록된 회차가 없습니다
-			</button>
-        </div>
+		    <div class="d-flex justify-content-center gap-3 text-muted small mb-3">
+		        <span>조회수 <strong th:text="${novel.viewCount}">0</strong></span>
+		        <span>추천 <strong th:text="${like.count}" id="likeCount">2,681</strong></span>
+		    </div>
+
+		    <a th:if="${firstEpisodeId != null}" 
+		       th:href="@{'/content/novel/episode/' + ${firstEpisodeId}}" 
+		       class="first-btn">
+		       첫 화 시청하기
+		    </a>
+
+		    <button th:if="${firstEpisodeId == null}" 
+		            class="first-btn" style="opacity: 0.5; cursor: default;" disabled>
+		        등록된 회차가 없습니다
+		    </button>
+
+		    <div class="d-flex justify-content-center gap-2 mt-2" th:if="${novel.username == #authentication.name}">
+		        <a th:href="@{/content/novel_update/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-primary">수정하기</a>
+		        <a th:href="@{/content/novel_delete/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('삭제하시겠습니까?');">삭제하기</a>
+		    </div>
+		</div>
 
         <div class="col-md-8">
             <div class="novel-desc-box shadow-sm">
@@ -115,10 +147,6 @@
                     상태: <strong th:text="${novel.visibility}">PUBLIC</strong> | 
                     댓글: <strong th:text="${novel.allowComment} ? '허용' : '비허용'">허용</strong>
                 </div>
-				<div th:if="${novel.username == #authentication.name}">
-				        <a th:href="@{/content/novel_update/{id}(id=${novel.id})}" class="btn btn-sm btn-light text-primary">수정</a>
-				        <a th:href="@{/content/novel_delete/{id}(id=${novel.id})}" class="btn btn-sm btn-light text-danger" onclick="return confirm('삭제?');">삭제</a>
-				    </div>
             </div>
 
             <div class="tag-area">
@@ -135,6 +163,11 @@
                 
                 <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">#등록된_태그가_없습니다</span>
             </div>
+
+            <div class="action-buttons">
+                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${novel.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
+                <button type="button" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
+            </div>
         </div>
     </div>
 
@@ -148,7 +181,7 @@
                 <li class="episode-item" th:each="episode : ${paging}">
                     <div class="d-flex justify-content-between align-items-center">
                         <a th:href="@{/content/novel/episode/{id}(id=${episode.id})}" class="episode-link flex-grow-1">
-                            </span> <span class="episode-title" th:text="${episode.episodeNum+'. '+episode.title}">회차 제목</span>
+                            <span class="episode-title" th:text="${episode.episodeNum+'. '+episode.title}">회차 제목</span>
                             <div class="small text-muted">
                                 조회수 <span th:text="${episode.viewCount}">0</span> · 
                                 <span th:text="${#temporals.format(episode.createdAt, 'yyyy-MM-dd')}"></span>
@@ -206,7 +239,6 @@
     </div>
 
     <script>
-        // 썸네일 미리보기
         const thumbIn = document.getElementById('thumbnailInput');
         const thumbPre = document.getElementById('thumbnailPreview');
         if (thumbIn) { thumbIn.onchange = () => { const [f] = thumbIn.files; if (f) { thumbPre.src = URL.createObjectURL(f); } } }

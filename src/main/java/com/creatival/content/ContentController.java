@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,27 +17,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.creatival.bookmark.BookmarkService;
+import com.creatival.comment.CommentService;
+import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.content.DTO.CreateArtDTO;
+import com.creatival.content.DTO.CreateFileDTO;
+import com.creatival.content.DTO.CreateMusicDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
+import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtDetail;
 import com.creatival.content.DTO.ResponseArtList;
+import com.creatival.content.DTO.ResponseFileDetailDTO;
+import com.creatival.content.DTO.ResponseFileListDTO;
+import com.creatival.content.DTO.ResponseMusicDetailDTO;
+import com.creatival.content.DTO.ResponseMusicListDTO;
 import com.creatival.content.DTO.ResponseNovelDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeDetail;
 import com.creatival.content.DTO.ResponseNovelEpisodeList;
 import com.creatival.content.DTO.ResponseNovelList;
+import com.creatival.content.DTO.ResponseVideoDetailDTO;
+import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
+import com.creatival.content.DTO.UpdateFileDTO;
+import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
+import com.creatival.content.DTO.UpdateVideoDTO;
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.repository.EpisodeRepository;
+import com.creatival.follow.FollowService;
+import com.creatival.like.LikeService;
+import com.creatival.like.TargetType;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -45,10 +65,21 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/content")
 public class ContentController {
 
+    private final PasswordEncoder passwordEncoder;
+
+    private final FollowService followService;
+
+    private final BookmarkService bookmarkService;
+
 	private final ContentService contentService;
 	private final UserService userService;
 	private final ContentFileService contentFileService;
 	private final TagService tagService;
+	private final CommentService commentService;
+	private final LikeService likeService;
+
+
+
 
 	
 	@GetMapping("/novel_list")
@@ -59,7 +90,11 @@ public class ContentController {
 	}
 	
 	@GetMapping("/novel_write")
-	public String novel_write(CreateNovelDTO createNovelDTO) {
+	public String novel_write(CreateNovelDTO createNovelDTO, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/novel_list";	
+		}
 		return "novel_write";
 	}
 	
@@ -93,10 +128,13 @@ public class ContentController {
 	@GetMapping("/novel_detail/{id}")
 	public String novel_detail(Model model, @PathVariable("id") Long id,@RequestParam(defaultValue = "0", name = "page") int page, Principal principal) {
 		Content content = contentService.getNovel(id);
+		contentService.upViewCount(content);
 		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
 		model.addAttribute("novel", novelDetail);
+		Users user=null;
 		if(principal != null) {
-			model.addAttribute("loginUsername", principal.getName());	
+			user = userService.getUserByUsername(principal.getName());
+			model.addAttribute("loginUsername", principal.getName());
 		} else {
 			model.addAttribute("loginUsername", null);
 		}
@@ -108,6 +146,10 @@ public class ContentController {
 		
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
 		model.addAttribute("tagList", contentTags);
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		
 		return "novel_detail";
 	}
 	
@@ -191,9 +233,15 @@ public class ContentController {
 	@GetMapping("/novel/episode/{id}")
 	public String novelEpisodeDetail(@PathVariable("id") Long episodeId, Model model) {
 		Episode episode = contentService.getNovelEpisode(episodeId); 
+		contentService.upViewCount(episode.getSeries().getContent());
 		ResponseNovelEpisodeDetail episodeDetail = ResponseNovelEpisodeDetail.from(episode);
 		model.addAttribute("episode", episodeDetail);
 		
+		
+		List<ResponseCommentDTO> comments = commentService.getCommentListByEpisode(episodeId);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByEpisode(episodeId);
+		model.addAttribute("commentCount", commentsCount);
 		
 		model.addAttribute("prevEpisode", contentService.getPrevEpisode(episode));
 		model.addAttribute("nextEpisode", contentService.getNextEpisode(episode));
@@ -251,7 +299,10 @@ public class ContentController {
 	}
 	
 	@GetMapping("/art/create")
-	public String createArt(CreateArtDTO createArtDTO) {
+	public String createArt(CreateArtDTO createArtDTO,Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+		}
 		return "illustration_write";
 	}
 	
@@ -293,11 +344,25 @@ public class ContentController {
 		if(content == null) {
 			return "redirect:/content/art/list";
 		}
+		contentService.upViewCount(content);
 		List<ContentFile> list = contentFileService.getContentFileByContent(content);
 		ResponseArtDetail responseArtDetail = ResponseArtDetail.from(content, list);
+		
 		model.addAttribute("art", responseArtDetail);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
 		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 		return "illustration_detail";
 	}
 	
@@ -346,5 +411,459 @@ public class ContentController {
 		Content content = contentService.getArt(id);
 		contentService.delete(content);
 		return "redirect:/content/art/list";
+	}
+	
+	@GetMapping("/video/list")
+	public String videoList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		List<ResponseVideoListDTO> list = contentService.getVideoList(page);
+		model.addAttribute("list", list);
+		return "video_list";
+	}
+	
+	@GetMapping("/video/create")
+	public String createVideo(Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/video/list";
+		}
+		CreateVideoDTO createVideoDTO = new CreateVideoDTO();
+		model.addAttribute("createVideoDTO", createVideoDTO);
+		return "video_write";
+	}
+	
+	@Transactional
+	@PostMapping("/video/create")
+	public String createVideo(@Valid CreateVideoDTO createVideoDTO, RedirectAttributes redirectAttributes, Principal principal) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		try {
+			contentService.createContentVideo(createVideoDTO, user);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 추가되었습니다!");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/video/list";
+		} catch(Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 문의해주시길 바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/create";
+		}
+	}
+	
+	@GetMapping("/video/detail/{id}")
+	public String videoDetail(@PathVariable("id") Long id, Model model, Principal principal) {
+		Content content = contentService.getContent(id);
+		contentService.upViewCount(content);
+		ResponseVideoDetailDTO dto = contentService.getVideoDetailById(id);
+		model.addAttribute("video", dto);
+		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
+		
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		return "video_detail";
+	}
+	
+	@GetMapping("/video/edit/{id}")
+	public String updateVideo(@PathVariable("id") Long id, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getVideoById(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "수정하려는 영상을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/video/detail/"+id;
+		}
+		model.addAttribute("updateVideoDTO", UpdateVideoDTO.from(content, contentFileService.getContentFileByContent(content).getFirst()));
+		return "video_edit";
+	}
+	@PostMapping("/video/edit/{id}")
+	public String updateVideo(@PathVariable("id") Long id,@Valid UpdateVideoDTO dto, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getVideoById(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "수정하려는 영상을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/video/detail/"+id;
+		}
+		try {
+			contentService.updateContentVideo(dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/video/detail/"+id;
+		} catch (IllegalStateException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		} catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 관리자에게 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+	        return "redirect:/content/video/detail/"+id;
+	    }
+	}
+	@PostMapping("/video/delete/{id}")
+	public String deleteVideo(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getVideoById(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "삭제하려는 영상을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/video/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 삭제할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/video/detail/"+id;
+		}
+		contentService.delete(content);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/content/video/list";
+	}
+	
+	@GetMapping("/music/list")
+	public String musicList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		List<ResponseMusicListDTO> list = contentService.getMusicList(page);
+		model.addAttribute("musicList", list);
+		return "music_list";
+	}
+	
+	@GetMapping("/music/write")
+	public String createMusic(Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/music/list";
+		}
+		CreateMusicDTO dto = new CreateMusicDTO();
+		model.addAttribute("createMusicDTO", dto);
+		return "/music_write";
+	}
+	
+	@PostMapping("/music/write")
+	public String createMusic(@Valid CreateMusicDTO createMusicDTO,Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		try {
+			contentService.createContentMusic(createMusicDTO, user);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 생성되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/music/list";
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/write";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 웹 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/write";
+		}
+	}
+	
+	@GetMapping("/music/detail/{id}")
+	public String musicDetail(Model model, @PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
+		Content content = contentService.getContent(id);
+		contentService.upViewCount(content);
+		ResponseMusicDetailDTO dto = contentService.getMusicDetailById(id);
+		if(dto == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 음악을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
+		model.addAttribute("music", dto);
+		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
+		
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		return "music_detail";
+	}
+	
+	@GetMapping("/music/edit/{id}")
+	public String updateMusic(Model model, @PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 음악을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
+		model.addAttribute("updateMusicDTO", UpdateMusicDTO.from(content, contentFileService.getContentFileByContent(content).getFirst()));
+		return "music_edit";
+	}
+	
+	@PostMapping("/music/edit/{id}")
+	public String updateMusic(@Valid UpdateMusicDTO dto,Model model, @PathVariable("id") Long id,Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getContent(id);
+		if(content==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 음악을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/detail/"+id;
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/detail/"+id;
+		}
+		try {
+			contentService.updateContentMusic(dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/music/detail/"+id;
+		} catch (IllegalStateException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/detail/"+id;
+		} catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 관리자에게 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+	        return "redirect:/content/music/detail/"+id;
+	    }
+	}
+	
+	@PostMapping("/music/delete/{id}")
+	public String deleteMusic(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getVideoById(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "삭제하려는 음악을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		contentService.upViewCount(content);
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 삭제할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/music/detail/"+id;
+		}
+		contentService.delete(content);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/content/music/list";
+	}
+	
+	@GetMapping("/file/list")
+	public String fileList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		Page<ResponseFileListDTO> list = contentService.getFileList(page);
+		model.addAttribute("fileList", list);
+		return "file_list";
+	}
+	
+	@GetMapping("/file/detail/{id}")
+	public String fileDetail(Model model, @PathVariable("id") Long id, Principal principal) {
+		contentService.upViewCount(contentService.getContent(id));
+		ResponseFileDetailDTO dto = contentService.getfIleDetail(id);
+		model.addAttribute("fileDetail", dto);
+		Content content = contentService.getContent(id);
+		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		model.addAttribute("tagList", contentTags);
+		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByContent(id);
+		model.addAttribute("commentCount", commentsCount);
+		System.out.println(dto.isAllowComment());
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		return "file_detail";
+	}
+	
+	@GetMapping("/file/write")
+	public String createFile(Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/file/list";
+		}
+		model.addAttribute("createFileDTO", new CreateFileDTO());
+		return "file_write";
+	}
+	
+	@PostMapping("/file/write")
+	public String fileWrite(@Valid CreateFileDTO createFileDTO, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		try {
+			contentService.createContentFile(createFileDTO, user);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 생성되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/file/list";
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/write";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 웹 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/write";
+		}
+	}
+	
+	@GetMapping("/file/edit/{id}")
+	public String updateFile(@PathVariable("id") Long id ,Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 음악을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/music/list";
+		}
+		List<ContentFile> files = contentFileService.getContentFileByContent(content);
+		
+		ContentFile file = files.stream().filter(f -> "FILE".equals(f.getFileType()))
+				.findFirst().orElseThrow(() -> new IllegalStateException("필수 파일이 없습니다."));
+		ContentFile previewImg = files.stream().filter(f -> "ART".equals(f.getFileType()))
+				.findFirst().orElse(null);
+		
+		if(previewImg==null) {
+			model.addAttribute("updateFileDTO", UpdateFileDTO.from(content, file));
+		} else {
+			model.addAttribute("updateFileDTO", UpdateFileDTO.from(content, file, previewImg));
+		}
+		
+		return "file_edit";
+	}
+	
+	@PostMapping("/file/edit/{id}")
+	public String updateFile(@Valid UpdateFileDTO dto ,@PathVariable("id") Long id,Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 파일을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/list";
+		}
+		
+		try {
+			contentService.updateContentFile(id, dto);
+			redirectAttributes.addFlashAttribute("message", "수정 완료됐습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/file/detail/" + id;
+		}   catch (IllegalArgumentException e) {
+				redirectAttributes.addFlashAttribute("message", e.getMessage());
+				redirectAttributes.addFlashAttribute("icon", "error");
+				return "redirect:/content/file/edit/" +id;
+			} catch (Exception e) {
+				e.printStackTrace();
+				redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다. 웹 관리자께 문의바랍니다.");
+				redirectAttributes.addFlashAttribute("icon", "error");
+				return "redirect:/content/file/edit/" +id;
+			}
+	}
+	
+	@GetMapping("/file/delete/{id}")
+	public String deleteFile(@PathVariable("id") Long id, Model model,Principal principal, RedirectAttributes redirectAttributes) {
+		Content content = contentService.getContent(id);
+		if(content == null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 파일을 찾는데 실패했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/detail/"+id;
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/detail/"+id;
+		}
+		if(!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 삭제할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/file/detail/"+id;
+		}
+		contentService.delete(content);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/content/file/list";
 	}
 }

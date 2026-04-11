@@ -24,6 +24,8 @@ import com.creatival.board.dto.ResponseBoardDetailDTO;
 import com.creatival.board.dto.ResponseBoardFileDTO;
 import com.creatival.board.dto.ResponseBoardListDTO;
 import com.creatival.board.dto.UpdateBoardDTO;
+import com.creatival.comment.CommentService;
+import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.content.Content;
 import com.creatival.content.ContentService;
 import com.creatival.team.Project;
@@ -47,6 +49,7 @@ public class BoardController {
 	private final ContentService contentService;
 	private final TeamService teamService;
 	private final UserService userService;
+	private final CommentService commentService;
 
 
 	@GetMapping()
@@ -60,8 +63,7 @@ public class BoardController {
 	@GetMapping("/write")
 	public String createBoard(CreateBoardDTO createBoardDTO, Principal principal, RedirectAttributes redirectAttributes) {
 		if(principal==null) {
-			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다!");
-			redirectAttributes.addFlashAttribute("icon", "error");
+			redirectAttributes.addFlashAttribute("isLogMsg",true);
 			return "redirect:/board";
 		}
 		return "board_write";
@@ -116,6 +118,10 @@ public class BoardController {
 		ResponseBoardDetailDTO dto = boardService.getBoardDetailById(boardId);
 		model.addAttribute("board", dto);
 		model.addAttribute("fileList", boardFiles);
+		List<ResponseCommentDTO> list = commentService.getCommentListByBoard(boardId);
+		model.addAttribute("comments", list);
+		int commentCount = commentService.getCountByBoard(boardId);
+		model.addAttribute("commentCount", commentCount);
 		return "board_detail";
 	}
 	

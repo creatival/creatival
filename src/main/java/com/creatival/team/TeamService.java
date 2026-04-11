@@ -3,6 +3,7 @@ package com.creatival.team;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,8 @@ import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseCheckoutListDTO;
+import com.creatival.team.dto.ResponseHistoryDTO;
+import com.creatival.team.dto.ResponseProjectDeatilDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
@@ -57,6 +60,7 @@ public class TeamService {
 	private final TeamApplicationRepository teamApplicationRepository;
 	private final ProjectRepository projectRepository;
 	private final UserService userService;
+	private final  HistoryRepository historyRepository;
 
 
 	
@@ -276,8 +280,15 @@ public class TeamService {
 		}
 	}
 	
-	public List<ResponseProjectListDTO> getProjectList(Team team) {
-		List<Project> projects = projectRepository.findByTeamAndVisibility(team,Visibility.PUBLIC);
+	public List<ResponseProjectListDTO> getProjectList(Team team, Users user) {
+		TeamMember member = getMemberForTeamByUser(team, user);
+		List<Project> projects = new ArrayList<>();
+		if(member != null) {
+			projects = projectRepository.findByTeam(team);
+		} else {
+			projects = projectRepository.findByTeamAndVisibility(team,Visibility.PUBLIC);
+		}
+		
 		System.out.println("조회된 프로젝트 개수: " + projects.size());
 		return projects.stream().map(project -> ResponseProjectListDTO.from(project)).toList();
 	}
@@ -431,6 +442,89 @@ public class TeamService {
 
 	public void deleteCheck(Checkout checkout) {
 		checkoutRepository.delete(checkout);
+		
+	}
+
+	public List<ResponseHistoryDTO> getHistoryByProject(Project project) {
+		List<History> list = historyRepository.findByProjectOrderByCreatedAtDesc(project);
+		return list.stream().map(history -> ResponseHistoryDTO.from(history)).toList();
+	}
+	public ResponseHistoryDTO getHistoryByProjectTop(Project project) {
+		Optional<History> history = historyRepository.findTop1ByProjectOrderByCreatedAtDesc(project);
+		if(history.isEmpty()) {
+			return null;
+		}
+		return ResponseHistoryDTO.from(history.get());
+	}
+
+	@Transactional
+	public void createTeamService(Project project, String versionTag, String title, String text) {
+		History history = History.builder()
+				.versionTag(versionTag)
+				.title(title)
+				.text(text)
+				.user(project.getTeam().getUser())
+				.project(project)
+				.build();
+		historyRepository.save(history);
+		
+	}
+
+	public History getHistoryById(long historyId) {
+		Optional<History> history = historyRepository.findById(historyId);
+		if(history.isEmpty()) {
+			return null;
+		}
+		return history.get();
+	}
+
+	public void deleteHistory(long historyId) {
+		Optional<History> optional = historyRepository.findById(historyId);
+		if(optional.isEmpty()) {
+			throw new IllegalArgumentException("삭제할 대상이 없습니다.");
+		}
+		historyRepository.delete(optional.get());
+		
+	}
+	
+	public List<ResponseProjectDeatilDTO> getTop3Projects() {
+		List<Project> projects = projectRepository.findTop3ByOrderByLikeCountDesc();
+		return projects.stream().map(project -> ResponseProjectDeatilDTO.from(project)).toList();
+	}
+
+	public List<ResponseTeamListDTO> getTeamListByUser(Users user) {
+		List<Team> teamList = new ArrayList<>();
+		List<TeamMember> members = teamMemberRepository.findByUser(user);
+		for(TeamMember member : members) {
+			teamList.add(member.getTeam());
+		}
+		return teamList.stream().map(team -> ResponseTeamListDTO.from(team)).toList();
+	}
+
+	public void upLikeCount(Long targetId) {
+		Team team = getTeamById(targetId);
+		if(team == null) {
+			return;
+		}
+		team.setLikeCount(team.getLikeCount()+1);
+		teamRepository.save(team);
+	}
+	public void downLikeCount(Long targetId) {
+		Team team = getTeamById(targetId);
+		if(team == null) {
+			return;
+		}
+		team.setLikeCount(team.getLikeCount()-1);
+		teamRepository.save(team);
+	}
+
+	public void upLikeCountForProject(Long targetId) {
+		Project project = getProjectById(targetId);
+		if(project==null) {
+			return;
+		}
+		project.setLikeCount(project.getLikeCount()+1);
+		projectRepository.save(project);
 		
 	}
 }

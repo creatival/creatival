@@ -11,7 +11,48 @@
             padding: 15px 0;
             background-color: #fff;
         }
+		.comment-section {
+		            background-color: #f8f9fa;
+		            border-radius: 15px;
+		            padding: 40px 20px;
+		        }
 
+		        .comment-input {
+		            border: none !important;
+		            border-bottom: 1px solid #dee2e6 !important;
+		            background-color: transparent !important;
+		        }
+
+		        .comment-input:focus {
+		            border-bottom: 2px solid #2D3278 !important;
+		        }
+				/* 🔥 댓글 버튼 (HEAD 스타일 유지) */
+				        .btn-text-action {
+				            background: none;
+				            border: none;
+				            font-size: 0.8rem;
+				            font-weight: 700;
+				            color: #878a8c;
+				            cursor: pointer;
+				        }
+
+				        .btn-text-action:hover {
+				            text-decoration: underline;
+				            color: #1a1a1b;
+				        }
+
+				        .reply-wrapper {
+				            margin-left: 12px;
+				            border-left: 2px solid #edeff1;
+				            padding-left: 20px;
+				            margin-top: 5px;
+				        }
+
+				        .btn-navy-custom {
+				            background-color: #2D3278;
+				            color: white;
+				            border-radius: 30px;
+				        }
         /* 2. 본문 뷰어 스타일 */
         .novel-body {
             font-size: 1.25rem; 
@@ -118,6 +159,47 @@
                     <div sec:authorize="isAnonymous()" class="alert alert-secondary text-center py-5">
                         로그인 후 열람이 가능합니다.
                     </div>
+					<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+					    <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-lg">
+					        <div class="modal-content">
+					            <div class="modal-header">
+					                <h5 class="modal-title fw-bold" id="commentModalLabel">댓글</h5>
+					                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					            </div>
+
+					            <div class="modal-body">
+					                <div class="mb-4" sec:authorize="isAuthenticated()">
+										<!-- 입력 -->
+								           <form th:action="@{/comment/episode/write/{id}(id=${episode.id})}"
+								                 method="post"
+								                 class="d-flex justify-content-center mb-5">
+
+								               <input type="text" name="text"
+								                      class="form-control comment-input me-3"
+								                      placeholder="댓글 쓰기"
+								                      style="max-width:500px;">
+
+								               <button type="submit" class="btn btn-navy-custom px-4">작성</button>
+								           </form>
+					                </div>
+
+					                <div class="pb-3 border-bottom mb-4">
+					                    <span class="fw-bold">전체 댓글</span> <span class="text-primary fw-bold" th:text="${commentCount}"></span>개
+					                </div>
+
+									<div class="comment-list">
+						                <th:block th:each="comment : ${comments}">
+						                    <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='episode', targetId=${episode.id})}"></div>
+						                </th:block>
+						            </div>
+					            </div>
+
+					            <div class="modal-footer">
+					                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">닫기</button>
+					            </div>
+					        </div>
+					    </div>
+					</div>
 
                 </div>
             </div>
@@ -132,11 +214,11 @@
                         </a>
                         <span th:if="${prevEpisode == null}" class="opacity-50">이전</span>
                     </div>
-                    <div class="col-4 border-start border-end border-white border-opacity-25">
-                        <a href="#comment-section">
-                            <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
-                        </a>
-                    </div>
+					<div class="col-4 border-start border-end border-white border-opacity-25">
+					    <a data-bs-toggle="modal" data-bs-target="#commentModal" style="cursor:pointer;">
+					        <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
+					    </a>
+					</div>
                     <div class="col-4">
                         <a th:if="${nextEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${nextEpisode.id})}">
                             다음 <i class="bi bi-caret-right-fill"></i>
@@ -145,6 +227,7 @@
                     </div>
                 </div>
             </div>
+			
         </div>
 
     </div> </body>

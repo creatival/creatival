@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="kr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+
+<div class="container my-5" layout:fragment="content">
+
+    <div class="mb-4 border-bottom pb-3">
+        <h3 class="fw-bold">
+            <span th:text="${team.name}">팀명</span> · 의견
+        </h3>
+        <a th:href="@{/team/{id}(id=${team.id})}"
+           class="text-decoration-none small text-muted">
+            ← 팀 페이지로 돌아가기
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <form th:action="@{/comment/team/write/{id}(id=${team.id})}"
+                  method="post"
+                  class="mb-4"
+                  sec:authorize="isAuthenticated()">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <textarea name="text"
+                                  class="form-control mb-3"
+                                  rows="3"
+                                  placeholder="팀에 대한 의견을 자유롭게 남겨보세요..."
+                                  required></textarea>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary px-4">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">전체 의견</h5>
+
+                    <div th:each="comment : ${commentList}" class="comment-item mb-4 pb-3 border-bottom">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold text-dark" th:text="${comment.username}">유저</span>
+                                <span class="text-muted small ms-2"
+                                      th:text="${#temporals.format(comment.createdAt, 'yyyy.MM.dd HH:mm')}">
+                                    2026.04.01
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="comment-content mt-2 text-secondary" style="white-space: pre-wrap;" th:text="${comment.text}">
+                            댓글 내용
+                        </div>
+
+                        <div class="comment-footer mt-2 d-flex gap-2" th:if="${comment.username == #authentication.name}">
+                            <button type="button" 
+                                    class="btn btn-link p-0 text-decoration-none small text-muted" 
+                                    onclick="toggleEditForm(this)">수정</button>
+                            <button type="button" 
+                                    class="btn btn-link p-0 text-decoration-none small text-danger" 
+                                    th:data-id="${comment.id}"
+                                    onclick="confirmDelete(this)">삭제</button>
+                        </div>
+
+                        <div class="edit-form-container mt-3" style="display: none;">
+                            <form th:action="@{/comment/team/update/{id}(id=${comment.id})}" method="post" class="p-3 border rounded bg-light">
+                                <input type="hidden" name="teamId" th:value="${team.id}">
+                                <textarea name="text" class="form-control mb-2" rows="3" th:text="${comment.text}" required></textarea>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEditForm(this)">취소</button>
+                                    <button type="submit" class="btn btn-sm btn-primary">수정완료</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <p class="text-muted text-center py-4" th:if="${#lists.isEmpty(commentList)}">
+                        아직 작성된 의견이 없습니다. 첫 의견을 남겨보세요!
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-center" th:if="${totalPages > 1}">
+                <nav>
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}" th:classappend="${currentPage == i} ? 'active'">
+                            <a class="page-link" 
+                               th:href="@{/team/{id}/comments(id=${team.id}, page=${i})}" 
+                               th:text="${i + 1}">1</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 2rem;">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">팀 정보</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <img th:src="${team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
+                             class="rounded-circle me-3"
+                             style="object-fit: cover;"
+                             width="50" height="50">
+                        <div>
+                            <h6 class="mb-0 fw-bold" th:text="${team.name}">팀 이름</h6>
+                            <small class="badge bg-light text-dark border" th:text="${team.status}">모집 중</small>
+                        </div>
+                    </div>
+                    <a th:href="@{/team/{id}(id=${team.id})}" class="btn btn-outline-secondary w-100">
+                        팀 페이지 상세 보기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /**
+         * 수정 폼 토글 함수
+         */
+        function toggleEditForm(button) {
+            const commentItem = button.closest('.comment-item');
+            const contentDiv = commentItem.querySelector('.comment-content');
+            const footerDiv = commentItem.querySelector('.comment-footer');
+            const editForm = commentItem.querySelector('.edit-form-container');
+            
+            // 다른 열려있는 수정 폼들을 모두 닫음 (선택 사항)
+            document.querySelectorAll('.edit-form-container').forEach(el => {
+                if (el !== editForm) {
+                    el.style.display = 'none';
+                    const item = el.closest('.comment-item');
+                    item.querySelector('.comment-content').style.display = 'block';
+                    item.querySelector('.comment-footer').style.display = 'flex';
+                }
+            });
+
+            const isVisible = editForm.style.display === 'block';
+
+            if (isVisible) {
+                editForm.style.display = 'none';
+                contentDiv.style.display = 'block';
+                footerDiv.style.display = 'flex';
+            } else {
+                editForm.style.display = 'block';
+                contentDiv.style.display = 'none';
+                footerDiv.style.display = 'none';
+                
+                // 텍스트 영역에 포커스 및 커서를 끝으로 이동
+                const textarea = editForm.querySelector('textarea');
+                textarea.focus();
+                textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+            }
+        }
+
+        /**
+         * 삭제 확인 및 요청
+         */
+        function confirmDelete(button) {
+            const id = button.getAttribute('data-id');
+
+            if (confirm("정말로 이 의견을 삭제하시겠습니까?")) {
+                // 삭제 API 호출 (카테고리 team 고정)
+                location.href = `/comment/team/delete/${id}`;
+            }
+        }
+    </script>
+</div>
+</html>
