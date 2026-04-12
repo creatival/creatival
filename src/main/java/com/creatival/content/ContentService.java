@@ -729,7 +729,7 @@ public class ContentService {
 		return contents.stream().map(content -> ResponseMusicListDTO.from(content)).toList();
 	}
 	public List<ResponseVideoListDTO> getVideoByUser(Users user) {
-		List<Content> contents = contentRepository.findByUserAndTypeOrderByCreatedAtDesc(user, ContentType.MUSIC);
+		List<Content> contents = contentRepository.findByUserAndTypeOrderByCreatedAtDesc(user, ContentType.VIDEO);
 		return contents.stream().map(content -> ResponseVideoListDTO.from(content)).toList();
 	}
 	

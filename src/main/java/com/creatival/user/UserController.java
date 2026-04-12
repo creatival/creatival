@@ -145,10 +145,10 @@ public class UserController {
 		model.addAttribute("novels", contentService.getNovelByUserOnlyPublic(user));
 		model.addAttribute("musics", contentService.getMusicByUserOnlyPublic(user));
 		model.addAttribute("videos", contentService.getVideoByUserOnlyPublic(user));
-		List<ResponseContentListForProject> contentList = likeService.myPageLikePreview(loginUser, TargetType.CONTENT);
+		List<ResponseContentListForProject> contentList = likeService.myPageLikePreview(user, TargetType.CONTENT);
 		model.addAttribute("likeContentPreview", contentList);
 		
-		List<ResponseContentListForProject> bookmarkContentList = bookmarkService.myPageBookmarkPreview(loginUser, TargetType.CONTENT);
+		List<ResponseContentListForProject> bookmarkContentList = bookmarkService.myPageBookmarkPreview(user, TargetType.CONTENT);
 		model.addAttribute("bookmarkContentPreview", bookmarkContentList);
 		return "mypage_home";
 	}

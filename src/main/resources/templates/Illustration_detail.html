@@ -173,13 +173,21 @@
 
     <div class="art-viewer mb-4">
         <div class="container" style="max-width: 800px;">
-            <div id="artSlider" class="carousel slide">
-                <div class="carousel-inner">
-                    <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
-                        <img th:src="${file.fileUrl}" class="art-image">
-                    </div>
-                </div>
-            </div>
+			<div id="artSlider" class="carousel slide" data-bs-ride="false"> <div class="carousel-inner">
+			        <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
+			            <img th:src="${file.fileUrl}" class="art-image">
+			        </div>
+			    </div>
+			    
+			    <button class="carousel-control-prev" type="button" data-bs-target="#artSlider" data-bs-slide="prev">
+			        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+			        <span class="visually-hidden">Previous</span>
+			    </button>
+			    <button class="carousel-control-next" type="button" data-bs-target="#artSlider" data-bs-slide="next">
+			        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+			        <span class="visually-hidden">Next</span>
+			    </button>
+			</div>
         </div>
     </div>
 
