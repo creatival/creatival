@@ -147,7 +147,7 @@
 
         <div class="container text-center mb-5">
 			<div class="mb-2">
-			  <a th:href="@{/content/novel_write}" class="btn-register">소설 등록하기</a>
+			  <a onclick="return requireLoginAction(() => location.href='/content/novel_write')" class="btn-register">소설 등록하기</a>
 			</div>
             <h3 class="fw-bold mb-4">추천 소설</h3>
             

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import com.creatival.user.Users;
 import com.creatival.content.Enum.ContentType;
+import com.creatival.content.Enum.Visibility;
 import com.creatival.team.Project;
 
 
@@ -34,5 +35,9 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 	List<Content> findByProject(Project project);
 	
 	Page<Content> findByType(ContentType type, Pageable pageable);
+	
+	List<Content> findByUserAndTypeOrderByCreatedAtDesc(Users user, ContentType contentType);
+	List<Content> findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(Users user,ContentType contentType, Visibility visibility );
+	List<Content> findTop4ByUserAndTypeOrderByCreatedAtDesc(Users user, ContentType type);
 	
 }

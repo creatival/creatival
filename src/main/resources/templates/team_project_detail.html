@@ -13,15 +13,13 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             width: 75px; height: 75px; background-color: #ffffff; border: 1px solid #e9ecef;
             border-radius: 16px; text-decoration: none !important; transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 8px; color: #495057;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 8px; color: #495057; cursor: pointer;
         }
         .btn-action:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-color: #dee2e6; color: #212529; }
         .btn-action i { font-size: 1.6rem; margin-bottom: 4px; line-height: 1; }
         .btn-action span { font-size: 0.75rem; font-weight: 600; }
         .btn-like i { color: #ff4757; }
-        .btn-follow i { color: #ffc107; }
         .btn-bookmark i { color: #2D3278; }
-        .btn-share i { color: #333; }
 
         .progress { background-color: #f1f3f5; border-radius: 10px; }
         .tag-badge { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 6px 12px; color: #495057; font-weight: 500; }
@@ -42,10 +40,15 @@
         
         <div class="col-lg-5 text-lg-end">
             <div class="action-buttons-group">
-                <a href="#" class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>1.2k</span></a>
-                <a href="#" class="btn-action btn-follow"><i class="bi bi-person-plus-fill"></i><span>팔로우</span></a>
-                <a href="#" class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></a>
-                <a href="#" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></a>
+                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${dto.id},'PROJECT')|" th:classappend="${like.liked ? ' active' : ''}">
+                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
+                    <span>좋아요</span>
+                </button>
+			    <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn" class="btn-action btn-bookmark">
+                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+                    <span>북마크</span>
+                </button>
+			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>	
             </div>
 
             <div class="d-flex justify-content-lg-end gap-2 mt-3">
@@ -80,7 +83,7 @@
                                 <img th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="콘텐츠 썸네일">
                             </a>
                             <div class="card-body p-3">
-                                <h6 class="card-title fw-bold text-truncate mb-3" th:text="${content.title}">제목</h6>
+                                <h6 class="card-title fw-bold text-truncate mb-2" th:text="${content.title}">제목</h6>
                                 <div class="d-flex align-items-center">
                                     <img th:src="${content.profileImgUrl != null ? content.profileImgUrl : 'https://dummyimage.com/20x20/ced4da/6c757d'}" class="rounded-circle me-2 object-fit-cover" style="width:24px;height:24px;" alt="프로필">
                                     <span class="small text-muted fw-medium" th:text="${content.username}">닉네임</span>
@@ -103,10 +106,21 @@
                             <span class="fw-semibold" th:text="${dto.teamName}">Team Name</span>
                         </div>
                     </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold small text-muted mb-2">좋아요 현황</h6>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-heart-fill text-danger me-2"></i> 
+                            <span class="fw-bold text-danger" th:text="${like.count}" id="likeCount">0</span>
+                            <span class="text-muted small ms-1">명이 응원합니다</span>
+                        </div>
+                    </div>
+
                     <div class="mb-4">
                         <h6 class="fw-bold small text-muted mb-2">태그</h6>
-                        <span class="badge rounded-pill tag-badge" th:text="${dto.projectTag}">#태그</span>
+                        <span class="badge rounded-pill tag-badge" th:text="${dto.projectTag != null ? dto.projectTag : '#태그없음'}">#태그</span>
                     </div>
+
                     <div class="mb-2">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h6 class="fw-bold small text-muted mb-0">버전</h6>
@@ -135,7 +149,7 @@
                     </div>
 
                     <div class="list-group list-group-flush" id="checkList">
-                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3" th:each="check : ${checkList}">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-0" th:each="check : ${checkList}">
                             <div>
                                 <div class="fw-semibold text-dark mb-1" th:text="${check.title}">제목</div>
                                 <div class="text-muted d-flex align-items-center" style="font-size: 0.75rem;">
@@ -148,6 +162,7 @@
                                 <input type="checkbox" class="form-check-input progress-check fs-5 m-0" th:data-id="${check.id}" th:checked="${check.checked}" th:disabled="${dto.leaderUsername != #authentication.name}" />
                             </div>
                         </div>
+                        <div th:if="${#lists.isEmpty(checkList)}" class="text-center py-3 text-muted small">등록된 계획이 없습니다.</div>
                     </div>
                 </div>
             </div>
@@ -165,7 +180,7 @@
                                 <img src="https://dummyimage.com/160x90/444/fff" class="object-fit-cover w-100 h-100" alt="추천 영상">
                             </div>
                             <div class="overflow-hidden">
-                                <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.9rem;">유니티로 2D 플랫포머 게임 만들기 2편</h6>
+                                <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.9rem;">유니티 프로젝트 원본 가이드</h6>
                                 <p class="text-muted small mb-0 text-truncate">Creatival_Official</p>
                             </div>
                         </div>
@@ -175,17 +190,16 @@
                     <a href="#" class="text-decoration-none text-dark d-block hover-card">	
                         <div class="d-flex gap-3 align-items-start">
                             <div class="position-relative bg-dark rounded-3 overflow-hidden flex-shrink-0" style="width: 120px; height: 68px;">
-                                <img src="https://dummyimage.com/160x90/444/fff" class="object-fit-cover w-100 h-100" alt="추천 영상">
+                                <img src="https://dummyimage.com/160x90/444/fff" class="object-fit-cover w-100 h-100" alt="연관 프로젝트">
                             </div>
                             <div class="overflow-hidden">
-                                <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.9rem;">유니티로 2D 플랫포머 게임 만들기 2편</h6>
-                                <p class="text-muted small mb-0 text-truncate">Creatival_Official</p>
+                                <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.9rem;">유니티 2D 게임 심화 과정</h6>
+                                <p class="text-muted small mb-0 text-truncate">Creatival_Dev</p>
                             </div>
                         </div>
                     </a>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -224,28 +238,31 @@
         const progressBar = document.getElementById("progressBar");
         const progressText = document.getElementById("progressText");
 
-        function updateProgress() {
+        function updateProgressUI() {
             const total = checkboxes.length;
             const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
             const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
             
-            // 프로그레스 바 애니메이션 부드럽게
-            progressBar.style.transition = "width 0.5s ease-in-out";
-            progressBar.style.width = percent + "%";
-            progressText.innerText = percent + "%";
+            if(progressBar) {
+                progressBar.style.transition = "width 0.5s ease-in-out";
+                progressBar.style.width = percent + "%";
+            }
+            if(progressText) progressText.innerText = percent + "%";
         }
 
         checkboxes.forEach(cb => {
             cb.addEventListener("change", function () {
-                updateProgress();
-                fetch("/team/check/update", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", [header]: token },
-                    body: JSON.stringify({ id: this.dataset.id, checked: this.checked })
-                }).catch(err => console.error(err));
+                updateProgressUI();
+                if (header && token) {
+                    fetch("/team/check/update", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", [header]: token },
+                        body: JSON.stringify({ id: this.dataset.id, checked: this.checked })
+                    }).catch(err => console.error("Update failed:", err));
+                }
             });
         });
-        updateProgress();
+        updateProgressUI();
     });
     </script>
 </div>

@@ -120,7 +120,7 @@
 			Swal.fire({
 	            icon: 'warning',
 	            title: '로그인이 필요합니다',
-	            text: '좋아요 기능은 로그인 후 이용할 수 있습니다.',
+	            text: '해당 기능은 로그인 후 이용할 수 있습니다.',
 	            confirmButtonText: '로그인하러 가기',
 	            showCancelButton: true,
 	            cancelButtonText: '닫기'
@@ -131,14 +131,20 @@
 	        });
 		}
 		
-		
+		function handleCreateClick() {
+		    if (!isLoggedIn) {
+		        requireLoginAction();
+		        return false; // 이동 막기
+		    }
+		    return true; // 정상 이동
+		}
 		function requireLoginAction(actionCallback) {
 			const isLoggedIn = [[${#authentication.principal != 'anonymousUser'}]];
 			if (!isLoggedIn) {
 			        Swal.fire({
 			            icon: 'warning',
 			            title: '로그인이 필요합니다',
-			            text: '좋아요 기능은 로그인 후 이용할 수 있습니다.',
+			            text: '해당 기능은 로그인 후 이용할 수 있습니다.',
 			            confirmButtonText: '로그인하러 가기',
 			            showCancelButton: true,
 			            cancelButtonText: '닫기'
@@ -170,6 +176,36 @@
 								} else {
 									document.getElementById('likeIcon').classList.remove('bi-hand-thumbs-up-fill');
 									document.getElementById('likeIcon').classList.add('bi-hand-thumbs-up');
+								}	
+						        
+					
+						        const btn = document.getElementById('likeBtn');
+						        if (data.liked) {
+						            btn.classList.add('active');
+						        } else {
+						            btn.classList.remove('active');
+						        }
+						    });
+			})
+		}
+		function toggleLikeHeart(targetId, type) {
+			const token = document.querySelector('meta[name="_csrf"]').content;
+			const header = document.querySelector('meta[name="_csrf_header"]').content;
+			requireLoginAction(() => {
+				fetch('/like/toggle', {	
+			        method: 'POST',
+			        headers: { 'Content-Type': 'application/json', [header]: token },
+			        body: JSON.stringify({ targetId, type })
+			    })
+				.then(res => res.json())
+						    .then(data => {
+						        document.getElementById('likeCount').innerText = data.count;
+								if(data.liked==true) {
+									document.getElementById('likeIcon').classList.add('bi-heart-fill');
+									document.getElementById('likeIcon').classList.remove('bi-heart');
+								} else {
+									document.getElementById('likeIcon').classList.remove('bi-heart-fill');
+									document.getElementById('likeIcon').classList.add('bi-heart');
 								}	
 						        
 					

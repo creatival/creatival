@@ -30,6 +30,8 @@ public class MainController {
 		model.addAttribute("topProjects", teamService.getTop3Projects());
 		model.addAttribute("topArt", contentService.getTopArt(6));
 		model.addAttribute("topNovel", contentService.getTopNovel(6));
+		model.addAttribute("topVideo", contentService.getTopVideo(6));
+		model.addAttribute("topMusic", contentService.getTopMusic(6));
 		return "index";
 	}
 	

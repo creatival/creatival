@@ -63,8 +63,7 @@ public class BoardController {
 	@GetMapping("/write")
 	public String createBoard(CreateBoardDTO createBoardDTO, Principal principal, RedirectAttributes redirectAttributes) {
 		if(principal==null) {
-			redirectAttributes.addFlashAttribute("message", "로그인은 필수 사항입니다!");
-			redirectAttributes.addFlashAttribute("icon", "error");
+			redirectAttributes.addFlashAttribute("isLogMsg",true);
 			return "redirect:/board";
 		}
 		return "board_write";

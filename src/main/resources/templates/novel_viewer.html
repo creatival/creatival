@@ -8,7 +8,48 @@
             padding: 15px 0;
             background-color: #fff;
         }
+		.comment-section {
+		            background-color: #f8f9fa;
+		            border-radius: 15px;
+		            padding: 40px 20px;
+		        }
 
+		        .comment-input {
+		            border: none !important;
+		            border-bottom: 1px solid #dee2e6 !important;
+		            background-color: transparent !important;
+		        }
+
+		        .comment-input:focus {
+		            border-bottom: 2px solid #2D3278 !important;
+		        }
+				/* 🔥 댓글 버튼 (HEAD 스타일 유지) */
+				        .btn-text-action {
+				            background: none;
+				            border: none;
+				            font-size: 0.8rem;
+				            font-weight: 700;
+				            color: #878a8c;
+				            cursor: pointer;
+				        }
+
+				        .btn-text-action:hover {
+				            text-decoration: underline;
+				            color: #1a1a1b;
+				        }
+
+				        .reply-wrapper {
+				            margin-left: 12px;
+				            border-left: 2px solid #edeff1;
+				            padding-left: 20px;
+				            margin-top: 5px;
+				        }
+
+				        .btn-navy-custom {
+				            background-color: #2D3278;
+				            color: white;
+				            border-radius: 30px;
+				        }
         /* 2. 본문 뷰어 스타일 */
         .novel-body {
             font-size: 1.25rem; 
@@ -125,42 +166,29 @@
 
 					            <div class="modal-body">
 					                <div class="mb-4" sec:authorize="isAuthenticated()">
-					                    <form action="/content/comment" method="post">
-					                        <div class="form-floating mb-2">
-					                            <textarea class="form-control" placeholder="댓글을 남겨보세요." id="floatingTextarea" style="height: 100px" name="content"></textarea>
-					                            <label for="floatingTextarea" class="text-muted">다양한 의견을 자유롭게 남겨주세요.</label>
-					                        </div>
-					                        <div class="text-end">
-					                            <button type="submit" class="btn btn-dark px-4 rounded-pill">등록</button>
-					                        </div>
-					                    </form>
+										<!-- 입력 -->
+								           <form th:action="@{/comment/episode/write/{id}(id=${episode.id})}"
+								                 method="post"
+								                 class="d-flex justify-content-center mb-5">
+
+								               <input type="text" name="text"
+								                      class="form-control comment-input me-3"
+								                      placeholder="댓글 쓰기"
+								                      style="max-width:500px;">
+
+								               <button type="submit" class="btn btn-navy-custom px-4">작성</button>
+								           </form>
 					                </div>
 
 					                <div class="pb-3 border-bottom mb-4">
-					                    <span class="fw-bold">전체 댓글</span> <span class="text-primary fw-bold">3</span>개
+					                    <span class="fw-bold">전체 댓글</span> <span class="text-primary fw-bold" th:text="${commentCount}"></span>개
 					                </div>
 
-					                <div class="comment-list">
-					                    <div class="d-flex mb-4">
-					                        <div class="me-3">
-					                            <i class="bi bi-person-circle fs-2 text-secondary"></i>
-					                        </div>
-					                        <div class="w-100">
-					                            <div class="fw-bold small">독자1 <span class="text-muted fw-normal ms-2">2026.04.01</span></div>
-					                            <p class="mb-1 text-dark">다음 화 너무 기대됩니다!</p>
-					                        </div>
-					                    </div>
-					                    
-					                    <div class="d-flex mb-4">
-					                        <div class="me-3">
-					                            <i class="bi bi-person-circle fs-2 text-secondary"></i>
-					                        </div>
-					                        <div class="w-100">
-					                            <div class="fw-bold small">독자2 <span class="text-muted fw-normal ms-2">2026.04.01</span></div>
-					                            <p class="mb-1 text-dark">작가님 건필하세요!</p>
-					                        </div>
-					                    </div>
-					                </div>
+									<div class="comment-list">
+						                <th:block th:each="comment : ${comments}">
+						                    <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='episode', targetId=${episode.id})}"></div>
+						                </th:block>
+						            </div>
 					            </div>
 
 					            <div class="modal-footer">

@@ -24,6 +24,7 @@ public class ResponseProjectListDTO {
 	
 	private String teamName;
 	
+	private Long likeCount;
 	public static ResponseProjectListDTO from(Project project) {
 		return ResponseProjectListDTO.builder()
 				.id(project.getId())
@@ -31,6 +32,7 @@ public class ResponseProjectListDTO {
 				.bannerImgUrl(project.getBannerImgUrl())
 				.createdAt(project.getCreatedAt())
 				.teamName(project.getTeam().getName())
+				.likeCount(project.getLikeCount())
 				.build(); 
 	}
 }

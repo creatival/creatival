@@ -1,0 +1,13 @@
+<th:block th:fragment="artLoop">
+    <div class="col-6 col-md-3 mb-3" th:each="aArt : ${moreArts}">
+        <a th:href="@{/content/art/detail/{id}(id=${aArt.id})}" class="art-grid-item d-block">
+            <img th:src="${aArt.thumbnailUrl}" class="art-grid-img">
+            <div class="art-grid-overlay">
+                <span class="small fw-bold text-truncate text-white" th:text="${aArt.title}">제목</span>
+                <span class="text-white-50 d-flex" style="font-size: 0.7rem;">
+                    <i class="bi bi-heart-fill me-1"></i>[[${aArt.likeCount}]]
+                </span>
+            </div>
+        </a>
+    </div>
+</th:block>

@@ -187,21 +187,42 @@
         <div class="d-flex justify-content-between mb-4">
             <div>
                 <div class="text-muted small mb-2">
-                    <span th:text="${#temporals.format(art.createdAt,'yyyy.MM.dd')}"></span> · 조회수 <span th:text="${art.viewCount}"></span>
+                    <span th:text="${#temporals.format(art.createdAt,'yyyy.MM.dd')}"></span>
+                    · 조회수 <span th:text="${art.viewCount}"></span>
+                    · 좋아요 <span th:text="${like.count}" id="likeCount">0</span>
                 </div>
                 <div>
                     <span th:each="tag : ${tagList}" class="art-tag" th:text="'#' + ${tag.tagText}"></span>
                 </div>
             </div>
+
             <div class="action-buttons">
-                <button class="btn-action" th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|" th:if="${art.username == #authentication.name}">
+                <button class="btn-action" 
+                        th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"
+                        th:if="${art.username == #authentication.name}">
                     <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
                     <span>수정하기</span>
                 </button>
-                <button class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></button>
-                <button class="btn-action btn-star"><i class="bi bi-star-fill"></i><span>즐겨찾기</span></button>
-                <button class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></button>
-                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
+
+                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
+                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
+                    <span>좋아요</span>
+                </button>
+
+                <button class="btn-action btn-star">
+                    <i class="bi bi-star-fill"></i>
+                    <span>즐겨찾기</span>
+                </button>
+
+                <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
+                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+                    <span>북마크</span>
+                </button>
+
+                <button class="btn-action btn-share">
+                    <i class="bi bi-share-fill"></i>
+                    <span>공유</span>
+                </button>
             </div>
         </div>
 
@@ -228,70 +249,78 @@
             </div>
         </div>
 
-		<h5 class="fw-bold mb-4">작품 계보</h5>
-		<div class="row g-4 mb-5">
-		    <div class="col-md-6">
-		        <div class="lineage-box h-100">
-		            <h6 class="text-muted fw-bold mb-3">
-		                <i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품
-		            </h6>
-		            <a href="#" class="lineage-card">
-		                <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
-		                <div class="overflow-hidden">
-		                    <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
-		                    <div class="small text-muted text-truncate">@OriginalArtist</div>
-		                </div>
-		            </a>
-		        </div>
-		    </div>
-
-		    <div class="col-md-6">
-		        <div class="lineage-box h-100 d-flex flex-column">
-		            <h6 class="text-muted fw-bold mb-3">
-		                <i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품
-		            </h6>
-		            <div class="d-flex flex-column gap-2 mb-3" style="max-height: 200px; overflow-y: auto;">
-		                <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,5)}">
-		                    <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
-		                    <div class="overflow-hidden">
-		                        <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
-		                        <div class="small text-muted text-truncate">@RemixCreator</div>
-		                    </div>
-		                </a>
-		            </div>
-		        </div>
-		    </div>
-		</div>
+        <h5 class="fw-bold mb-4">작품 계보</h5>
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="lineage-box">
+                    <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품</h6>
+                    <a href="#" class="lineage-card" th:if="${parentContent!=null}">
+                        <img th:src="${parentContent.thumbnailUrl}" class="lineage-img" alt="원본">
+                        <div class="overflow-hidden">
+                            <div class="fw-bold text-dark text-truncate mb-1" th:text="${parentContent.title}">여름날의 바다 (Original)</div>
+                            <div class="small text-muted text-truncate" th:text="|${parentContent.type}|">type</div>
+                            <div class="small text-muted text-truncate" th:text="|${parentContent.username}(${parentContent.displayname})|">@OriginalArtist</div>
+                        </div>
+                    </a>
+                    <p class="text-muted text-center " th:if="${parentContent==null}">해당 컨텐츠는 원본 컨텐츠입니다.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="lineage-box">
+                    <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품</h6>
+                    <div class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"  th:each="childContent : ${childContents}" th:href="childContent">
+                        <a  class="lineage-card" th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(childContent.type)},id=${childContent.id})}">
+                            <img th:src="${childContent.thumbnailUrl}" class="lineage-img" alt="파생">
+                            <div class="overflow-hidden">
+                                <div class="fw-bold text-dark text-truncate mb-1" th:text="${childContent.title}">여름날의 바다 (리마스터)</div>
+                                <div class="small text-muted text-truncate" th:text="|${childContent.type}|">type</div>
+                                <div class="small text-muted text-truncate" th:text="|${childContent.username}(${childContent.displayname})|">@RemixCreator</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
-            <h5 class="fw-bold mb-0" th:text="${art.displayname} + '님의 다른 작품'">작가의 다른 작품</h5>
-            <a href="#" class="text-muted small text-decoration-none">더보기 <i class="bi bi-chevron-right"></i></a>
+            <h5 class="fw-bold mb-0" th:text="${art.displayname} + '님의 다른 작품'">작가의 다른 인기 작품</h5>
+            <a th:href="@{/user/myPage/{id}(id=${art.userId})}" class="text-muted small text-decoration-none">더보기 <i class="bi bi-chevron-right"></i></a>
         </div>
         <div class="row g-3 mb-5">
-            <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,4)}">
+            <div class="col-6 col-md-3" th:each="aArt : ${anotherArt}">
                 <a href="#" class="art-grid-item">
-                    <img src="https://dummyimage.com/300x300/e9ecef/495057" class="art-grid-img">
+                    <img th:src="${aArt.thumbnailUrl}" class="art-grid-img">
                     <div class="art-grid-overlay">
-                        <span class="small fw-bold text-truncate text-white">작품 타이틀 [[${i}]]</span>
-                        <span class="text-white-50" style="font-size: 0.7rem;"><i class="bi bi-heart-fill"></i> 120</span>
+                        <span class="small fw-bold text-truncate text-white" th:text="${aArt.title}">작품 타이틀 [[${i}]]</span>
+                        <span class="text-white-50 d-flex" style="font-size: 0.7rem;"><i class="bi bi-heart-fill"></i><div class="ms-2" th:text="| ${aArt.likeCount}|"></div></span>
                     </div>
                 </a>
             </div>
         </div>
 
-        <h5 class="fw-bold mb-3">다른 작품</h5>
-        <div class="row g-3 mb-5">
-            <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,8)}">
-                <a href="#" class="art-grid-item">
-                    <img src="https://dummyimage.com/300x300/dee2e6/6c757d" class="art-grid-img">
+        <h5 class="fw-bold mb-3">다른 작품 추천</h5>
+        <div class="row g-3 mb-5" id="art-list-container">
+            <div class="col-6 col-md-3" th:each="aArt : ${initialArts}">
+                <a th:href="@{/content/detail/{id}(id=${aArt.id})}" class="art-grid-item">
+                    <img th:src="${aArt.thumbnailUrl}" class="art-grid-img">
                     <div class="art-grid-overlay">
-                        <span class="small fw-bold text-truncate text-white">추천 작품 [[${i}]]</span>
-                        <span class="text-white-50" style="font-size: 0.7rem;">@추천작가명</span>
+                        <span class="small fw-bold text-truncate text-white" th:text="${aArt.title}"></span>
                     </div>
                 </a>
             </div>
         </div>
-    </div> <footer class="full-footer">
+        <div class="row g-3 mb-5" id="art-list-container">
+        </div>
+
+        <div id="loading-spinner" class="text-center my-5 d-none">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted fw-bold">새로운 작품을 불러오는 중...</p>
+        </div>
+    </div> 
+    
+    <footer class="full-footer">
         <div class="container py-5">
             <div class="row mb-4">
                 <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
@@ -334,6 +363,52 @@
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+    let page = 0;
+    let loading = false;
+    let hasNext = true;
 
+    function loadMoreArts() {
+        if (loading || !hasNext) return;
+
+        loading = true;
+        
+        // 1. 로딩 스피너 표시
+        const spinner = document.getElementById('loading-spinner');
+        const container = document.getElementById('art-list-container');
+        spinner.classList.remove('d-none');
+
+        // 테스트를 위해 로딩을 보고 싶다면 서버에서 지연을 주거나, 
+        // 아래 fetch를 setTimeout으로 아주 약간 감싸보세요.
+        fetch(`/content/art/more?page=${page}`)
+            .then(response => response.text())
+            .then(html => {
+                // 1. 공백을 제거한 실제 텍스트가 있는지 확인
+                const trimmedHtml = html.trim();
+                
+                if (trimmedHtml === "") {
+                    console.log("더 이상 불러올 데이터가 없습니다.");
+                    hasNext = false; // 여기서 멈춤
+                } else {
+                    container.insertAdjacentHTML('beforeend', trimmedHtml);
+                    page++; // 다음 페이지 번호 증가
+                    console.log("현재 로딩된 페이지:", page);
+                }
+            })
+            .catch(err => console.error("로딩 실패:", err))
+            .finally(() => {
+                // 2. 로딩 완료 후 스피너 숨기기
+                loading = false;
+                spinner.classList.add('d-none');
+            });
+    }
+
+    // 스크롤 이벤트
+    window.onscroll = function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
+            loadMoreArts();
+        }
+    };
+    </script>	
 </div>
 </html>

@@ -90,6 +90,7 @@ public class Content {
 	private Long viewCount=0L;
 	
 	@Builder.Default
+	@Column(nullable = false)
 	private Long likeCount=0L;
 	
 	@CreationTimestamp
@@ -103,6 +104,9 @@ public class Content {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "original_content_id")
 	private Content originalContent;
+	
+	@OneToMany(mappedBy = "originalContent")
+	private List<Content> childContents;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "projectTag")

@@ -28,11 +28,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.MailService;
+import com.creatival.bookmark.BookmarkService;
 import com.creatival.comment.CommentService;
 import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.content.Content;
 import com.creatival.content.ContentService;
 import com.creatival.content.DTO.ResponseContentListForProject;
+import com.creatival.like.LikeService;
+import com.creatival.like.TargetType;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.team.Enum.TeamRole;
@@ -78,6 +81,8 @@ public class TeamController {
 	private final UserTokenService userTokenService;
 	private final ContentService contentService;
 	private final CommentService commentService;
+	private final LikeService likeService;
+	private final BookmarkService bookmarkService;
 
 
 	
@@ -138,6 +143,12 @@ public class TeamController {
 		
 		List<ResponseCommentDTO> comments = commentService.getCommentListByTeam(id);
 		model.addAttribute("comments", comments);
+		
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.TEAM, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.TEAM, id));
 		return "team_detail";
 	}
 	
@@ -333,7 +344,7 @@ public class TeamController {
 	}
 	
 	@GetMapping("/{tid}/project/{pid}")
-	public String projectDetail(Model model, @PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId) {
+	public String projectDetail(Model model, @PathVariable("tid") Long teamId, @PathVariable("pid") Long projectId, Principal principal) {
 		Project project = teamService.getProjectById(projectId);
 		List<ResponseContentListForProject> contents = contentService.getContentByProject(project);
 		List<ResponseCheckoutListDTO> checkouts = teamService.getCheckoutByProject(project);
@@ -341,6 +352,12 @@ public class TeamController {
 		model.addAttribute("contentList", contents);
 		model.addAttribute("checkList", checkouts);
 		model.addAttribute("log", teamService.getHistoryByProjectTop(project));
+		Users user = null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.PROJECT, projectId));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.PROJECT, projectId));
 		return "team_project_detail";
 	}
 	

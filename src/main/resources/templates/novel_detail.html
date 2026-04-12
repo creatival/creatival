@@ -108,8 +108,8 @@
 				
                 <div class="d-flex justify-content-center align-items-center gap-3">
                     <button class="btn btn-primary rounded-pill px-4"> 팔로우 </button>
-                    <div class="text-center" style="cursor: pointer;">
-                        <i class="bi bi-bookmark" style="font-size: 1.5rem; display: block; line-height: 1;"></i>
+                    <div class="text-center" style="cursor: pointer;" th:onclick="|toggleBookmark(${novel.id}, 'CONTENT')|" id="bookmarkBtn">
+                       	<i id="bookmarkIcon" class="bi" style="font-size: 1.5rem; display: block; line-height: 1;" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                         <span style="font-size: 11px; font-weight: bold; color: #666;">북마크</span>
                     </div>
                 </div>
@@ -117,7 +117,7 @@
 
 		    <div class="d-flex justify-content-center gap-3 text-muted small mb-3">
 		        <span>조회수 <strong th:text="${novel.viewCount}">0</strong></span>
-		        <span>추천 <strong>2,681</strong></span>
+		        <span>추천 <strong th:text="${like.count}" id="likeCount">2,681</strong></span>
 		    </div>
 
 		    <a th:if="${firstEpisodeId != null}" 
@@ -162,7 +162,7 @@
             </div>
 
             <div class="action-buttons">
-                <button type="button" class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></button>
+                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${novel.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
                 <button type="button" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
             </div>
 			<h5 class="fw-bold mb-4 ">작품 계보</h5>

@@ -2,9 +2,12 @@ package com.creatival.content;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +31,7 @@ import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtDetail;
 import com.creatival.content.DTO.ResponseArtList;
+import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.content.DTO.ResponseFileDetailDTO;
 import com.creatival.content.DTO.ResponseFileListDTO;
 import com.creatival.content.DTO.ResponseMusicDetailDTO;
@@ -44,6 +48,7 @@ import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
 import com.creatival.content.DTO.UpdateNovelEpisodeDTO;
 import com.creatival.content.DTO.UpdateVideoDTO;
+import com.creatival.content.Enum.ContentType;
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.follow.FollowService;
@@ -64,6 +69,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/content")
 public class ContentController {
 
+    private final PasswordEncoder passwordEncoder;
+
     private final FollowService followService;
 
     private final BookmarkService bookmarkService;
@@ -77,6 +84,7 @@ public class ContentController {
 
 
 
+
 	
 	@GetMapping("/novel_list")
 	public String novel_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
@@ -86,7 +94,11 @@ public class ContentController {
 	}
 	
 	@GetMapping("/novel_write")
-	public String novel_write(CreateNovelDTO createNovelDTO) {
+	public String novel_write(CreateNovelDTO createNovelDTO, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/novel_list";	
+		}
 		return "novel_write";
 	}
 	
@@ -96,7 +108,7 @@ public class ContentController {
 			System.out.println("오류 발생");
 			return "novel_write";
 		}
-		if (createNovelDTO.getOriginalContentId()!=null && createNovelDTO.getProjectTag() !=null) {
+		if (createNovelDTO.getOriginalContentId()!=null && (createNovelDTO.getProjectTag() !=null || createNovelDTO.getProjectTag().isEmpty())) {
 			bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 content에 속하거나 하나만 할 수 있습니다");
 			return "illustration_write";
 		}
@@ -120,10 +132,13 @@ public class ContentController {
 	@GetMapping("/novel_detail/{id}")
 	public String novel_detail(Model model, @PathVariable("id") Long id,@RequestParam(defaultValue = "0", name = "page") int page, Principal principal) {
 		Content content = contentService.getNovel(id);
+		contentService.upViewCount(content);
 		ResponseNovelDetail novelDetail = ResponseNovelDetail.from(content);
 		model.addAttribute("novel", novelDetail);
+		Users user=null;
 		if(principal != null) {
-			model.addAttribute("loginUsername", principal.getName());	
+			user = userService.getUserByUsername(principal.getName());
+			model.addAttribute("loginUsername", principal.getName());
 		} else {
 			model.addAttribute("loginUsername", null);
 		}
@@ -135,6 +150,10 @@ public class ContentController {
 		
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
 		model.addAttribute("tagList", contentTags);
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		
 		return "novel_detail";
 	}
 	
@@ -218,9 +237,15 @@ public class ContentController {
 	@GetMapping("/novel/episode/{id}")
 	public String novelEpisodeDetail(@PathVariable("id") Long episodeId, Model model) {
 		Episode episode = contentService.getNovelEpisode(episodeId); 
+		contentService.upViewCount(episode.getSeries().getContent());
 		ResponseNovelEpisodeDetail episodeDetail = ResponseNovelEpisodeDetail.from(episode);
 		model.addAttribute("episode", episodeDetail);
 		
+		
+		List<ResponseCommentDTO> comments = commentService.getCommentListByEpisode(episodeId);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByEpisode(episodeId);
+		model.addAttribute("commentCount", commentsCount);
 		
 		model.addAttribute("prevEpisode", contentService.getPrevEpisode(episode));
 		model.addAttribute("nextEpisode", contentService.getNextEpisode(episode));
@@ -278,7 +303,10 @@ public class ContentController {
 	}
 	
 	@GetMapping("/art/create")
-	public String createArt(CreateArtDTO createArtDTO) {
+	public String createArt(CreateArtDTO createArtDTO,Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+		}
 		return "illustration_write";
 	}
 	
@@ -295,7 +323,7 @@ public class ContentController {
 		if (createArtDTO.getImages() == null || createArtDTO.getImages().isEmpty()) {
 	        System.out.println("이미지 리스트가 비어있습니다.");
 	    }
-		if (createArtDTO.getOriginalContentId()!=null && createArtDTO.getProjectTag() !=null) {
+		if (createArtDTO.getOriginalContentId()!=null && (createArtDTO.getProjectTag() !=null && !createArtDTO.getProjectTag().isEmpty())) {
 			bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 content에 속하거나 하나만 할 수 있습니다");
 			return "illustration_write";
 		}
@@ -320,10 +348,36 @@ public class ContentController {
 		if(content == null) {
 			return "redirect:/content/art/list";
 		}
+		contentService.upViewCount(content);
 		List<ContentFile> list = contentFileService.getContentFileByContent(content);
 		ResponseArtDetail responseArtDetail = ResponseArtDetail.from(content, list);
+		
 		model.addAttribute("art", responseArtDetail);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
+		
+		if(content.getOriginalContent()!=null) {
+			Content parentContent = content.getOriginalContent();
+			if(parentContent.getType()==ContentType.ART) {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(content, contentFileService.getContentFileThumbnail(content).getFileUrl()));
+			} else {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
+			}
+			
+		}
+		List<ResponseArtList> anotherArt  = contentService.getAutherArt(content.getUser());
+		model.addAttribute("anotherArt", anotherArt);
+		List<ResponseContentListForProject> childContentList=new ArrayList<>();
+		List<Content> childContents = content.getChildContents();
+		for(Content childContent : childContents) {
+			if(childContent.getType()==ContentType.ART) {
+				childContentList.add(ResponseContentListForProject.fromArt(childContent, contentFileService.getContentFileThumbnail(childContent).getFileUrl()));
+			} else {
+				childContentList.add(ResponseContentListForProject.fromNovel(childContent));
+			}
+		}
+		model.addAttribute("childContents", childContentList);
+		
+		
 		model.addAttribute("tagList", contentTags);
 		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
 		model.addAttribute("comments", comments);
@@ -333,6 +387,7 @@ public class ContentController {
 		if(principal != null) {
 			user = userService.getUserByUsername(principal.getName());
 		}
+		
 		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
@@ -394,7 +449,11 @@ public class ContentController {
 	}
 	
 	@GetMapping("/video/create")
-	public String createVideo(Model model) {
+	public String createVideo(Model model, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/video/list";
+		}
 		CreateVideoDTO createVideoDTO = new CreateVideoDTO();
 		model.addAttribute("createVideoDTO", createVideoDTO);
 		return "video_write";
@@ -425,6 +484,7 @@ public class ContentController {
 	@GetMapping("/video/detail/{id}")
 	public String videoDetail(@PathVariable("id") Long id, Model model, Principal principal) {
 		Content content = contentService.getContent(id);
+		contentService.upViewCount(content);
 		ResponseVideoDetailDTO dto = contentService.getVideoDetailById(id);
 		model.addAttribute("video", dto);
 		List<ResponseTagDTO> contentTags = tagService.getTagForContent(content);
@@ -533,9 +593,8 @@ public class ContentController {
 	@GetMapping("/music/write")
 	public String createMusic(Model model, Principal principal, RedirectAttributes redirectAttributes) {
 		if(principal==null) {
-			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
-			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/";
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/music/list";
 		}
 		CreateMusicDTO dto = new CreateMusicDTO();
 		model.addAttribute("createMusicDTO", dto);
@@ -568,8 +627,9 @@ public class ContentController {
 	}
 	
 	@GetMapping("/music/detail/{id}")
-	public String musicDetail(Model model, @PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+	public String musicDetail(Model model, @PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
 		Content content = contentService.getContent(id);
+		contentService.upViewCount(content);
 		ResponseMusicDetailDTO dto = contentService.getMusicDetailById(id);
 		if(dto == null) {
 			redirectAttributes.addFlashAttribute("message", "해당하는 음악을 찾는데 실패했습니다.");
@@ -583,6 +643,14 @@ public class ContentController {
 		model.addAttribute("comments", comments);
 		int commentsCount = commentService.getCountByContent(id);
 		model.addAttribute("commentCount", commentsCount);
+		
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 		return "music_detail";
 	}
 	
@@ -651,15 +719,16 @@ public class ContentController {
 			redirectAttributes.addFlashAttribute("icon", "error");
 			return "redirect:/";
 		}
+		contentService.upViewCount(content);
 		if(principal == null) {
 			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/video/detail/"+id;
+			return "redirect:/content/music/detail/"+id;
 		}
 		if(!content.getUser().getUsername().equals(principal.getName())) {
 			redirectAttributes.addFlashAttribute("message", "오직 본인만 삭제할 수 있습니다.");
 			redirectAttributes.addFlashAttribute("icon", "warning");
-			return "redirect:/content/video/detail/"+id;
+			return "redirect:/content/music/detail/"+id;
 		}
 		contentService.delete(content);
 		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
@@ -675,7 +744,8 @@ public class ContentController {
 	}
 	
 	@GetMapping("/file/detail/{id}")
-	public String fileDetail(Model model, @PathVariable("id") Long id) {
+	public String fileDetail(Model model, @PathVariable("id") Long id, Principal principal) {
+		contentService.upViewCount(contentService.getContent(id));
 		ResponseFileDetailDTO dto = contentService.getfIleDetail(id);
 		model.addAttribute("fileDetail", dto);
 		Content content = contentService.getContent(id);
@@ -686,15 +756,21 @@ public class ContentController {
 		int commentsCount = commentService.getCountByContent(id);
 		model.addAttribute("commentCount", commentsCount);
 		System.out.println(dto.isAllowComment());
+		Users user =null;
+		if(principal != null) {
+			user = userService.getUserByUsername(principal.getName());
+		}
+		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
+		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
+		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 		return "file_detail";
 	}
 	
 	@GetMapping("/file/write")
 	public String createFile(Model model, Principal principal, RedirectAttributes redirectAttributes) {
 		if(principal==null) {
-			redirectAttributes.addFlashAttribute("message", "로그인이 필요한 작업입니다.");
-			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/";
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/file/list";
 		}
 		model.addAttribute("createFileDTO", new CreateFileDTO());
 		return "file_write";
@@ -817,5 +893,14 @@ public class ContentController {
 		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
 		redirectAttributes.addFlashAttribute("icon", "success");
 		return "redirect:/content/file/list";
+	}
+	
+	@GetMapping("/art/more")
+	public String getMoreArts(@RequestParam(name = "page", defaultValue = "0") int page, Model model) throws InterruptedException {
+		Thread.sleep(500);
+		Page<ResponseArtList> arts = contentService.getMoreArt(page);
+	    
+	    model.addAttribute("moreArts", arts);
+	    return "illustration-fragments :: artLoop"; 
 	}
 }
