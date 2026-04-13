@@ -231,4 +231,9 @@ public class MainController {
 	public String file_write() {
 		return "file_write";
 	}
+	
+	@GetMapping("/boost_record")
+	public String boost_record() {
+		return "boost_record";
+	}
 }
