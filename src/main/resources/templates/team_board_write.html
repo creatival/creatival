@@ -1,0 +1,235 @@
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+	
+<head>
+	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+</head>
+<div layout:fragment="content">
+	
+
+
+    <style>
+        :root {
+            --brand-navy: #3B4371;
+            --brand-orange: #FF7F50;
+            --input-focus: #8C94CD;
+            --bg-light: #F8F9FA;
+            --border-color: #E9ECEF;
+        }
+
+        .write-container {
+            max-width: 900px;
+            margin: 3rem auto 5rem;
+            padding: 0 20px;
+        }
+
+        /* 헤더 스타일 */
+        .write-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .write-header h2 {
+            font-weight: 800;
+            color: var(--brand-navy);
+            letter-spacing: -1px;
+        }
+        .write-header p { color: #888; font-size: 0.95rem; }
+
+        /* 카드 및 섹션 스타일 */
+        .write-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--brand-navy);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title i { color: var(--brand-orange); }
+
+        /* 폼 요소 */
+        .form-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .form-control, .form-select {
+            border: 1.5px solid #F0F0F0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            background-color: #FDFDFD;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--brand-navy);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(59, 67, 113, 0.05);
+        }
+
+        /* 작성자 정보 박스 */
+        .author-info {
+            background-color: #F8F9FF;
+            border: 1px solid #E1E6FF;
+            border-radius: 10px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 50px;
+        }
+
+        /* 미리보기 박스 */
+        .preview-box {
+            font-size: 0.8rem;
+            margin-top: 6px;
+            min-height: 18px;
+            font-weight: 600;
+        }
+
+        /* 파일 업로드 아이템 */
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* 버튼 그룹 */
+        .btn-group-custom {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 3rem;
+        }
+        .btn-creativ {
+            padding: 14px 45px;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .btn-cancel { background: #fff; border: 1.5px solid #DDD; color: #666; }
+        .btn-cancel:hover { background: #F5F5F5; }
+        .btn-submit { background: var(--brand-navy); border: none; color: #fff; }
+        .btn-submit:hover { background: #2c3359; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(59,67,113,0.2); }
+
+        .divider { height: 1px; background: #EEE; margin: 2rem 0; }
+    </style>
+
+    <div class="write-container">
+        <div class="write-header">
+            <h2>팀 게시글 작성</h2>
+            <p>팀원들과 공유하고 싶은 소중한 아이디어를 기록해보세요.</p>
+        </div>
+
+        <form th:action="@{/board/write}" method="post" enctype="multipart/form-data">
+            <div class="write-card">
+                
+                <div class="section-title"><i class="bi bi-info-circle-fill"></i> 기본 정보</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">카테고리 설정</label>
+                        <select class="form-select" name="boardType">
+                            <option value="NORMAL" selected>팀 게시판 (일반)</option>
+                            <option value="CREATOR">공지사항 (필독)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">작성자</label>
+                        <div class="author-info">
+                            <img src="https://dummyimage.com/30x30/3B4371/fff&text=U" class="rounded-circle">
+                            <span class="small fw-bold text-dark" th:text="${#authentication.name}">사용자명</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="section-title"><i class="bi bi-link-45deg"></i> 연관 리소스 연결 <small class="text-muted fw-normal ms-2">(선택사항)</small></div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">컨텐츠 ID</label>
+                        <input type="number" class="form-control" name="contentId" id="contentId" placeholder="ID 입력">
+                        <div id="contentPreview" class="preview-box"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">프로젝트 ID</label>
+                        <input type="number" class="form-control" name="projectId" id="projectId" placeholder="ID 입력">
+                        <div id="projectPreview" class="preview-box"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">팀 ID</label>
+                        <input type="number" class="form-control" name="teamId" id="teamId" placeholder="ID 입력">
+                        <div id="teamPreview" class="preview-box"></div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="section-title"><i class="bi bi-pencil-fill"></i> 게시글 내용</div>
+                <div class="mb-4">
+                    <label class="form-label">제목</label>
+                    <input type="text" class="form-control form-control-lg" name="title" placeholder="제목을 입력해 주세요" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">상세 내용</label>
+                    <textarea class="form-control" id="contentArea" name="boardText" style="min-height: 250px; resize: none;" 
+                              placeholder="팀원들과 나눌 내용을 자유롭게 작성해 주세요."></textarea>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label">파일 첨부 <small class="text-muted">(최대 3개 / 이미지, 영상)</small></label>
+                    <div id="fileInputs">
+                        <input class="form-control file-input" type="file" name="images" accept="image/*,video/*" id="file_init">
+                    </div>
+                    <div id="fileList" class="file-list"></div>
+                </div>
+            </div>
+
+            <div class="btn-group-custom">
+                <button type="button" class="btn btn-creativ btn-cancel" onclick="history.back()">취소하기</button>
+                <button type="submit" class="btn btn-creativ btn-submit">게시글 등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // (제공해주신 JS 로직을 그대로 이곳에 넣으시면 됩니다.)
+        // 디자인 수정을 위해 input 이벤트 시 preview 컬러만 브랜드 색상으로 조정했습니다.
+        function debouncedFetchInfo(type, id) {
+            const preview = document.getElementById(type + 'Preview');
+            clearTimeout(debounceTimer);
+            if(!id) { preview.innerText = ""; return; }
+            preview.innerHTML = '<small class="text-muted">조회 중...</small>';
+            debounceTimer = setTimeout(() => {
+                fetch(`/board/info/${type}?id=${id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.name) {
+                            preview.innerHTML = `<span style="color:var(--brand-orange);">●</span> <strong class="text-dark">${data.name}</strong>`;
+                        } else {
+                            preview.innerHTML = `<span class="text-danger">✕</span> 존재하지 않는 ID`;
+                        }
+                    })
+                    .catch(() => { preview.innerText = "조회 실패"; });
+            }, 300);
+        }
+        // ... (나머지 handleFileSelect, removeFile 등 기존 함수 유지)
+    </script>
+</th:block>
+</html>

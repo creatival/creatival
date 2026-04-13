@@ -195,7 +195,7 @@
             <div class="d-grid gap-2 mb-4" th:if="${team.leaderUsername == #authentication.name}">
                 <a th:href="@{/team/{id}/teamApplicationManage(id=${team.id})}" class="btn btn-outline-dark py-2 fw-bold"><i class="bi bi-people-fill me-2"></i>신청 현황 관리</a>
                 <a th:href="@{/team/{id}/teamMemberManage(id=${team.id})}" class="btn btn-outline-secondary py-2 fw-bold"><i class="bi bi-person-gear me-2"></i>멤버 관리</a>
-				<a th:href="@{/team/{id}/teamMemberManage(id=${team.id})}" class="btn btn-outline-secondary py-2 fw-bold"><i class="bi bi-person-gear me-2"></i>회원 관리</a>
+				<a th:href="@{/team_membership_mange}" class="btn btn-outline-secondary py-2 fw-bold"><i class="bi bi-person-gear me-2"></i>회원 관리</a>
             </div>
 
             <div class="card shadow-sm border-0 mb-4">
@@ -215,7 +215,7 @@
             </div>
 
             <div class="d-grid gap-2">
-                <button class="btn btn-light border py-3 text-start px-3 shadow-sm"><i class="bi bi-megaphone me-2"></i> 팀 홍보하기</button>
+                <a th:href="@{/team_board}" class="btn btn-light border py-3 text-start px-3 shadow-sm"><i class="bi bi-megaphone me-2"></i> 팀 게시판 이동</a>
                 <a th:href="@{/team_boost}" class="btn btn-support py-3 text-start px-3 shadow-sm fw-bold"><i class="bi bi-heart-fill me-2"></i> 팀 구독/후원하기</a>
             </div>
         </div>
