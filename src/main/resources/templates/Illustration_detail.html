@@ -217,11 +217,6 @@
                     <span>좋아요</span>
                 </button>
 
-                <button class="btn-action btn-star">
-                    <i class="bi bi-star-fill"></i>
-                    <span>즐겨찾기</span>
-                </button>
-
                 <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>

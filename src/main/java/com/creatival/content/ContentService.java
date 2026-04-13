@@ -20,12 +20,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateArtDTO;
+import com.creatival.content.DTO.CreateComicDTO;
 import com.creatival.content.DTO.CreateFileDTO;
 import com.creatival.content.DTO.CreateMusicDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
 import com.creatival.content.DTO.CreateNovelEpisodeDTO;
 import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtList;
+import com.creatival.content.DTO.ResponseComicEpisodeListDTO;
+import com.creatival.content.DTO.ResponseComicListDTO;
 import com.creatival.content.DTO.ResponseContentFileDTO;
 import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.content.DTO.ResponseFileDetailDTO;
@@ -784,6 +787,77 @@ public class ContentService {
 		Page<Content> pages = contentRepository.findByType(ContentType.ART, pageable);
 		return pages.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content)));
 	}
-	
+	public void createContentComic(@Valid CreateComicDTO dto, Users user) throws IOException {
+		Content content = Content.builder()
+				.title(dto.getTitle())
+				.description(dto.getDescription())
+				.user(user)
+				.visibility(dto.getVisibility())
+				.ownerType(dto.getOwnerType())
+				.type(ContentType.COMIC)
+				.isAllowComment(dto.isAllowComment())
+				.isFanWork(dto.isFanWork())
+				.build();
+		String imgurl = "/upload/images/thumbnail/";
+		
+		if(dto.getThumbnailFile() != null && !dto.getThumbnailFile().isEmpty()) {
+			imgurl += fileUtil.saveImage(dto.getThumbnailFile(), "thumbnail");
+			content.setThumbnailImgUrl(imgurl);
+		}
+		if(content.isFanWork() && dto.getOriginalContentId() != null) {
+			content.setOriginalContent(contentRepository.findById(dto.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
+		}
+		if(dto.getProjectTag() != null && !dto.getProjectTag().isBlank()) {
+			Project project = teamService.getProjectTag(dto.getProjectTag());
+			if(project==null) {
+				throw new IllegalArgumentException("projectTag가 존재하지 않는 tag입니다!");
+			}
+			TeamMember member = teamService.getMemberForTeamByUser(project.getTeam(), user);
+			if(member == null) {
+				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
+			}
+			content.setProject(project);
+		}
+		contentRepository.save(content);
+		String tagString = dto.getTagString();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        // 쉼표로 구분된 문자열을 배열로 변환
+	        String[] tags = tagString.split(",");
+	        
+	        for (String tagName : tags) {
+	            String trimmedTag = tagName.trim();
+	            if (!trimmedTag.isEmpty()) {
+	                // 태그를 저장하고 소설과 연결하는 로직 호출
+	                // 예: tagService.addTagToContent(novel, trimmedTag);
+	            	tagService.createTagForContent(content, tagName, user.getUsername());
+	            }
+	        }
+	    }
+		
+		Series series = Series.builder()
+				.content(content)
+				.isEnd(dto.isEnd())
+				.build();
+		seriesRepository.save(series);
+	}
+	public Page<ResponseComicListDTO> getComicList(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.COMIC,pageable);
+		
+		return contents.map(content -> ResponseComicListDTO.from(content, content.getSeries()));
+	}
+	public Content getComicById(Long id) {
+		Optional<Content> optional = contentRepository.findById(id);
+		if(optional.isEmpty()) {
+			return null;
+		}
+		return optional.get();
+	}
+	public Page<ResponseComicEpisodeListDTO> getEpisodeBySeriesForComic(Series series,int page) {
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("episodeNum").descending());
+		Page<Episode> episodeList = episodeRepository.findBySeriesOrderByEpisodeNumAsc(series, pageable);
+		
+		return episodeList.map(episode -> ResponseComicEpisodeListDTO.from(episode));
+	}
 	
 }
