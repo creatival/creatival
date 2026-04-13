@@ -1,23 +1,31 @@
-<html layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 <head>
     <style>
-        /* 웹툰 뷰어 컨테이너: 이미지 사이의 흰 줄(gap) 제거가 핵심 */
+        /* 웹툰 뷰어 컨테이너 */
         .toon-viewer img {
-            display: block; /* 인라인 속성 제거로 하단 여백 삭제 */
-            width: 100%;    /* 컨테이너 꽉 차게 */
-            height: auto;   /* 비율 유지 */
+            display: block;
+            width: 100%;
+            height: auto;
             border: none;
             margin: 0;
             padding: 0;
         }
         
-        /* 모바일에서는 꽉 차게, PC에서는 적당한 너비로 */
         .toon-container {
-            max-width: 800px; /* PC에서 너무 크지 않게 제한 (네이버 웹툰 등은 690px~800px 사용) */
+            max-width: 800px;
             margin: 0 auto;
             background-color: #fff;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05); /* 살짝 그림자 */
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
         }
+
+        /* 하단 네비게이션 바 고정 스타일 (선택사항) */
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #dee2e6;
+            padding: 15px 0;
+        }
+		
+		
     </style>
 </head>
 
@@ -25,7 +33,8 @@
 
     <div class="mt-5"></div>
 
-    <div class="container-fluid p-0"> <div class="toon-container">
+    <div class="container-fluid p-0"> 
+        <div class="toon-container">
             
             <div class="p-4 text-center border-bottom">
                 <h2 class="fw-bold">12화. 각성하는 힘</h2>
@@ -33,24 +42,22 @@
             </div>
 
             <div class="toon-viewer">
-                <img src="images/pic.png" alt="만화컷1" loading="lazy">
-                <img src="images/pic.png" alt="만화컷2" loading="lazy">
-                <img src="images/pic.png" alt="만화컷3" loading="lazy">
-                <img src="images/pic.png" alt="만화컷4" loading="lazy">
-                <img src="images/pic.png" alt="만화컷5" loading="lazy">
-                </div>
+                <img src="images/pic.png" alt="만화컷1">
+                <img src="images/pic.png" alt="만화컷2">
+                <img src="images/pic.png" alt="만화컷3">
+                <img src="images/pic.png" alt="만화컷4">
+            </div>
 
-            <div class="p-4 bg-light border-top text-center">
+            <div class="p-5 bg-light border-top text-center">
                 <h5 class="fw-bold mb-3">작가의 말</h5>
                 <p class="text-secondary small">
                     이번 화도 재미있게 봐주셔서 감사합니다.<br>
                     다음 화는 휴재 없이 진행됩니다!
                 </p>
                 <button class="btn btn-outline-danger btn-sm rounded-pill px-4 mt-2">
-                    <i class="bi bi-heart-fill"></i> 좋아요
+                    <i class="bi bi-heart-fill"></i> 좋아요 1.2k
                 </button>
             </div>
-
         </div>
     </div>
 
@@ -58,13 +65,64 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="#" class="btn btn-outline-secondary px-4">
-                        <i class="bi bi-chevron-left"></i> 이전화
+                    
+                    <a href="#" class="btn btn-outline-secondary px-3 px-md-4">
+                        <i class="bi bi-chevron-left"></i> <span class="d-none d-md-inline">이전화</span>
                     </a>
-                    <a th:href="@{/comic_detail}" class="btn btn-outline-dark px-4">목록</a>
-                    <a href="#" class="btn btn-primary px-4 text-white">
-                        다음화 <i class="bi bi-chevron-right"></i>
+                    
+                    <button type="button" class="btn btn-dark px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#commentModal">
+                        <i class="bi bi-chat-dots-fill me-1"></i> 댓글 보기
+                    </button>
+
+                    <a href="#" class="btn btn-primary px-3 px-md-4 text-white">
+                        <span class="d-none d-md-inline">다음화</span> <i class="bi bi-chevron-right"></i>
                     </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="commentModalLabel">댓글</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <div class="d-flex gap-2">
+                            <input type="text" class="form-control" placeholder="따뜻한 댓글을 남겨주세요.">
+                            <button type="button" class="btn btn-primary px-4">등록</button>
+                        </div>
+                    </div>
+
+                    <div class="pb-2 border-bottom mb-4">
+                        <span class="fw-bold">전체 댓글</span> <span class="text-primary fw-bold">3</span>개
+                    </div>
+
+                    <div class="comment-list">
+                        <div class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-bold small">독자1</span>
+                                <span class="text-muted" style="font-size: 0.7rem;">2026.02.12</span>
+                            </div>
+                            <p class="mb-0 small">와... 이번 화 연출 미쳤네요 ㄷㄷ</p>
+                        </div>
+                        <div class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-bold small">독자2</span>
+                                <span class="text-muted" style="font-size: 0.7rem;">2026.02.12</span>
+                            </div>
+                            <p class="mb-0 small">다음 화가 너무 기대됩니다!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">닫기</button>
                 </div>
             </div>
         </div>

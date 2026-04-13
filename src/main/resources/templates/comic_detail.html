@@ -136,9 +136,12 @@
 
     <div class="container mb-5">
         <div class="row">
-            <div class="col-md-10 mx-auto">
-                <h4 class="fw-bold mb-4 border-bottom pb-2">회차 리스트 (총 123화)</h4>
-                
+			<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+			    <h4 class="fw-bold mb-0">회차 리스트 (총 123화)</h4>
+			    <a th:href="@{/comic/episode/write}" class="btn btn-outline-primary btn-sm fw-bold">
+			        <i class="bi bi-plus-circle me-1"></i> 새 회차 업로드
+			    </a>
+			</div>
                 <div class="list-group list-group-flush shadow-sm rounded border">
                     <a th:href="@{/comic_viewer}" class="list-group-item list-group-item-action py-3">
                         <div class="d-flex align-items-center">
