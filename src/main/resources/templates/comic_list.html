@@ -1,333 +1,167 @@
 <html layout:decorate="~{layout}">
 <head>
     <style>
-		
-		.category-item { 
-				        transition: all 0.3s ease; 
-				        text-decoration: none !important;
-				    }
-				    
-				    .icon-box {
-				        width: 80px; 
-				        height: 80px; 
-				        background-color: #F8F9FA; /* 기본 연회색 배경 */
-				        border-radius: 22px;
-				        margin: 0 auto 12px; 
-				        display: flex; 
-				        align-items: center; 
-				        justify-content: center;
-				        overflow: hidden;
-				        border: 1px solid #eee;
-				        transition: all 0.3s ease;
-				    }
-
-				    .category-icon-img {
-				        width: 100%;       
-				        height: 100%;      
-				        object-fit: contain; 
-				        padding: 18px; /* 아이콘 크기 통일 */
-				        transition: transform 0.3s ease;
-				    }
-
-				    /* 호버 시 디자인 변경: Creatival 오렌지색 적용 */
-				    .category-item:hover { 
-				        transform: translateY(-8px); 
-				    }
-				    
-				    .category-item:hover .category-icon-img {
-				        transform: scale(1.1); /* 아이콘 살짝 확대 */
-				    }
-
-				    .category-item .fw-bold {
-				        color: #3B4371; /* 브랜드 네이비 */
-				        font-size: 0.95rem;
-				        transition: color 0.3s ease;
-				    }
-	
-	
-        .comic-card-img {
-            height: 300px;
-            object-fit: cover; /* 이미지가 비율을 유지하며 꽉 차게 */
+        .category-item { transition: all 0.3s ease; text-decoration: none !important; }
+        .icon-box {
+            width: 80px; height: 80px; background-color: #F8F9FA;
+            border-radius: 22px; margin: 0 auto 12px; display: flex;
+            align-items: center; justify-content: center; overflow: hidden;
+            border: 1px solid #eee; transition: all 0.3s ease;
         }
+        .category-icon-img {
+            width: 100%; height: 100%; object-fit: contain;
+            padding: 18px; transition: transform 0.3s ease;
+        }
+        .category-item:hover { transform: translateY(-8px); }
+        .category-item:hover .category-icon-img { transform: scale(1.1); }
+        .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; transition: color 0.3s ease; }
+        .comic-card-img { height: 300px; object-fit: cover; }
         .hover-shadow:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s ease;
+            transform: translateY(-5px); transition: all 0.3s ease;
             box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
         }
     </style>
 </head>
 
 <div class="container" layout:fragment="content">
-	
-	<section class="py-5 bg-white">
-	    <div class="container">
-	        <div class="row text-center g-4 justify-content-center">
-	            
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/Illustration_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트">
-	                    </div>
-	                    <div class="fw-bold">일러스트</div>
-	                </a>
-	            </div>
+    <section class="py-5 bg-white">
+        <div class="container">
+			<div class="row text-center g-4 g-md-5 justify-content-center">
+			                <div class="col-4 col-md-2">
+			                    <a th:href="@{/Illustration_list}" class="category-item d-block">
+			                        <div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
+			                        <div class="fw-bold">일러스트</div>
+			                    </a>
+			                </div>
+			                <div class="col-4 col-md-2">
+			                    <a th:href="@{/content/music_list}" class="category-item d-block">
+			                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
+			                        <div class="fw-bold">음악</div>
+			                    </a>
+			                </div>
+			                <div class="col-4 col-md-2">
+			                    <a th:href="@{/content/video_list}" class="category-item d-block">
+			                        <div class="icon-box"><img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오"></div>
+			                        <div class="fw-bold">비디오</div>
+			                    </a>
+			                </div>
+			                <div class="col-4 col-md-2">
+			                    <a th:href="@{/content/novel_list}" class="category-item d-block">
+			                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
+			                        <div class="fw-bold">소설</div>
+			                    </a>
+			                </div>
+			                <div class="col-4 col-md-2">
+			                    <a th:href="@{/content/file/list}" class="category-item d-block">
+			                        <div class="icon-box"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
+			                        <div class="fw-bold">파일</div>
+			                    </a>
+			                </div>
+			            </div>
+        </div>
+    </section>
 
+    <div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
+        <div>
+            <h2 class="fw-bold">추천 만화</h2>
+            <p class="text-muted mb-0">이번 주 가장 인기 있는 작품들을 만나보세요.</p>
+        </div>
 
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/music_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
-	                    </div>
-	                    <div class="fw-bold">음악</div>
-	                </a>
-	            </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#keyRegisterModal" 
+                    style="border-radius: 8px; height: 38px; font-weight: 600;">
+                <i class="bi bi-key-fill me-1"></i>코드 등록
+            </button>
+            
+            <a th:href="@{/comic_write}" class="btn btn-dark px-4 shadow-sm" style="border-radius: 8px; height: 38px;">
+                작품 등록
+            </a>
 
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/video_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오">
-	                    </div>
-	                    <div class="fw-bold">비디오</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/content/novel_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
-	                    </div>
-	                    <div class="fw-bold">소설</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/file_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일">
-	                    </div>
-	                    <div class="fw-bold">파일</div>
-	                </a>
-	            </div>
-
-	        </div>
-	    </div>
-	</section>
-    
-	<div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
-	    <div>
-	        <h2 class="fw-bold">추천 만화</h2>
-	        <p class="text-muted mb-0">이번 주 가장 인기 있는 작품들을 만나보세요.</p>
-	    </div>
-
-	    <div class="d-flex gap-2">
-	        <a th:href="@{/comic_write}" class="btn btn-dark px-4 shadow-sm">
-	        	</i> 작품 등록
-	        </a>
-	        
-	        <div class="btn-group" role="group">
-	            <button type="button" class="btn btn-outline-dark active">전체</button>
-	            <button type="button" class="btn btn-outline-dark">연재중</button>
-	            <button type="button" class="btn btn-outline-dark">완결</button>
-	        </div>
-	    </div>
-	</div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-dark active">전체</button>
+                <button type="button" class="btn btn-outline-dark">연재중</button>
+                <button type="button" class="btn btn-outline-dark">완결</button>
+            </div>
+        </div>
+    </div>
 
     <div class="container pb-5 px-0">
-        
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-            
             <div class="col">
                 <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
                     <span class="position-absolute top-0 start-0 badge bg-danger m-2">UP</span>
-                    
-                    <a th:href="@{/comic_detail}">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
+                    <a th:href="@{/comic_detail}"><img src="images/pic.png" class="card-img-top comic-card-img" alt="썸네일"></a>
                     <div class="card-body p-2">
                         <h6 class="card-title fw-bold text-truncate">나 혼자 레벨업</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">장성락</span>
-                        </div>
                         <p class="card-text text-secondary small mb-0 mt-1">#판타지 #액션</p>
                     </div>
                 </div>
             </div>
+            </div>
+    </div>
 
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow position-relative">
-                    <span class="position-absolute top-0 start-0 badge bg-primary m-2">NEW</span>
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">전지적 독자 시점</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">UMI/슬리피</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#현대판타지</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">화산귀환</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">LICO</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#무협 #개그</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">외모지상주의</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">박태준</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#학원 #드라마</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">신의 탑</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">SIU</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#판타지</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">호랑이 형님</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">이상규</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#판타지 #시대극</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">작가명</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
-                    </div>
-                </div>
-            </div>
-             <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">작가명</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
-                    </div>
-                </div>
-            </div>
-             <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">작가명</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
-                    </div>
-                </div>
-            </div>
-             <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">작가명</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
-                    </div>
-                </div>
-            </div>
-             <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">작가명</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
-                    </div>
-                </div>
-            </div>
-             <div class="col">
-                <div class="card h-100 shadow-sm rounded border-0 hover-shadow">
-                    <a href="#">
-                        <img src="images/pic.png" class="card-img-top comic-card-img" alt="만화 썸네일">
-                    </a>
-                    <div class="card-body p-2">
-                        <h6 class="card-title fw-bold text-truncate">제목 예시</h6>
-                        <div class="d-flex justify-content-between align-items-center fs-7">
-                            <span class="text-muted small text-truncate">작가명</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-0 mt-1">#장르</p>
-                    </div>
-                </div>
-            </div>
-
-        </div> </div> <nav aria-label="Page navigation example" class="mb-5">
+    <nav aria-label="Page navigation example" class="mb-5">
         <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
-            </li>
             <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">4</a></li>
-            <li class="page-item"><a class="page-link" href="#">5</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">다음</a>
-            </li>
-        </ul>
+            </ul>
     </nav>
+
+    <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">제품 코드 등록</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-3 mb-4 text-muted small">
+                        보유하고 계신 제품 코드(16자리)를 입력해 주세요.<br>
+                        (예: ABCD-EFGH-IJKL-MNOP)
+                    </p>
+                    <input type="text" id="productKeyInput" class="form-control form-control-lg text-center font-monospace" 
+                           placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn text-white px-4" style="background-color: #f05a28;" onclick="submitProductKey()">코드 활성화</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyInput = document.getElementById('productKeyInput');
+
+            if (keyInput) {
+                keyInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
+                    e.target.value = result;
+                });
+            }
+        });
+
+        function submitProductKey() {
+            const keyInput = document.getElementById('productKeyInput');
+            const val = keyInput.value;
+            if(val.length < 19) {
+                alert('코드를 정확히 입력해 주세요 (16자리).');
+                return;
+            }
+            
+            alert('코드 [' + val + '] 등록이 요청되었습니다.');
+            
+            const modalElement = document.getElementById('keyRegisterModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+            keyInput.value = '';
+        }
+    </script>
 </div>
 </html>
