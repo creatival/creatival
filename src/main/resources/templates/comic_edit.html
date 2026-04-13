@@ -10,7 +10,7 @@
             overflow: hidden; display: flex; align-items: center; justify-content: center;
             background-color: #f8f9ff; position: relative;
         }
-        /* ⭐️ 배너 썸네일 미리보기 영역 (세로형) */
+        /* 배너 썸네일 미리보기 영역 (세로형) */
         .preview-wrapper.banner-preview {
             max-width: 200px; 
             height: 300px; 
@@ -47,7 +47,7 @@
         .tag-badge:hover { background-color: #d1dbff; }
         .tag-input-group { max-width: 400px; margin: 0 auto; }
 
-        /* 4. 설정 그룹 박스 (장르, 요일 등) */
+        /* 4. 설정 그룹 박스 */
         .settings-label { font-size: 0.9rem; color: #495057; font-weight: bold; margin-bottom: 12px; display: block; border-bottom: 2px solid #f1f3f5; padding-bottom: 8px; }
         .settings-group { background: #fff; border-radius: 12px; padding: 25px; border: 1px solid #e9ecef; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
 
@@ -76,24 +76,26 @@
     <div class="container mt-5 mb-5 d-flex justify-content-center">
         <div class="col-lg-8">
 
-            <form th:action="@{/content/comic_write}" method="post" enctype="multipart/form-data" id="comicForm">
-                
+            <form th:action="@{/content/comic_modify}" method="post" enctype="multipart/form-data" id="comicForm">
+
                 <div class="mb-4 text-center">
-                    <h3 class="fw-bold" style="color: #2f3e75;">새 만화 등록</h3>
-                    <p class="text-muted mb-0">새로운 시각적 경험을 독자들에게 선사하세요</p>
+                    <h3 class="fw-bold" style="color: #2f3e75;">만화 정보 수정</h3>
+                    <p class="text-muted mb-0">작품의 정보를 최신 상태로 업데이트하세요</p>
                 </div>
 
                 <div class="mb-5 mt-4 text-center">
                     <label class="settings-label text-center border-0 mb-3"><i class="bi bi-image text-primary"></i> 배너 썸네일</label>
                     <div class="preview-wrapper banner-preview shadow-sm mx-auto">
-                        <div class="preview-placeholder" id="bannerPlaceholder"><i class="bi bi-camera fs-1"></i><br>세로형 이미지<br>(예: 200x300)</div>
+                        <div class="preview-placeholder" id="bannerPlaceholder">
+                            <i class="bi bi-camera fs-1"></i><br>세로형 이미지<br>(예: 200x300)
+                        </div>
                         <img id="bannerPreview" class="preview-img">
                     </div>
                     <div class="custom-file-container shadow-sm mx-auto" style="max-width: 250px;">
-                        <input type="file" id="bannerImage" name="bannerThumbnail" class="file-input-hidden" accept="image/*" 
+                        <input type="file" id="bannerImage" name="bannerThumbnailFile" class="file-input-hidden" accept="image/*" 
                                onchange="handleImagePreview(this, 'bannerPreview', 'bannerPlaceholder', 'bannerName')">
-                        <label for="bannerImage" class="btn-file-select mb-0">선택</label>
-                        <span class="file-name-display" id="bannerName">파일 없음</span>
+                        <label for="bannerImage" class="btn-file-select mb-0">변경</label>
+                        <span class="file-name-display" id="bannerName">선택된 파일 없음</span>
                     </div>
                 </div>
 
@@ -148,13 +150,11 @@
                             </div>
                         </div>
 
-                        
-
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-between mt-5 pt-4 border-top">
-                    <button type="submit" class="btn-submit-action shadow-sm">작품 등록</button>
+                    <button type="submit" class="btn-submit-action shadow-sm">수정 완료</button>
                     <a th:href="@{/}" class="btn-cancel-action shadow-sm">취소</a>
                 </div>
 
@@ -181,7 +181,7 @@
                 }
                 reader.readAsDataURL(input.files[0]);
             } else {
-                fileDisplay.innerText = '파일 없음';
+                fileDisplay.innerText = '선택된 파일 없음';
                 previewImg.src = '';
                 previewImg.style.display = 'none';
                 placeholder.style.display = 'block';

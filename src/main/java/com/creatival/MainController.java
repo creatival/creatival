@@ -83,6 +83,11 @@ public class MainController {
 		return "comic_viewer";
 	}
 	
+	@GetMapping("/comic_edit")
+	public String comic_edit() {
+		return "comic_edit";
+	}
+	
 	@GetMapping("/comic_episode_write")
 	public String comic_episode_write() {
 		return "comic_episode_write";
