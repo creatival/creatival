@@ -1,6 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
+      
+<head>
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+</head>
+
 <div class="container my-5" layout:fragment="content">
     
     <meta name="_csrf" th:content="${_csrf.token}">
@@ -43,17 +49,16 @@
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
                     <span>좋아요</span>
                 </button>
-			    <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn"  class="btn-action btn-bookmark">
+                <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn"  class="btn-action btn-bookmark">
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>
                 </button>
-			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>	
+                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>    
             </div>
 
-            <div class="d-flex justify-content-end gap-2 mt-2">
-                <button sec:authorize="isAuthenticated()" class="btn btn-outline-secondary btn-sm">대표 게시물로 고정</button>
+            <div class="d-flex justify-content-end gap-2 mt-2" sec:authorize="isAuthenticated()">
+                <button class="btn btn-outline-secondary btn-sm">대표 게시물로 고정</button>
                 <a th:href="@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}"
-                   sec:authorize="isAuthenticated()"
                    class="btn btn-outline-secondary btn-sm">수정하기</a>
             </div>
         </div>

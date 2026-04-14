@@ -1,7 +1,9 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
 <div class="container-fluid p-0" layout:fragment="content">
     
     <style>
+        /* 카테고리 및 공통 애니메이션 */
         .category-item { transition: transform 0.2s ease; text-decoration: none !important; }
         .category-item:hover { transform: translateY(-5px); }
         .icon-box { width: 80px; height: 80px; background-color: #F8F9FA; border-radius: 22px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #eee; }
@@ -12,10 +14,11 @@
         .hover-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
         .rounded-5 { border-radius: 2rem !important; }
 
-        /* 배경 분리 디자인 섹션 */
+        /* 섹션별 배경 디자인 */
         .recommend-section { background-color: white; padding-top: 80px; }
         .carousel-bg-gray { background-color: #f4f4f4; padding: 60px 0 80px; margin-top: 40px; }
 
+        /* 소설/만화 카드 스타일 */
         .novel-card { background-color: white; border-radius: 12px; overflow: hidden; height: 100%; }
         .novel-card-img-wrapper { aspect-ratio: 3 / 4; overflow: hidden; background-color: #eee; }
         .novel-card-info { padding: 15px 10px; background-color: white; }
@@ -23,7 +26,7 @@
         /* 슬라이드 컨트롤러 */
         .novel-carousel-control {
             width: 44px; height: 44px; background-color: #888; border-radius: 50%; top: 50%;
-            transform: translateY(-50%); opacity: 1 !important; border: none;
+            transform: translateY(-50%); opacity: 1 !important; border: none; z-index: 5;
         }
         .novel-carousel-control:hover { background-color: #666; }
 
@@ -71,13 +74,17 @@
             <div class="row text-center g-4 justify-content-center">
                 <div class="col-4 col-md-2">
                     <a th:href="@{/content/art/list}" class="text-dark category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
+                        <div class="icon-box">
+                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
+                        </div>
                         <div class="fw-bold">일러스트</div>
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
                     <a th:href="@{/content/comic/list}" class="text-dark category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
+                        <div class="icon-box">
+                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
+                        </div>
                         <div class="fw-bold">만화</div>
                     </a>
                 </div>
@@ -89,7 +96,9 @@
                 </div>
                 <div class="col-4 col-md-2">
                     <a th:href="@{/content/video/list}" class="text-dark category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오"></div>
+                        <div class="icon-box">
+                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
+                        </div>
                         <div class="fw-bold">비디오</div>
                     </a>
                 </div>
@@ -101,7 +110,9 @@
                 </div>
                 <div class="col-4 col-md-2">
                     <a th:href="@{/content/file/list}" class="text-dark category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
+                        <div class="icon-box">
+                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
+                        </div>
                         <div class="fw-bold">파일</div>
                     </a>
                 </div>
@@ -111,7 +122,7 @@
 
     <section class="py-5 bg-white border-top">
         <div class="container text-center">
-            <div class="p-5 bg-light rounded-5 shadow-sm d-flex flex-column flex-md-row align-items-center justify-content-between px-md-5 hover-card" style="transition: transform 0.3s ease;">
+            <div class="p-5 bg-light rounded-5 shadow-sm d-flex flex-column flex-md-row align-items-center justify-content-between px-md-5 hover-card">
                 <div class="text-md-start mb-3 mb-md-0">
                     <h3 class="fw-bold mb-1">커뮤니티 광장</h3>
                     <p class="text-muted mb-0">다양한 창작자들과 자유롭게 이야기를 나누어 보세요.</p>
@@ -147,7 +158,7 @@
     <section class="py-5 bg-light">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">인기 일러스트</h2>
-            <p class="mb-5"><a th:href="@{/Illustration_list}" class="text-muted text-decoration-none small">일러스트 페이지로 이동 <i class="bi bi-chevron-right"></i></a></p>
+            <p class="mb-5"><a th:href="@{/content/art/list}" class="text-muted text-decoration-none small">일러스트 페이지로 이동 <i class="bi bi-chevron-right"></i></a></p>
             <div class="row row-cols-2 row-cols-md-4 g-4">
                 <div class="col" th:each="art : ${topArt}">
                     <div class="card border-0 shadow-sm h-100 hover-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
@@ -175,15 +186,13 @@
                             <div class="row row-cols-3 g-4 justify-content-center">
                                 <div class="col" th:each="novel : ${topNovel}">
                                     <div class="card novel-card border-0 hover-card" th:onclick="|location.href='@{/content/novel/detail/{id}(id=${novel.id})}'|">
-                                        <a th:href="@{|/content/novel_detail/${novel.id}|}" class="text-decoration-none text-dark">
-                                            <div class="novel-card-img-wrapper">
-                                                <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" class="w-100 h-100" style="object-fit: cover;" alt="소설표지">
-                                            </div>
-                                            <div class="novel-card-info text-center">
-                                                <h6 class="fw-bold mb-1 text-truncate" th:text="${novel.title}">소설명</h6>
-                                                <p class="text-muted small mb-0 text-truncate" th:text="${novel.displayname}">작가이름</p>
-                                            </div>
-                                        </a>
+                                        <div class="novel-card-img-wrapper">
+                                            <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" class="w-100 h-100" style="object-fit: cover;" alt="소설표지">
+                                        </div>
+                                        <div class="novel-card-info text-center">
+                                            <h6 class="fw-bold mb-1 text-truncate" th:text="${novel.title}">소설명</h6>
+                                            <p class="text-muted small mb-0 text-truncate" th:text="${novel.displayname}">작가이름</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -203,7 +212,7 @@
     <section class="recommend-section" style="padding-top: 40px;">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">추천 만화</h2>
-            <a th:href="@{/content/comic_list}" class="text-muted d-block small text-decoration-none">만화 페이지로 이동 <i class="bi bi-chevron-right"></i></a>
+            <a th:href="@{/content/comic/list}" class="text-muted d-block small text-decoration-none">만화 페이지로 이동 <i class="bi bi-chevron-right"></i></a>
         </div>
         <div class="carousel-bg-gray">
             <div class="container position-relative" style="max-width: 1000px;">
@@ -212,16 +221,14 @@
                         <div class="carousel-item active">
                             <div class="row row-cols-3 g-4 justify-content-center">
                                 <div class="col" th:each="comic : ${topComic}">
-                                    <div class="card novel-card border-0 hover-card" th:onclick="|location.href='@{/content/comic_detail/${comic.id}}'|">
-                                        <a th:href="@{|/content/comic_detail/${comic.id}|}" class="text-decoration-none text-dark">
-                                            <div class="novel-card-img-wrapper">
-                                                <img th:src="${comic.thumbnailUrl != null ? comic.thumbnailUrl : '/images/pic.png'}" class="w-100 h-100" style="object-fit: cover;" alt="만화표지">
-                                            </div>
-                                            <div class="novel-card-info text-center">
-                                                <h6 class="fw-bold mb-1 text-truncate" th:text="${comic.title}">만화명</h6>
-                                                <p class="text-muted small mb-0" th:text="${comic.displayname}">작가이름</p>
-                                            </div>
-                                        </a>
+                                    <div class="card novel-card border-0 hover-card" th:onclick="|location.href='@{/content/comic/detail/{id}(id=${comic.id})}'|">
+                                        <div class="novel-card-img-wrapper">
+                                            <img th:src="${comic.thumbnailUrl != null ? comic.thumbnailUrl : '/images/pic.png'}" class="w-100 h-100" style="object-fit: cover;" alt="만화표지">
+                                        </div>
+                                        <div class="novel-card-info text-center">
+                                            <h6 class="fw-bold mb-1 text-truncate" th:text="${comic.title}">만화명</h6>
+                                            <p class="text-muted small mb-0" th:text="${comic.displayname}">작가이름</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -286,9 +293,9 @@
                 </div>
             </div>
         </div>
-        <div class="bg-white" style="height: 100px;"></div>
+        <div class="bg-white" style="height: 150px;"></div>
     </section>
-        
+
     <footer class="full-footer">
         <div class="container py-5">
             <div class="row mb-4">

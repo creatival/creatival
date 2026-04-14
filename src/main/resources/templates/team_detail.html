@@ -4,10 +4,15 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
+      
+<head>
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+</head>
 
 <div class="container my-5" layout:fragment="content">
     <style>
-        /* 카드형 액션 버튼 스타일 */
+        /* 카드형 액션 버튼 스타일 (HEAD의 세련된 디자인) */
         .action-buttons-group { display: flex; gap: 10px; justify-content: flex-end; }
         .btn-action {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -20,24 +25,24 @@
         .btn-action i { font-size: 1.5rem; margin-bottom: 3px; line-height: 1; }
         .btn-action span { font-size: 0.75rem; font-weight: 700; }
         .btn-like i { color: #ff4757; }
-        .btn-follow i { color: #ffc107; }
         .btn-bookmark i { color: #2D3278; }
-        
-        /* 배지 및 태그 */
+        .btn-share i { color: #333; }
+
+        /* 배지 및 태그 스타일 */
         .badge-status { padding: 6px 12px; border-radius: 20px; font-weight: 600; }
         .tag-badge { 
             background-color: #f8f9fa; border: 1px solid #dee2e6; color: #333;
             padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;
-            display: inline-flex; align-items: center; margin-right: 5px;
+            display: inline-flex; align-items: center; margin-right: 5px; margin-bottom: 5px;
         }
         .tag-badge i { cursor: pointer; color: #aaa; transition: 0.2s; margin-left: 5px; }
         .tag-badge i:hover { color: #dc3545; }
 
-        /* 채팅/의견 섹션 */
+        /* 채팅/의견 섹션 (통합 스타일) */
         .comment-section { background-color: #fdfdfd; border-radius: 8px; border: 1px solid #dee2e6; }
         .chat-box { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; }
         .btn-support { background-color: #3B4371; color: white; border: none; transition: 0.3s; }
-        .btn-support:hover { background-color: #2a3152; color: white; transform: translateY(-2px); }
+        .btn-support:hover { background-color: #2a3152; color: white; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     </style>
 
     <div class="row mb-5 pb-4 border-bottom align-items-end">
@@ -72,7 +77,7 @@
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
                     <span>좋아요</span>
                 </button>
-                <button th:onclick="|toggleBookmark(${team.id}, 'TEAM')|" id="bookmarkBtn"  class="btn-action btn-bookmark">
+                <button th:onclick="|toggleBookmark(${team.id}, 'TEAM')|" id="bookmarkBtn" class="btn-action btn-bookmark">
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>
                 </button>
@@ -82,7 +87,7 @@
                 <th:block th:if="${team.leaderUsername == #authentication.name}">
                     <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary btn-sm me-1"><i class="bi bi-pencil-square"></i> 수정하기</a>
                 </th:block>
-                <a th:href="@{/team/{id}/application(id=${team.id})}" onclick="return requireLoginAction()"  class="btn btn-primary px-4 fw-bold shadow-sm">팀 참여 신청</a>
+                <a th:href="@{/team/{id}/application(id=${team.id})}" onclick="return requireLoginAction()" class="btn btn-primary px-4 fw-bold shadow-sm">팀 참여 신청</a>
             </div>
         </div>
     </div>
@@ -128,7 +133,15 @@
             <section class="mb-5">
                 <h4 class="fw-bold mb-4 border-bottom pb-2">팀 의견 나누기</h4>
                 <div class="comment-section p-4">
-                    <div class="chat-list mb-4">
+					<form th:action="@{/comment/team/write/{id}(id=${team.id})}" method="post" sec:authorize="isAuthenticated()">
+					    <div class="chat-input-wrapper shadow-sm border">
+					        <textarea name="text" class="form-control border-0 rounded-0" rows="3" placeholder="팀원들과 자유롭게 의견을 나누어 보세요."></textarea>
+					        <div class="d-flex justify-content-end border-top p-2 bg-light">
+					            <button type="submit" class="btn btn-dark btn-sm px-4">의견 등록</button>
+					        </div>
+					    </div>
+					</form>
+                    <div class="chat-list mb-4 mt-4">
                         <div class="d-flex mb-3" th:each="comment : ${comments}">
                             <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3" width="40" height="40">
                             <div class="w-100">
@@ -140,14 +153,7 @@
                             </div>
                         </div>
                     </div>
-                    <form th:action="@{/comment/team/write/{id}(id=${team.id})}" method="post" sec:authorize="isAuthenticated()">
-                        <div class="chat-input-wrapper shadow-sm border">
-                            <textarea name="text" class="form-control border-0 rounded-0" rows="3" placeholder="팀원들과 자유롭게 의견을 나누어 보세요."></textarea>
-                            <div class="d-flex justify-content-end border-top p-2 bg-light">
-                                <button type="submit" class="btn btn-dark btn-sm px-4">의견 등록</button>
-                            </div>
-                        </div>
-                    </form>
+
                 </div>
             </section>
         </div>
@@ -191,11 +197,15 @@
                 <div class="card-body">
                     <h5 class="fw-bold mb-4 border-bottom pb-2">참여 중인 팀원</h5>
                     <div class="list-group list-group-flush">
+                        <div th:if="${#lists.isEmpty(memberList)}" class="py-3 text-center text-muted small">참여 중인 멤버가 없습니다.</div>
                         <div th:each="member : ${memberList}" class="list-group-item px-0 border-0 d-flex align-items-center">
                             <img th:src="${member.profileImgUrl != null} ? ${member.profileImgUrl} : 'https://dummyimage.com/40x40/adb5bd/495057'"
                                  class="rounded-circle me-3" width="35" height="35">
                             <div>
-                                <p class="mb-0 fw-bold small" th:text="${member.username}">이름</p>
+                                <p class="mb-0 fw-bold small">
+                                    <span th:text="${member.username}">이름</span>
+                                    <span th:if="${member.role.name() == 'LEADER'}" class="text-primary small">(팀장)</span>
+                                </p>
                                 <small class="text-muted" th:text="${member.position}">포지션</small>
                             </div>
                         </div>
@@ -203,9 +213,36 @@
                 </div>
             </div>
 
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0">최신 팀 의견</h6>
+                        <a th:href="@{/team/{id}/comments(id=${team.id})}" class="small text-decoration-none">더보기</a>
+                    </div>
+                    <div>
+                        <div class="mb-3 pb-2 border-bottom" th:each="comment : ${comments}">
+                            <div class="small text-muted mb-1">
+                                <span class="fw-bold text-dark" th:text="${comment.username}">유저</span> ·
+                                <span th:text="${#temporals.format(comment.createdAt, 'MM.dd')}">04.01</span>
+                            </div>
+                            <div class="small text-secondary" style="line-height:1.4; max-height: 2.8em; overflow: hidden;">
+                                <span th:text="${comment.text}">댓글 내용</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0" th:if="${#lists.isEmpty(comments)}">아직 의견이 없습니다.</p>
+                    </div>
+                    <form th:action="@{/comment/team/write/{id}(id=${team.id})}" method="post" class="mt-3" sec:authorize="isAuthenticated()">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="text" class="form-control" placeholder="한 줄 의견..." required>
+                            <button class="btn btn-primary">작성</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="d-grid gap-2">
                 <button class="btn btn-light border py-3 text-start px-3 shadow-sm"><i class="bi bi-megaphone me-2"></i> 팀 홍보하기</button>
-                <a th:href="@{/team_boost}" class="btn btn-support py-3 text-start px-3 shadow-sm fw-bold"><i class="bi bi-heart-fill me-2"></i> 팀 구독하기</a>
+                <a th:href="@{/team/{id}/boost(id=${team.id})}" class="btn btn-support py-3 text-start px-3 shadow-sm fw-bold"><i class="bi bi-heart-fill me-2"></i> 팀 구독하기</a>
             </div>
         </div>
     </div>

@@ -789,4 +789,9 @@ public class TeamController {
 		}
 		
 	}
+	
+	@GetMapping("/{id}/boost")
+	public String sponsorship() {
+		return "team_boost";
+	}
 }
