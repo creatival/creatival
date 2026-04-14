@@ -47,7 +47,10 @@ public class MainController {
 		return "novel_viewer";
 	}
 	
-	
+	@GetMapping("/payment/test")
+    public String paymentPage() {
+        return "payment"; // payment.html
+    }
 	
 	@GetMapping("/novel_edit")
 	public String novel_edit() {

@@ -28,6 +28,7 @@ public class SecurityConfig {
 		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
 				.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
 				.csrf((csrf)->csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
+				.csrf(csrf -> csrf.ignoringRequestMatchers("/api/webhook/**"))
 				.headers((headers)->headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
 				.formLogin((formLogin) -> formLogin.loginPage("/user/login").defaultSuccessUrl("/").failureHandler(customAuthenticationFailureHandler))
 				.logout((logout)->logout.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
