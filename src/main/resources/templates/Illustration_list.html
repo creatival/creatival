@@ -63,24 +63,10 @@
         }
         .custom-pagination .page-link:hover { color: #f05a28; }
 
-        /* 4. 추가 버튼 스타일 */
-        .btn-register { font-size: 0.85rem; color: #888; text-decoration: none; cursor: pointer; }
-        .btn-register:hover { color: #f05a28; }
-        
-        .btn-code-modal {
-            background-color: transparent;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            padding: 4px 15px;
-            font-size: 0.8rem;
-            color: #666;
-            transition: all 0.2s;
-            font-weight: 600;
-        }
-        .btn-code-modal:hover {
-            background-color: #f05a28;
-            color: white;
-            border-color: #f05a28;
+        /* 제품 코드 전용 폰트 스타일 */
+        #productKeyInput {
+            letter-spacing: 2px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -90,7 +76,7 @@
         <div class="container">
             <div class="row text-center g-4 justify-content-center">
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/comic_list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/content/comic/list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box shadow-sm">
                             <img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화">
                         </div>
@@ -98,7 +84,7 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/music_list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/content/music/list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box shadow-sm">
                             <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
                         </div>
@@ -106,7 +92,7 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/video_list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/content/video/list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box shadow-sm">
                             <img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오">
                         </div>
@@ -114,7 +100,7 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/novel_list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/content/novel/list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box shadow-sm">
                             <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
                         </div>
@@ -122,7 +108,7 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/file_list}" class="text-decoration-none text-dark category-item d-block">
+                    <a th:href="@{/content/file/list}" class="text-decoration-none text-dark category-item d-block">
                         <div class="icon-box shadow-sm">
                             <img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일">
                         </div>
@@ -133,32 +119,32 @@
         </div>
     </section>
 
-    <div class="container text-center mb-5">
-        <div class="mb-3 d-flex justify-content-center align-items-center gap-3">
-            <a href="#" onclick="return requireLoginAction(() => location.href='/content/art/create')" class="btn-register">
-               일러스트 등록하기
-            </a>
-            <span class="text-muted" style="font-size: 0.8rem;">|</span>
-            <button type="button" class="btn-code-modal" data-bs-toggle="modal" data-bs-target="#keyRegisterModal">
-                <i class="bi bi-key-fill me-1"></i>코드 등록
-            </button>
-        </div>
-        <h3 class="fw-bold mb-4">추천 일러스트</h3>
-        
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href="/" class="text-muted text-decoration-none small">홈 페이지로 돌아가기</a>
+    <div class="container mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
             
-            <nav th:if="${paging != null and !paging.isEmpty()}">
-                <ul class="pagination custom-pagination mb-0">
-                    <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-                        <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">&lt;</a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#" th:text="${paging.number + 1}">1</a></li>
-                    <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-                        <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">&gt;</a>
-                    </li>
-                </ul>
-            </nav>
+            <div style="flex: 1;">
+                <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
+                    <i class="bi bi-house-door-fill me-2"></i>
+                    <span class="fw-bold">홈으로 가기</span>
+                </a>
+            </div>
+
+            <div class="text-center" style="flex: 2;">
+                <h2 class="fw-bold mb-0">추천 일러스트</h2>
+                <p class="text-muted mb-0 mt-1 small">다양한 크리에이터의 일러스트를 만나보세요.</p>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
+                <button type="button" class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#keyRegisterModal">
+                    <i class="bi bi-key-fill me-2"></i>
+                    <span class="fw-bold">코드 등록</span>
+                </button>
+
+                <a onclick="return requireLoginAction(() => location.href='/content/art/create')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm" style="cursor:pointer;">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    <span class="fw-bold">일러스트 등록</span>
+                </a>
+            </div>
         </div>
     </div>
 

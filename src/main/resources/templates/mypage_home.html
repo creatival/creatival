@@ -455,7 +455,7 @@
             if (!likedModal) likedModal = new bootstrap.Modal(modalElement);
             likedModal.show();
 
-            const userId = [[${user.id}]];
+            const userId = "[[${user.id}]]";
             const modalBody = document.getElementById('likedArtsModalBody');
             modalBody.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>';
             
@@ -478,7 +478,7 @@
             if (!bookmarkModal) bookmarkModal = new bootstrap.Modal(modalElement);
             bookmarkModal.show();
 
-            const userId = [[${user.id}]];
+            const userId = "[[${user.id}]]";
             const modalBody = document.getElementById('bookmarkedModalBody');
             modalBody.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>';
             

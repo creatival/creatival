@@ -7,6 +7,24 @@
 
 <div class="container my-5" layout:fragment="content">
     <style>
+        /* ===== 추가된 후원하기 스타일 (기존 디자인 유지) ===== */
+        .btn-boost-orange {
+            background-color: #f05a28 !important;
+            border: none !important;
+            color: white !important;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-boost-orange:hover {
+            background-color: #d44a1d !important;
+            transform: translateY(-2px);
+        }
+        .btn-action.btn-boost-card {
+            background-color: #fff2ee;
+            border-color: #f05a28;
+            color: #f05a28;
+        }
+
         /* 카드형 액션 버튼 스타일 */
         .action-buttons-group { display: flex; gap: 10px; justify-content: flex-end; }
         .btn-action {
@@ -68,6 +86,7 @@
 
         <div class="col-md-5 mt-4 mt-md-0">
             <div class="action-buttons-group mb-3">
+
                 <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${team.id},'TEAM')|" th:classappend="${like.liked ? ' active' : ''}">
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
                     <span>좋아요</span>
@@ -208,7 +227,9 @@
 
             <div class="d-grid gap-2">
                 <button class="btn btn-light border py-3 text-start px-3 shadow-sm"><i class="bi bi-megaphone me-2"></i> 팀 홍보하기</button>
-                <a th:href="@{/team_boost}" class="btn btn-support py-3 text-start px-3 shadow-sm fw-bold"><i class="bi bi-heart-fill me-2"></i> 팀 구독하기</a>
+                <a th:href="@{/team_boost}" class="btn btn-boost-orange py-3 text-start px-3 shadow-sm fw-bold">
+                     팀 후원하기
+                </a>
             </div>
         </div>
     </div>

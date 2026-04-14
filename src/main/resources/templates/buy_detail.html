@@ -1,0 +1,93 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div class="container-fluid p-0" layout:fragment="content">
+    
+    <style>
+        /* 상세 페이지 전용 스타일 */
+        .content-thumbnail { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background-color: #f8f9fa; }
+        .creator-avatar { width: 50px; height: 50px; border-radius: 50%; background-color: #eee; object-fit: cover; }
+        .price-tag { font-size: 1.8rem; font-weight: 800; color: #111; }
+        .info-box { background-color: #f8f9fa; border-radius: 1.5rem; transition: all 0.3s ease; }
+        .info-box:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: translateY(-3px); }
+		
+		/* 숫자 입력칸 화살표 숨김 */
+		    input[type="number"]::-webkit-outer-spin-button,
+		    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+		    input[type="number"] { -moz-appearance: textfield; }
+		    
+		    /* 포커스 시 기본 테두리 숨김 */
+		    .custom-price-input:focus { outline: none; }
+		    
+		    /* 전체 영역에 마우스를 올리면 텍스트 입력 커서(I 모양)로 변경 */
+		    .clickable-input-area { cursor: text; }
+    </style>
+
+    <section class="py-4 bg-white border-bottom">
+        <div class="container">
+        </div>
+    </section>
+
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row g-5 align-items-start">
+                <div class="col-lg-7">
+                    <div class="content-thumbnail aspect-ratio-4x3 d-flex align-items-center justify-content-center" style="min-height: 500px;">
+                        <i class="bi bi-image text-muted opacity-25" style="font-size: 8rem;"></i>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 d-flex flex-column">
+                    <h2 class="fw-bold mb-3">별이 쏟아지는 밤하늘의 기억 (임시 타이틀)</h2>
+                    
+                    <div class="d-flex align-items-center mb-4 pb-4 border-bottom cursor-pointer" onclick="location.href='#'">
+                        <img th:src="@{/images/pic.png}" class="creator-avatar me-3 border" alt="작가 썸네일">
+                        <div>
+                            <h6 class="fw-bold mb-0">밤하늘여행자 <i class="bi bi-check-circle-fill text-primary small"></i></h6>
+                            <small class="text-muted">@night_sky_art</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-5 flex-grow-1">
+                        <h5 class="fw-bold mb-3">작품 설명</h5>
+                        <p class="text-muted" style="line-height: 1.8;">
+                            이 작품은 고요한 밤하늘과 그 아래에서 빛나는 작은 불빛들을 모티브로 제작되었습니다. <br><br>
+                            고해상도 원본 파일(PNG, PSD)이 포함되어 있으며, 개인 소장 및 비상업적 용도로 자유롭게 활용하실 수 있습니다. 창작자의 세계를 응원해 주셔서 감사합니다.
+                        </p>
+                    </div>
+
+					<div class="info-box p-4 text-center mt-auto">
+					    <div class="mb-4 text-start">
+					        <span class="text-muted fw-bold mb-3 d-block">결제/후원 금액</span>
+					        
+					        <label for="priceInput" class="d-flex justify-content-between align-items-center border-bottom border-dark pb-2 mb-2 clickable-input-area w-100">
+					            <span class="text-muted small mb-0">최소 금액: 1,000 P</span>
+					            
+					            <div class="d-flex align-items-center">
+					                <input type="number" id="priceInput" 
+					                       class="form-control text-end fs-4 fw-bold border-0 bg-transparent p-0 me-2 custom-price-input" 
+					                       placeholder="" min="1000" step="100" 
+					                       style="width: 150px; box-shadow: none;"
+					                       oninput="if(this.value.length > 14) this.value = this.value.slice(0, 8);">
+					                <span class="fs-5 fw-normal text-muted">P</span>
+					            </div>
+					        </label>
+
+					        <div class="text-end mt-2">
+					            <small class="text-secondary"><i class="bi bi-info-circle me-1"></i>원하시는 금액을 자유롭게 입력할 수 있습니다.</small>
+					        </div>
+					    </div>
+					    
+					    <div class="d-grid gap-3">
+					        <button class="btn btn-dark btn-lg rounded-pill fw-bold py-3">결제하기</button>
+					        <div class="d-flex gap-2">
+					            <button class="btn btn-outline-secondary w-50 rounded-pill fw-bold py-2"><i class="bi bi-heart me-1"></i> 찜하기</button>
+					            <button class="btn btn-outline-secondary w-50 rounded-pill fw-bold py-2"><i class="bi bi-share me-1"></i> 공유</button>
+					        </div>
+					    </div>
+					</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+</html>

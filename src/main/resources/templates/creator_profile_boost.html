@@ -1,0 +1,138 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div class="container-fluid p-0" layout:fragment="content">
+    
+    <style>
+        /* 공통 및 좌측 프로필 영역 스타일 */
+        .banner-container { height: 240px; background-color: #e9ecef; position: relative; overflow: hidden; }
+        .banner-img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar { 
+            width: 130px; height: 130px; 
+            border-radius: 20px; 
+            border: 4px solid #fff; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            background-color: #fff; 
+            object-fit: cover; 
+            position: absolute; 
+            bottom: -40px; left: 0;
+        }
+        .nav-custom { border-bottom: 2px solid #f1f3f5; gap: 1rem; }
+        .nav-custom .nav-link { 
+            color: #868e96; font-weight: bold; font-size: 1.1rem; 
+            padding: 1rem 0.5rem; border-radius: 0; border-bottom: 3px solid transparent; 
+            background: transparent;
+        }
+        .nav-custom .nav-link:hover { color: #343a40; }
+        .nav-custom .nav-link.active { color: #212529; border-bottom-color: #212529; }
+
+        /* 우측 후원 박스 및 금액 입력 스타일 */
+        .sticky-sidebar { position: sticky; top: 100px; }
+        .donation-card { border: 1px solid #e9ecef; border-radius: 16px; background-color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        .custom-price-input:focus { outline: none; }
+        .clickable-input-area { cursor: text; }
+    </style>
+
+    <section class="banner-container">
+        <div class="w-100 h-100 bg-secondary opacity-25 d-flex align-items-center justify-content-center">
+            <i class="bi bi-image text-white fs-1 opacity-50"></i>
+        </div>
+    </section>
+    
+    <section class="bg-white pb-5">
+        <div class="container" style="max-width: 1100px;">
+            
+            <div class="row g-5">
+                
+                <div class="col-lg-7 col-xl-8 pe-lg-4">
+                    
+                    <div class="position-relative mb-5" style="height: 60px;">
+                        <img th:src="@{/images/pic.png}" class="profile-avatar" alt="크리에이터 프로필">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">밤하늘여행자 </h2>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <div class="d-flex gap-4 mb-3 small fw-bold">
+                            <span>팔로워 <span class="text-primary">1,204</span></span>
+                        </div>
+                        <p class="text-dark" style="line-height: 1.7; font-size: 1.05rem;">
+                            환영합니다! 주로 판타지 세계관을 배경으로 한 일러스트와 짧은 단편 소설을 연재하고 있습니다. <br>
+                            이곳에 올라오는 모든 작업물은 여러분의 따뜻한 후원으로 만들어집니다. 언제나 감사드립니다.
+                        </p>
+                    </div>
+
+                    <ul class="nav nav-custom mb-4" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-works" type="button">전체 작품</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-community" type="button">참가 팀</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="pills-works" role="tabpanel">
+                            <div class="py-5 text-center bg-light rounded-4 border" style="border-style: dashed !important;">
+                                <i class="bi bi-journal-album fs-1 text-muted opacity-50 mb-3 d-block"></i>
+                                <h6 class="fw-bold text-dark mb-1">아직 등록된 작품이 없습니다</h6>
+                                <p class="text-muted small mb-0">첫 번째 작품이 업로드되길 기다려주세요.</p>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-community" role="tabpanel">
+                            <div class="py-5 text-center text-muted">
+                                커뮤니티 게시글이 표시될 공간입니다.
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="col-lg-5 col-xl-4 pt-4 pt-lg-0 mt-3 mt-lg-5">
+                    <div class="sticky-sidebar mt-lg-5">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center">
+                            <i class="bi bi-heart-fill me-2 text-danger"></i> 크리에이터 후원하기
+                        </h5>
+                        
+                        <div class="donation-card p-4 text-center">
+                            <div class="mb-4 text-start">
+                                <span class="text-muted fw-bold mb-3 d-block">후원 금액</span>
+                                
+                                <label for="priceInput" class="d-flex justify-content-between align-items-center border-bottom border-dark pb-2 mb-2 clickable-input-area w-100">
+                                    <span class="text-muted small mb-0 text-nowrap">최소 금액: 1,000 P</span>
+                                    
+                                    <div class="d-flex align-items-center flex-grow-1 ms-3">
+                                        <input type="number" id="priceInput" 
+                                               class="form-control text-end fs-4 fw-bold border-0 bg-transparent p-0 me-2 custom-price-input" 
+                                               placeholder="" min="1000" step="100" 
+                                               style="box-shadow: none; width: 100%;"
+                                               oninput="if(this.value.length > 12) this.value = this.value.slice(0, 12);">
+                                        <span class="fs-5 fw-normal text-muted">P</span>
+                                    </div>
+                                </label>
+
+                                <div class="text-end mt-2">
+                                    <small class="text-secondary"><i class="bi bi-info-circle me-1"></i>원하시는 금액을 자유롭게 입력할 수 있습니다.</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button class="btn btn-dark btn-lg rounded-pill fw-bold py-3">후원하기</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div>
+</html>
