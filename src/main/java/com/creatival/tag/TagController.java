@@ -52,6 +52,11 @@ public class TagController {
 		createTagForContent(tagName, id, principal.getName());
 		return "redirect:/content/video/detail/"+id;
 	}
+	@PostMapping("/createContentComicTag/{id}")
+	public String createTagForComic(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
+		createTagForContent(tagName, id, principal.getName());
+		return "redirect:/content/comic/detail/"+id;
+	}
 	@PostMapping("/createContentMusicTag/{id}")
 	public String createTagForMusic(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
 		createTagForContent(tagName, id, principal.getName());
@@ -103,6 +108,12 @@ public class TagController {
 		tagService.deleteMappingForContent(contentId, tagId);
 		
 		return "redirect:/content/music/detail/"+contentId;
+	}
+	@GetMapping("/comic/deleteContentTag")
+	public String deleteContentComicTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
+		tagService.deleteMappingForContent(contentId, tagId);
+		
+		return "redirect:/content/comic/detail/"+contentId;
 	}
 	@GetMapping("/file/deleteContentTag")
 	public String deleteContentFileTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {

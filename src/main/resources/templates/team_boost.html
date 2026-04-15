@@ -1,8 +1,8 @@
 <html layout:decorate="~{layout}">
 	<head>
-			<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-							<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
-		</head>
+					<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+					<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+			</head>
 <div layout:fragment="content">
 
 <style>
@@ -45,6 +45,7 @@
         background: #fff; border-radius: 16px;
         padding: 30px; border: 1px solid #eaeaea;
         height: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        position: relative;
     }
 
     .team-title { font-size: 1.8rem; font-weight: 800; color: #222; text-align: center; margin-top: 20px;}
@@ -56,20 +57,20 @@
     .progress-bar-custom { background-color: var(--c-orange); border-radius: 20px; }
 
     /* =========================================
-       [핵심 수정: 결제 폼 레이아웃]
+       [결제 폼 레이아웃]
        ========================================= */
     .boost-form {
         display: flex;
         flex-direction: column;
-        gap: 15px; /* 모든 요소 간격 통일 */
+        gap: 15px; 
     }
 
     /* 빠른 금액 선택 버튼 그룹 */
     .amount-btn-group {
         display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 3열 그리드 */
+        grid-template-columns: repeat(3, 1fr); 
         gap: 10px;
-        margin-bottom: 5px; /* gap과 합쳐짐 */
+        margin-bottom: 5px; 
     }
     
     .amount-btn {
@@ -88,14 +89,13 @@
     /* 금액 입력 필드 컨테이너 */
     .input-amount-wrapper {
         position: relative;
-        width: 100%; /* 부모 너비 따름 */
-        box-sizing: border-box; /* 패딩 포함 너비 계산 */
+        width: 100%; 
+        box-sizing: border-box; 
     }
     
-    /* 핵심 수정: th:src -> src */
     .input-amount-custom {
         width: 100%;
-        box-sizing: border-box; /* 패딩/보더 포함 전체 너비 100% */
+        box-sizing: border-box; 
         padding: 16px 20px;
         border-radius: 12px;
         border: 2px solid #ddd;
@@ -106,7 +106,7 @@
     }
     .input-amount-custom:focus { border-color: var(--c-orange); background-color: #fff; }
 
-    /* 결제 버튼 */
+    /* 결제/구독 버튼 공통 */
     .btn-submit-boost {
         width: 100%; padding: 18px;
         border-radius: 12px; border: none;
@@ -114,27 +114,23 @@
         font-size: 1.1rem; font-weight: bold;
         cursor: pointer; transition: 0.3s;
     }
-    .btn-submit-boost:hover { background-color: #2a3152; }
+    .btn-submit-boost:hover { filter: brightness(0.9); }
 
-    /* 태그 */
-    .tag-badge { background-color: #e9ecef; color: #555; border-radius: 20px; padding: 6px 15px; font-size: 0.85rem; font-weight: 600; margin: 0 3px; }
+    /* 구독 전용 배지 */
+    .sub-badge {
+        background-color: var(--c-orange);
+        color: white;
+        font-size: 0.8rem;
+        font-weight: bold;
+        padding: 6px 16px;
+        border-radius: 20px;
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 4px 10px rgba(255, 127, 80, 0.3);
+    }
 
-    /* =========================================
-       [image_5.png의 팀 상세 페이지 후원 버튼 전용 스타일]
-       ========================================= */
-    .btn-support {
-        background-color: var(--c-orange); /* Creatival 브랜드 오렌지 */
-        color: white;
-        border: none;
-        transition: 0.3s;
-        width: 100%; /* d-grid gap-2 하위에서 100% 너비 */
-    }
-    .btn-support:hover {
-        background-color: #e66a3e;
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
 </style>
 
 <div class="boost-header">
@@ -189,7 +185,51 @@
             </div>
         </div>
     </div>
-</div>
+
+    <div class="mt-5 pt-5 border-top">
+        <h3 class="fw-bold text-center mb-2">정기 구독하기</h3>
+        <p class="text-muted text-center mb-5">매월 정기적으로 팀을 응원하고 특별한 혜택을 누려보세요.</p>
+
+        <div class="row g-4 justify-content-center">
+            
+            <div class="col-md-5">
+                <div class="c-card text-center d-flex flex-column" style="border: 1px solid var(--c-navy);">
+                    <h5 class="fw-bold mt-2" style="color: var(--c-navy);">베이직 플랜</h5>
+                    <div class="my-4">
+                        <span class="fs-2 fw-bold text-dark">₩ 4,900</span> <span class="text-muted">/ 월</span>
+                    </div>
+                    <ul class="list-unstyled text-muted mb-5 text-start mx-auto" style="line-height: 2.2;">
+                        <li>구독자 전용 게시글 열람</li>
+                        <li>창작 비하인드 노트 공유</li>
+                        <li>프로필 전용 뱃지 부여</li>
+                    </ul>
+                    <form th:action="@{/team/{id}/subscribe/basic(id=${team != null ? team.id : 0})}" method="post" class="mt-auto">
+                        <button type="submit" class="btn-submit-boost" style="background-color: var(--c-navy);">베이직 구독하기</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="c-card text-center d-flex flex-column" style="border: 2px solid var(--c-orange);">
+                    <div class="sub-badge">BEST</div>
+                    <h5 class="fw-bold mt-2" style="color: var(--c-orange);">프리미엄 플랜</h5>
+                    <div class="my-4">
+                        <span class="fs-2 fw-bold text-dark">₩ 9,900</span> <span class="text-muted">/ 월</span>
+                    </div>
+                    <ul class="list-unstyled text-muted mb-5 text-start mx-auto" style="line-height: 2.2;">
+                        <li>플랜의 모든 혜택</li>
+                        <li>미공개 창작물 우선 열람권</li>
+                        <li>프로젝트 크레딧 이름 등재</li>
+                    </ul>
+                    <form th:action="@{/team/{id}/subscribe/premium(id=${team != null ? team.id : 0})}" method="post" class="mt-auto">
+                        <button type="submit" class="btn-submit-boost" style="background-color: var(--c-orange);">프리미엄 구독하기</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

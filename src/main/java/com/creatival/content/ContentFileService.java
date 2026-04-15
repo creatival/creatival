@@ -67,9 +67,7 @@ public class ContentFileService {
 	}
 	
 	public ContentFile getContentFileThumbnail(Content content) {
-		if(content.getType() == ContentType.ART) {
-			return null;
-		}
+	
 		ContentFile contentFile = contentFileRepository.findTopByContentOrderBySortOrderAsc(content);
 		return contentFile;
 	}

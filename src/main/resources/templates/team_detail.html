@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
-      
+
 <head>
     <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
     <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
@@ -12,7 +12,6 @@
 
 <div class="container my-5" layout:fragment="content">
     <style>
-        /* 카드형 액션 버튼 스타일 (HEAD의 세련된 디자인) */
         .action-buttons-group { display: flex; gap: 10px; justify-content: flex-end; }
         .btn-action {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -28,9 +27,8 @@
         .btn-bookmark i { color: #2D3278; }
         .btn-share i { color: #333; }
 
-        /* 배지 및 태그 스타일 */
         .badge-status { padding: 6px 12px; border-radius: 20px; font-weight: 600; }
-        .tag-badge { 
+        .tag-badge {
             background-color: #f8f9fa; border: 1px solid #dee2e6; color: #333;
             padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;
             display: inline-flex; align-items: center; margin-right: 5px; margin-bottom: 5px;
@@ -38,7 +36,6 @@
         .tag-badge i { cursor: pointer; color: #aaa; transition: 0.2s; margin-left: 5px; }
         .tag-badge i:hover { color: #dc3545; }
 
-        /* 채팅/의견 섹션 (통합 스타일) */
         .comment-section { background-color: #fdfdfd; border-radius: 8px; border: 1px solid #dee2e6; }
         .chat-box { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; }
         .btn-support { background-color: #3B4371; color: white; border: none; transition: 0.3s; }
@@ -83,19 +80,20 @@
                 </button>
                 <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
             </div>
-			<div class="text-md-end">
-			    <th:block th:if="${team.leaderUsername == #authentication.name}">
-			        <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary btn-sm me-1">
-			            <i class="bi bi-pencil-square"></i> 수정하기
-			        </a>
-			    </th:block>
 
-			    <a href="javascript:void(0);"
-			       th:onclick="|return requireLoginAction(() => location.href='/team/${team.id}/application')|"
-			       class="btn btn-primary px-4 fw-bold shadow-sm">
-			        팀 참여 신청
-			    </a>
-			</div>
+            <div class="text-md-end">
+                <th:block th:if="${team.leaderUsername == #authentication.name}">
+                    <a th:href="@{/team/{id}/update(id=${team.id})}" class="btn btn-outline-secondary btn-sm me-1">
+                        <i class="bi bi-pencil-square"></i> 수정하기
+                    </a>
+                </th:block>
+
+                <a href="javascript:void(0);"
+                   th:onclick="|return requireLoginAction(() => location.href='/team/${team.id}/application')|"
+                   class="btn btn-primary px-4 fw-bold shadow-sm">
+                    팀 참여 신청
+                </a>
+            </div>
         </div>
     </div>
 
@@ -140,14 +138,15 @@
             <section class="mb-5">
                 <h4 class="fw-bold mb-4 border-bottom pb-2">팀 의견 나누기</h4>
                 <div class="comment-section p-4">
-					<form th:action="@{/comment/team/write/{id}(id=${team.id})}" method="post" sec:authorize="isAuthenticated()">
-					    <div class="chat-input-wrapper shadow-sm border">
-					        <textarea name="text" class="form-control border-0 rounded-0" rows="3" placeholder="팀원들과 자유롭게 의견을 나누어 보세요."></textarea>
-					        <div class="d-flex justify-content-end border-top p-2 bg-light">
-					            <button type="submit" class="btn btn-dark btn-sm px-4">의견 등록</button>
-					        </div>
-					    </div>
-					</form>
+                    <form th:action="@{/comment/team/write/{id}(id=${team.id})}" method="post" sec:authorize="isAuthenticated()">
+                        <div class="chat-input-wrapper shadow-sm border">
+                            <textarea name="text" class="form-control border-0 rounded-0" rows="3" placeholder="팀원들과 자유롭게 의견을 나누어 보세요."></textarea>
+                            <div class="d-flex justify-content-end border-top p-2 bg-light">
+                                <button type="submit" class="btn btn-dark btn-sm px-4">의견 등록</button>
+                            </div>
+                        </div>
+                    </form>
+
                     <div class="chat-list mb-4 mt-4">
                         <div class="d-flex mb-3" th:each="comment : ${comments}">
                             <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3" width="40" height="40">
@@ -160,7 +159,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </section>
         </div>
@@ -188,7 +186,7 @@
                     <div class="d-flex align-items-center">
                         <div>
                             <p class="mb-0 mt-2 fw-bold small">좋아요 현황</p>
-                            <i class="bi text-danger" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i> 
+                            <i class="bi text-danger" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
                             <small class="text-danger fw-bold" th:text="${like.count}" id="likeCount">0</small><small class="text-danger">개</small>
                         </div>
                     </div>
@@ -273,19 +271,19 @@
         </div>
     </div>
 
-	<script th:inline="javascript">
-	    document.addEventListener('DOMContentLoaded', function () {
-	        const msg = /*[[${message}]]*/ null;
-	        const status = /*[[${status}]]*/ 'success';
-	        if (msg) {
-	            Swal.fire({
-	                icon: status,
-	                title: status === 'error' ? '알림' : '완료',
-	                text: msg,
-	                confirmButtonColor: '#3B4371'
-	            });
-	        }
-	    });
-	</script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const msg = /*[[${message}]]*/ null;
+            const status = /*[[${status}]]*/ 'success';
+            if (msg) {
+                Swal.fire({
+                    icon: status,
+                    title: status === 'error' ? '알림' : '완료',
+                    text: msg,
+                    confirmButtonColor: '#3B4371'
+                });
+            }
+        });
+    </script>
 </div>
 </html>

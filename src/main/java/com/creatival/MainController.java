@@ -239,4 +239,9 @@ public class MainController {
 	public String boost_record() {
 		return "boost_record";
 	}
+	
+	@GetMapping("/aboutUs")
+	public String aboutUs() {
+		return "about_us";
+	}
 }

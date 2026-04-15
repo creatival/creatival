@@ -1,94 +1,35 @@
-<<<<<<< HEAD
+<!DOCTYPE html>
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-=======
-<html layout:decorate="~{layout}">
-	<head>
-	    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-	    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
-	</head>
->>>>>>> refs/remotes/origin/yeachan
-<div class="container" layout:fragment="content">
+<head>
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
     <style>
-        /* =========================================
-           [1. 프로필 섹션]
-           ========================================= */
         .profile-section { text-align: center; padding: 50px 0 0 0; background-color: #fff; }
-        .profile-img-container { 
-            position: relative; width: 130px; height: 130px; margin: 0 auto 20px; 
-            cursor: pointer; display: block; 
+        .profile-img-container {
+            position: relative; width: 130px; height: 130px; margin: 0 auto 20px;
+            cursor: pointer; display: block;
         }
-        .profile-img { 
-            width: 100%; height: 100%; background-color: #dbdbdb; 
-            border-radius: 50%; object-fit: cover; border: 1px solid #eee; 
+        .profile-img {
+            width: 100%; height: 100%; background-color: #dbdbdb;
+            border-radius: 50%; object-fit: cover; border: 1px solid #eee;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .camera-icon { 
-            position: absolute; bottom: 0; right: 0; background-color: #fff; 
-            border-radius: 50%; border: 1px solid #ddd; width: 34px; height: 34px; 
-            display: flex; align-items: center; justify-content: center; 
-            color: #3B4371; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        .camera-icon {
+            position: absolute; bottom: 0; right: 0; background-color: #fff;
+            border-radius: 50%; border: 1px solid #ddd; width: 34px; height: 34px;
+            display: flex; align-items: center; justify-content: center;
+            color: #3B4371; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-<<<<<<< HEAD
-=======
-		/* [프로필 버튼 스타일 수정 및 추가] */
-		.btn-edit-profile, .btn-deactivate { 
-		    display: inline-flex;
-		    align-items: center;
-		    justify-content: center;
-		    width: 160px;
-		    height: 42px;
-		    border-radius: 10px; 
-		    font-size: 0.9rem; 
-		    font-weight: 600; 
-		    cursor: pointer; 
-		    transition: 0.2s; 
-		}
-		
-		/* 버튼 그룹의 하단 여백 조정 */
-		.profile-btn-group {
-		    display: flex;
-		    justify-content: center;
-		    gap: 20px;
-		    margin-bottom: 15px;
-		}
-		
-		/* 팔로우 버튼 (시안 스타일 적용) */
-		.btn-follow {
-		    display: inline-flex;
-		    align-items: center;
-		    justify-content: center;
-		    width: 340px;
-		    height: 46px;
-		    background-color: #3B4371;
-		    color: #fff;
-		    border: none;
-		    border-radius: 30px;
-		    font-size: 1rem;
-		    font-weight: 700;
-		    cursor: pointer;
-		    transition: 0.2s;
-		    margin-bottom: 40px;
-			
-			display: none;
-		}
-
-		.btn-follow:hover {
-		    background-color: #2a3152;
-		    transform: translateY(-1px);
-		    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-		}
-
->>>>>>> refs/remotes/origin/yeachan
         .profile-nickname { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; color: #222; }
         .profile-intro { color: #777; font-size: 0.95rem; margin: 20px auto; max-width: 500px; }
-        
+
         .profile-btn-group { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-        
-        .btn-edit-profile, .btn-deactivate { 
+
+        .btn-edit-profile, .btn-deactivate {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 160px; height: 42px; border-radius: 10px; font-size: 0.9rem; 
-            font-weight: 600; cursor: pointer; transition: 0.2s; 
+            width: 160px; height: 42px; border-radius: 10px; font-size: 0.9rem;
+            font-weight: 600; cursor: pointer; transition: 0.2s;
         }
         .btn-edit-profile { background-color: #e9e9e9; border: none; color: #444; }
         .btn-edit-profile:hover { background-color: #ddd; }
@@ -108,9 +49,6 @@
         .tag-delete-btn { color: #555; cursor: pointer; margin-left: 5px; transition: 0.2s; }
         .tag-delete-btn:hover { color: #ff5a5a; }
 
-        /* =========================================
-           [2. 탭 메뉴 & 인디케이터]
-           ========================================= */
         .tab-menu-wrapper { display: flex; justify-content: center; gap: 40px; border-bottom: 1px solid #ddd; height: 50px; align-items: center; position: relative; }
         .tab-menu-item { cursor: pointer; color: #777; font-size: 1.05rem; font-weight: 600; height: 100%; display: flex; align-items: center; padding: 0 5px; transition: color 0.2s; }
         .tab-menu-item.active { font-weight: 800; color: #000; }
@@ -124,31 +62,25 @@
         @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* =========================================
-           [3. 콘텐츠 그리드]
-           ========================================= */
         .content-box-gray { padding: 40px 0; background: #F8F9FA; border-radius: 12px; margin-bottom: 40px; }
         .section-header { text-align: left; margin-bottom: 20px; border-left: 5px solid #3B4371; padding-left: 15px; }
         .section-title { font-size: 1.3rem; font-weight: 800; color: #333; }
-        
+
         .content-card { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #eee; cursor: pointer; transition: 0.2s; height: 100%; display: block; text-decoration: none !important; }
         .content-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-        
+
         .card-img-placeholder { width: 100%; position: relative; overflow: hidden; background: #eee; }
         .card-img-placeholder img { width: 100%; height: 100%; object-fit: cover; }
         .card-img-placeholder i { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; color: #ccc; }
-        
+
         .card-label { padding: 10px; font-size: 0.85rem; font-weight: 700; text-align: center; color: #333; }
-        
+
         .illu-img { aspect-ratio: 3 / 4; }
         .comic-img { aspect-ratio: 1 / 1; }
         .music-img { aspect-ratio: 1 / 1; }
         .novel-img { aspect-ratio: 3 / 4.2; }
         .video-img { aspect-ratio: 16 / 9; }
 
-        /* =========================================
-           [4. 팀 & 프로젝트 섹션]
-           ========================================= */
         .team-banner { height: 100px; overflow: hidden; background: #3B4371; }
         .team-banner img { width: 100%; height: 100%; object-fit: cover; }
         .team-profile { width: 70px; height: 70px; object-fit: cover; margin-top: -35px; border: 3px solid #fff; }
@@ -160,7 +92,9 @@
         .table-info-custom th { background-color: #F9F9F9; width: 30%; padding: 15px 25px; border-bottom: 1px solid #eee; text-align: left; font-size: 0.9rem; }
         .table-info-custom td { padding: 15px 25px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
     </style>
+</head>
 
+<div class="container" layout:fragment="content">
     <main style="background: #fff; padding-bottom: 100px;">
         <section class="profile-section">
             <div class="profile-img-container" data-bs-toggle="modal" data-bs-target="#imageUpdateModal">
@@ -169,69 +103,51 @@
             </div>
 
             <h2 class="profile-nickname" th:text="|${user.displayName} (${user.username})|">닉네임</h2>
-            
-            <div class="d-flex justify-content-center align-items-center flex-wrap gap-2 mb-3">              
+
+            <div class="d-flex justify-content-center align-items-center flex-wrap gap-2 mb-3">
                 <div th:each="tag : ${tagList}" class="badge rounded-pill custom-tag-badge d-flex align-items-center">
                     <span th:text="'#' + ${tag.tagText}">#태그명</span>
-                    <span th:if="${user.username == #authentication.name}" th:onclick="|if(confirm('삭제하시겠습니까?')) location.href='@{/tag/deleteUserTag(tagId=${tag.id})}'|" class="tag-delete-btn">
+                    <span th:if="${user.username == #authentication.name}"
+                          th:onclick="|if(confirm('삭제하시겠습니까?')) location.href='@{/tag/deleteUserTag(tagId=${tag.id})}'|"
+                          class="tag-delete-btn">
                         <i class="bi bi-x-circle-fill"></i>
                     </span>
                 </div>
-                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-0" th:if="${user.username == #authentication.name}" 
-                        style="width: 24px; height: 24px;" data-bs-toggle="modal" data-bs-target="#tagAddModal">
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm rounded-circle p-0"
+                        th:if="${user.username == #authentication.name}"
+                        style="width: 24px; height: 24px;"
+                        data-bs-toggle="modal"
+                        data-bs-target="#tagAddModal">
                     <i class="bi bi-plus"></i>
                 </button>
             </div>
 
             <p class="profile-intro" th:text="${user.description != null ? user.description : '나를 표현하는 한 줄 소개를 적어보세요.'}"></p>
 
-<<<<<<< HEAD
             <div class="profile-btn-group" th:if="${user.username == #authentication.name}">
                 <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile">프로필 편집</div>
                 <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate">계정 비활성화</div>
-=======
-<<<<<<< HEAD
-            <div class="profile-btn-group">
-                <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile">프로필 편집</div>
-                <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate">프로필 비활성화</div>
-=======
-            <div class="d-flex justify-content-center gap-2">
-                <div th:onclick="|location.href='@{/user/edit}'|" class="btn-edit-profile" th:if="${user.username == #authentication.name}">프로필 편집</div>
-                <div th:onclick="|location.href='@{/user/delete}'|" class="btn-deactivate" th:if="${user.username == #authentication.name}">프로필 비활성화</div>
-                <button id="followBtn" class="btn-follow" th:classappend="${follow.followed} ? ' following'" th:onclick="|toggleFollow(${user.id}, 'USER')|" th:if="${user.username != #authentication.name}" th:text="${follow.followed} ? '팔로우 중' : '팔로우'"></button>
->>>>>>> refs/remotes/origin/jinhoe
->>>>>>> refs/remotes/origin/yeachan
             </div>
-            
-            <button th:if="${user.username != #authentication.name}" id="followBtn" class="btn-follow" 
-                    th:classappend="${follow != null && follow.followed} ? ' following'" 
-                    th:onclick="|toggleFollow(${user.id}, 'USER')|" 
+
+            <button th:if="${user.username != #authentication.name}"
+                    id="followBtn"
+                    class="btn-follow"
+                    th:classappend="${follow != null && follow.followed} ? ' following'"
+                    th:onclick="|toggleFollow(${user.id}, 'USER')|"
                     th:text="${follow != null && follow.followed} ? '팔로우 중' : '팔로우'">
             </button>
 
             <div class="tab-menu-wrapper">
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> refs/remotes/origin/yeachan
                 <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home', 0)">홈</div>
                 <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts', 1)">게시물</div>
                 <div id="tab-team" class="tab-menu-item" onclick="switchTab('team', 2)">팀</div>
                 <div id="tab-project" class="tab-menu-item" onclick="switchTab('project', 3)">프로젝트</div>
                 <div id="tab-interests" class="tab-menu-item" onclick="switchTab('interests', 4)">관심목록</div>
                 <div class="tab-indicator" id="tabIndicator"></div>
-<<<<<<< HEAD
-=======
-=======
-                <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home')">홈</div>
-                <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts')">게시물</div>
-                <div id="tab-team" class="tab-menu-item" onclick="switchTab('team')">팀</div>
-                <div id="tab-project" class="tab-menu-item" onclick="switchTab('project')">프로젝트</div>
->>>>>>> refs/remotes/origin/jinhoe
->>>>>>> refs/remotes/origin/yeachan
             </div>
         </section>
-        
+
         <section id="content-home" class="tab-content active container mt-4">
             <div class="info-card shadow-sm">
                 <div class="info-card-header">기본 정보</div>
@@ -245,23 +161,11 @@
             </div>
         </section>
 
-<<<<<<< HEAD
         <section id="content-posts" class="tab-content container">
             <div th:if="${not #lists.isEmpty(arts)}">
                 <div class="section-header"><h3 class="section-title">일러스트</h3></div>
                 <div class="content-box-gray px-3">
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-=======
-        <section id="content-posts" class="tab-content">
-            <div class="section-header"><h3 class="section-title">일러스트</h3></div>
-            <section class="content-box-gray">
-                <div class="grid-container">
-<<<<<<< HEAD
-                    <div class="row row-cols-custom-4 g-3">
-                        <div class="col" th:each="i : ${#numbers.sequence(1, 8)}">
-=======
-                    <div class="row row-cols-custom-6 g-3">
->>>>>>> refs/remotes/origin/yeachan
                         <div class="col" th:each="art : ${arts}">
                             <div class="content-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
                                 <div class="card-img-placeholder illu-img">
@@ -273,24 +177,14 @@
                         </div>
                     </div>
                 </div>
-<<<<<<< HEAD
             </div>
+
             <div th:if="${not #lists.isEmpty(comics)}">
                 <div class="section-header"><h3 class="section-title">만화</h3></div>
                 <div class="content-box-gray px-3">
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
                         <div class="col" th:each="comic : ${comics}">
-=======
-            </section>
-
-            <div class="section-header"><h3 class="section-title">만화</h3></div>
-            <section class="content-box-gray">
-                <div class="grid-container">
-                    <div class="row row-cols-custom-6 g-3">
-                        <div class="col" th:each="i : ${#numbers.sequence(1, 6)}">
->>>>>>> refs/remotes/origin/jinhoe
->>>>>>> refs/remotes/origin/yeachan
-                            <div class="content-card">
+                            <div class="content-card" th:onclick="|location.href='@{/content/comic/detail/{id}(id=${comic.id})}'|">
                                 <div class="card-img-placeholder comic-img">
                                     <img th:if="${comic.thumbnailUrl != null}" th:src="${comic.thumbnailUrl}" alt="" />
                                     <i class="bi bi-journal-richtext fs-4"></i>
@@ -300,27 +194,12 @@
                         </div>
                     </div>
                 </div>
-<<<<<<< HEAD
             </div>
+
             <div th:if="${not #lists.isEmpty(novels)}">
                 <div class="section-header"><h3 class="section-title">소설</h3></div>
                 <div class="content-box-gray px-3">
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-=======
-            </section>
-
-            <div class="section-header"><h3 class="section-title">소설</h3></div>
-            <section class="content-box-gray">
-                <div class="grid-container">
-<<<<<<< HEAD
-                    <div class="row row-cols-custom-4 g-3">
-                        <div class="col" th:each="i : ${#numbers.sequence(1, 4)}">
-                            <div class="content-card">
-                                <div class="card-img-placeholder novel-img"><i class="bi bi-book fs-4"></i></div>
-                                <div class="card-label">소설 명</div>
-=======
-                    <div class="row row-cols-custom-6 g-3">
->>>>>>> refs/remotes/origin/yeachan
                         <div class="col" th:each="novel : ${novels}">
                             <div class="content-card" th:onclick="|location.href='@{/content/novel_detail/{id}(id=${novel.id})}'|">
                                 <div class="card-img-placeholder novel-img">
@@ -333,6 +212,7 @@
                     </div>
                 </div>
             </div>
+
             <div th:if="${not #lists.isEmpty(musics)}">
                 <div class="section-header"><h3 class="section-title">음악</h3></div>
                 <div class="content-box-gray px-3">
@@ -340,35 +220,8 @@
                         <div class="col" th:each="music : ${musics}">
                             <div class="content-card" th:onclick="|location.href='@{/content/music/detail/{id}(id=${music.id})}'|">
                                 <div class="card-img-placeholder music-img">
-<<<<<<< HEAD
                                     <img th:if="${music.thumbnailUrl != null}" th:src="${music.thumbnailUrl}" alt="" />
                                     <i class="bi bi-music-note-beamed fs-4"></i>
-=======
-									<img th:if="${music.thumbnailUrl != null}" th:src="${music.thumbnailUrl}" alt="" />
-								</div>
-                                <div class="card-label" th:text="${music.title}">음악 명</div>
->>>>>>> refs/remotes/origin/jinhoe
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="section-header"><h3 class="section-title">동영상</h3></div>
-            <section class="content-box-gray">
-                <div class="grid-container">
-<<<<<<< HEAD
-                    <div class="row row-cols-1 row-cols-md-3 g-3">
-                        <div class="col" th:each="i : ${#numbers.sequence(1, 3)}">
-                            <div class="content-card">
-=======
-                    <div class="row row-cols-custom-4 g-3">
-                        <div class="col" th:each="video : ${videos}">
-                            <div class="content-card" th:onclick="|location.href='@{/content/video/detail/{id}(id=${video.id})}'|">
->>>>>>> refs/remotes/origin/jinhoe
-                                <div class="card-img-placeholder video-img" style="background: #bbb;">
-                                    <img th:if="${video.thumbnailUrl != null}" th:src="${video.thumbnailUrl}" alt="" />
->>>>>>> refs/remotes/origin/yeachan
                                 </div>
                                 <div class="card-label text-truncate" th:text="${music.title}">음악 명</div>
                             </div>
@@ -376,6 +229,7 @@
                     </div>
                 </div>
             </div>
+
             <div th:if="${not #lists.isEmpty(videos)}">
                 <div class="section-header"><h3 class="section-title">동영상</h3></div>
                 <div class="content-box-gray px-3">
@@ -392,7 +246,9 @@
                     </div>
                 </div>
             </div>
-            <div th:if="${#lists.isEmpty(arts) and #lists.isEmpty(novels) and #lists.isEmpty(musics) and #lists.isEmpty(videos)}" class="text-center py-5 text-muted">
+
+            <div th:if="${#lists.isEmpty(arts) and #lists.isEmpty(comics) and #lists.isEmpty(novels) and #lists.isEmpty(musics) and #lists.isEmpty(videos)}"
+                 class="text-center py-5 text-muted">
                 <i class="bi bi-folder2-open display-4"></i>
                 <p class="mt-3">아직 업로드한 게시물이 없습니다.</p>
             </div>
@@ -402,7 +258,8 @@
             <div class="section-header"><h3 class="section-title">소속 팀</h3></div>
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <div class="col" th:each="team : ${myTeams}">
-                    <div class="card h-100 shadow-sm rounded border-0 hover-shadow overflow-hidden text-center" style="cursor: pointer;"
+                    <div class="card h-100 shadow-sm rounded border-0 hover-shadow overflow-hidden text-center"
+                         style="cursor: pointer;"
                          th:onclick="|location.href='@{/team/{id}(id=${team.id})}'|">
                         <div class="team-banner">
                             <img th:src="${team.bannerImgUrl != null ? team.bannerImgUrl : '/images/default-banner.png'}" alt="배너">
@@ -428,16 +285,16 @@
             <div class="section-header d-flex justify-content-between align-items-center container">
                 <h3 class="section-title">좋아요 표시한 작품</h3>
                 <button type="button" class="btn btn-sm btn-outline-secondary" th:onclick="|loadLikedContents()|">더보기 <i class="bi bi-plus"></i></button>
-            </div>              
+            </div>
             <section class="content-box-gray">
                 <div class="grid-container px-3 container">
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3" id="likedSummaryGrid">
                         <div class="col" th:each="content : ${likeContentPreview}">
                             <a class="content-card" th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}">
-                                 <div class="card-img-placeholder illu-img">
-                                     <img th:src="${content.thumbnailUrl}" alt="" />
-                                 </div>
-                                 <div class="card-label text-truncate" th:text="${content.title}">작품명</div>
+                                <div class="card-img-placeholder illu-img">
+                                    <img th:src="${content.thumbnailUrl}" alt="" />
+                                </div>
+                                <div class="card-label text-truncate" th:text="${content.title}">작품명</div>
                             </a>
                         </div>
                     </div>
@@ -453,10 +310,10 @@
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3" id="bookmarkSummaryGrid">
                         <div class="col" th:each="content : ${bookmarkContentPreview}">
                             <a class="content-card" th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}">
-								<div class="card-img-placeholder video-img">
-	                                 <img th:src="${content.thumbnailUrl}" alt="" />
-	                             </div>
-								<div class="card-label text-truncate" th:text="${content.title}">작품명</div>
+                                <div class="card-img-placeholder video-img">
+                                    <img th:src="${content.thumbnailUrl}" alt="" />
+                                </div>
+                                <div class="card-label text-truncate" th:text="${content.title}">작품명</div>
                             </a>
                         </div>
                         <div th:if="${#lists.isEmpty(bookmarkContentPreview)}" class="text-center w-100 py-4 text-muted">저장된 북마크가 없습니다.</div>
@@ -545,7 +402,7 @@
 
         function switchTab(tabId, index) {
             if (currentIndex === index) return;
-            const direction = index > currentIndex ? 1 : -1; 
+            const direction = index > currentIndex ? 1 : -1;
             currentIndex = index;
 
             document.querySelectorAll('.tab-menu-item').forEach(tab => tab.classList.remove('active'));
@@ -574,10 +431,9 @@
         }
 
         function toggleFollow(id, type) {
-            location.reload(); 
+            location.reload();
         }
 
-        /* [공통: API 데이터로 카드 생성 함수] */
         function createContentCard(content) {
             const typePath = content.type ? content.type.toLowerCase() : 'art';
             const detailPath = `/content/${typePath}/detail/${content.id}`;
@@ -585,8 +441,8 @@
                 <div class="col">
                     <a href="${detailPath}" class="content-card" style="text-decoration:none;">
                         <div class="card-img-placeholder illu-img">
-                            <img src="${content.thumbnailUrl || 'https://dummyimage.com/150x200'}" 
-                                 style="width:100%; height:100%; object-fit:cover;" 
+                            <img src="${content.thumbnailUrl || 'https://dummyimage.com/150x200'}"
+                                 style="width:100%; height:100%; object-fit:cover;"
                                  alt="${content.title}">
                         </div>
                         <div class="card-info mt-2 text-center">
@@ -599,7 +455,6 @@
             `;
         }
 
-        /* [좋아요 데이터 로드] */
         function loadLikedContents() {
             const modalElement = document.getElementById('likedArtsModal');
             let likedModal = bootstrap.Modal.getInstance(modalElement);
@@ -609,20 +464,21 @@
             const userId = [[${user.id}]];
             const modalBody = document.getElementById('likedArtsModalBody');
             modalBody.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>';
-            
-            fetch(`/like/${userId}/liked-contents`) 
+
+            fetch(`/like/${userId}/liked-contents`)
                 .then(res => res.json())
                 .then(data => {
-                    modalBody.innerHTML = ''; 
+                    modalBody.innerHTML = '';
                     if (!data || data.length === 0) {
                         modalBody.innerHTML = '<p class="text-center w-100 text-muted">좋아요 한 컨텐츠가 없습니다.</p>';
                     } else {
                         data.forEach(content => modalBody.insertAdjacentHTML('beforeend', createContentCard(content)));
                     }
-                }).catch(err => modalBody.innerHTML = '<p class="text-center w-100 text-danger py-5">오류가 발생했습니다.</p>');
+                }).catch(() => {
+                    modalBody.innerHTML = '<p class="text-center w-100 text-danger py-5">오류가 발생했습니다.</p>';
+                });
         }
 
-        /* [북마크 데이터 로드 - 좋아요와 동일한 설계] */
         function loadBookmarkedContents() {
             const modalElement = document.getElementById('bookmarkedModal');
             let bookmarkModal = bootstrap.Modal.getInstance(modalElement);
@@ -632,18 +488,19 @@
             const userId = [[${user.id}]];
             const modalBody = document.getElementById('bookmarkedModalBody');
             modalBody.innerHTML = '<div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>';
-            
-            // 북마크용 API 경로 (서버에 해당 엔드포인트 구현 필요)
-            fetch(`/bookmark/${userId}/bookmarked-contents`) 
+
+            fetch(`/bookmark/${userId}/bookmarked-contents`)
                 .then(res => res.json())
                 .then(data => {
-                    modalBody.innerHTML = ''; 
+                    modalBody.innerHTML = '';
                     if (!data || data.length === 0) {
                         modalBody.innerHTML = '<p class="text-center w-100 text-muted">저장된 북마크가 없습니다.</p>';
                     } else {
                         data.forEach(content => modalBody.insertAdjacentHTML('beforeend', createContentCard(content)));
                     }
-                }).catch(err => modalBody.innerHTML = '<p class="text-center w-100 text-danger py-5">데이터를 불러올 수 없습니다.</p>');
+                }).catch(() => {
+                    modalBody.innerHTML = '<p class="text-center w-100 text-danger py-5">데이터를 불러올 수 없습니다.</p>';
+                });
         }
     </script>
 </div>

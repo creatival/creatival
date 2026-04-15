@@ -152,6 +152,11 @@ public class TeamController {
 		return "team_detail";
 	}
 	
+	@GetMapping("/{id}/teamBoard")
+	public String teamBoard() {
+		return "team_board";
+	}
+	
 	@GetMapping("/{id}/teamApplicationManage")
 	public String team_application_manage(Model model, @PathVariable("id") Long id, Principal principal) {
 		Users user = userService.getUserByUsername(principal.getName());

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Creatival</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+    
+    <style>
+        :root {
+            --brand-navy: #3B4371;
+            --brand-orange: #FF7F50;
+            --brand-purple: #432C8C;
+            --bg-light: #FFFFFF;
+            --soft-gray: #F8F9FA;
+            --text-gray: #666;
+        }
+
+        /* [해결] 스크롤바가 생겨도 화면이 좌우로 흔들리지 않게 고정 */
+        html { overflow-y: scroll; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-light);
+            color: #212121;
+            -webkit-font-smoothing: antialiased;
+            text-align: center;
+        }
+
+        .about-us-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+        }
+
+        /* --- 1. 상단 탭 내비게이션 --- */
+        .tabs-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 60px;
+            border-bottom: 2px solid #eaeaea;
+            position: relative;
+        }
+
+        .tab-item {
+            cursor: pointer;
+            color: #bbb;
+            font-weight: 700; /* 기본 두께 */
+            font-size: 1.1rem;
+            padding: 12px 20px;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            position: relative;
+            outline: none;
+        }
+
+        /* [해결] 글자가 두꺼워져도 버튼 너비가 변하지 않도록 처리 */
+        .tab-item::after {
+            display: block;
+            content: attr(data-title);
+            font-weight: 800;
+            height: 0;
+            overflow: hidden;
+            visibility: hidden;
+        }
+
+        .tab-item:hover { color: var(--brand-navy); }
+        .tab-item.active { color: var(--brand-navy); font-weight: 800; }
+
+        /* 슬라이드 인디케이터 */
+        .tab-indicator {
+            position: absolute;
+            bottom: -2px;
+            height: 3px;
+            background-color: var(--brand-orange);
+            border-radius: 2px;
+            /* 베지어 곡선을 수정하여 더 쫀득한 느낌 부여 */
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            left: 0;
+            width: 0;
+            pointer-events: none;
+        }
+
+        /* --- 2. 공통 헤더 --- */
+        .about-header { margin-bottom: 60px; }
+        .logo-image { max-width: 280px; height: auto; margin-bottom: 30px; }
+        .about-us-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--brand-purple);
+        }
+        .divider { border: none; border-top: 1px solid #eee; margin: 40px 0; opacity: 0.7; }
+
+        /* --- 3. 공통 애니메이션 --- */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease-out forwards; }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* --- [섹션 1] 팀원 소개 스타일 --- */
+        .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .member-card {
+            background-color: #fff; border-radius: 16px; padding: 40px 30px;
+            transition: all 0.3s ease; border: 1px solid #f0f0f0;
+        }
+        .member-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(67, 44, 140, 0.08);
+            border-color: var(--brand-orange);
+        }
+        .avatar-wrapper {
+            width: 130px; height: 130px; border-radius: 50%;
+            border: 4px solid var(--brand-purple); margin: 0 auto 25px;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #f9f9f9 0%, #f0f0f0 100%);
+        }
+        .avatar-wrapper i { font-size: 3rem; color: #ccc; }
+        .member-name { font-size: 1.25rem; font-weight: 700; color: var(--brand-purple); margin-bottom: 8px; }
+        .member-role { font-size: 0.95rem; font-weight: 600; color: var(--brand-orange); margin-bottom: 12px; }
+        .member-details { font-size: 0.9rem; color: var(--text-gray); line-height: 1.6; }
+
+        /* --- [섹션 2] 탄생 스토리 스타일 --- */
+        .naming-box {
+            display: flex; align-items: center; justify-content: center;
+            gap: 20px; margin-bottom: 60px; padding: 40px;
+            background-color: var(--soft-gray); border-radius: 24px;
+        }
+        .naming-word span { display: block; font-size: 0.85rem; color: #999; margin-bottom: 4px; }
+        .naming-word strong { font-size: 1.6rem; color: var(--brand-navy); font-weight: 800; }
+        .naming-plus { font-size: 1.4rem; color: var(--brand-orange); font-weight: 900; }
+
+        .philosophy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 60px; }
+        .phi-card { padding: 40px; border: 1px solid #eee; border-radius: 20px; text-align: left; transition: 0.3s; }
+        .phi-card:hover { border-color: var(--brand-orange); background-color: #fff; }
+        .phi-icon { font-size: 2.2rem; color: var(--brand-orange); margin-bottom: 15px; }
+        .phi-card h4 { font-weight: 800; color: var(--brand-navy); margin-bottom: 12px; }
+        .phi-card p { color: var(--text-gray); line-height: 1.7; font-size: 0.95rem; }
+
+        .vision-banner {
+            padding: 60px;
+            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-purple) 100%);
+            color: white; border-radius: 30px;
+        }
+        .vision-banner h3 { font-weight: 700; margin-bottom: 15px; }
+        .vision-banner p { font-size: 1.05rem; font-weight: 300; opacity: 0.9; line-height: 1.6; }
+
+        @media (max-width: 768px) {
+            .team-grid, .philosophy-grid { grid-template-columns: 1fr; }
+            .naming-box { flex-direction: column; gap: 10px; }
+            .naming-plus { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="about-us-container">
+    <nav class="tabs-bar">
+        <button class="tab-item active" data-title="팀원 소개" onclick="showTab(event, 'team')">팀원 소개</button>
+        <button class="tab-item" data-title="탄생 비화" onclick="showTab(event, 'story')">탄생 비화</button>
+        <div id="tabIndicator" class="tab-indicator"></div>
+    </nav>
+
+    <header class="about-header">
+        <div class="logo-section">
+            <img th:src="@{/images/creatival_logoV5-Photoroom.png}" alt="Creatival Logo" class="logo-image">
+        </div>
+        <h1 class="about-us-title">ABOUT US</h1>
+        <hr class="divider">
+    </header>
+
+    <section id="team" class="tab-content active">
+        <div class="team-grid">
+            <div class="member-card">
+                <div class="avatar-wrapper"><i class="bi bi-person-fill"></i></div>
+                <h3 class="member-name">김예찬</h3>
+                <p class="member-role">Website Design</p>
+                <p class="member-details">사용자 경험을 최우선으로 하는<br>직관적인 인터페이스를 설계합니다.</p>
+            </div>
+            <div class="member-card">
+                <div class="avatar-wrapper"><i class="bi bi-person-fill"></i></div>
+                <h3 class="member-name">김진회</h3>
+                <p class="member-role">Backend Developer</p>
+                <p class="member-details">안정적인 서버 인프라를 통해<br>창작자들의 데이터를 안전하게 관리합니다.</p>
+            </div>
+            <div class="member-card">
+                <div class="avatar-wrapper"><i class="bi bi-person-fill"></i></div>
+                <h3 class="member-name">이승재</h3>
+                <p class="member-role">Frontend Developer</p>
+                <p class="member-details">상상력을 코드로 구현하여<br>생동감 넘치는 웹 화면을 만듭니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="story" class="tab-content">
+        <div class="naming-box">
+            <div class="naming-word"><span>Idea</span><strong>Creative</strong></div>
+            <div class="naming-plus"><i class="bi bi-plus-lg"></i></div>
+            <div class="naming-word"><span>Party</span><strong>Festival</strong></div>
+            <div class="naming-plus"><i class="bi bi-pause-fill" style="transform: rotate(90deg);"></i></div>
+            <div class="naming-word"><span>Brand</span><strong style="color: var(--brand-orange);">Creatival</strong></div>
+        </div>
+
+        <div class="philosophy-grid">
+            <div class="phi-card">
+                <div class="phi-icon"><i class="bi bi-lightbulb-fill"></i></div>
+                <h4>혼자에서 우리로</h4>
+                <p>창작은 때로 고독한 과정이지만, 그 결과물이 세상과 연결될 때 비로소 완성됩니다. 우리는 그 연결의 다리가 되고자 합니다.</p>
+            </div>
+            <div class="phi-card">
+                <div class="phi-icon"><i class="bi bi-stars"></i></div>
+                <h4>축제가 되는 창작</h4>
+                <p>작업의 모든 순간이 즐거움이 되길 바랍니다. Creatival은 창작의 과정 자체를 하나의 축제로 즐길 수 있는 환경을 만듭니다.</p>
+            </div>
+        </div>
+
+        <div class="vision-banner shadow-lg">
+            <h3>Every Step is a Celebration.</h3>
+            <p>Creatival은 모든 창작자의 발걸음이 하나의 멋진 퍼레이드가 되기를 꿈꿉니다.<br>여러분의 상상을 현실의 축제로 만드는 든든한 파트너가 되겠습니다.</p>
+        </div>
+    </section>
+</div>
+
+<script>
+    function updateIndicator(tabElement) {
+        const indicator = document.getElementById('tabIndicator');
+        if (!tabElement) return;
+        
+        // offsetLeft와 offsetWidth를 사용하여 정확한 위치 계산
+        indicator.style.width = tabElement.offsetWidth + 'px';
+        indicator.style.left = tabElement.offsetLeft + 'px';
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const activeTab = document.querySelector('.tab-item.active');
+        // 초기 로딩 시 약간의 지연을 주어 폰트 렌더링 후 위치 계산
+        setTimeout(() => updateIndicator(activeTab), 50);
+    });
+
+    window.addEventListener('resize', () => {
+        const activeTab = document.querySelector('.tab-item.active');
+        updateIndicator(activeTab);
+    });
+
+    function showTab(event, tabId) {
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.classList.remove('active'));
+
+        const tabs = document.querySelectorAll('.tab-item');
+        tabs.forEach(tab => tab.classList.remove('active'));
+
+        const targetContent = document.getElementById(tabId);
+        targetContent.classList.add('active');
+        
+        const clickedTab = event.currentTarget;
+        clickedTab.classList.add('active');
+
+        updateIndicator(clickedTab);
+    }
+</script>
+
+</body>
+</html>

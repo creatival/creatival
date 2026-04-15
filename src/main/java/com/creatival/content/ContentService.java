@@ -625,7 +625,10 @@ public class ContentService {
 	    }
 		
 		contentFileService.createContentFileFileForContent(content, createFileDTO.getFile(), "file");
-		contentFileService.createContentFileImageForContent(content, createFileDTO.getExtraImg(), "previewImg");
+		if(createFileDTO.getExtraImg()!=null && !createFileDTO.getExtraImg().isEmpty()) {
+			contentFileService.createContentFileImageForContent(content, createFileDTO.getExtraImg(), "previewImg");
+		}
+		
 		
 	}
 	public Page<ResponseFileListDTO> getFileList(int page) {
