@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layout}">
+	
+<head>
+    <title>게시글 작성 | Creatival</title>
+	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+</head>
+
+<div layout:fragment="content">
+    <style>
+        /* [핵심] 모든 요소에 box-sizing 적용하여 패딩으로 인한 터짐 방지 */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --brand-navy: #3B4371;
+            --brand-orange: #FF7F50;
+            --border-color: #E9ECEF;
+        }
+
+        .write-container {
+            max-width: 900px;
+            margin: 3rem auto 5rem;
+            padding: 0 20px;
+            overflow-x: hidden; /* 가로 스크롤 방지 */
+        }
+
+        .write-header { text-align: center; margin-bottom: 3rem; }
+        .write-header h2 { font-weight: 800; color: var(--brand-navy); font-size: 2.2rem; }
+
+        .write-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            width: 100%; /* 부모 너비 준수 */
+        }
+
+        /* 섹션 타이틀 세로 라인 */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--brand-navy);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--brand-orange);
+            border-radius: 10px;
+        }
+
+        /* [수정] 입력 그룹 - 라벨과 입력창을 수직으로 완벽 분리 */
+        .form-row-custom {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.8rem;
+            width: 100%;
+        }
+        .form-row-custom .form-label {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 1rem;
+        }
+        .form-row-custom .form-control, 
+        .form-row-custom .form-select {
+            width: 100% !important; /* 가로 너비 꽉 채우기 */
+            max-width: 100%;
+            border: 1.5px solid #E9ECEF;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 1rem;
+        }
+
+        /* 파일 업로드 박스 디자인 */
+        .file-upload-zone {
+            border: 2px dashed #DDE2E6;
+            border-radius: 15px;
+            padding: 25px;
+            background: #FAFBFC;
+            width: 100%;
+        }
+
+        /* [수정] 하단 버튼 디자인 - 사진과 동일한 스타일 및 글자 크기 조정 */
+        .btn-action-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 3.5rem;
+        }
+
+        .btn-creativ {
+            padding: 14px 45px;
+            font-weight: 700;
+            border-radius: 10px;
+            font-size: 1.1rem; /* 글자 크기 살짝 키움 */
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        /* 취소 버튼 (주황색 아웃라인) */
+        .btn-cancel-outline {
+            background: #fff;
+            color: var(--brand-orange);
+            border: 2px solid var(--brand-orange);
+        }
+        .btn-cancel-outline:hover {
+            background: #FFF5F2;
+            transform: translateY(-2px);
+        }
+
+        /* 등록 버튼 (네이비) */
+        .btn-submit-solid {
+            background: var(--brand-navy);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 15px rgba(59, 67, 113, 0.2);
+        }
+        .btn-submit-solid:hover {
+            background: #2c3359;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 67, 113, 0.3);
+        }
+
+        .divider { height: 1px; background: #F0F2F5; margin: 2.5rem 0; }
+    </style>
+
+    <div class="write-container">
+        <div class="write-header">
+            <h2>공지 및 업데이트 작성</h2>
+            <p class="text-muted">내용이 오른쪽으로 치우치지 않도록 레이아웃이 보정되었습니다.</p>
+        </div>
+
+        <form th:action="@{/board/write}" method="post" enctype="multipart/form-data">
+            <div class="write-card">
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="form-row-custom">
+                            <label class="form-label">게시글 종류</label>
+                            <select class="form-select" name="boardType">
+                                <option value="NORMAL">팀 게시판 (일반)</option>
+                                <option value="CREATOR" selected>📢 공지사항 (필독)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-row-custom">
+                            <label class="form-label">작성자 정보</label>
+                            <div class="form-control d-flex align-items-center bg-light" style="height: 55px; border-style: solid;">
+                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="24" class="me-2">
+                                <span class="fw-bold" th:text="${#authentication.name}">사용자명</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="section-title">게시글 본문 작성</div>
+                
+                <div class="form-row-custom">
+                    <label class="form-label">공지 제목</label>
+                    <input type="text" class="form-control" name="title" placeholder="제목을 입력해 주세요" required>
+                </div>
+
+                <div class="form-row-custom">
+                    <label class="form-label">내용</label>
+                    <textarea class="form-control" name="boardText" style="min-height: 320px; resize: none;" 
+                              placeholder="팀원들에게 전달할 상세 내용을 입력해 주세요."></textarea>
+                </div>
+
+                <div class="form-row-custom mb-0">
+                    <label class="form-label">미디어 첨부 <small class="text-muted fw-normal">(최대 3개)</small></label>
+                    <div class="file-upload-zone">
+                        <input class="form-control mb-3" type="file" name="images" accept="image/*,video/*" multiple id="file_input" onchange="handleFileSelect(this)">
+                        <div id="fileList"></div>
+                        <div class="text-center text-muted small mt-2">
+                            <i class="bi bi-info-circle me-1"></i> 이미지나 영상 파일을 선택해 주세요.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-action-group">
+                <a th:href="@{/board}" class="btn btn-creativ btn-cancel-outline">취소</a>
+                <button type="submit" class="btn btn-creativ btn-submit-solid">게시글 등록하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        function handleFileSelect(input) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            if (input.files.length > 3) {
+                alert("파일은 최대 3개까지만 첨부할 수 있습니다.");
+                input.value = "";
+                return;
+            }
+
+            Array.from(input.files).forEach((file) => {
+                const item = document.createElement('div');
+                item.className = 'p-2 bg-white border rounded-3 mb-2 small d-flex justify-content-between align-items-center shadow-sm';
+                item.innerHTML = `
+                    <span><i class="bi bi-file-earmark-check me-2 text-primary"></i>${file.name}</span>
+                    <span class="badge bg-light text-dark border">${Math.round(file.size/1024)} KB</span>
+                `;
+                fileList.appendChild(item);
+            });
+        }
+    </script>
+</th:block>
+</html>

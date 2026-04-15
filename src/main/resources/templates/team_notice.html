@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>뉴스 및 공지사항 | Creatival</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --brand-navy: #3B4371;
+            --brand-orange: #FF7F50;
+            --steam-dark-gray: #2a475e;
+            --bg-light: #F4F7F9;
+            --border-color: #DDE2E6;
+        }
+
+        html { scrollbar-gutter: stable; }
+        body { background-color: var(--bg-light); color: #333; font-family: 'Pretendard', sans-serif; }
+
+        /* [해결] 헤더 중앙 정렬 */
+        .notice-header-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        /* 탭 내비게이션 */
+        .board-menu-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+        .nav-tabs-board { display: flex; gap: 40px; margin-bottom: -2px; }
+        .board-tab {
+            background: none; border: none; font-size: 1.1rem; font-weight: 700;
+            color: #999; padding: 0 10px 15px 10px; cursor: pointer;
+            transition: 0.2s; border-bottom: 3px solid transparent;
+        }
+        .board-tab.active { color: var(--brand-navy); border-bottom: 3px solid var(--brand-navy); }
+
+        .btn-write {
+            background-color: var(--brand-navy); color: white; border-radius: 8px;
+            padding: 10px 24px; font-weight: 600; margin-bottom: 10px;
+            transition: 0.2s; text-decoration: none; border: none;
+        }
+        .btn-write:hover { background-color: #2c3359; color: white; transform: translateY(-2px); }
+
+        /* 공지사항 카드 */
+        .notice-card {
+            background: #fff; border-radius: 0 0 16px 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            margin-bottom: 50px; overflow: hidden;
+            text-align: left; /* 본문은 읽기 편하게 왼쪽 정렬 유지 */
+        }
+
+        .notice-hero-img { width: 100%; height: 400px; object-fit: cover; }
+        .notice-body { padding: 3rem; }
+        .notice-category { color: var(--brand-orange); font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem; display: block; }
+        .notice-title { font-size: 2.5rem; font-weight: 800; color: #1b2838; line-height: 1.2; margin-bottom: 1.5rem; }
+        
+        .author-box {
+            display: flex; align-items: center; padding-bottom: 2rem;
+            border-bottom: 1px solid #eee; margin-bottom: 2.5rem;
+        }
+        .author-avatar { width: 48px; height: 48px; border-radius: 4px; margin-right: 15px; }
+        .author-name { font-weight: 700; color: var(--steam-dark-gray); margin-bottom: 0; }
+        .post-date { font-size: 0.85rem; color: #888; }
+
+        .notice-content { font-size: 1.15rem; line-height: 1.9; color: #444; }
+        .content-img-wrapper { margin: 3rem 0; text-align: center; }
+        .content-img { max-width: 100%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        .interaction-bar {
+            background-color: #f9f9f9; padding: 1.5rem 3rem;
+            display: flex; align-items: center; gap: 20px;
+            border-top: 1px solid #eee;
+        }
+        .stat-item { color: #666; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: steamFadeIn 0.4s ease-out; }
+        @keyframes steamFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    
+    <div class="notice-header-section">
+        <h1 class="display-5 fw-bold" style="color: var(--brand-navy); font-weight: 800;">뉴스 및 공지사항</h1>
+        <p class="text-muted">Creatival 프로젝트의 최신 소식과 팀 업데이트를 한눈에 확인하세요.</p>
+    </div>
+
+    <div class="board-menu-wrapper">
+        <div class="nav-tabs-board">
+            <button class="board-tab active" data-tab="all-news">전체 뉴스</button>
+            <button class="board-tab" data-tab="updates">업데이트</button>
+        </div>
+        <a th:href="@{/team_notice_write}" class="btn btn-write"><i class="bi bi-pencil-fill me-2"></i>공지 작성</a>
+    </div>
+
+    <div id="all-news" class="tab-content active">
+        <article class="notice-card">
+            <img src="https://dummyimage.com/1200x600/3B4371/ffffff&text=Creatival+Featured+Image" class="notice-hero-img">
+            
+            <div class="notice-body">
+                <span class="notice-category">Major Update</span>
+                <h2 class="notice-title">Creatival 베타 2.0 배포 안내: 새로운 크리에이터 도구 추가</h2>
+                
+                <div class="author-box">
+                    <img src="https://dummyimage.com/100x100/3B4371/fff&text=C" class="author-avatar">
+                    <div>
+                        <p class="author-name">Creatival Team</p>
+                        <span class="post-date">2026년 4월 15일</span>
+                    </div>
+                </div>
+
+                <div class="notice-content">
+                    <p>안녕하세요, 팀 여러분! 드디어 <b>Creatival 베타 2.0 버전</b>이 배포되었습니다.</p>
+                    <div class="content-img-wrapper">
+                        <img src="https://dummyimage.com/1000x500/eee/333&text=New+Dashboard+UI+Screen" class="content-img">
+                    </div>
+                    <p>본문에 사진을 넣으실 때는 위와 같이 <code>content-img-wrapper</code> 클래스를 사용하시면 깔끔하게 들어갑니다.</p>
+                </div>
+            </div>
+
+            <div class="interaction-bar">
+                <div class="stat-item"><i class="bi bi-heart-fill text-danger"></i> 24</div>
+                <div class="stat-item"><i class="bi bi-chat-right-text-fill"></i> 8</div>
+            </div>
+        </article>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.board-tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(content => content.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,253 +1,210 @@
 <html layout:decorate="~{layout}">
-	<head>
-					<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-					<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
-			</head>
+<head>
+    <title>팀 후원하기 | Creatival</title>
+</head>
 <div layout:fragment="content">
+    <style>
+        :root {
+            --c-navy: #3B4371;
+            --c-orange: #FF7F50;
+            --c-purple: #432C8C;
+            --c-bg: #f9faff;
+        }
 
-<style>
-    /* =========================================
-       [후원 페이지 전용 스타일]
-       ========================================= */
-    :root {
-        --c-navy: #3B4371;
-        --c-orange: #FF7F50;
-        --c-bg: #f8f9fa;
-    }
+        body { background-color: var(--c-bg); }
 
-    body { background-color: var(--c-bg); }
+        /* 상단 헤더 영역 - 그라데이션 및 프로필 배치 */
+        .boost-header {
+            background: linear-gradient(135deg, var(--c-navy) 0%, var(--c-purple) 100%);
+            padding: 100px 0 60px;
+            text-align: center;
+            color: white;
+            position: relative;
+            margin-bottom: 80px;
+        }
 
-    /* 상단 커버 영역 */
-    .boost-header {
-        background: linear-gradient(135deg, var(--c-navy), #2a3152);
-        padding: 80px 0 40px;
-        text-align: center;
-        color: white;
-        position: relative;
-        margin-bottom: 60px;
-    }
-    
-    .boost-profile-img {
-        width: 140px; height: 140px;
-        border-radius: 50%; border: 4px solid white;
-        object-fit: cover;
-        position: absolute; bottom: -70px; left: 50%;
-        transform: translateX(-50%);
-        background-color: #fff;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
+        .boost-profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 40px; /* Creatival 특유의 부드러운 사각형 */
+            border: 6px solid white;
+            object-fit: cover;
+            position: absolute;
+            bottom: -75px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
 
-    /* 메인 컨텐츠 컨테이너 */
-    .boost-container { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
-    
-    /* 공통 카드 스타일 */
-    .c-card {
-        background: #fff; border-radius: 16px;
-        padding: 30px; border: 1px solid #eaeaea;
-        height: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        position: relative;
-    }
+        /* 컨테이너 및 폰트 설정 */
+        .boost-container { max-width: 1000px; margin: 0 auto; padding: 0 20px 80px; }
+        
+        .team-title { font-size: 2.2rem; font-weight: 800; color: #212121; text-align: center; margin-top: 25px; }
+        .team-sub-text { text-align: center; color: #666; margin-bottom: 50px; font-size: 1.1rem; }
 
-    .team-title { font-size: 1.8rem; font-weight: 800; color: #222; text-align: center; margin-top: 20px;}
-    .team-desc { color: #666; text-align: center; margin-bottom: 30px; font-size: 1rem; }
+        /* 공통 카드 스타일 */
+        .c-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 40px rgba(59, 67, 113, 0.05);
+            height: 100%;
+        }
 
-    /* 프로그레스 바 */
-    .goal-box { background-color: #fcfcfc; border-radius: 12px; padding: 20px; border: 1px solid #f0f0f0; }
-    .progress-custom { height: 12px; border-radius: 20px; background-color: #e9ecef; overflow: hidden; margin: 15px 0 10px; }
-    .progress-bar-custom { background-color: var(--c-orange); border-radius: 20px; }
+        /* 목표 달성률 박스 */
+        .goal-box {
+            background-color: #F8F9FF;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #EEF0FF;
+            margin-top: 30px;
+        }
 
-    /* =========================================
-       [결제 폼 레이아웃]
-       ========================================= */
-    .boost-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px; 
-    }
+        .progress-custom {
+            height: 14px;
+            border-radius: 20px;
+            background-color: #E2E5F5;
+            overflow: hidden;
+            margin: 15px 0 10px;
+        }
 
-    /* 빠른 금액 선택 버튼 그룹 */
-    .amount-btn-group {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); 
-        gap: 10px;
-        margin-bottom: 5px; 
-    }
-    
-    .amount-btn {
-        padding: 12px 0;
-        border: 1px solid #ddd; background: #fff;
-        border-radius: 12px;
-        color: #555; font-weight: 600;
-        cursor: pointer; transition: 0.2s;
-    }
-    .amount-btn:hover, .amount-btn.active {
-        border-color: var(--c-orange);
-        background-color: #fff5f2;
-        color: var(--c-orange);
-    }
+        .progress-bar-custom {
+            background: linear-gradient(90deg, var(--c-orange), #FFAD8F);
+            border-radius: 20px;
+            height: 100%;
+            transition: width 1s ease-in-out;
+        }
 
-    /* 금액 입력 필드 컨테이너 */
-    .input-amount-wrapper {
-        position: relative;
-        width: 100%; 
-        box-sizing: border-box; 
-    }
-    
-    .input-amount-custom {
-        width: 100%;
-        box-sizing: border-box; 
-        padding: 16px 20px;
-        border-radius: 12px;
-        border: 2px solid #ddd;
-        font-size: 1.1rem;
-        outline: none;
-        transition: 0.3s;
-        background-color: #fdfdfd;
-    }
-    .input-amount-custom:focus { border-color: var(--c-orange); background-color: #fff; }
+        /* 금액 선택 버튼 그룹 */
+        .amount-btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-    /* 결제/구독 버튼 공통 */
-    .btn-submit-boost {
-        width: 100%; padding: 18px;
-        border-radius: 12px; border: none;
-        background-color: var(--c-navy); color: #fff;
-        font-size: 1.1rem; font-weight: bold;
-        cursor: pointer; transition: 0.3s;
-    }
-    .btn-submit-boost:hover { filter: brightness(0.9); }
+        .amount-btn {
+            padding: 15px 0;
+            border: 2px solid #F0F2F7;
+            background: #fff;
+            border-radius: 15px;
+            color: #777;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-    /* 구독 전용 배지 */
-    .sub-badge {
-        background-color: var(--c-orange);
-        color: white;
-        font-size: 0.8rem;
-        font-weight: bold;
-        padding: 6px 16px;
-        border-radius: 20px;
-        position: absolute;
-        top: -14px;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 4px 10px rgba(255, 127, 80, 0.3);
-    }
+        .amount-btn:hover { border-color: var(--c-orange); color: var(--c-orange); }
+        .amount-btn.active {
+            background-color: var(--c-orange);
+            border-color: var(--c-orange);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 127, 80, 0.3);
+        }
 
-</style>
+        /* 입력 필드 */
+        .input-amount-custom {
+            width: 100%;
+            padding: 18px 25px;
+            border-radius: 15px;
+            border: 2px solid #F0F2F7;
+            font-size: 1.2rem;
+            font-weight: 700;
+            outline: none;
+            transition: 0.3s;
+            background-color: #FDFDFD;
+            margin-bottom: 25px;
+        }
 
-<div class="boost-header">
-    <img th:src="${team != null and team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}" 
-         onerror="this.src='https://dummyimage.com/140x140/cccccc/ffffff&text=Team'" 
-         class="boost-profile-img" alt="팀 프로필">
-</div>
+        .input-amount-custom:focus {
+            border-color: var(--c-navy);
+            background-color: #fff;
+        }
 
-<div class="boost-container">
-    <h2 class="team-title" th:text="${team != null ? team.name : '멋진 창작팀'}">멋진 창작팀</h2>
-    <p class="team-desc" th:text="${team != null ? team.description : '세상에 없던 새로운 가치를 만들어가는 팀입니다.'}">팀 소개글</p>
+        /* 결제 버튼 */
+        .btn-submit-boost {
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            border: none;
+            background-color: var(--c-navy);
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-    <div class="row g-4 mt-2">
-        <div class="col-lg-7">
-            <div class="c-card">
-                <h5 class="fw-bold mb-4">✨ 프로젝트 스토리</h5>
-                <p class="text-muted" style="line-height: 1.7;">
-                    팀의 구체적인 창작 계획과 후원금 사용처를 투명하게 공유하여 신뢰를 얻는 공간입니다.
-                </p>
+        .btn-submit-boost:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+            box-shadow: 0 10px 25px rgba(59, 67, 113, 0.2);
+        }
 
-                <div class="goal-box mt-5">
-                    <div class="d-flex justify-content-between">
-                        <span class="fw-bold text-dark">목표 달성률</span>
-                        <span class="text-muted small"><strong>65%</strong></span>
-                    </div>
-                    <div class="progress-custom">
-                        <div class="progress-bar-custom" style="width: 65%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        .card-label { font-size: 1.1rem; font-weight: 800; color: var(--c-navy); margin-bottom: 20px; display: block; }
+    </style>
 
-        <div class="col-lg-5">
-            <div class="c-card border-0" style="border-top: 5px solid var(--c-orange);">
-                <h5 class="fw-bold mb-1">팀 후원하기</h5>
-                <p class="small text-muted mb-4">금액을 선택하거나 직접 입력해 주세요.</p>
+    <div class="boost-header">
+        <img th:src="${team.profileImgUrl}" class="boost-profile-img" alt="Team Profile">
+    </div>
 
-                <form th:action="@{/team/{id}/boost(id=${team != null ? team.id : 0})}" method="post" class="boost-form">
+    <div class="boost-container">
+        <h2 class="team-title" th:text="${team.name}">팀 이름</h2>
+        <p class="team-sub-text">한 번의 소중한 후원이 창작자에게 큰 힘이 됩니다.</p>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="c-card">
+                    <span class="card-label">✨ 프로젝트 스토리</span>
+                    <p class="text-muted" style="line-height: 1.8;" th:text="${team.description}">
+                        팀의 구체적인 창작 계획과 후원금 사용처를 투명하게 공유하여 신뢰를 얻는 공간입니다.
+                    </p>
                     
-                    <div class="amount-btn-group" id="amountButtons">
-                        <button type="button" class="amount-btn" data-value="10000">1만 원</button>
-                        <button type="button" class="amount-btn" data-value="30000">3만 원</button>
-                        <button type="button" class="amount-btn" data-value="50000">5만 원</button>
+                    <div class="goal-box">
+                        <div class="d-flex justify-content-between align-items-end">
+                            <span class="fw-bold text-dark">목표 달성률</span>
+                            <span style="color: var(--c-orange); font-weight: 800; font-size: 1.2rem;">65%</span>
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar-custom" style="width: 65%;"></div>
+                        </div>
+                        <p class="small text-muted mb-0 mt-2 text-center">목표 금액까지 얼마 남지 않았어요!</p>
                     </div>
+                </div>
+            </div>
 
-                    <div class="input-amount-wrapper">
+            <div class="col-lg-5">
+                <div class="c-card" style="border-top: 6px solid var(--c-orange);">
+                    <span class="card-label">💰 후원금액 선택</span>
+                    <form th:action="@{/team/{id}/boost(id=${team.id})}" method="post">
+                        <div class="amount-btn-group">
+                            <button type="button" class="amount-btn" data-value="10000">1만 원</button>
+                            <button type="button" class="amount-btn" data-value="30000">3만 원</button>
+                            <button type="button" class="amount-btn" data-value="50000">5만 원</button>
+                        </div>
                         <input type="number" id="supportAmount" name="amount" class="input-amount-custom" placeholder="금액 직접 입력 (₩)" required>
-                    </div>
-
-                    <button type="submit" class="btn-submit-boost">결제하기</button>
-                </form>
+                        <button type="submit" class="btn-submit-boost">응원 결제하기</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="mt-5 pt-5 border-top">
-        <h3 class="fw-bold text-center mb-2">정기 구독하기</h3>
-        <p class="text-muted text-center mb-5">매월 정기적으로 팀을 응원하고 특별한 혜택을 누려보세요.</p>
-
-        <div class="row g-4 justify-content-center">
-            
-            <div class="col-md-5">
-                <div class="c-card text-center d-flex flex-column" style="border: 1px solid var(--c-navy);">
-                    <h5 class="fw-bold mt-2" style="color: var(--c-navy);">베이직 플랜</h5>
-                    <div class="my-4">
-                        <span class="fs-2 fw-bold text-dark">₩ 4,900</span> <span class="text-muted">/ 월</span>
-                    </div>
-                    <ul class="list-unstyled text-muted mb-5 text-start mx-auto" style="line-height: 2.2;">
-                        <li>구독자 전용 게시글 열람</li>
-                        <li>창작 비하인드 노트 공유</li>
-                        <li>프로필 전용 뱃지 부여</li>
-                    </ul>
-                    <form th:action="@{/team/{id}/subscribe/basic(id=${team != null ? team.id : 0})}" method="post" class="mt-auto">
-                        <button type="submit" class="btn-submit-boost" style="background-color: var(--c-navy);">베이직 구독하기</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="col-md-5">
-                <div class="c-card text-center d-flex flex-column" style="border: 2px solid var(--c-orange);">
-                    <div class="sub-badge">BEST</div>
-                    <h5 class="fw-bold mt-2" style="color: var(--c-orange);">프리미엄 플랜</h5>
-                    <div class="my-4">
-                        <span class="fs-2 fw-bold text-dark">₩ 9,900</span> <span class="text-muted">/ 월</span>
-                    </div>
-                    <ul class="list-unstyled text-muted mb-5 text-start mx-auto" style="line-height: 2.2;">
-                        <li>플랜의 모든 혜택</li>
-                        <li>미공개 창작물 우선 열람권</li>
-                        <li>프로젝트 크레딧 이름 등재</li>
-                    </ul>
-                    <form th:action="@{/team/{id}/subscribe/premium(id=${team != null ? team.id : 0})}" method="post" class="mt-auto">
-                        <button type="submit" class="btn-submit-boost" style="background-color: var(--c-orange);">프리미엄 구독하기</button>
-                    </form>
-                </div>
-            </div>
-
-        </div>
-    </div>
-    </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const buttons = document.querySelectorAll(".amount-btn");
-        const inputField = document.getElementById("supportAmount");
-
-        buttons.forEach(button => {
-            button.addEventListener("click", function() {
-                buttons.forEach(btn => btn.classList.remove("active"));
+    <script>
+        document.querySelectorAll(".amount-btn").forEach(btn => {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll(".amount-btn").forEach(b => b.classList.remove("active"));
                 this.classList.add("active");
-                inputField.value = this.getAttribute("data-value");
+                document.getElementById("supportAmount").value = this.dataset.value;
             });
         });
 
-        inputField.addEventListener("input", function() {
-            buttons.forEach(btn => btn.classList.remove("active"));
+        // 직접 입력 시 선택 해제
+        document.getElementById("supportAmount").addEventListener("input", function() {
+            document.querySelectorAll(".amount-btn").forEach(btn => btn.classList.remove("active"));
         });
-    });
-</script>
+    </script>
 </div>
 </html>
