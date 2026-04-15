@@ -38,95 +38,113 @@
 
 <div class="container" layout:fragment="content">
 
-    <!-- 상단 제목 영역 -->
     <div class="mt-5 mb-4 d-flex justify-content-between align-items-end">
         <div>
             <h2 class="fw-bold">추천 팀</h2>
             <p class="text-muted mb-0">다양한 팀들을 만나보세요.</p>
         </div>
 
-        <div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-dark px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#keyRegisterModal">
+                <i class="bi bi-key-fill me-1"></i>코드 등록
+            </button>
+            
             <a th:href="@{/team/create}" class="btn btn-dark px-4 shadow-sm">
                 팀 등록
             </a>
         </div>
     </div>
 
-    <!-- 팀 카드 영역 -->
     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-
         <div class="col" th:each="team : ${paging}">
             <div class="card h-100 shadow-sm rounded border-0 hover-shadow overflow-hidden position-relative">
-
-                <!-- 배너 이미지 -->
                 <a th:href="@{/team/{id}(id=${team.id})}">
                     <div class="team-banner">
                         <img th:src="${team.bannerImgUrl != null ? team.bannerImgUrl : '/images/default-banner.png'}">
                     </div>
                 </a>
-
-                <!-- 카드 본문 -->
                 <div class="card-body p-2 text-center">
-
-                    <!-- 프로필 이미지 -->
                     <img th:src="${team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}"
                          class="rounded-circle border border-white shadow team-profile">
-
-                    <!-- 팀 이름 -->
-                    <h6 class="card-title fw-bold text-truncate mt-2 mb-1"
-                        th:text="${team.name}">
-                        팀 이름
-                    </h6>
-
-                    <!-- 리더 이름 -->
-                    <div class="text-muted small text-truncate"
-                         th:text="${team.leaderUsername}">
-                        리더 이름
-                    </div>
-
+                    <h6 class="card-title fw-bold text-truncate mt-2 mb-1" th:text="${team.name}">팀 이름</h6>
+                    <div class="text-muted small text-truncate" th:text="${team.leaderUsername}">리더 이름</div>
                 </div>
-
             </div>
         </div>
-
     </div>
 
-    <!-- 페이징 -->
-    <nav aria-label="Page navigation" class="my-5"
-         th:if="${paging.totalPages > 1}">
+    <nav aria-label="Page navigation" class="my-5" th:if="${paging.totalPages > 1}">
         <ul class="pagination justify-content-center">
-
-            <!-- 이전 -->
-            <li class="page-item"
-                th:classappend="${paging.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/team/list(page=${paging.number - 1})}">
-                    이전
-                </a>
+            <li class="page-item" th:classappend="${paging.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/team/list(page=${paging.number - 1})}">이전</a>
             </li>
-
-            <!-- 페이지 번호 -->
-            <li class="page-item"
-                th:each="i : ${#numbers.sequence(0, paging.totalPages - 1)}"
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, paging.totalPages - 1)}"
                 th:classappend="${paging.number == i} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/team/list(page=${i})}"
-                   th:text="${i + 1}">
-                </a>
+                <a class="page-link" th:href="@{/team/list(page=${i})}" th:text="${i + 1}"></a>
             </li>
-
-            <!-- 다음 -->
-            <li class="page-item"
-                th:classappend="${paging.last} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/team/list(page=${paging.number + 1})}">
-                    다음
-                </a>
+            <li class="page-item" th:classappend="${paging.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/team/list(page=${paging.number + 1})}">다음</a>
             </li>
-
         </ul>
     </nav>
 
-</div>
+    <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">제품 코드 등록</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-3 mb-4 text-muted small">
+                        보유하고 계신 제품 코드(16자리)를 입력해 주세요.<br>
+                        (예: ABCD-EFGH-IJKL-MNOP)
+                    </p>
+                    <input type="text" id="productKeyInput" class="form-control form-control-lg text-center font-monospace" 
+                           placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn text-white px-4" style="background-color: #f05a28;" onclick="submitProductKey()">코드 활성화</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyInput = document.getElementById('productKeyInput');
+            if (keyInput) {
+                keyInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
+                    e.target.value = result;
+                });
+            }
+        });
+
+        function submitProductKey() {
+            const keyInput = document.getElementById('productKeyInput');
+            const val = keyInput.value;
+            if(val.length < 19) {
+                alert('코드를 정확히 입력해 주세요 (16자리).');
+                return;
+            }
+            alert('코드 [' + val + '] 등록이 요청되었습니다.');
+            
+            const modalElement = document.getElementById('keyRegisterModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+            keyInput.value = '';
+        }
+    </script>
+
+</div>
 </html>

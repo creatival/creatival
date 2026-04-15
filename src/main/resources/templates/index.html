@@ -6,10 +6,20 @@
         /* 카테고리 및 공통 애니메이션 */
         .category-item { transition: transform 0.2s ease; text-decoration: none !important; }
         .category-item:hover { transform: translateY(-5px); }
-        .icon-box { width: 80px; height: 80px; background-color: #F8F9FA; border-radius: 22px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #eee; }
+        
+        .icon-box { 
+            width: 80px; height: 80px; 
+            background-color: #F8F9FA; 
+            border-radius: 22px; 
+            margin: 0 auto 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            overflow: hidden; 
+            border: 1px solid #eee; 
+        }
         .category-icon-img { width: 100%; height: 100%; object-fit: contain; padding: 15px; }
         
-        /* 공통 카드 스타일 */
+        /* 공통 유틸리티 */
+        .thumbnail-wrapper { aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; background-color: #eee; position: relative; }
         .hover-card { transition: all 0.3s ease; cursor: pointer; }
         .hover-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
         .rounded-5 { border-radius: 2rem !important; }
@@ -18,17 +28,35 @@
         .recommend-section { background-color: white; padding-top: 80px; }
         .carousel-bg-gray { background-color: #f4f4f4; padding: 60px 0 80px; margin-top: 40px; }
 
-        /* 소설/만화 카드 스타일 */
-        .novel-card { background-color: white; border-radius: 12px; overflow: hidden; height: 100%; }
+        /* 추천 소설/만화 카드 스타일 */
+        .novel-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .novel-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
         .novel-card-img-wrapper { aspect-ratio: 3 / 4; overflow: hidden; background-color: #eee; }
         .novel-card-info { padding: 15px 10px; background-color: white; }
 
         /* 슬라이드 컨트롤러 */
         .novel-carousel-control {
-            width: 44px; height: 44px; background-color: #888; border-radius: 50%; top: 50%;
-            transform: translateY(-50%); opacity: 1 !important; border: none; z-index: 5;
+            width: 44px;
+            height: 44px;
+            background-color: #888;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 1 !important;
+            border: none;
+            z-index: 5;
         }
         .novel-carousel-control:hover { background-color: #666; }
+        .carousel-control-prev.novel-carousel-control { left: -60px; }
+        .carousel-control-next.novel-carousel-control { right: -60px; }
 
         /* 푸터 스타일 */
         .full-footer { background-color: #0b152d !important; color: white !important; width: 100%; margin-top: 0; }
@@ -73,7 +101,7 @@
         <div class="container">
             <div class="row text-center g-4 justify-content-center">
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block">
+                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
                         <div class="icon-box">
                             <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
                         </div>
@@ -81,7 +109,7 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block">
+                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
                         <div class="icon-box">
                             <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
                         </div>
@@ -89,13 +117,13 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block">
+                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
                         <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
                         <div class="fw-bold">음악</div>
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block">
+                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
                         <div class="icon-box">
                             <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
                         </div>
@@ -103,13 +131,13 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/novel_list}" class="text-dark category-item d-block">
+                    <a th:href="@{/content/novel_list}" class="text-dark category-item d-block text-decoration-none">
                         <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
                         <div class="fw-bold">소설</div>
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block">
+                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
                         <div class="icon-box">
                             <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
                         </div>
@@ -173,12 +201,13 @@
         </div>
     </section>
 
-    <section class="recommend-section">
-        <div class="container text-center">
+    <section class="bg-white pt-5">
+        <div class="container text-center mb-4">
             <h2 class="fw-bold mb-1">추천 소설</h2>
             <a th:href="@{/content/novel_list}" class="text-muted d-block small text-decoration-none">소설 페이지로 이동 <i class="bi bi-chevron-right"></i></a>
         </div>
-        <div class="carousel-bg-gray">
+        
+        <div class="bg-light py-5">
             <div class="container position-relative" style="max-width: 1000px;">
                 <div id="novelCarousel" class="carousel slide" data-bs-ride="false">
                     <div class="carousel-inner">
@@ -209,12 +238,13 @@
         </div>
     </section>
 
-    <section class="recommend-section" style="padding-top: 40px;">
-        <div class="container text-center">
+    <section class="bg-white pt-5">
+        <div class="container text-center mb-4">
             <h2 class="fw-bold mb-1">추천 만화</h2>
             <a th:href="@{/content/comic/list}" class="text-muted d-block small text-decoration-none">만화 페이지로 이동 <i class="bi bi-chevron-right"></i></a>
         </div>
-        <div class="carousel-bg-gray">
+
+        <div class="bg-light py-5">
             <div class="container position-relative" style="max-width: 1000px;">
                 <div id="comicCarousel" class="carousel slide" data-bs-ride="false">
                     <div class="carousel-inner">
@@ -227,7 +257,7 @@
                                         </div>
                                         <div class="novel-card-info text-center">
                                             <h6 class="fw-bold mb-1 text-truncate" th:text="${comic.title}">만화명</h6>
-                                            <p class="text-muted small mb-0" th:text="${comic.displayname}">작가이름</p>
+                                            <p class="text-muted small mb-0 text-truncate" th:text="${comic.displayname}">작가이름</p>
                                         </div>
                                     </div>
                                 </div>
@@ -235,16 +265,16 @@
                         </div>
                     </div>
                     <button class="carousel-control-prev novel-carousel-control" type="button" data-bs-target="#comicCarousel" data-bs-slide="prev" style="left: -60px;">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 18px;"></span>
                     </button>
                     <button class="carousel-control-next novel-carousel-control" type="button" data-bs-target="#comicCarousel" data-bs-slide="next" style="right: -60px;">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="carousel-control-next-icon" aria-hidden="true" style="width: 18px;"></span>
                     </button>
                 </div>
             </div>
         </div>
     </section>
-
+    
     <section class="bg-white pt-5">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">인기 비디오</h2>
@@ -300,11 +330,12 @@
         <div class="container py-5">
             <div class="row mb-4">
                 <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-                    <h6 class="fw-bold mb-3">정보 센터</h6>
+                    <h6 class="fw-bold mb-3">회사 정보</h6>
                     <ul class="list-unstyled small opacity-75">
                         <li>이용 안내</li>
                         <li>공지사항</li>
                         <li>고객센터</li>
+                        <li>도움말</li>
                         <li>광고문의</li>
                     </ul>
                 </div>
@@ -315,7 +346,7 @@
                     <span>이용 약관</span>
                     <span>개인 정보 보호 정책</span>
                 </div>
-                <div class="col-md-4 text-center small opacity-50">
+                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
                     © 2026 creatival All rights reserved.
                 </div>
                 <div class="col-md-4 text-end">

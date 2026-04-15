@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>PortOne 후원 테스트</title>
     <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
     <style>
@@ -76,12 +78,12 @@
     <div class="card">
         <div class="row">
             <label for="storeId">storeId</label>
-            <input id="storeId" value="store-여기에-네-storeId" />
+            <input id="storeId" value="store-9e24dee6-82a9-48c5-b561-4aa2bf124ba1" />
         </div>
 
         <div class="row">
             <label for="channelKey">channelKey</label>
-            <input id="channelKey" value="channel-key-여기에-네-channelKey" />
+            <input id="channelKey" value="channel-key-4c22d196-f552-424e-8ce7-e73d0209b77a" />
         </div>
 
         <div class="row">
@@ -135,6 +137,8 @@
     </div>
 
     <script>
+		const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+		const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
         let lastPaymentId = null;
 
         function log(message, data) {
@@ -155,62 +159,61 @@
             document.getElementById("paymentId").value = generatePaymentId();
         });
 
-        async function requestPayment() {
-            const storeId = document.getElementById("storeId").value.trim();
-            const channelKey = document.getElementById("channelKey").value.trim();
-            const orderName = document.getElementById("orderName").value.trim();
-            const totalAmount = Number(document.getElementById("amount").value);
-            const currency = document.getElementById("currency").value;
-            const payMethod = document.getElementById("payMethod").value;
-            const customerName = document.getElementById("customerName").value.trim();
-            const customerEmail = document.getElementById("customerEmail").value.trim();
-            let paymentId = document.getElementById("paymentId").value.trim();
+		async function requestPayment() {
+		    const merchantUid = (await fetch("/api/sponsorship/create", {
+		        method: "POST",
+				headers: {
+				        [csrfHeader]: csrfToken
+				    }
+		    }).then(res => res.text())).trim();
 
-            if (!paymentId) {
-                paymentId = generatePaymentId();
-                document.getElementById("paymentId").value = paymentId;
-            }
+		    console.log("merchantUid=", merchantUid, "length=", merchantUid.length);
 
-            lastPaymentId = paymentId;
+		    document.getElementById("paymentId").value = merchantUid;
 
-            try {
-                log("결제 요청 시작", {
-                    storeId,
-                    channelKey,
-                    paymentId,
-                    orderName,
-                    totalAmount,
-                    currency,
-                    payMethod
-                });
+		    const storeId = document.getElementById("storeId").value.trim();
+		    const channelKey = document.getElementById("channelKey").value.trim();
+		    const orderName = document.getElementById("orderName").value.trim();
+		    const totalAmount = Number(document.getElementById("amount").value);
+		    const currency = document.getElementById("currency").value;
+		    const payMethod = document.getElementById("payMethod").value;
+		    const customerName = document.getElementById("customerName").value.trim();
+		    const customerEmail = document.getElementById("customerEmail").value.trim();
 
-                const response = await PortOne.requestPayment({
-                    storeId,
-                    channelKey,
-                    paymentId,
-                    orderName,
-                    totalAmount,
-                    currency,
-                    payMethod,
-                    customer: {
-                        fullName: customerName,
-                        email: customerEmail
-                    }
-                });
+		    const paymentId = merchantUid;
 
-                log("PortOne 응답", response);
+		    try {
+		        log("결제 요청 시작", {
+		            storeId,
+		            channelKey,
+		            paymentId,
+		            paymentIdLength: paymentId.length,
+		            orderName,
+		            totalAmount,
+		            currency,
+		            payMethod
+		        });
 
-                if (response && response.code) {
-                    alert("결제 실패: " + response.message);
-                    return;
-                }
+		        const response = await PortOne.requestPayment({
+		            storeId,
+		            channelKey,
+		            paymentId,
+		            orderName,
+		            totalAmount,
+		            currency,
+		            payMethod,
+		            customer: {
+		                fullName: customerName,
+		                email: customerEmail
+		            }
+		        });
 
-                alert("결제창 요청 완료. 서버 완료 처리 버튼으로 검증 가능");
-            } catch (error) {
-                log("예외 발생", error);
-                alert("예외 발생. 콘솔/로그 확인");
-            }
-        }
+		        log("PortOne 응답", response);
+		    } catch (error) {
+		        log("예외 발생", error);
+		        alert("예외 발생. 콘솔/로그 확인");
+		    }
+		}
 
         async function completeOnServer() {
             const paymentId = document.getElementById("paymentId").value.trim() || lastPaymentId;

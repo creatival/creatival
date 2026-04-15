@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.creatival.FileUtil;
 import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateComicDTO;
+import com.creatival.content.DTO.CreateComicEpisodeDTO;
 import com.creatival.content.DTO.CreateFileDTO;
 import com.creatival.content.DTO.CreateMusicDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
@@ -42,6 +43,8 @@ import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.ResponseVideoDetailDTO;
 import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
+import com.creatival.content.DTO.UpdateComicDTO;
+import com.creatival.content.DTO.UpdateComicEpisodeDTO;
 import com.creatival.content.DTO.UpdateFileDTO;
 import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
@@ -63,7 +66,7 @@ import com.creatival.user.UserRepository;
 import com.creatival.user.UserService;
 import com.creatival.user.Users;
 
-
+import groovyjarjarantlr4.v4.parse.ANTLRParser.throwsSpec_return;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -283,7 +286,7 @@ public class ContentService {
 		episodeRepository.save(episode);
 	}
 	
-	public void deleteNovelEpisode(Episode episode) {
+	public void deleteEpisode(Episode episode) {
 		episodeRepository.delete(episode);
 	}
 	
@@ -857,7 +860,92 @@ public class ContentService {
 		Pageable pageable = PageRequest.of(page, 10, Sort.by("episodeNum").descending());
 		Page<Episode> episodeList = episodeRepository.findBySeriesOrderByEpisodeNumAsc(series, pageable);
 		
-		return episodeList.map(episode -> ResponseComicEpisodeListDTO.from(episode));
+		return episodeList.map(episode -> ResponseComicEpisodeListDTO.from(episode, contentFileService.getContentFileThumbnailForEpisode(episode)));
+	}
+	public void createComicEpisode(Users user, Content content, @Valid CreateComicEpisodeDTO dto) {
+		if(dto.getFileList().isEmpty() ||dto.getFileList() == null) {
+			throw new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		Series series = content.getSeries();
+		Integer maxNum = episodeRepository.findByMaxEpisodeNumBySeries(series);
+		if(maxNum == null) maxNum=0;
+		Episode episode = Episode.builder()
+				.title(dto.getTitle())
+				.isFree(dto.isFree())
+				.note(dto.getNote())
+				.series(series)
+				.episodeNum(maxNum+1)
+				.build();
+		episodeRepository.save(episode);
+		
+		int totalCount = episodeRepository.countBySeries(series);
+		series.setTotalEpisode(totalCount);
+		seriesRepository.save(series);
+		
+		contentFileService.createContentFileImageForForEpisode(episode, dto.getFileList(), "comic");
+	}
+	public void upViewCountForEpisode(Episode episode) {
+		episode.setViewCount(episode.getViewCount());
+		episodeRepository.save(episode);
+	}
+	public void updateContentComicEpisode(@Valid UpdateComicEpisodeDTO dto) throws IOException {
+		Episode episode = getEpisodeById(dto.getId());
+		episode.setTitle(dto.getTitle());
+		episode.setFree(dto.isFree());
+		episode.setNote(dto.getNote());
+		
+		if (dto.getDeleteFileIds() != null && !dto.getDeleteFileIds().isEmpty()) {
+	        for (Long fileId : dto.getDeleteFileIds()) {
+	            contentFileService.deleteImage(fileId);
+	        }
+	    }
+
+	    if (dto.getFileList() != null) {
+	        if(!dto.getFileList().isEmpty()) {
+	        	contentFileService.updateContentFileImageForForEpisode(episode, dto.getFileList(), "comic");
+	        }
+	    }
+		
+	}
+	@Transactional
+	public void updateContentComic(@Valid UpdateComicDTO comicDTO) throws Exception {
+		System.out.println(comicDTO.getId() + "id는 이것");
+		Content content = getContent(comicDTO.getId());
+		if(content==null) {
+			throw new Exception();
+		}
+		content.setTitle(comicDTO.getTitle());
+		content.setDescription(comicDTO.getDescription());
+		content.setAllowComment(comicDTO.isAllowComment());
+		content.setVisibility(comicDTO.getVisibility());
+		if(comicDTO.getOriginalContentId()!=null) {
+			content.setOriginalContent(getContent(comicDTO.getOriginalContentId()));
+		}
+		
+		
+		String imgurl=null;
+		if(!comicDTO.getThumbnailFile().isEmpty() || comicDTO.getThumbnailFile()==null) {
+			imgurl += fileUtil.saveImage(comicDTO.getThumbnailFile(), "thumbnail");
+			content.setThumbnailImgUrl(imgurl);
+		}
+		
+		contentRepository.save(content);
+		
+		Series series = content.getSeries();
+		
+		series.setEnd(comicDTO.isEnd());
+		
+		seriesRepository.save(series);
+		
+		
+	}
+	
+	public void deleteContentComic(Content content) {
+		
+		if(content==null) {
+			throw new IllegalArgumentException("지울려는 콘텐츠가 없습니다.");
+		}
+		contentRepository.delete(content);
 	}
 	
 }

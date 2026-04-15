@@ -45,6 +45,7 @@ public class ResponseComicDetailDTO {
 	
 	private LocalDateTime createdAt;
 	
+	
 	//series 관련 필드
 	private boolean end;
 	private int totalEpisode;

@@ -265,7 +265,7 @@
                             <div class="small text-muted text-truncate" th:text="|${parentContent.username}(${parentContent.displayname})|">@OriginalArtist</div>
                         </div>
                     </a>
-					<p class="text-muted text-center " th:if="${parentContent==null}">해당 컨텐츠는 원본 컨텐츠입니다.</p>
+                    <p class="text-muted text-center " th:if="${parentContent==null}">해당 컨텐츠는 원본 컨텐츠입니다.</p>
                 </div>
             </div>
             <div class="col-md-6">
@@ -276,7 +276,7 @@
                             <img th:src="${childContent.thumbnailUrl}" class="lineage-img" alt="파생">
                             <div class="overflow-hidden">
                                 <div class="fw-bold text-dark text-truncate mb-1" th:text="${childContent.title}">여름날의 바다 (리마스터)</div>
-								<div class="small text-muted text-truncate" th:text="|${childContent.type}|">type</div>
+                                <div class="small text-muted text-truncate" th:text="|${childContent.type}|">type</div>
                                 <div class="small text-muted text-truncate" th:text="|${childContent.username}(${childContent.displayname})|">@RemixCreator</div>
                             </div>
                         </a>
@@ -301,26 +301,26 @@
             </div>
         </div>
 
-		<h5 class="fw-bold mb-3">다른 작품 추천</h5>
-		<div class="row g-3 mb-5" id="art-list-container">
-		    <div class="col-6 col-md-3" th:each="aArt : ${initialArts}">
-		        <a th:href="@{/content/detail/{id}(id=${aArt.id})}" class="art-grid-item">
-		            <img th:src="${aArt.thumbnailUrl}" class="art-grid-img">
-		            <div class="art-grid-overlay">
-		                <span class="small fw-bold text-truncate text-white" th:text="${aArt.title}"></span>
-		            </div>
-		        </a>
-		    </div>
-		</div>
-		<div class="row g-3 mb-5" id="art-list-container">
-		    </div>
+        <h5 class="fw-bold mb-3">다른 작품 추천</h5>
+        <div class="row g-3 mb-5" id="art-list-container">
+            <div class="col-6 col-md-3" th:each="aArt : ${initialArts}">
+                <a th:href="@{/content/detail/{id}(id=${aArt.id})}" class="art-grid-item">
+                    <img th:src="${aArt.thumbnailUrl}" class="art-grid-img">
+                    <div class="art-grid-overlay">
+                        <span class="small fw-bold text-truncate text-white" th:text="${aArt.title}"></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="row g-3 mb-5" id="art-list-container">
+        </div>
 
-		<div id="loading-spinner" class="text-center my-5 d-none">
-		    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-		        <span class="visually-hidden">Loading...</span>
-		    </div>
-		    <p class="mt-2 text-muted fw-bold">새로운 작품을 불러오는 중...</p>
-		</div>
+        <div id="loading-spinner" class="text-center my-5 d-none">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted fw-bold">새로운 작품을 불러오는 중...</p>
+        </div>
     </div> 
     
     <footer class="full-footer">
@@ -366,52 +366,52 @@
             </div>
         </div>
     </div>
-	<script th:inline="javascript">
-	let page = 0;
-	let loading = false;
-	let hasNext = true;
+    <script th:inline="javascript">
+    let page = 0;
+    let loading = false;
+    let hasNext = true;
 
-	function loadMoreArts() {
-	    if (loading || !hasNext) return;
+    function loadMoreArts() {
+        if (loading || !hasNext) return;
 
-	    loading = true;
-	    
-	    // 1. 로딩 스피너 표시
-	    const spinner = document.getElementById('loading-spinner');
-	    const container = document.getElementById('art-list-container');
-	    spinner.classList.remove('d-none');
+        loading = true;
+        
+        // 1. 로딩 스피너 표시
+        const spinner = document.getElementById('loading-spinner');
+        const container = document.getElementById('art-list-container');
+        spinner.classList.remove('d-none');
 
-	    // 테스트를 위해 로딩을 보고 싶다면 서버에서 지연을 주거나, 
-	    // 아래 fetch를 setTimeout으로 아주 약간 감싸보세요.
-	    fetch(`/content/art/more?page=${page}`)
-	        .then(response => response.text())
-			.then(html => {
-			    // 1. 공백을 제거한 실제 텍스트가 있는지 확인
-			    const trimmedHtml = html.trim();
-			    
-			    if (trimmedHtml === "") {
-			        console.log("더 이상 불러올 데이터가 없습니다.");
-			        hasNext = false; // 여기서 멈춤
-			    } else {
-			        container.insertAdjacentHTML('beforeend', trimmedHtml);
-			        page++; // 다음 페이지 번호 증가
-			        console.log("현재 로딩된 페이지:", page);
-			    }
-			})
-	        .catch(err => console.error("로딩 실패:", err))
-	        .finally(() => {
-	            // 2. 로딩 완료 후 스피너 숨기기
-	            loading = false;
-	            spinner.classList.add('d-none');
-	        });
-	}
+        // 테스트를 위해 로딩을 보고 싶다면 서버에서 지연을 주거나, 
+        // 아래 fetch를 setTimeout으로 아주 약간 감싸보세요.
+        fetch(`/content/art/more?page=${page}`)
+            .then(response => response.text())
+            .then(html => {
+                // 1. 공백을 제거한 실제 텍스트가 있는지 확인
+                const trimmedHtml = html.trim();
+                
+                if (trimmedHtml === "") {
+                    console.log("더 이상 불러올 데이터가 없습니다.");
+                    hasNext = false; // 여기서 멈춤
+                } else {
+                    container.insertAdjacentHTML('beforeend', trimmedHtml);
+                    page++; // 다음 페이지 번호 증가
+                    console.log("현재 로딩된 페이지:", page);
+                }
+            })
+            .catch(err => console.error("로딩 실패:", err))
+            .finally(() => {
+                // 2. 로딩 완료 후 스피너 숨기기
+                loading = false;
+                spinner.classList.add('d-none');
+            });
+    }
 
-	// 스크롤 이벤트
-	window.onscroll = function() {
-	    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
-	        loadMoreArts();
-	    }
-	};
-	</script>	
+    // 스크롤 이벤트
+    window.onscroll = function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
+            loadMoreArts();
+        }
+    };
+    </script>	
 </div>
 </html>

@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import com.creatival.content.Enum.OwnerType;
@@ -42,6 +45,8 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Entity
+@SQLDelete(sql = "UPDATE content SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class Content {
 	
 	protected Content() {
@@ -96,6 +101,13 @@ public class Content {
 	@CreationTimestamp
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
+	
+	@Column(nullable = false)
+	@Builder.Default
+	private boolean deleted=false;
+	
+	
+	private LocalDateTime deletedAt;
 	
 	@UpdateTimestamp
 	@Column(nullable = false)

@@ -1,22 +1,152 @@
-<html layout:decorate="~{layout}">
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
 <head>
     <style>
-        /* 웹툰 뷰어 컨테이너: 이미지 사이의 흰 줄(gap) 제거가 핵심 */
+        .toon-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .toon-header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 6px 12px;
+            margin-bottom: 12px;
+        }
+
+        .toon-viewer {
+            background: #fff;
+        }
+
         .toon-viewer img {
-            display: block; /* 인라인 속성 제거로 하단 여백 삭제 */
-            width: 100%;    /* 컨테이너 꽉 차게 */
-            height: auto;   /* 비율 유지 */
+            display: block;
+            width: 100%;
+            height: auto;
             border: none;
             margin: 0;
             padding: 0;
+            background: #fff;
         }
-        
-        /* 모바일에서는 꽉 차게, PC에서는 적당한 너비로 */
-        .toon-container {
-            max-width: 800px; /* PC에서 너무 크지 않게 제한 (네이버 웹툰 등은 690px~800px 사용) */
+
+        .episode-meta {
+            font-size: 0.92rem;
+            color: #6c757d;
+        }
+
+        .author-note-box {
+            background: #f8f9fa;
+        }
+
+        .stat-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #dee2e6;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            background: #fff;
+        }
+
+        .bottom-nav-wrap {
+            max-width: 800px;
             margin: 0 auto;
-            background-color: #fff;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05); /* 살짝 그림자 */
+        }
+
+        .empty-image-box {
+            min-height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            color: #6c757d;
+            border-top: 1px solid #f1f3f5;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        /* 댓글 모달 전용 */
+        .comment-input {
+            border: none !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            border-radius: 0 !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .comment-input:focus {
+            border-bottom: 2px solid #2D3278 !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .btn-navy-custom {
+            background-color: #2D3278;
+            color: white;
+            border-radius: 30px;
+            border: none;
+        }
+
+        .btn-navy-custom:hover {
+            background-color: #23285f;
+            color: white;
+        }
+
+        /* comment-line fragment가 기대하는 스타일 */
+        .btn-action {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #878a8c;
+            cursor: pointer;
+        }
+
+        .btn-action:hover {
+            text-decoration: underline;
+            color: #1a1a1b;
+        }
+
+        .btn-delete {
+            color: #dc3545;
+        }
+
+        .comment-item {
+            padding: 0.25rem 0;
+        }
+
+        .comment-main {
+            width: 100%;
+        }
+
+        .reply-wrapper {
+            margin-left: 12px;
+            border-left: 2px solid #edeff1;
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .comment-list .comment-item + .comment-item {
+            margin-top: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .toon-container {
+                border-radius: 0;
+                box-shadow: none;
+            }
         }
     </style>
 </head>
@@ -25,47 +155,198 @@
 
     <div class="mt-5"></div>
 
-    <div class="container-fluid p-0"> <div class="toon-container">
-            
-            <div class="p-4 text-center border-bottom">
-                <h2 class="fw-bold">12화. 각성하는 힘</h2>
-                <p class="text-muted mb-0">작가 홍길동 | 2026.02.12</p>
+    <div class="container-fluid p-0">
+        <div class="toon-container">
+
+            <div class="p-4 p-md-5 text-center border-bottom">
+                <div>
+                    <span class="toon-header-badge"
+                          th:classappend="${episodeDetail.free} ? 'bg-success-subtle text-success-emphasis' : 'bg-warning-subtle text-warning-emphasis'">
+                        <i class="bi"
+                           th:classappend="${episodeDetail.free} ? ' bi-unlock-fill' : ' bi-lock-fill'"></i>
+                        <span th:text="${episodeDetail.free} ? '무료 회차' : '유료 회차'">무료 회차</span>
+                    </span>
+                </div>
+
+                <h2 class="fw-bold mb-2">
+                    <span th:text="${episodeDetail.episodeNum}">1</span>화.
+                    <span th:text="${episodeDetail.title}">회차 제목</span>
+                </h2>
+
+                <p class="episode-meta mb-3">
+                    <span th:text="${content != null ? content.title : '작품명'}">작품명</span>
+                    <span class="mx-1">·</span>
+                    <span th:text="${#temporals.format(episodeDetail.createdAt, 'yyyy.MM.dd')}">2026.02.12</span>
+                </p>
+
+                <div class="d-flex justify-content-center flex-wrap gap-2">
+                    <span class="stat-chip">
+                        <i class="bi bi-eye"></i>
+                        조회수
+                        <span th:text="${episodeDetail.viewCount != null ? #numbers.formatInteger(episodeDetail.viewCount, 0, 'COMMA') : 0}">0</span>
+                    </span>
+                    <span class="stat-chip">
+                        <i class="bi bi-heart"></i>
+                        좋아요
+                        <span th:text="${episodeDetail.likeCount != null ? #numbers.formatInteger(episodeDetail.likeCount, 0, 'COMMA') : 0}">0</span>
+                    </span>
+                </div>
             </div>
 
             <div class="toon-viewer">
-                <img src="images/pic.png" alt="만화컷1" loading="lazy">
-                <img src="images/pic.png" alt="만화컷2" loading="lazy">
-                <img src="images/pic.png" alt="만화컷3" loading="lazy">
-                <img src="images/pic.png" alt="만화컷4" loading="lazy">
-                <img src="images/pic.png" alt="만화컷5" loading="lazy">
-                </div>
+                <th:block th:if="${episodeDetail.fileList != null and !episodeDetail.fileList.isEmpty()}">
+                    <th:block th:each="file, stat : ${episodeDetail.fileList}">
+                        <img th:src="@{${file.fileUrl}}"
+                             th:alt="${episodeDetail.title + ' 이미지 ' + (stat.index + 1)}">
+                    </th:block>
+                </th:block>
 
-            <div class="p-4 bg-light border-top text-center">
-                <h5 class="fw-bold mb-3">작가의 말</h5>
-                <p class="text-secondary small">
-                    이번 화도 재미있게 봐주셔서 감사합니다.<br>
-                    다음 화는 휴재 없이 진행됩니다!
-                </p>
-                <button class="btn btn-outline-danger btn-sm rounded-pill px-4 mt-2">
-                    <i class="bi bi-heart-fill"></i> 좋아요
-                </button>
+                <div class="empty-image-box"
+                     th:if="${episodeDetail.fileList == null or episodeDetail.fileList.isEmpty()}">
+                    등록된 이미지가 없습니다.
+                </div>
             </div>
 
+            <div class="p-4 p-md-5 author-note-box border-top text-center">
+                <h5 class="fw-bold mb-3">작가의 말</h5>
+
+                <p class="text-secondary small mb-3"
+                   style="white-space: pre-line;"
+                   th:if="${episodeDetail.note != null and !#strings.isEmpty(episodeDetail.note)}"
+                   th:text="${episodeDetail.note}">
+                    작가의 말이 여기에 표시됩니다.
+                </p>
+
+                <p class="text-muted small mb-3"
+                   th:if="${episodeDetail.note == null or #strings.isEmpty(episodeDetail.note)}">
+                    등록된 작가의 말이 없습니다.
+                </p>
+
+                <button type="button"
+                        class="btn btn-outline-danger btn-sm rounded-pill px-4 mt-2">
+                    <i class="bi bi-heart-fill"></i>
+                    좋아요
+                    <span th:text="${episodeDetail.likeCount != null ? #numbers.formatInteger(episodeDetail.likeCount, 0, 'COMMA') : 0}">0</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <div class="container mt-5 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="d-flex justify-content-between align-items-center">
-                    <a href="#" class="btn btn-outline-secondary px-4">
-                        <i class="bi bi-chevron-left"></i> 이전화
-                    </a>
-                    <a th:href="@{/comic_detail}" class="btn btn-outline-dark px-4">목록</a>
-                    <a href="#" class="btn btn-primary px-4 text-white">
-                        다음화 <i class="bi bi-chevron-right"></i>
-                    </a>
+        <div class="bottom-nav-wrap">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+
+                        <a th:if="${prevEpisode != null}"
+                           th:href="@{/content/comic/{contentId}/episode/{episodeId}(contentId=${content.id}, episodeId=${prevEpisode.id})}"
+                           class="btn btn-outline-secondary px-3 px-md-4">
+                            <i class="bi bi-chevron-left"></i>
+                            <span class="d-none d-md-inline">이전화</span>
+                        </a>
+
+                        <button th:if="${prevEpisode == null}"
+                                type="button"
+                                class="btn btn-outline-secondary px-3 px-md-4"
+                                disabled>
+                            <i class="bi bi-chevron-left"></i>
+                            <span class="d-none d-md-inline">이전화</span>
+                        </button>
+
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/content/comic/detail/{id}(id=${content.id})}"
+                               class="btn btn-dark px-4 fw-bold shadow-sm">
+                                <i class="bi bi-list-ul me-1"></i> 목록
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-primary px-4 fw-bold shadow-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#commentModal">
+                                <i class="bi bi-chat-dots-fill me-1"></i> 댓글 보기
+                            </button>
+                        </div>
+
+                        <a th:if="${nextEpisode != null}"
+                           th:href="@{/content/comic/{contentId}/episode/{episodeId}(contentId=${content.id}, episodeId=${nextEpisode.id})}"
+                           class="btn btn-primary px-3 px-md-4 text-white">
+                            <span class="d-none d-md-inline">다음화</span>
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+
+                        <button th:if="${nextEpisode == null}"
+                                type="button"
+                                class="btn btn-primary px-3 px-md-4 text-white"
+                                disabled>
+                            <span class="d-none d-md-inline">다음화</span>
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="commentModalLabel">댓글</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-4" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/comment/episode/write/{id}(id=${episodeDetail.id})}"
+                              method="post"
+                              class="d-flex justify-content-center mb-4">
+                            <input type="hidden"
+                                   th:name="${_csrf.parameterName}"
+                                   th:value="${_csrf.token}">
+
+                            <input type="text"
+                                   name="text"
+                                   class="form-control comment-input me-3"
+                                   placeholder="댓글 쓰기"
+                                   style="max-width:500px;">
+
+                            <button type="submit" class="btn btn-navy-custom px-4">작성</button>
+                        </form>
+                    </div>
+
+                    <div class="text-center text-muted mb-4"
+                         sec:authorize="isAnonymous()">
+                        로그인 후 댓글을 작성할 수 있습니다.
+                    </div>
+
+                    <div class="pb-3 border-bottom mb-4">
+                        <span class="fw-bold">전체 댓글</span>
+                        <span class="text-primary fw-bold"
+                              th:text="${commentCount != null ? commentCount : (comments != null ? #lists.size(comments) : 0)}">0</span>개
+                    </div>
+
+                    <div class="comment-list">
+                        <th:block th:if="${comments != null and !comments.isEmpty()}">
+                            <th:block th:each="comment : ${comments}">
+                                <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='episode', targetId=${episodeDetail.id})}"></div>
+                            </th:block>
+                        </th:block>
+
+                        <div class="text-center text-muted py-4"
+                             th:if="${comments == null or comments.isEmpty()}">
+                            아직 댓글이 없습니다.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">닫기</button>
+                </div>
+
             </div>
         </div>
     </div>

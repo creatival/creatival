@@ -2,6 +2,7 @@ package com.creatival.content.DTO;
 
 import java.time.LocalDateTime;
 
+import com.creatival.content.ContentFile;
 import com.creatival.content.Episode;
 import com.creatival.content.Enum.ContentType;
 import com.creatival.content.Enum.OwnerType;
@@ -38,8 +39,12 @@ public class ResponseComicEpisodeListDTO {
 	
 	private LocalDateTime updatedAt;
 	
-	public static ResponseComicEpisodeListDTO from(Episode episode) {
-		return ResponseComicEpisodeListDTO.builder()
+	private String thumbnailUrl;
+	
+	private Long likeCount;
+	
+	public static ResponseComicEpisodeListDTO from(Episode episode, ContentFile contentFile) {
+		ResponseComicEpisodeListDTO dto = ResponseComicEpisodeListDTO.builder()
 				.id(episode.getId())
 				.title(episode.getTitle())
 				.free(episode.isFree())
@@ -49,6 +54,11 @@ public class ResponseComicEpisodeListDTO {
 				.createdAt(episode.getCreatedAt())
 				.updatedAt(episode.getUpdatedAt())
 				.username(episode.getSeries().getContent().getUser().getUsername())
+				.likeCount(episode.getLikeCount())
 				.build();
+		if(contentFile!=null) {
+			dto.setThumbnailUrl(contentFile.getFileUrl());
+		}
+		return dto;
 	}
 }

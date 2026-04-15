@@ -14,83 +14,89 @@
 
     <style>
         /* ===== [공통] 카드형 액션 버튼 스타일 ===== */
-        .action-buttons-group { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 15px; }
+        .action-buttons-group { display: flex; gap: 10px; justify-content: flex-md-end; margin-bottom: 15px; flex-wrap: wrap; }
         .btn-action {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 70px; height: 75px; background-color: #ffffff; border: 1px solid #dee2e6;
-            border-radius: 12px; text-decoration: none !important; transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 8px; color: #333;
-            cursor: pointer;
+            width: 75px; height: 75px; background-color: #ffffff; border: 1px solid #e9ecef;
+            border-radius: 16px; text-decoration: none !important; transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 8px; color: #495057; cursor: pointer;
         }
-        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 5px 12px rgba(0,0,0,0.1); border-color: #adb5bd; color: #111; }
-        .btn-action i { font-size: 1.5rem; margin-bottom: 3px; line-height: 1; }
-        .btn-action span { font-size: 0.72rem; font-weight: 700; }
+        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-color: #dee2e6; color: #212529; }
+        .btn-action i { font-size: 1.6rem; margin-bottom: 4px; line-height: 1; }
+        .btn-action span { font-size: 0.75rem; font-weight: 600; }
         .btn-like i { color: #ff4757; }
-        .btn-follow i { color: #ffc107; }
         .btn-bookmark i { color: #2D3278; }
 
-        .progress { background-color: #e9ecef; border-radius: 10px; }
-        .tag-badge { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 5px 10px; color: #333; }
+        .progress { background-color: #f1f3f5; border-radius: 10px; }
+        .tag-badge { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 6px 12px; color: #495057; font-weight: 500; }
+        .hover-card { transition: transform 0.2s ease; }
+        .hover-card:hover { transform: translateY(-3px); }
     </style>
 
     <div class="row mb-5 pb-4 border-bottom align-items-end">
-        <div class="col-md-7">
-            <span class="badge bg-primary mb-2" th:text="${dto.status != null ? dto.status : '모집 중'}">모집 중</span>
-            <h1 class="fw-bold display-5" th:text="${dto.title}">프로젝트 제목</h1>
-            <p class="text-muted mb-0">
-                <i class="bi bi-calendar-check me-1"></i> 시작일: <span th:text="${dto.createdAt != null ? #temporals.format(dto.createdAt,'yyyy.MM.dd') : '2026.02.12'}"></span> | 
+        <div class="col-lg-7 mb-4 mb-lg-0">
+            <span class="badge bg-primary rounded-pill px-3 py-2 mb-3" th:text="${dto.status != null ? dto.status : '모집 중'}">모집 중</span>
+            <h1 class="fw-bolder display-5 mb-3" th:text="${dto.title}">프로젝트 제목</h1>
+            <p class="text-muted mb-0 fw-medium">
+                <i class="bi bi-calendar-check me-1"></i> 시작일: <span th:text="${dto.createdAt != null ? #temporals.format(dto.createdAt,'yyyy.MM.dd') : '2026.02.12'}"></span> 
+                <span class="mx-2 text-light">|</span> 
                 <i class="bi bi-calendar-event me-1"></i> 종료일: <span th:text="${dto.endDate != null ? #temporals.format(dto.endDate,'yyyy.MM.dd') : '미정'}"></span>
             </p>
         </div>
         
-        <div class="col-md-5 mt-4 mt-md-0 text-md-end">
-            <div class="action-buttons-group">
-                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${dto.id},'PROJECT')|" th:classappend="${like.liked ? ' active' : ''}">
-                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
-                    <span>좋아요</span>
-                </button>
-                <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn"  class="btn-action btn-bookmark">
-                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
-                    <span>북마크</span>
-                </button>
-                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>    
-            </div>
+        <div class="col-lg-5 text-lg-end">
+			<div class="action-buttons-group">
+			    <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${dto.id},'PROJECT')|" th:classappend="${like.liked ? ' active' : ''}">
+			        <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
+			        <span>좋아요</span>
+			    </button>
+			    <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn" class="btn-action btn-bookmark">
+			        <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+			        <span>북마크</span>
+			    </button>
+			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>    
+			</div>
 
-            <div class="d-flex justify-content-end gap-2 mt-2" sec:authorize="isAuthenticated()">
-                <button class="btn btn-outline-secondary btn-sm">대표 게시물로 고정</button>
-                <a th:href="@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}"
-                   class="btn btn-outline-secondary btn-sm">수정하기</a>
-            </div>
+			<div class="d-flex justify-content-lg-end gap-2 mt-3">
+			    <button sec:authorize="isAuthenticated()" class="btn btn-outline-secondary btn-sm px-3 rounded-pill fw-medium">
+			        대표 게시물로 고정
+			    </button>
+			    <a th:href="@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}"
+			       sec:authorize="isAuthenticated()"
+			       class="btn btn-dark btn-sm px-3 rounded-pill fw-medium">
+			        수정하기
+			    </a>
+			</div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row g-5">
         <div class="col-lg-8">
             <img th:src="${dto.bannerImgUrl != null ? dto.bannerImgUrl : '/images/pic.png'}"
-                 class="img-fluid rounded shadow-sm mb-5" alt="대표 이미지" style="width:100%; height:400px; object-fit:cover;">
+                 class="img-fluid rounded-4 shadow-sm mb-5 w-100" alt="대표 이미지" style="height:450px; object-fit:cover;">
 
             <section class="mb-5">
-                <h4 class="fw-bold mb-4 border-bottom pb-2">프로젝트 소개</h4>
-                <div class="lh-lg text-secondary" th:utext="${dto.description}">프로젝트 소개 내용</div>
+                <h4 class="fw-bold mb-4 border-bottom pb-3">프로젝트 소개</h4>
+                <div class="lh-lg text-body-secondary fs-6" th:utext="${dto.description}">프로젝트 소개 내용</div>
             </section>
 
             <section class="mb-5">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
                     <h4 class="fw-bold mb-0">프로젝트 콘텐츠</h4>
-                    <a th:href="@{/Illustration_list}" class="text-decoration-none small text-muted">전체 보기 ></a>
+                    <a th:href="@{/}" class="text-decoration-none small text-primary fw-medium">전체 보기 <i class="bi bi-chevron-right"></i></a>
                 </div>
                 
-                <div class="row g-4">
-                    <div class="col-6 col-md-4" th:each="content : ${contentList}">
-                        <div class="card h-100 shadow-sm border-0 position-relative">
+                <div class="row row-cols-2 row-cols-md-3 g-4">
+                    <div class="col" th:each="content : ${contentList}">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-card">
                             <a th:href="${content.contentUrl}">
-                                <img th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                                <img th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="콘텐츠 썸네일">
                             </a>
                             <div class="card-body p-3">
-                                <h6 class="card-title fw-bold text-truncate" th:text="${content.title}">제목</h6>
+                                <h6 class="card-title fw-bold text-truncate mb-2" th:text="${content.title}">제목</h6>
                                 <div class="d-flex align-items-center">
-                                    <img th:src="${content.profileImgUrl != null ? content.profileImgUrl : 'https://dummyimage.com/20x20/ced4da/6c757d'}" class="rounded-circle me-2" style="width:20px;height:20px;">
-                                    <span class="small text-muted" th:text="${content.username}">닉네임</span>
+                                    <img th:src="${content.profileImgUrl != null ? content.profileImgUrl : 'https://dummyimage.com/20x20/ced4da/6c757d'}" class="rounded-circle me-2 object-fit-cover" style="width:24px;height:24px;" alt="프로필">
+                                    <span class="small text-muted fw-medium" th:text="${content.username}">닉네임</span>
                                 </div>
                             </div>
                         </div>
@@ -100,66 +106,70 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-4 border-bottom pb-2">프로젝트 정보</h5>
-                    <div class="mb-3">
-                        <h6 class="fw-bold small">소속 팀</h6>
-                        <div class="d-flex align-items-center">
-                            <img th:src="${dto.profileImgUrl}" class="rounded-circle me-3" style="width:40px;height:40px;">
-                            <span th:text="${dto.teamName}">Team Name</span>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex align-items-center mb-3">
-                        <div>
-                            <p class="mb-0 mt-1 fw-bold small">좋아요 현황</p>
-                            <i class="bi text-danger bi-heart-fill"></i> 
-                            <small class="text-danger fw-bold" th:text="${like.count}" id="likeCount">0</small><small class="text-danger">개</small>
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-3">프로젝트 정보</h5>
+                    <div class="mb-4">
+                        <h6 class="fw-bold small text-muted mb-2">소속 팀</h6>
+                        <div class="d-flex align-items-center bg-light p-2 rounded-3">
+                            <img th:src="${dto.profileImgUrl}" class="rounded-circle me-3 object-fit-cover" style="width:40px;height:40px;" alt="팀 로고">
+                            <span class="fw-semibold" th:text="${dto.teamName}">Team Name</span>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <h6 class="fw-bold small">태그</h6>
+                    <div class="mb-4">
+                        <h6 class="fw-bold small text-muted mb-2">좋아요 현황</h6>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-heart-fill text-danger me-2"></i> 
+                            <span class="fw-bold text-danger" th:text="${like.count}" id="likeCount">0</span>
+                            <span class="text-muted small ms-1">명이 응원합니다</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold small text-muted mb-2">태그</h6>
                         <span class="badge rounded-pill tag-badge" th:text="${dto.projectTag != null ? dto.projectTag : '#태그없음'}">#태그</span>
                     </div>
 
                     <div class="mb-2">
-                        <div class="d-flex justify-content-between">
-                            <h6 class="fw-bold small">버전</h6>
-                            <a th:href="@{/team/{tid}/project/{pid}/history(tid=${dto.teamId}, pid=${dto.id})}" class="small text-decoration-none">역사 보기 ></a>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold small text-muted mb-0">버전</h6>
+                            <a th:href="@{/team/{tid}/project/{pid}/history(tid=${dto.teamId}, pid=${dto.id})}" class="text-decoration-none small text-primary">역사 보기 <i class="bi bi-clock-history"></i></a>
                         </div>
-                        <span class="badge bg-primary" th:text="${log != null ? log.versionTag : 'v1.0.0'}">v1.0.0</span>
+                        <span class="badge bg-dark px-3 py-2 rounded-pill" th:text="${log != null ? log.versionTag : '현재 버전이 등록되어있지 않습니다.'}">v1.0.0</span>
                     </div>
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                         <h5 class="fw-bold mb-0">진행도</h5>
-                        <button class="btn btn-sm btn-outline-primary" sec:authorize="isAuthenticated()" data-bs-toggle="modal" data-bs-target="#createCheckModal">계획 추가</button>
+                        <button class="btn btn-sm btn-primary rounded-pill px-3" sec:authorize="isAuthenticated()" data-bs-toggle="modal" data-bs-target="#createCheckModal"><i class="bi bi-plus-lg"></i> 계획 추가</button>
                     </div>
 
                     <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1">
-                            <small class="text-muted">전체 공정률</small>
+                        <div class="d-flex justify-content-between mb-2">
+                            <small class="text-muted fw-semibold">전체 공정률</small>
                             <small id="progressText" class="fw-bold text-primary" th:text="${(dto.totalProgress ?: 0) + '%'}"></small>
                         </div>
-                        <div class="progress" style="height:8px">
-                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" th:style="'width:' + ${(dto.totalProgress ?: 0)} + '%'"></div>
+                        <div class="progress" style="height:10px">
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" th:style="'width:' + ${(dto.totalProgress ?: 0)} + '%'"></div>
                         </div>
                     </div>
 
-                    <div class="list-group" id="checkList">
-                        <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2" th:each="check : ${checkList}">
+                    <div class="list-group list-group-flush" id="checkList">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-0" th:each="check : ${checkList}">
                             <div>
-                                <div class="fw-semibold small" th:text="${check.title}">제목</div>
-                                <small class="text-muted" style="font-size: 0.7rem;" th:text="${check.deadline != null ? #temporals.format(check.deadline,'MM.dd HH:mm') : '마감미정'}"></small>
+                                <div class="fw-semibold text-dark mb-1" th:text="${check.title}">제목</div>
+                                <div class="text-muted d-flex align-items-center" style="font-size: 0.75rem;">
+                                    <i class="bi bi-clock me-1"></i>
+                                    <span th:text="${check.deadline != null ? #temporals.format(check.deadline,'MM.dd HH:mm') : '마감미정'}"></span>
+                                </div>
                             </div>
                             <div class="d-flex align-items-center">
-                                <a th:if="${dto.leaderUsername == #authentication.name}" th:href="@{/team/check/delete/{cid}(cid=${check.id})}" class="text-danger me-2" onclick="return confirm('삭제하시겠습니까?');"><i class="bi bi-x-circle-fill"></i></a>
-                                <input type="checkbox" class="form-check-input progress-check" th:data-id="${check.id}" th:checked="${check.checked}" th:disabled="${dto.leaderUsername != #authentication.name}" />
+                                <a th:if="${dto.leaderUsername == #authentication.name}" th:href="@{/team/check/delete/{cid}(cid=${check.id})}" class="text-danger me-3 fs-5" onclick="return confirm('삭제하시겠습니까?');"><i class="bi bi-x-circle-fill"></i></a>
+                                <input type="checkbox" class="form-check-input progress-check fs-5 m-0" th:data-id="${check.id}" th:checked="${check.checked}" th:disabled="${dto.leaderUsername != #authentication.name}" />
                             </div>
                         </div>
                         <div th:if="${#lists.isEmpty(checkList)}" class="text-center py-3 text-muted small">등록된 계획이 없습니다.</div>
@@ -167,21 +177,34 @@
                 </div>
             </div>
 
-            <div class="d-grid"><button class="btn btn-light border py-3 shadow-sm"><i class="bi bi-megaphone me-2"></i> 홍보 및 공유하기</button></div>
+            <div class="d-grid mb-4">
+                <button class="btn btn-light btn-lg border-0 rounded-4 shadow-sm fw-bold text-dark hover-card"><i class="bi bi-megaphone-fill text-warning me-2"></i> 프로젝트 홍보하기</button>
+            </div>
+
         </div>
     </div>
 
     <div class="modal fade" id="createCheckModal" tabindex="-1" sec:authorize="isAuthenticated()">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content border-0 shadow rounded-4">
                 <form th:action="@{/team/createCheck/{id}(id=${dto.id})}" method="post">
-                    <div class="modal-header"><h5 class="modal-title fw-bold">새 계획 추가</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                    <div class="modal-body">
-                        <div class="mb-3"><label class="form-label fw-semibold">제목</label><input type="text" name="title" class="form-control" placeholder="할 일을 입력하세요" required></div>
-                        <div class="mb-3"><label class="form-label fw-semibold">마감 기한</label><input type="datetime-local" name="deadline" class="form-control"></div>
+                    <div class="modal-header border-bottom-0 pb-0 mt-2 px-4">
+                        <h5 class="modal-title fw-bold">새 계획 추가</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-footer border-0">
-                        <button type="submit" class="btn btn-primary w-100">추가하기</button>
+                    <div class="modal-body px-4 py-4">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-muted small">제목</label>
+                            <input type="text" name="title" class="form-control form-control-lg bg-light border-0" placeholder="계획을 입력하세요" required>
+                        </div>
+                        <div>
+                            <label class="form-label fw-semibold text-muted small">마감 기한</label>
+                            <input type="datetime-local" name="deadline" class="form-control bg-light border-0">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 pt-0 px-4 mb-2">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">추가하기</button>
                     </div>
                 </form>
             </div>
@@ -200,7 +223,11 @@
             const total = checkboxes.length;
             const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
             const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
-            if(progressBar) progressBar.style.width = percent + "%";
+            
+            if(progressBar) {
+                progressBar.style.transition = "width 0.5s ease-in-out";
+                progressBar.style.width = percent + "%";
+            }
             if(progressText) progressText.innerText = percent + "%";
         }
 

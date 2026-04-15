@@ -25,6 +25,7 @@ import com.creatival.comment.CommentService;
 import com.creatival.comment.dto.ResponseCommentDTO;
 import com.creatival.content.DTO.CreateArtDTO;
 import com.creatival.content.DTO.CreateComicDTO;
+import com.creatival.content.DTO.CreateComicEpisodeDTO;
 import com.creatival.content.DTO.CreateFileDTO;
 import com.creatival.content.DTO.CreateMusicDTO;
 import com.creatival.content.DTO.CreateNovelDTO;
@@ -33,6 +34,7 @@ import com.creatival.content.DTO.CreateVideoDTO;
 import com.creatival.content.DTO.ResponseArtDetail;
 import com.creatival.content.DTO.ResponseArtList;
 import com.creatival.content.DTO.ResponseComicDetailDTO;
+import com.creatival.content.DTO.ResponseComicEpisodeDetail;
 import com.creatival.content.DTO.ResponseComicEpisodeListDTO;
 import com.creatival.content.DTO.ResponseComicListDTO;
 import com.creatival.content.DTO.ResponseContentListForProject;
@@ -47,6 +49,8 @@ import com.creatival.content.DTO.ResponseNovelList;
 import com.creatival.content.DTO.ResponseVideoDetailDTO;
 import com.creatival.content.DTO.ResponseVideoListDTO;
 import com.creatival.content.DTO.UpdateArtDTO;
+import com.creatival.content.DTO.UpdateComicDTO;
+import com.creatival.content.DTO.UpdateComicEpisodeDTO;
 import com.creatival.content.DTO.UpdateFileDTO;
 import com.creatival.content.DTO.UpdateMusicDTO;
 import com.creatival.content.DTO.UpdateNovelDTO;
@@ -297,7 +301,7 @@ public class ContentController {
 		if (!episode.getSeries().getContent().getUser().getUsername().equals(principal.getName())) {
 			return "/";
 		}
-		contentService.deleteNovelEpisode(episode);
+		contentService.deleteEpisode(episode);
 		return "redirect:/content/novel_detail/" + episode.getSeries().getContent().getId();
 	}
 
@@ -990,7 +994,229 @@ public class ContentController {
 
 		return "comic_detail";
 	}
-
+	
+	@GetMapping("/comic/episode/write/{id}")
+	public String createComic(Model model, @PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+id;
+		}
+		model.addAttribute("createComicEpisodeDTO", new CreateComicEpisodeDTO());
+		model.addAttribute("content", ResponseComicDetailDTO.from(contentService.getComicById(id)));
+		return "comic_episode_write";
+	}
+	
+	@PostMapping("/comic/{id}/episode/write")
+	public String createComic(Model model,@PathVariable("id") Long id, @Valid CreateComicEpisodeDTO dto, Principal principal, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+id;
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		Content content = contentService.getComicById(id);
+		
+		try {
+			contentService.createComicEpisode(user, content, dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 됐습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/comic/detail/"+id;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/comic/episode/write/"+id;
+		}
+		
+	}
+	
+	@GetMapping("/comic/episode/{id}")
+	public String comicEpisodeDetail(Model model, Principal principal,@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+		Episode episode = contentService.getEpisodeById(id);
+		if(episode==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/comic/detail/"+id;
+		}
+		if(!episode.isFree) {
+			if(principal==null) {
+				redirectAttributes.addFlashAttribute("isLogMsg", true);
+				return "redirect:/content/comic/detail/"+id;
+			}
+		}
+		episode.setViewCount(episode.getViewCount()+1);
+		contentService.upViewCountForEpisode(episode);
+		Content content = episode.getSeries().getContent();
+		model.addAttribute("content", ResponseComicDetailDTO.from(content));
+		List<ResponseCommentDTO> comments = commentService.getCommentListByEpisode(id);
+		model.addAttribute("comments", comments);
+		int commentsCount = commentService.getCountByEpisode(id);
+		model.addAttribute("commentCount", commentsCount);
+		model.addAttribute("episodeDetail", ResponseComicEpisodeDetail.from(episode, contentFileService.getContentFileByEpisode(episode)));
+		contentService.upViewCountForEpisode(episode);
+		return "comic_viewer";
+	}
+	
+	@GetMapping("/comic/episode/update/{id}")
+	public String updateComic(Model model, Principal principal, @PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+		Episode episode = contentService.getEpisodeById(id);
+		if(episode==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		Content content = episode.getSeries().getContent();
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+content.getId();
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		if(!content.getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/comic/detail/"+content.getId();
+		}
+		model.addAttribute("updateComicEpisodeDTO", UpdateComicEpisodeDTO.from(episode, contentFileService.getContentFileByEpisode(episode)));
+		
+		return "comic_episode_write_edit";
+	}
+	
+	@PostMapping("/comic/episode/update/{id}")
+	public String updateComicEpisode(@Valid UpdateComicEpisodeDTO dto, @PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
+		Episode episode = contentService.getEpisodeById(id);
+		if(episode==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		Content content = episode.getSeries().getContent();
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+content.getId();
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		if(!content.getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/comic/detail/"+content.getId();
+		}
+		
+		try {
+			contentService.updateContentComicEpisode(dto);
+			redirectAttributes.addFlashAttribute("message", "수정 완료되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/comic/detail/"+content.getId();
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/comic/detail/"+content.getId();
+		}
+	}
+	@GetMapping("/comic/update/{id}")
+	public String updateComic(Model model, @PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Content comic = contentService.getComicById(id);
+		if(comic==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+		if (!comic.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+		model.addAttribute("updateComicDTO", UpdateComicDTO.from(comic, comic.getSeries()));
+		return "comic_edit";
+		
+	}
+	@PostMapping("/comic/update/{id}")
+	public String updateComic(Model model, @Valid UpdateComicDTO comicDTO, @PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Content comic = contentService.getComicById(id);
+		if(comic==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+		if (!comic.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+		try {
+			contentService.updateContentComic(comicDTO);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/comic/detail/"+comic.getId();
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "예상치 못 한 오류가 났습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+	}
+	
+	@GetMapping("/comic/delete/{id}")
+	public String deleteComic(Model model, @PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Content comic = contentService.getComicById(id);
+		if(comic==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+		if (!comic.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+		try {
+			contentService.deleteContentComic(comic);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/comic/list";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "예상치 못 한 오류가 났습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/comic/detail/"+comic.getId();
+		}
+	}
+	@GetMapping("/comic/episode/delete/{id}")
+	public String deleteComicEpisode(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
+		Episode episode = contentService.getEpisodeById(id);
+		if(episode==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/";
+		}
+		Content content = episode.getSeries().getContent();
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/content/comic/detail/"+content.getId();
+		}
+		if (!episode.getSeries().getContent().getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 수정할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/comic/detail/"+content.getId();
+		}
+		contentService.deleteEpisode(episode);
+		redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/content/comic/detail/" + content.getId();
+	}
+	
 	// 실시간 처리를 위한 api
 
 	@GetMapping("/art/more")

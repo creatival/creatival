@@ -17,49 +17,76 @@
             display: inline-flex; align-items: center; border: 2px solid #a0c4ff;
             border-radius: 12px; padding: 5px; width: 100%; max-width: 500px; background-color: #fff;
         }
-        
-        /* 실제 파일 input은 숨김 */
+
         #thumbnailFile { display: none; }
-        
+
         .btn-file-select {
             background-color: #fff; border: 1px solid #ced4da; border-radius: 8px;
-            padding: 8px 20px; font-size: 0.95rem; cursor: pointer; margin-right: 15px;
-            transition: 0.2s;
+            padding: 8px 20px; cursor: pointer; margin-right: 15px;
         }
-        .btn-file-select:hover { background-color: #f0f0f0; }
-        
-        .file-name-display { color: #6c757d; font-size: 0.95rem; flex-grow: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* 2. 입력창 스타일 */
+        .file-name-display { color: #6c757d; }
+
+        /* 입력 */
         .form-control-custom {
-            border: none; border-bottom: 2px solid #eee; border-radius: 0;
-            padding: 15px 0; box-shadow: none !important; text-align: center;
+            border: none; border-bottom: 2px solid #eee;
+            padding: 15px 0; text-align: center;
         }
+
         .form-control-custom:focus { border-bottom-color: #2f3e75; }
-        .description-box { background-color: #f9f9f9; border: 1px solid #eee; border-radius: 15px; padding: 20px; resize: none; }
 
-        /* 3. 태그 스타일 */
+        .description-box {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        /* 태그 */
         .tag-badge {
-            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
-            padding: 6px 14px; border-radius: 20px; font-size: 0.9rem;
-            display: inline-flex; align-items: center;
+            background-color: #eef2ff;
+            color: #3b82f6;
+            border: 1px solid #d1dbff;
+            padding: 6px 14px;
+            border-radius: 20px;
         }
-        .tag-badge i { cursor: pointer; margin-left: 8px; font-size: 14px; color: #ff5e3a; }
-        .tag-input-group { max-width: 450px; margin: 0 auto; }
 
-        /* 4. 설정 그룹 */
-        .settings-label { font-size: 0.9rem; color: #444; font-weight: 700; margin-bottom: 12px; display: block; }
-        .settings-group { background: #ffffff; border-radius: 15px; padding: 25px; border: 1px solid #ebebeb; }
-        
-        /* 5. 버튼 */
-        .btn-submit-action {
-            background-color: #2f3e75; color: white; border-radius: 10px;
-            padding: 16px 0; font-weight: bold; width: 48%; border: none;
+        .tag-badge i {
+            cursor: pointer;
+            margin-left: 8px;
+            color: #ff5e3a;
         }
+
+        /* 설정 */
+        .settings-group {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #ebebeb;
+        }
+
+        .settings-label {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* 버튼 */
+        .btn-submit-action {
+            background-color: #2f3e75;
+            color: white;
+            border-radius: 10px;
+            padding: 16px 0;
+            width: 48%;
+            border: none;
+        }
+
         .btn-cancel-action {
-            background-color: white; color: #666; border: 1px solid #ccc;
-            border-radius: 10px; padding: 16px 0; font-weight: bold; width: 48%;
-            text-decoration: none; display: inline-block; text-align: center;
+            border: 1px solid #ccc;
+            padding: 16px 0;
+            width: 48%;
+            text-align: center;
+            text-decoration: none;
+            color: #666;
         }
     </style>
 </head>
@@ -73,117 +100,141 @@
                 <p class="text-muted">독자들에게 새로운 즐거움을 선사할 준비가 되셨나요?</p>
             </div>
 
-            <form th:action="@{/content/comic/write}" method="post" enctype="multipart/form-data" th:object="${createComicDTO}" id="comicForm">
-                
+            <!-- 핵심: DTO 바인딩 -->
+            <form th:action="@{/content/comic/write}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  th:object="${createComicDTO}"
+                  id="comicForm">
+
+                <!-- 제목 -->
                 <div class="mb-5">
-                    <input type="text" th:field="*{title}" class="form-control form-control-custom fs-2 fw-bold" placeholder="만화 제목을 입력하세요" required>
-                    <div class="text-danger small mt-2 text-center" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                    <input type="text"
+                           th:field="*{title}"
+                           class="form-control form-control-custom fs-2 fw-bold"
+                           placeholder="만화 제목을 입력하세요"
+                           required>
+
+                    <div class="text-danger small mt-2 text-center"
+                         th:if="${#fields.hasErrors('title')}"
+                         th:errors="*{title}"></div>
                 </div>
 
+                <!-- 썸네일 -->
                 <div class="mb-5 text-center">
                     <label class="settings-label text-muted">대표 썸네일</label>
+
                     <div class="preview-wrapper shadow-sm">
-                        <div class="preview-placeholder" id="placeholder"><i class="bi bi-images fs-1"></i><br>이미지 미리보기</div>
+                        <div class="preview-placeholder" id="placeholder">
+                            이미지 미리보기
+                        </div>
                         <img id="imagePreview">
                     </div>
-                    
+
                     <div class="d-flex justify-content-center">
                         <div class="custom-file-container shadow-sm">
-                            <input type="file" th:field="*{thumbnailFile}" accept="image/*" onchange="previewImage(this)">
-                            <label for="thumbnailFile" class="btn-file-select mb-0">파일 선택</label>
-                            <span class="file-name-display" id="fileNameDisplay">선택된 파일 없음</span>
+                            <input type="file"
+                                   th:field="*{thumbnailFile}"
+                                   accept="image/*"
+                                   onchange="previewImage(this)">
+                            <label for="thumbnailFile" class="btn-file-select">파일 선택</label>
+                            <span id="fileNameDisplay">선택된 파일 없음</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- 설명 -->
                 <div class="mb-5 text-center">
-                    <label class="settings-label"><i class="bi bi-chat-left-text-fill me-2"></i>작품 시놉시스</label>
-                    <textarea th:field="*{description}" class="form-control description-box" rows="6" placeholder="작품의 줄거리를 입력해 주세요."></textarea>
+                    <label class="settings-label">작품 시놉시스</label>
+                    <textarea th:field="*{description}"
+                              class="form-control description-box"
+                              rows="6"></textarea>
                 </div>
 
+                <!-- 태그 -->
                 <div class="mb-5 text-center">
-                    <label class="settings-label"><i class="bi bi-tags-fill me-2"></i>태그 설정</label>
+                    <label class="settings-label">태그 설정</label>
+
                     <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
 
                     <div class="input-group tag-input-group shadow-sm">
-                        <span class="input-group-text bg-white border-end-0 text-muted">#</span>
-                        <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그 입력 후 Enter" onkeypress="handleTagKey(event)">
+                        <span class="input-group-text">#</span>
+                        <input type="text"
+                               id="tagInput"
+                               class="form-control"
+                               onkeypress="handleTagKey(event)">
                         <button class="btn btn-dark" type="button" onclick="addTag()">추가</button>
                     </div>
+
                     <input type="hidden" th:field="*{tagString}" id="finalTagString">
                 </div>
 
+                <!-- 설정 FULL -->
                 <div class="settings-group mb-5 shadow-sm">
                     <div class="row g-4">
+
                         <div class="col-md-4">
                             <span class="settings-label">연재 상태</span>
-                            <div class="d-flex gap-3 mt-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" th:field="*{end}" value="false" checked id="status-ing">
-                                    <label class="form-check-label" for="status-ing">연재 중</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" th:field="*{end}" value="true" id="status-end">
-                                    <label class="form-check-label" for="status-end">완결</label>
-                                </div>
-                            </div>
+                            <input type="radio" th:field="*{end}" value="false" checked> 연재 중
+                            <input type="radio" th:field="*{end}" value="true"> 완결
                         </div>
 
                         <div class="col-md-4">
                             <span class="settings-label">공개 설정</span>
-                            <select th:field="*{visibility}" class="form-select form-select-sm">
-                                <option th:each="vis : ${T(com.creatival.content.Enum.Visibility).values()}"
-                                        th:value="${vis}" th:text="${vis.name()}">PUBLIC</option>
+                            <select th:field="*{visibility}" class="form-select">
+                                <option th:each="v : ${T(com.creatival.content.Enum.Visibility).values()}"
+                                        th:value="${v}"
+                                        th:text="${v}">
+                                </option>
                             </select>
                         </div>
 
                         <div class="col-md-4">
                             <span class="settings-label">작품 유형</span>
-                            <select th:field="*{ownerType}" class="form-select form-select-sm">
-                                <option th:each="owner : ${T(com.creatival.content.Enum.OwnerType).values()}"
-                                        th:value="${owner}" th:text="${owner.name()}">PERSONAL</option>
+                            <select th:field="*{ownerType}" class="form-select">
+                                <option th:each="o : ${T(com.creatival.content.Enum.OwnerType).values()}"
+                                        th:value="${o}"
+                                        th:text="${o}">
+                                </option>
                             </select>
                         </div>
 
                         <div class="col-md-4">
                             <span class="settings-label">댓글 허용</span>
-                            <div class="form-check form-switch mt-1">
-                                <input class="form-check-input" type="checkbox" th:field="*{allowComment}" id="allowComment" checked>
-                                <label class="form-check-label" for="allowComment">댓글 활성화</label>
-                            </div>
+                            <input type="checkbox" th:field="*{allowComment}">
                         </div>
 
                         <div class="col-md-4">
-                            <span class="settings-label">프로젝트 태그 (선택)</span>
-                            <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="그룹명">
+                            <span class="settings-label">프로젝트 태그</span>
+                            <input type="text" th:field="*{projectTag}" class="form-control">
                         </div>
 
                         <div class="col-md-4">
                             <span class="settings-label">2차 창작 여부</span>
-                            <div class="form-check mt-1">
-                                <input class="form-check-input" type="checkbox" th:field="*{fanWork}" id="fanWork">
-                                <label class="form-check-label" for="fanWork">팬워크 체크</label>
-                            </div>
+                            <input type="checkbox" th:field="*{fanWork}">
                         </div>
-                        
-                        <div class="col-md-12 border-top pt-3 mt-3">
-                            <span class="settings-label">원본 작품 ID (2차 창작인 경우 필히 입력)</span>
-                            <input type="number" th:field="*{originalContentId}" class="form-control" placeholder="ID 숫자를 입력하세요">
+
+                        <div class="col-md-12">
+                            <span class="settings-label">원본 작품 ID</span>
+                            <input type="number" th:field="*{originalContentId}" class="form-control">
                         </div>
+
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between mt-5 pt-4 border-top">
-                    <a th:href="@{/}" class="btn-cancel-action shadow-sm">취소</a>
-                    <button type="submit" class="btn-submit-action shadow-sm">작품 등록 완료</button>
+                <!-- 버튼 -->
+                <div class="d-flex justify-content-between">
+                    <a th:href="@{/}" class="btn-cancel-action">취소</a>
+                    <button type="submit" class="btn-submit-action">작품 등록 완료</button>
                 </div>
+
             </form>
-            
+
         </div>
     </div>
 
-    <script th:inline="javascript">
-        /** 1. 이미지 미리보기 및 파일명 처리 **/
+    <!-- JS -->
+    <script>
         function previewImage(input) {
             const fileDisplay = document.getElementById('fileNameDisplay');
             const preview = document.getElementById('imagePreview');
@@ -207,7 +258,6 @@
             }
         }
 
-        /** 2. 태그 시스템 **/
         let tagArray = [];
 
         function handleTagKey(e) {
@@ -219,13 +269,9 @@
 
         function addTag() {
             const input = document.getElementById('tagInput');
-            const value = input.value.trim().replace(/#/g, '');
+            const value = input.value.trim();
 
             if (value && !tagArray.includes(value)) {
-                if (tagArray.length >= 10) {
-                    alert("태그는 최대 10개까지 가능합니다.");
-                    return;
-                }
                 tagArray.push(value);
                 updateTags();
                 input.value = '';
@@ -241,25 +287,12 @@
             const container = document.getElementById('tagContainer');
             const hiddenInput = document.getElementById('finalTagString');
 
-            container.innerHTML = tagArray.map(t => `
-                <span class="tag-badge shadow-sm">
-                    #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
-                </span>
-            `).join('');
+            container.innerHTML = tagArray.map(t =>
+                `<span class="tag-badge">#${t} <i onclick="removeTag('${t}')">x</i></span>`
+            ).join('');
 
             hiddenInput.value = tagArray.join(',');
         }
-
-        /** 3. 제출 전 검증 **/
-        document.getElementById("comicForm").addEventListener("submit", function(e) {
-            const projectTag = document.querySelector("input[name='projectTag']").value.trim();
-            const originalContentId = document.querySelector("input[name='originalContentId']").value.trim();
-
-            if (projectTag !== "" && originalContentId !== "") {
-                alert("프로젝트 태그와 원본 작품 ID는 동시에 입력할 수 없습니다.");
-                e.preventDefault();
-            }
-        });
     </script>
 </div>
 </html>

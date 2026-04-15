@@ -66,7 +66,7 @@
         /* 서버 메시지 처리 */
         const msg = /*[[${message}]]*/ null;
         const icon = /*[[${icon}]]*/ "info";
-        const isLogMessage = /*[[${isLogMessage}]]*/ false; // 로그인 권장 알림 여부
+        const isLogMessage = /*[[${isLogMsg}]]*/ false; // 로그인 권장 알림 여부
 
         if(msg){
             Swal.fire({ icon: icon, text: msg });

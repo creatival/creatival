@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 <head>
     <style>
         /* 만화 전용 추가 스타일 */
@@ -68,6 +68,19 @@
 
         /* 기타 보조 버튼 */
         .admin-btns { display: flex; flex-direction: column; gap: 5px; }
+
+        /* ===== [추가된 섹션 전용 스타일] ===== */
+        /* 1. 작품 계보 스타일 */
+        .lineage-box { background-color: #f8f9fa; border-radius: 12px; padding: 20px; border: 1px solid #e9ecef; }
+        .lineage-card { display: flex; align-items: center; gap: 12px; background: #fff; padding: 12px; border-radius: 10px; text-decoration: none !important; border: 1px solid #dee2e6; transition: all 0.2s ease; }
+        .lineage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-color: #adb5bd; }
+        .lineage-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+
+        /* 2. 작품 갤러리 그리드 스타일 */
+        .art-grid-item { position: relative; display: block; border-radius: 12px; overflow: hidden; aspect-ratio: 1 / 1; text-decoration: none !important; }
+        .art-grid-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .art-grid-item:hover .art-grid-img { transform: scale(1.08); }
+        .art-grid-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%); padding: 25px 12px 10px; display: flex; flex-direction: column; }
     </style>
 </head>
 
@@ -155,58 +168,92 @@
         </div>
     </div>
 
-    <div class="container mb-5">
-		<div class="col-12 text-end mb-3" th:if="${comic.username == loginUsername}">
-		            <a th:href="@{'/content/comic/episode/write/' + ${comic.id}}" class="btn btn-outline-dark btn-sm">회차 추가</a>
-		        </div>
-        <div class="row">
-            <div class="col-md-10 mx-auto">
-                <h4 class="fw-bold mb-4 border-bottom pb-2" >회차 리스트 (총 123화)</h4>
-                
-                <div class="list-group list-group-flush shadow-sm rounded border" th:each="episode : ${paging}">
-                    <a th:href="@{/comic_viewer}" class="list-group-item list-group-item-action py-3">
-                        <div class="d-flex align-items-center">
-                            <img src="images/pic.png" class="episode-img me-3 shadow-sm" alt="123화 썸네일">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold" th:text="${episode.title}">123화 - 새로운 시작의 서막</h6>
-                                <span class="text-muted small" th:text="${episode.createdAt}">2026.02.12</span>
-                            </div>
-                            <div class="text-end text-muted small d-none d-md-block">
-                                <span><i class="bi bi-heart"></i> 1.2k</span>
-                            </div>
-                        </div>
-                    </a>
+	<div class="container mb-5">
+	    <div class="col-12 text-end mb-3" th:if="${comic.username == loginUsername}">
+	        <a th:href="@{'/content/comic/episode/write/' + ${comic.id}}"
+	           class="btn btn-outline-dark btn-sm">회차 추가</a>
+	    </div>
 
-                    <a href="#" class="list-group-item list-group-item-action py-3">
-                        <div class="d-flex align-items-center">
-                            <img src="images/pic.png" class="episode-img me-3 shadow-sm" alt="122화 썸네일">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold">122화 - 위기의 순간</h6>
-                                <span class="text-muted small">2026.02.05</span>
-                            </div>
-                            <div class="text-end text-muted small d-none d-md-block">
-                                <span><i class="bi bi-heart"></i> 1.1k</span>
-                            </div>
-                        </div>
-                    </a>
+	    <div class="row">
+	        <div class="col-md-10 mx-auto">
 
-                    <a href="#" class="list-group-item list-group-item-action py-3 text-center text-secondary small">
-                        이전 회차 더보기
-                    </a>
-                </div>
+	            <h4 class="fw-bold mb-4 border-bottom pb-2">
+	                회차 리스트 (총 <span th:text="${paging.totalElements}">0</span>화)
+	            </h4>
 
-                <nav aria-label="Page navigation" class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled"><a class="page-link">이전</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
+	            <div class="list-group list-group-flush shadow-sm rounded border">
+
+	                <div th:each="episode : ${paging}"
+	                     class="list-group-item py-3">
+
+	                    <div class="d-flex align-items-center">
+	                        <a th:href="@{/content/comic/episode/{id}(id=${episode.id})}"
+	                           class="d-flex align-items-center text-decoration-none text-dark flex-grow-1">
+
+	                            <img th:src="${episode.thumbnailUrl != null ? episode.thumbnailUrl : '/images/pic.png'}"
+	                                 class="episode-img me-3 shadow-sm">
+
+	                            <div class="flex-grow-1">
+	                                <h6 class="mb-1 fw-bold"
+	                                    th:text="|${episode.episodeNum}. ${episode.title}|">제목</h6>
+
+	                                <span class="text-muted small"
+	                                      th:text="${#temporals.format(episode.createdAt, 'yyyy.MM.dd')}">
+	                                </span>
+	                            </div>
+
+	                            <div class="text-end text-muted small d-none d-md-block me-3">
+	                                <span>
+	                                    <i class="bi bi-heart"></i>
+	                                    <span th:text="${episode.likeCount ?: 0}">0</span>
+	                                </span>
+	                            </div>
+	                        </a>
+
+	                        <div class="d-flex align-items-center gap-2 ms-2"
+	                             th:if="${comic.username == loginUsername}">
+	                            <a th:href="@{/content/comic/episode/update/{id}(id=${episode.id})}"
+	                               class="btn-action-text">
+	                                수정
+	                            </a>
+
+	                            <a th:href="@{/content/comic/episode/delete/{id}(id=${episode.id})}"
+	                               class="btn-action-text btn-action-delete"
+	                               onclick="return confirm('이 회차를 삭제하시겠습니까?');">
+	                                삭제
+	                            </a>
+	                        </div>
+	                    </div>
+	                </div>
+
+	                <div class="text-center py-3 text-muted small"
+	                     th:if="${paging.isEmpty()}">
+	                    등록된 회차가 없습니다.
+	                </div>
+
+	            </div>
+
+	            <nav class="mt-4 mb-5" th:if="${!paging.isEmpty()}">
+	                <ul class="pagination justify-content-center">
+
+	                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+	                        <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">이전</a>
+	                    </li>
+
+	                    <li class="page-item active">
+	                        <a class="page-link" th:text="${paging.number + 1}">1</a>
+	                    </li>
+
+	                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+	                        <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">다음</a>
+	                    </li>
+
+	                </ul>
+	            </nav>
+
+	        </div>
+	    </div>
+	</div>
 	<div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal" tabindex="-1">
 		        <div class="modal-dialog modal-dialog-centered modal-sm">
 		            <div class="modal-content">

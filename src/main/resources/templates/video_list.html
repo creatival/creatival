@@ -1,6 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 <div class="container my-5" layout:fragment="content">
-<<<<<<< HEAD
 
     <style>
         .category-item { transition: all 0.3s ease; text-decoration: none !important; }
@@ -17,24 +16,27 @@
         .category-item:hover { transform: translateY(-8px); }
         .category-item:hover .category-icon-img { transform: scale(1.1); }
         .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; }
+
+        .video-card { transition: transform 0.2s ease; cursor: pointer; }
+        .video-card:hover { transform: scale(1.02); }
     </style>
 
     <section class="py-4 bg-white mb-4 border-bottom">
         <div class="row text-center g-4 justify-content-center">
             <div class="col-4 col-md-2">
-                <a th:href="@{/Illustration_list}" class="category-item d-block">
+                <a th:href="@{/content/art/list}" class="category-item d-block">
                     <div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
                     <div class="fw-bold">일러스트</div>
                 </a>
             </div>
             <div class="col-4 col-md-2">
-                <a th:href="@{/comic_list}" class="category-item d-block">
+                <a th:href="@{/content/comic/list}" class="category-item d-block">
                     <div class="icon-box"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
                     <div class="fw-bold">만화</div>
                 </a>
             </div>
             <div class="col-4 col-md-2">
-                <a th:href="@{/music_list}" class="category-item d-block">
+                <a th:href="@{/content/music/list}" class="category-item d-block">
                     <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
                     <div class="fw-bold">음악</div>
                 </a>
@@ -46,7 +48,7 @@
                 </a>
             </div>
             <div class="col-4 col-md-2">
-                <a th:href="@{/file_list}" class="category-item d-block">
+                <a th:href="@{/content/file/list}" class="category-item d-block">
                     <div class="icon-box"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
                     <div class="fw-bold">파일</div>
                 </a>
@@ -60,139 +62,20 @@
             <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
         </div>
         
-        <div class="d-flex gap-3 align-items-center">
-            <a onclick="return requireLoginAction(() => location.href='/content/video/create')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
+        <div class="d-flex gap-2 align-items-center">
+            <button type="button" class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#keyRegisterModal">
+                <i class="bi bi-key-fill me-2"></i>
+                <span class="fw-bold">코드 등록</span>
+            </button>
+
+            <a href="javascript:void(0);"
+               onclick="return requireLoginAction(() => location.href='/content/video/create')"
+               class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
                 <i class="bi bi-plus-lg me-2"></i>
                 <span class="fw-bold">비디오 등록</span>
             </a>
-=======
-    
-<<<<<<< HEAD
-	<style>
-		.category-item { 
-				        transition: all 0.3s ease; 
-				        text-decoration: none !important;
-				    }
-				    
-				    .icon-box {
-				        width: 80px; 
-				        height: 80px; 
-				        background-color: #F8F9FA; /* 기본 연회색 배경 */
-				        border-radius: 22px;
-				        margin: 0 auto 12px; 
-				        display: flex; 
-				        align-items: center; 
-				        justify-content: center;
-				        overflow: hidden;
-				        border: 1px solid #eee;
-				        transition: all 0.3s ease;
-				    }
 
-				    .category-icon-img {
-				        width: 100%;       
-				        height: 100%;      
-				        object-fit: contain; 
-				        padding: 18px; /* 아이콘 크기 통일 */
-				        transition: transform 0.3s ease;
-				    }
-
-				    /* 호버 시 디자인 변경: Creatival 오렌지색 적용 */
-				    .category-item:hover { 
-				        transform: translateY(-8px); 
-				    }
-				    
-				    .category-item:hover .category-icon-img {
-				        transform: scale(1.1); /* 아이콘 살짝 확대 */
-				    }
-
-				    .category-item .fw-bold {
-				        color: #3B4371; /* 브랜드 네이비 */
-				        font-size: 0.95rem;
-				        transition: color 0.3s ease;
-				    }
-	</style>
-	
-	<section class="py-5 bg-white">
-	    <div class="container">
-	        <div class="row text-center g-4 justify-content-center">
-	            
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/Illustration_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트">
-	                    </div>
-	                    <div class="fw-bold">일러스트</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/comic_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화">
-	                    </div>
-	                    <div class="fw-bold">만화</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/music_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
-	                    </div>
-	                    <div class="fw-bold">음악</div>
-	                </a>
-	            </div>
-
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/content/novel_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
-	                    </div>
-	                    <div class="fw-bold">소설</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/file_list}" class="category-item d-block">
-	                    <div class="icon-box">
-	                        <img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일">
-	                    </div>
-	                    <div class="fw-bold">파일</div>
-	                </a>
-	            </div>
-
-	        </div>
-	    </div>
-	</section>
-	
-	<div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-	    <div>
-	        <h2 class="fw-bold mb-0">비디오</h2>
-	        <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
-	    </div>
-	    
-	    <div class="d-flex gap-3 align-items-center">
-	        <a th:href="@{/video_write}" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
-	            <i class="bi bi-plus-lg me-2"></i>
-	            <span class="fw-bold">비디오 등록</span>
-	        </a>
-=======
-    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-        <div>
-            <h2 class="fw-bold mb-0">비디오</h2>
-            <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
-        </div>
-        
-        <div class="d-flex gap-3 align-items-center">
-            <a onclick="return requireLoginAction(() => location.href='/content/video/create')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
-                <i class="bi bi-plus-lg me-2"></i>
-                <span class="fw-bold">동영상 등록</span>
-            </a>
->>>>>>> refs/remotes/origin/jinhoe
->>>>>>> refs/remotes/origin/yeachan
-
-            <div class="d-none d-sm-block">
+            <div class="d-none d-sm-block ms-2">
                 <div class="btn-group" role="group">
                     <input type="radio" class="btn-check" name="sort" id="latest" checked>
                     <label class="btn btn-outline-secondary btn-sm" for="latest">최신순</label>
@@ -216,7 +99,7 @@
                     </div>
                     <div class="card-body p-3">
                         <div class="d-flex align-items-start">
-                            <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}" 
+                            <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}"
                                  class="rounded-circle me-2" alt="프로필" style="width: 32px; height: 32px; object-fit: cover;">
                             <div class="overflow-hidden">
                                 <h6 class="card-title fw-bold text-truncate mb-1" th:text="${video.title}">비디오 제목</h6>
@@ -236,10 +119,67 @@
         <ul class="pagination justify-content-center">
             <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
             <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
             <li class="page-item"><a class="page-link" href="#">다음</a></li>
         </ul>
     </nav>
+
+    <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">제품 코드 등록</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-3 mb-4 text-muted small">
+                        보유하고 계신 제품 코드(16자리)를 입력해 주세요.<br>
+                        (예: ABCD-EFGH-IJKL-MNOP)
+                    </p>
+                    <input type="text" id="productKeyInput" class="form-control form-control-lg text-center font-monospace"
+                           placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn text-white px-4" style="background-color: #f05a28;" onclick="submitProductKey()">코드 활성화</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyInput = document.getElementById('productKeyInput');
+            if (keyInput) {
+                keyInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
+                    e.target.value = result;
+                });
+            }
+        });
+
+        function submitProductKey() {
+            const keyInput = document.getElementById('productKeyInput');
+            const val = keyInput.value;
+            if (val.length < 19) {
+                alert('코드를 정확히 입력해 주세요 (16자리).');
+                return;
+            }
+            alert('코드 [' + val + '] 등록이 요청되었습니다.');
+            
+            const modalElement = document.getElementById('keyRegisterModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+            keyInput.value = '';
+        }
+    </script>
 
 </div>
 </html>

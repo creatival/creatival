@@ -33,4 +33,5 @@ public interface EpisodeRepository extends JpaRepository<Episode, Long> {
 	Optional<Episode> findFirstBySeriesAndEpisodeNumGreaterThanOrderByEpisodeNumAsc(Series series, int episodeNum);
 	
 	Optional<Episode> findFirstBySeriesOrderByEpisodeNumAsc(Series series);
+	
 }
