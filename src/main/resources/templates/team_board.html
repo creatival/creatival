@@ -1,202 +1,165 @@
 <!DOCTYPE html>
-<html lang="kr" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>팀 게시판 | Creatival</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    
+<html lang="kr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<div class="container py-5" layout:fragment="content">
+
     <style>
         :root {
             --brand-navy: #3B4371;
             --brand-orange: #FF7F50;
             --bg-light: #F8F9FA;
             --border-color: #E9ECEF;
+            --danger: #dc3545;
         }
 
-        html { scrollbar-gutter: stable; }
         body { background-color: var(--bg-light); color: #333; font-family: 'Pretendard', sans-serif; }
 
-        /* 헤더 탭 메뉴 */
+        /* 타이틀 섹션 */
+        .board-top-title { text-align: center; margin-bottom: 2.5rem; }
+        .board-top-title h1 { color: var(--brand-navy); font-weight: 800; margin-bottom: 0.5rem; }
+        .board-top-title p { color: #888; font-size: 0.95rem; }
+
+        /* 메뉴바 */
         .board-menu-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--border-color); margin-bottom: 30px;
+            padding-bottom: 14px; flex-wrap: wrap; gap: 15px;
         }
+        .board-menu-title { font-size: 1.15rem; font-weight: 800; color: var(--brand-navy); margin: 0; }
+        .board-menu-subtitle { font-size: 0.9rem; color: #888; margin: 0; }
 
-        .nav-tabs-board {
-            display: flex;
-            gap: 40px;
-            margin-bottom: -2px;
-        }
-
-        .board-tab {
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #aaa;
-            padding: 0 10px 15px 10px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            border-bottom: 3px solid transparent;
-        }
-
-        .board-tab.active {
-            color: var(--brand-navy);
-            border-bottom: 3px solid var(--brand-navy);
-        }
-
+        /* 버튼 스타일 */
         .btn-write {
-            background-color: var(--brand-navy);
-            color: white;
-            border-radius: 8px;
-            padding: 8px 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            transition: 0.2s;
-            text-decoration: none;
+            background-color: var(--brand-navy); color: white; border-radius: 8px;
+            padding: 8px 20px; font-weight: 600; text-decoration: none; transition: 0.2s;
         }
         .btn-write:hover { background-color: #2c3359; color: white; transform: translateY(-2px); }
 
-        /* 컨텐츠 영역 및 애니메이션 */
-        .tab-content-area { min-height: 500px; position: relative; }
-        .tab-content { display: none; width: 100%; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* 게시글 컨테이너 */
+        .post-container {
+            background: #fff; border-radius: 16px; box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+            overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 30px;
+            scroll-margin-top: 100px;
         }
+        .post-container:target { border: 2px solid var(--brand-orange); box-shadow: 0 0 0 4px rgba(255,127,80,0.12); }
 
-        /* 공통 포스트 카드 디자인 */
-        .post-container { 
-            background: #fff; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 25px rgba(0,0,0,0.05); 
-            overflow: hidden; 
-            border: 1px solid var(--border-color);
-            margin-bottom: 30px;
-        }
-
-        .post-header-area { 
-            background-color: #F8F9FF; 
-            padding: 2.5rem; 
-            border-bottom: 1px solid var(--border-color); 
-        }
-
-        /* 공지사항용 헤더 배경 (선택사항: 공지사항을 더 강조하고 싶을 때) */
+        /* 헤더 영역 */
+        .post-header-area { padding: 2rem; border-bottom: 1px solid var(--border-color); background-color: #ffffff; }
         .notice-header { background-color: #FFF9F7; }
 
-        /* 태그 스타일 */
-        .tag-common { padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: white; }
+        /* 태그 */
+        .tag-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+        .tag-common { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: white; }
         .team-tag { background-color: var(--brand-navy); }
+        .project-tag { background-color: #5A67D8; }
         .notice-tag { background-color: var(--brand-orange); }
+        .normal-tag { background-color: #6c757d; }
 
-        .post-content { padding: 2.5rem; line-height: 1.8; font-size: 1.05rem; }
-        
-        .author-img { width: 42px; height: 42px; object-fit: cover; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* 제목 및 관리 버튼 */
+        .post-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 1.5rem; }
+        .post-title { font-size: 1.5rem; font-weight: 800; color: #212529; margin: 0; word-break: keep-all; }
+        .post-action-group { display: flex; gap: 6px; }
+        .btn-post-action {
+            border: 1px solid var(--border-color); background: #fff; color: #495057;
+            border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; transition: 0.2s;
+        }
+        .btn-post-action:hover { background: #f8f9fa; color: #212529; }
+        .btn-post-delete { color: var(--danger); border-color: #f1c4cb; }
+        .btn-post-delete:hover { background: #fff5f6; }
+
+        /* 작성자 정보 */
+        .author-img { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 1px solid var(--border-color); }
+        .meta-line { font-size: 0.88rem; color: #777; }
+
+        /* 본문 */
+        .post-content { padding: 2rem; line-height: 1.8; font-size: 1rem; white-space: pre-wrap; }
+        .post-image { max-width: 100%; border-radius: 12px; margin-top: 20px; border: 1px solid var(--border-color); }
+
+        .empty-box { background: #fff; border-radius: 16px; padding: 4rem; text-align: center; color: #999; border: 1px solid var(--border-color); }
     </style>
-</head>
-<body>
 
-<div class="container py-5">
-    
-    <div class="text-center mb-5">
-        <h1 class="display-6 fw-bold" style="color: var(--brand-navy);">팀 공간</h1>
-        <p class="text-muted small">우리 팀의 아이디어와 공지사항을 한곳에서 확인하세요.</p>
+    <div class="board-top-title">
+        <h1>팀 공간</h1>
+        <p>팀과 프로젝트의 소식을 한곳에서 확인하세요.</p>
     </div>
 
     <div class="board-menu-wrapper">
-        <div class="nav-tabs-board">
-            <button class="board-tab active" data-tab="team-board">팀 게시판</button>
-            <button class="board-tab" data-tab="notice-board">공지사항</button>
+        <div class="board-menu-left">
+            <p class="board-menu-title">게시글 목록</p>
+            <p class="board-menu-subtitle">최신 공지와 업데이트가 제공됩니다.</p>
         </div>
-        <a href="#" class="btn btn-write"><i class="bi bi-pencil-square me-2"></i>글 작성</a>
+
+        <div class="board-menu-right">
+            <a th:if="${canWrite}"
+               th:href="${teamId != null} ? @{/team/{teamId}/teamBoard/create(teamId=${teamId})} : @{/team/project/{projectId}/teamBoard/create(projectId=${projectId})}"
+               class="btn btn-write">
+                <i class="bi bi-pencil-square me-1"></i> 
+                <span th:text="${teamId != null} ? '팀 글 쓰기' : '프로젝트 글 쓰기'">글 쓰기</span>
+            </a>
+        </div>
     </div>
 
-    <div class="tab-content-area">
-        
-        <div id="team-board" class="tab-content active">
-            <div class="post-container">
-                <div class="post-header-area">
-                    <div class="mb-3"><span class="tag-common team-tag">Project Update</span></div>
-                    <h2 class="fw-bold mb-4">이번 주 브랜드 로고 시안 공유 및 피드백 요청 건</h2>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <img src="https://dummyimage.com/80x80/3B4371/fff&text=D" class="author-img me-3">
-                            <div>
-                                <div class="fw-bold text-dark">Dongmin (Hongsi)</div>
-                                <div class="text-muted small">2026. 04. 13 · 조회수 128</div>
-                            </div>
-                        </div>
+    <th:block th:if="${teamBoardList != null and !#lists.isEmpty(teamBoardList)}">
+        <div class="post-container" th:each="board : ${teamBoardList}" th:id="|board-${board.id}|">
+            
+            <div class="post-header-area" th:classappend="${board.notice} ? ' notice-header' : ''">
+                <div class="tag-row">
+                    <span class="tag-common" th:classappend="${board.notice} ? ' notice-tag' : ' normal-tag'"
+                          th:text="${board.notice} ? 'Notice' : 'Update'">Type</span>
+                    
+                    <span class="tag-common team-tag" th:if="${board.teamId != null}" th:text="|${board.teamName}팀|">Team</span>
+                    <span class="tag-common project-tag" th:if="${board.projectId != null}" th:text="${board.projectName}">Project</span>
+                </div>
 
+                <div class="post-title-row">
+                    <div class="post-title" th:text="${board.title}">게시글 제목</div>
+                    
+                    <div class="post-action-group" th:if="${canWrite}">
+                        <a th:href="${board.teamId != null} ? 
+                                   @{/team/{teamId}/teamBoard/{boardId}/update(teamId=${board.teamId}, boardId=${board.id})} : 
+                                   @{/team/project/{projectId}/teamBoard/{boardId}/update(projectId=${board.projectId}, boardId=${board.id})}" 
+                           class="btn-post-action">수정</a>
+                        
+                        <form th:action="${board.teamId != null} ? 
+                                         @{/team/{teamId}/teamBoard/{boardId}/delete(teamId=${board.teamId}, boardId=${board.id})} : 
+                                         @{/team/project/{projectId}/teamBoard/{boardId}/delete(projectId=${board.projectId}, boardId=${board.id})}" 
+                              method="post" class="d-inline" onsubmit="return confirm('삭제하시겠습니까?');">
+                            <button type="submit" class="btn-post-action btn-post-delete">삭제</button>
+                        </form>
                     </div>
                 </div>
-                <div class="post-content">
-                    <p>로고 시안 공유드립니다. 우리 팀의 정체성이 잘 드러나도록 세 가지 컨셉으로 준비해 보았습니다. 확인 후 자유롭게 의견 주세요!</p>
-                    <div class="my-5 text-center">
-                        <img src="https://dummyimage.com/800x400/3B4371/FF7F50&text=Creatival+Logo+Concept" class="img-fluid rounded-3 border shadow-sm">
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <img th:src="${board.profileImgUrl != null ? board.profileImgUrl : '/images/default-profile.png'}" 
+                             class="author-img me-3" alt="프로필">
+                        <div>
+                            <div class="fw-bold" th:text="${board.displayname}">작성자명</div>
+                            <div class="meta-line">
+                                <span th:text="${board.username}">@username</span> · 
+                                <span th:text="${#temporals.format(board.createdAt, 'yyyy. MM. dd HH:mm')}">2026. 04. 16</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${board.notice}" class="badge bg-white text-dark border py-2 px-3 mt-2 mt-md-0">
+                        <i class="bi bi-megaphone-fill text-warning me-1"></i> 중요 공지
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="notice-board" class="tab-content">
-            <div class="post-container">
-                <div class="post-header-area notice-header">
-                    <div class="mb-3"><span class="tag-common notice-tag">Notice</span></div>
-                    <h2 class="fw-bold mb-4">필독! 이번 주 전체 정기 회의 일정 변경 안내</h2>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <img src="https://dummyimage.com/80x80/FF7F50/fff&text=A" class="author-img me-3">
-                            <div>
-                                <div class="fw-bold text-dark">Admin (관리자)</div>
-                                <div class="text-muted small">2026. 04. 14 · 조회수 342</div>
-                            </div>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-white text-dark border py-2 px-3"><i class="bi bi-megaphone-fill text-warning me-1"></i> 필독</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="post-content">
-                    <p>안녕하세요, 팀 여러분. 이번 주 목요일로 예정되어 있던 정기 회의가 외부 파트너사 미팅 일정으로 인해 <b>금요일 오후 2시</b>로 변경되었습니다.</p>
-                    <div class="p-4 my-4 rounded-3" style="background-color: #FFF9F7; border: 1px dashed var(--brand-orange);">
-                        <ul class="mb-0">
-                            <li><b>기존 일정:</b> 2026. 04. 16 (목) 오후 3:00</li>
-                            <li><b>변경 일정:</b> 2026. 04. 17 (금) 오후 2:00</li>
-                            <li><b>장소:</b> 3층 대회의실 및 Google Meet</li>
-                        </ul>
-                    </div>
-                    <p>일정 확인하시어 업무에 참고 부탁드립니다. 감사합니다!</p>
+            <div class="post-content">
+                <div th:text="${board.text}">게시글 내용이 여기에 표시됩니다.</div>
+                <div th:if="${board.imgUrl != null}" class="text-center">
+                    <img th:src="${board.imgUrl}" class="post-image" alt="게시글 이미지">
                 </div>
             </div>
         </div>
+    </th:block>
 
+    <div class="empty-box" th:if="${teamBoardList == null or #lists.isEmpty(teamBoardList)}">
+        <i class="bi bi-chat-dots fs-1 d-block mb-3" style="color: #dee2e6;"></i>
+        아직 등록된 게시글이 없습니다.
     </div>
+
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('.board-tab');
-        const contents = document.querySelectorAll('.tab-content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const targetId = this.getAttribute('data-tab');
-
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(content => content.classList.remove('active'));
-
-                this.classList.add('active');
-                document.getElementById(targetId).classList.add('active');
-            });
-        });
-    });
-</script>
-
-</body>
 </html>

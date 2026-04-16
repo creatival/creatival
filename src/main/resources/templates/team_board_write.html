@@ -1,279 +1,406 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+<html lang="kr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
-	
-<head>
-    <title>게시글 작성 | Creatival</title>
-	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
-</head>
 
-<div layout:fragment="content">
+<div class="container py-5" layout:fragment="content">
+
     <style>
         :root {
             --brand-navy: #3B4371;
             --brand-orange: #FF7F50;
             --bg-light: #F8F9FA;
             --border-color: #E9ECEF;
+            --danger: #dc3545;
         }
 
-        .write-container {
-            max-width: 960px;
-            margin: 3rem auto 5rem;
-            padding: 0 20px;
+        body {
+            background-color: var(--bg-light);
+            color: #333;
+            font-family: 'Pretendard', sans-serif;
         }
 
-        /* 상단 헤더 */
-        .write-header {
-            margin-bottom: 2.5rem;
-            border-left: 5px solid var(--brand-navy);
-            padding-left: 20px;
+        .board-form-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
         }
-        .write-header h2 {
-            font-weight: 800;
+
+        .page-title-box {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title-box h1 {
             color: var(--brand-navy);
-            margin-bottom: 5px;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
         }
-        .write-header p { color: #777; margin-bottom: 0; }
 
-        /* 카드 스타일 */
-        .write-card {
+        .page-title-box p {
+            color: #888;
+            margin-bottom: 0;
+        }
+
+        .form-card {
             background: #fff;
             border: 1px solid var(--border-color);
-            padding: 45px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            overflow: hidden;
         }
 
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
+        .form-card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-card-header h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.35rem;
             color: var(--brand-navy);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
-        .section-title i { color: var(--brand-orange); font-size: 1.2rem; }
 
-        /* 폼 요소 디자인 */
+        .form-card-header p {
+            margin-bottom: 0;
+            color: #777;
+            font-size: 0.95rem;
+        }
+
+        .form-card-body {
+            padding: 2rem;
+        }
+
         .form-label {
             font-weight: 700;
-            font-size: 0.9rem;
-            color: #444;
-            margin-bottom: 10px;
-        }
-        .form-control, .form-select {
-            border: 1.5px solid #E5E5E5;
-            border-radius: 10px;
-            padding: 12px 18px;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: var(--brand-navy);
-            box-shadow: 0 0 0 4px rgba(59, 67, 113, 0.1);
-            outline: none;
+            color: #333;
+            margin-bottom: 0.65rem;
         }
 
-        /* 작성자 정보 바 */
-        .author-box {
-            background-color: #F9FAFF;
-            border: 1px solid #EEF0FF;
-            border-radius: 10px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .required-mark {
+            color: var(--danger);
+            margin-left: 4px;
         }
-        .author-box img { width: 32px; height: 32px; object-fit: cover; }
 
-        /* 연관 리소스 영역 (ID 입력) */
-        .resource-group {
-            background: #fdfdfd;
-            border: 1px dashed #ddd;
+        .form-control,
+        .form-check-input {
             border-radius: 12px;
-            padding: 20px;
         }
+
+        .form-control {
+            border: 1px solid #dcdfe4;
+            padding: 0.85rem 1rem;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--brand-navy);
+            box-shadow: 0 0 0 0.2rem rgba(59, 67, 113, 0.12);
+        }
+
+        textarea.form-control {
+            min-height: 280px;
+            resize: vertical;
+            line-height: 1.7;
+        }
+
+        .form-text {
+            font-size: 0.88rem;
+            color: #888;
+        }
+
+        .form-check-wrapper {
+            background: #fafbfc;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+        }
+
+        .form-check-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .notice-guide {
+            margin-top: 0.45rem;
+            font-size: 0.88rem;
+            color: #777;
+        }
+
         .preview-box {
-            font-size: 0.85rem;
-            margin-top: 8px;
-            min-height: 20px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            display: none;
+            margin-top: 1rem;
+            text-align: center;
+            border: 1px dashed #cfd4dc;
+            border-radius: 16px;
+            padding: 1rem;
+            background: #fcfcfd;
         }
 
-        /* 파일 리스트 스타일 */
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-top: 8px;
-            border: 1px solid #eee;
-        }
-        .btn-remove-file {
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
+        .preview-box.active {
+            display: block;
         }
 
-        /* 버튼 그룹 */
-        .btn-group-custom {
+        .preview-box img {
+            max-width: 100%;
+            max-height: 320px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        .field-error {
+            margin-top: 0.45rem;
+            color: var(--danger);
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .btn-area {
             display: flex;
             justify-content: flex-end;
-            gap: 15px;
-            margin-top: 2.5rem;
+            gap: 0.75rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
         }
-        .btn-creativ {
-            padding: 15px 40px;
+
+        .btn-cancel,
+        .btn-submit {
+            border: none;
+            border-radius: 12px;
+            padding: 0.85rem 1.4rem;
             font-weight: 700;
-            border-radius: 10px;
-            transition: all 0.2s;
-        }
-        .btn-cancel { background: #eee; color: #555; border: none; text-decoration: none; text-align: center; }
-        .btn-cancel:hover { background: #e0e0e0; }
-        .btn-submit { background: var(--brand-navy); color: #fff; border: none; }
-        .btn-submit:hover { background: #2c3359; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(59,67,113,0.25); }
-
-        .divider { height: 1px; background: #f0f0f0; margin: 2.5rem 0; }
-    </style>
-
-    <div class="write-container">
-        <div class="write-header">
-            <h2>팀 게시글 작성</h2>
-            <p>팀원들과 공유하고 싶은 새로운 프로젝트 소식이나 공지사항을 작성해주세요.</p>
-        </div>
-
-        <form th:action="@{/board/write}" method="post" enctype="multipart/form-data">
-            <div class="write-card">
-                
-                <div class="row g-4 mb-2">
-                    <div class="col-md-6">
-                        <label class="form-label">카테고리 선택</label>
-                        <select class="form-select" name="boardType">
-                            <option value="NORMAL" selected>팀 게시판 (일반 프로젝트 소식)</option>
-                            <option value="CREATOR">공지사항 (전체 팀원 필독)</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">작성자</label>
-                        <div class="author-box">
-                            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="rounded-circle">
-                            <span class="fw-bold text-dark" th:text="${#authentication.name}">사용자명</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="section-title"><i class="bi bi-box-seam-fill"></i> 연관 리소스 연결 <small class="text-muted fw-normal">(선택)</small></div>
-                <div class="resource-group">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">컨텐츠 ID</label>
-                            <input type="number" class="form-control" name="contentId" id="contentId" placeholder="ID 입력" oninput="debouncedFetchInfo('content', this.value)">
-                            <div id="contentPreview" class="preview-box"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">프로젝트 ID</label>
-                            <input type="number" class="form-control" name="projectId" id="projectId" placeholder="ID 입력" oninput="debouncedFetchInfo('project', this.value)">
-                            <div id="projectPreview" class="preview-box"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">팀 ID</label>
-                            <input type="number" class="form-control" name="teamId" id="teamId" placeholder="ID 입력" oninput="debouncedFetchInfo('team', this.value)">
-                            <div id="teamPreview" class="preview-box"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="section-title"><i class="bi bi-pencil-square"></i> 게시글 내용 작성</div>
-                <div class="mb-4">
-                    <label class="form-label">제목</label>
-                    <input type="text" class="form-control form-control-lg" name="title" placeholder="제목을 입력해 주세요" required>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">상세 내용</label>
-                    <textarea class="form-control" id="contentArea" name="boardText" style="min-height: 300px; resize: none;" 
-                              placeholder="내용을 입력해 주세요. HTML이나 마크다운 형식은 지원되지 않습니다."></textarea>
-                </div>
-
-                <div class="mb-0">
-                    <label class="form-label"><i class="bi bi-paperclip me-1"></i> 파일 첨부 <small class="text-muted">(이미지, 영상 최대 3개)</small></label>
-                    <div id="fileInputs">
-                        <input class="form-control" type="file" name="images" accept="image/*,video/*" multiple id="file_input" onchange="handleFileSelect(this)">
-                    </div>
-                    <div id="fileList" class="mt-2"></div>
-                </div>
-            </div>
-
-            <div class="btn-group-custom">
-                <a th:href="@{/board}" class="btn btn-creativ btn-cancel">돌아가기</a>
-                <button type="submit" class="btn btn-creativ btn-submit">게시글 등록하기</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<th:block layout:fragment="script">
-    <script th:inline="javascript">
-        let debounceTimer;
-
-        // 리소스 정보 가져오기 (Debounce 적용)
-        function debouncedFetchInfo(type, id) {
-            const preview = document.getElementById(type + 'Preview');
-            clearTimeout(debounceTimer);
-            
-            if(!id) { preview.innerHTML = ""; return; }
-            
-            preview.innerHTML = '<small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span>조회 중...</small>';
-            
-            debounceTimer = setTimeout(() => {
-                fetch(`/board/info/${type}?id=${id}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.name) {
-                            preview.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> <strong class="text-dark">${data.name}</strong>`;
-                        } else {
-                            preview.innerHTML = `<i class="bi bi-exclamation-circle-fill text-danger"></i> 존재하지 않는 ID`;
-                        }
-                    })
-                    .catch(() => { 
-                        preview.innerHTML = `<i class="bi bi-x-circle-fill text-danger"></i> 조회 실패`;
-                    });
-            }, 500);
+            text-decoration: none;
+            transition: 0.2s;
         }
 
-        // 파일 선택 처리
-        function handleFileSelect(input) {
-            const fileList = document.getElementById('fileList');
-            fileList.innerHTML = '';
-            
-            if (input.files.length > 3) {
-                alert("파일은 최대 3개까지만 첨부할 수 있습니다.");
-                input.value = "";
-                return;
+        .btn-cancel {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-cancel:hover {
+            background: #dde1e5;
+            color: #343a40;
+        }
+
+        .btn-submit {
+            background: var(--brand-navy);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #2c3359;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .form-card-header,
+            .form-card-body {
+                padding: 1.25rem;
             }
 
-            Array.from(input.files).forEach((file, index) => {
-                const item = document.createElement('div');
-                item.className = 'file-item';
-                item.innerHTML = `
-                    <span><i class="bi bi-file-earmark-check me-2"></i>${file.name} <small class="text-muted">(${Math.round(file.size/1024)}KB)</small></span>
-                    <i class="bi bi-check2 text-success"></i>
-                `;
-                fileList.appendChild(item);
+            textarea.form-control {
+                min-height: 220px;
+            }
+
+            .btn-area {
+                justify-content: stretch;
+            }
+
+            .btn-cancel,
+            .btn-submit {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+
+    <div class="board-form-wrapper">
+
+        <div class="page-title-box">
+            <h1>게시글 작성</h1>
+            <p>팀 또는 프로젝트 공간에 새로운 공지나 업데이트를 등록하세요.</p>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-header">
+                <h2>새 게시글 작성</h2>
+                <p>중요 안내는 공지로, 일반 진행 상황은 업데이트로 등록하면 됩니다.</p>
+            </div>
+
+            <div class="form-card-body">
+
+                <!-- 팀 작성 -->
+                <form th:if="${teamId != null}"
+                      th:action="@{/team/{teamId}/teamBoard/create(teamId=${teamId})}"
+                      th:object="${createTeamBoardDTO}"
+                      method="post"
+                      enctype="multipart/form-data">
+
+                    <div class="mb-4">
+                        <label for="title" class="form-label">
+                            제목<span class="required-mark">*</span>
+                        </label>
+                        <input type="text"
+                               id="title"
+                               th:field="*{title}"
+                               class="form-control"
+                               maxlength="100"
+                               placeholder="제목을 입력하세요">
+                        <div class="form-text">최대 100자까지 입력할 수 있습니다.</div>
+                        <div class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="text" class="form-label">
+                            내용<span class="required-mark">*</span>
+                        </label>
+                        <textarea id="text"
+                                  th:field="*{text}"
+                                  class="form-control"
+                                  placeholder="게시글 내용을 입력하세요"></textarea>
+                        <div class="field-error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="img" class="form-label">대표 이미지</label>
+                        <input type="file"
+                               id="img"
+                               th:field="*{img}"
+                               class="form-control"
+                               accept="image/*">
+                        <div class="form-text">이미지는 1장만 업로드할 수 있습니다.</div>
+                        <div class="preview-box" id="imagePreviewBox">
+                            <img id="imagePreview" src="" alt="미리보기 이미지">
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check-wrapper">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="notice"
+                                   th:field="*{notice}">
+                            <label class="form-check-label" for="notice">
+                                공지사항으로 등록
+                            </label>
+                        </div>
+                        <div class="notice-guide">
+                            체크하면 중요 공지로 분류되고, 해제하면 일반 업데이트 글로 등록됩니다.
+                        </div>
+                    </div>
+
+                    <div class="btn-area">
+                        <a th:href="@{/team/{teamId}/board(teamId=${teamId})}" class="btn-cancel">취소</a>
+                        <button type="submit" class="btn-submit">등록하기</button>
+                    </div>
+                </form>
+
+                <!-- 프로젝트 작성 -->
+                <form th:if="${projectId != null}"
+                      th:action="@{/team/project/{projectId}/teamBoard/create(projectId=${projectId})}"
+                      th:object="${createTeamBoardDTO}"
+                      method="post"
+                      enctype="multipart/form-data">
+
+                    <div class="mb-4">
+                        <label for="projectTitle" class="form-label">
+                            제목<span class="required-mark">*</span>
+                        </label>
+                        <input type="text"
+                               id="projectTitle"
+                               th:field="*{title}"
+                               class="form-control"
+                               maxlength="100"
+                               placeholder="제목을 입력하세요">
+                        <div class="form-text">최대 100자까지 입력할 수 있습니다.</div>
+                        <div class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="projectText" class="form-label">
+                            내용<span class="required-mark">*</span>
+                        </label>
+                        <textarea id="projectText"
+                                  th:field="*{text}"
+                                  class="form-control"
+                                  placeholder="게시글 내용을 입력하세요"></textarea>
+                        <div class="field-error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="projectImg" class="form-label">대표 이미지</label>
+                        <input type="file"
+                               id="projectImg"
+                               th:field="*{img}"
+                               class="form-control image-input"
+                               accept="image/*">
+                        <div class="form-text">이미지는 1장만 업로드할 수 있습니다.</div>
+                        <div class="preview-box" id="projectImagePreviewBox">
+                            <img id="projectImagePreview" src="" alt="미리보기 이미지">
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check-wrapper">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="projectNotice"
+                                   th:field="*{notice}">
+                            <label class="form-check-label" for="projectNotice">
+                                공지사항으로 등록
+                            </label>
+                        </div>
+                        <div class="notice-guide">
+                            체크하면 중요 공지로 분류되고, 해제하면 일반 업데이트 글로 등록됩니다.
+                        </div>
+                    </div>
+
+                    <div class="btn-area">
+                        <a th:href="@{/team/project/{projectId}/board(projectId=${projectId})}" class="btn-cancel">취소</a>
+                        <button type="submit" class="btn-submit">등록하기</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function bindImagePreview(inputId, boxId, imageId) {
+            const input = document.getElementById(inputId);
+            const box = document.getElementById(boxId);
+            const image = document.getElementById(imageId);
+
+            if (!input || !box || !image) return;
+
+            input.addEventListener('change', function () {
+                const file = this.files && this.files[0];
+
+                if (!file) {
+                    image.src = '';
+                    box.classList.remove('active');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    image.src = e.target.result;
+                    box.classList.add('active');
+                };
+                reader.readAsDataURL(file);
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            bindImagePreview('img', 'imagePreviewBox', 'imagePreview');
+            bindImagePreview('projectImg', 'projectImagePreviewBox', 'projectImagePreview');
+        });
     </script>
-</th:block>
+
+</div>
 </html>

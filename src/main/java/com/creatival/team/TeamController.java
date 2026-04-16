@@ -41,17 +41,20 @@ import com.creatival.tag.TagService;
 import com.creatival.team.Enum.TeamRole;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
+import com.creatival.team.dto.CreateTeamBoardDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseCheckoutListDTO;
 import com.creatival.team.dto.ResponseHistoryDTO;
 import com.creatival.team.dto.ResponseProjectDeatilDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
+import com.creatival.team.dto.ResponseTeamBoardDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
 import com.creatival.team.dto.UpdateCheckDTO;
 import com.creatival.team.dto.UpdateProjectDTO;
+import com.creatival.team.dto.UpdateTeamBoardDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
 import com.creatival.team.repository.TeamMemberRepository;
 import com.creatival.team.repository.TeamRepository;
@@ -149,8 +152,11 @@ public class TeamController {
 		}
 		model.addAttribute("like", likeService.getLike(user, TargetType.TEAM, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.TEAM, id));
+		model.addAttribute("teamBoard", teamService.getMainTeamBoardForTeam(team));
 		return "team_detail";
 	}
+	
+	
 	
 	@GetMapping("/{id}/teamApplicationManage")
 	public String team_application_manage(Model model, @PathVariable("id") Long id, Principal principal) {
@@ -356,8 +362,10 @@ public class TeamController {
 		if(principal != null) {
 			user = userService.getUserByUsername(principal.getName());
 		}
+		model.addAttribute("teamBoard", teamService.getMainTeamBoardForProject(project));
 		model.addAttribute("like", likeService.getLike(user, TargetType.PROJECT, projectId));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.PROJECT, projectId));
+		model.addAttribute("projectId", project.getId());
 		return "team_project_detail";
 	}
 	
@@ -736,7 +744,7 @@ public class TeamController {
 			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
 		}
 		try {
-			teamService.createTeamService(project, versionTag, title, text);
+			teamService.createTeamHistory(project, versionTag, title, text);
 			redirectAttributes.addFlashAttribute("message", "버전이 성공적으로 기록되었습니다.");
 			redirectAttributes.addFlashAttribute("icon", "success");
 			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
@@ -788,5 +796,381 @@ public class TeamController {
 			return "redirect:/team/"+project.getTeam().getId()+"/project/" +project.getId()+"/history";
 		}
 		
+	}
+	
+	@GetMapping("/{id}/boost")
+	public String sponsorship() {
+		return "team_boost";
+	}
+	
+	@GetMapping("/{id}/teamBoard")
+	public String teamBoard(Model model, @PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
+		Team team = teamService.getTeamById(id);
+		if(team==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀을 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		List<ResponseTeamBoardDTO> list = teamService.getTeamBoardByTeam(team);
+		model.addAttribute("teamBoardList", list);
+		model.addAttribute("teamId", team.getId());
+		if(principal != null) {
+			Users user = userService.getUserByUsername(principal.getName());
+			if(user.getUsername().equals(team.getUser().getUsername())) {
+				model.addAttribute("canWrite", true);
+			} else {
+				model.addAttribute("canWrite", false);
+			}
+		} else {
+			model.addAttribute("canWrite", false);
+		}
+		
+		return "team_board";
+	}
+	
+	@GetMapping("/{id}/teamBoard/create")
+	public String createTeamBoard(Model model, Principal principal, @PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		Team team = teamService.getTeamById(id);
+		if(team==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		
+		if(!team.getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id;
+		}
+		model.addAttribute("createTeamBoardDTO", new CreateTeamBoardDTO());
+		model.addAttribute("teamId", team.getId());
+		return "team_board_write";
+	}
+	
+	@PostMapping("/{id}/teamBoard/create")
+	public String createTeamBoard(Model model,@Valid CreateTeamBoardDTO dto, Principal principal, @PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		Team team = teamService.getTeamById(id);
+		if(team==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		
+		if(!team.getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+id;
+		}
+		
+		try {
+			teamService.createTeamBoard(team, dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 추가되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/{id}/teamBoard";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "예상치 못 한 오류가 발생했습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/{id}/teamBoard";
+		}
+	}
+	@GetMapping("/{tid}/teamBoard/{bid}/update")
+	public String updateTeamBoard(Model model, Principal principal,@PathVariable("tid") Long tid, @PathVariable("bid") Long bid, RedirectAttributes redirectAttributes) {
+		Team team = teamService.getTeamById(tid);
+		if(team==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		TeamBoard teamBoard = teamService.getTeamBoardById(bid);
+		if(teamBoard==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 공지가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		
+		if(!team.getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+tid;
+		}
+		model.addAttribute("updateTeamBoardDTO", UpdateTeamBoardDTO.from(teamBoard));
+		model.addAttribute("teamId", team.getId());
+		return "team_board_edit";
+	}
+	
+	@PostMapping("/{tid}/teamBoard/{bid}/update")
+	public String updateTeamBoard(@Valid UpdateTeamBoardDTO dto ,Model model, Principal principal,@PathVariable("tid") Long tid, @PathVariable("bid") Long bid, RedirectAttributes redirectAttributes) {
+		Team team = teamService.getTeamById(tid);
+		if(team==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		TeamBoard teamBoard = teamService.getTeamBoardById(bid);
+		if(teamBoard==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 공지가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		
+		if(!team.getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+tid;
+		}
+		
+		try {
+			teamService.updateTeamBoard(bid,dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/" + tid + "/teamBoard";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "예상치 못 한 오류가 발생했습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/" + tid + "/teamBoard";
+		}
+	}
+	
+	@PostMapping("/{tid}/teamBoard/{bid}/delete")
+	public String deleteTeamBoard(Model model, Principal principal,@PathVariable("tid") Long tid, @PathVariable("bid") Long bid, RedirectAttributes redirectAttributes) {
+		Team team = teamService.getTeamById(tid);
+		if(team==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		TeamBoard teamBoard = teamService.getTeamBoardById(bid);
+		if(teamBoard==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 공지가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		
+		if(!team.getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/" +tid+"/teamBoard";
+		}
+		
+		teamService.deleteTeamBoard(teamBoard);
+		redirectAttributes.addFlashAttribute("message", "공지가 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/team/" +tid+"/teamBoard";
+	}
+	
+	//teamBoard project 쪽
+	@GetMapping("/{tid}/project/{pid}/teamBoard")
+	public String teamBoardForProject(Model model, @PathVariable("pid") Long pid, RedirectAttributes redirectAttributes, Principal principal) {
+		Project project = teamService.getProjectById(pid);
+		if(project==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 프로젝트를 찾을 수 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		List<ResponseTeamBoardDTO> list = teamService.getTeamBoardByProject(project);
+		model.addAttribute("teamBoardList", list);
+		model.addAttribute("projectId", project.getId());
+		if(principal != null) {
+			Users user = userService.getUserByUsername(principal.getName());
+			if(user.getUsername().equals(project.getTeam().getUser().getUsername())) {
+				model.addAttribute("canWrite", true);
+			} else {
+				model.addAttribute("canWrite", false);
+			}
+		} else {
+			model.addAttribute("canWrite", false);
+		}
+		
+		return "team_board";
+	}
+	
+	@GetMapping("/project/{pid}/teamBoard/create")
+	public String createTeamBoardForProject(Model model, Principal principal, @PathVariable("pid") Long pid, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		Project project = teamService.getProjectById(pid);
+		if(project==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		
+		if(!project.getTeam().getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		}
+		model.addAttribute("createTeamBoardDTO", new CreateTeamBoardDTO());
+		model.addAttribute("projectId", project.getId());
+		return "team_board_write";
+	}
+	
+	@PostMapping("/project/{pid}/teamBoard/create")
+	public String createTeamBoardForProject(Model model,@Valid CreateTeamBoardDTO dto, Principal principal,  @PathVariable("pid") Long pid, RedirectAttributes redirectAttributes) {
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		Project project = teamService.getProjectById(pid);
+		if(project==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		
+		if(!project.getTeam().getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		}
+		
+		try {
+			teamService.createTeamBoard(project, dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 추가되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "예상치 못 한 오류가 발생했습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		}
+	}
+	@GetMapping("/project/{pid}/teamBoard/{bid}/update")
+	public String updateTeamBoardForProject(Model model, Principal principal,@PathVariable("pid") Long pid, @PathVariable("bid") Long bid, RedirectAttributes redirectAttributes) {
+		Project project = teamService.getProjectById(pid);
+		if(project==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		TeamBoard teamBoard = teamService.getTeamBoardById(bid);
+		if(teamBoard==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 공지가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		
+		if(!project.getTeam().getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		}
+		model.addAttribute("updateTeamBoardDTO", UpdateTeamBoardDTO.from(teamBoard));
+		model.addAttribute("projectId", project.getId());
+		return "team_board_edit";
+	}
+	
+	@PostMapping("/project/{pid}/teamBoard/{bid}/update")
+	public String updateTeamBoardForProject(@Valid UpdateTeamBoardDTO dto ,Model model, Principal principal, @PathVariable("pid") Long pid, @PathVariable("bid") Long bid, RedirectAttributes redirectAttributes) {
+		Project project = teamService.getProjectById(pid);
+		if(project==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		TeamBoard teamBoard = teamService.getTeamBoardById(bid);
+		if(teamBoard==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 공지가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		
+		if(!project.getTeam().getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		}
+		
+		try {
+			teamService.updateTeamBoard(bid,dto);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "예상치 못 한 오류가 발생했습니다. 관리자께 문의바랍니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		}
+	}
+	
+	@PostMapping("/project/{pid}/teamBoard/{bid}/delete")
+	public String deleteTeamBoardForProject(Model model, Principal principal,@PathVariable("pid") Long pid, @PathVariable("bid") Long bid, RedirectAttributes redirectAttributes) {
+		Project project=teamService.getProjectById(pid);
+		if(project==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 팀이 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		TeamBoard teamBoard = teamService.getTeamBoardById(bid);
+		if(teamBoard==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 공지가 존재하지 않습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal == null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		Users user = userService.getUserByUsername(principal.getName());
+		
+		
+		if(!project.getTeam().getUser().getUsername().equals(user.getUsername())) {
+			redirectAttributes.addFlashAttribute("message", "오직 팀장만이 공지를 관리할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
+		}
+		
+		teamService.deleteTeamBoard(teamBoard);
+		redirectAttributes.addFlashAttribute("message", "공지가 삭제되었습니다.");
+		redirectAttributes.addFlashAttribute("icon", "success");
+		return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
 	}
 }

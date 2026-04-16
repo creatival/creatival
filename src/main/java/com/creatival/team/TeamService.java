@@ -22,16 +22,19 @@ import com.creatival.team.Enum.ApplicationStatus;
 import com.creatival.team.Enum.TeamRole;
 import com.creatival.team.dto.CreateProjectDTO;
 import com.creatival.team.dto.CreateTeamApplicationDTO;
+import com.creatival.team.dto.CreateTeamBoardDTO;
 import com.creatival.team.dto.CreateTeamDTO;
 import com.creatival.team.dto.ResponseCheckoutListDTO;
 import com.creatival.team.dto.ResponseHistoryDTO;
 import com.creatival.team.dto.ResponseProjectDeatilDTO;
 import com.creatival.team.dto.ResponseProjectListDTO;
 import com.creatival.team.dto.ResponseTeamApplicationDTO;
+import com.creatival.team.dto.ResponseTeamBoardDTO;
 import com.creatival.team.dto.ResponseTeamDetailDTO;
 import com.creatival.team.dto.ResponseTeamListDTO;
 import com.creatival.team.dto.ResponseTeamMember;
 import com.creatival.team.dto.UpdateProjectDTO;
+import com.creatival.team.dto.UpdateTeamBoardDTO;
 import com.creatival.team.dto.UpdateTeamDTO;
 import com.creatival.team.repository.*;
 import com.creatival.token.UserToken;
@@ -61,6 +64,7 @@ public class TeamService {
 	private final ProjectRepository projectRepository;
 	private final UserService userService;
 	private final  HistoryRepository historyRepository;
+	private final TeamBoardRepository teamBoardRepository;
 
 
 	
@@ -458,7 +462,7 @@ public class TeamService {
 	}
 
 	@Transactional
-	public void createTeamService(Project project, String versionTag, String title, String text) {
+	public void createTeamHistory(Project project, String versionTag, String title, String text) {
 		History history = History.builder()
 				.versionTag(versionTag)
 				.title(title)
@@ -526,5 +530,92 @@ public class TeamService {
 		project.setLikeCount(project.getLikeCount()+1);
 		projectRepository.save(project);
 		
+	}
+
+	public void createTeamBoard(Team team, @Valid CreateTeamBoardDTO dto) throws IOException {
+		TeamBoard teamBoard = TeamBoard.builder()
+				.title(dto.getTitle())
+				.text(dto.getText())
+				.notice(dto.isNotice())
+				.team(team)
+				.user(team.getUser())
+				.build();
+		if(dto.getImg()!=null && !dto.getImg().isEmpty()) {
+			String imgUrl = "/upload/images/teamBoard/"+ fileUtil.saveImage(dto.getImg(), "teamBoard");
+			teamBoard.setImgUrl(imgUrl);
+		}
+		teamBoardRepository.save(teamBoard);
+		
+	}
+
+	public TeamBoard getTeamBoardById(Long id) {
+		Optional<TeamBoard> optional = teamBoardRepository.findById(id);
+		if(optional.isEmpty()) {
+			return null;
+		}
+		return optional.get();
+	}
+
+	public void updateTeamBoard(Long bid, @Valid UpdateTeamBoardDTO dto) throws IOException {
+		TeamBoard teamBoard = getTeamBoardById(bid);
+		teamBoard.setTitle(dto.getTitle());
+		teamBoard.setText(dto.getText());
+		teamBoard.setNotice(dto.isNotice());
+		if(dto.getImg()!=null && !dto.getImg().isEmpty()) {
+			String imgUrl = "/upload/images/teamBoard/"+ fileUtil.saveImage(dto.getImg(), "teamBoard");
+			teamBoard.setImgUrl(imgUrl);
+		}
+		
+		teamBoardRepository.save(teamBoard);
+	}
+
+	public void deleteTeamBoard(TeamBoard teamBoard) {
+		if(teamBoard==null) {
+			return;
+		}
+		teamBoardRepository.delete(teamBoard);
+		
+	}
+
+	public List<ResponseTeamBoardDTO> getTeamBoardByTeam(Team team) {
+		List<TeamBoard> list = teamBoardRepository.findByTeamOrderByCreatedAtDesc(team);
+		return list.stream().map(teamBoard -> ResponseTeamBoardDTO.fromTeam(teamBoard)).toList();
+	}
+	
+	public ResponseTeamBoardDTO getMainTeamBoardForTeam(Team team) {
+		Optional<TeamBoard> teamBoard = teamBoardRepository.findTop1ByTeamAndNoticeOrderByCreatedAtDesc(team, true);
+		if(teamBoard.isEmpty()) {
+			return null;
+		}
+		return ResponseTeamBoardDTO.fromTeam(teamBoard.get());
+	}
+
+	public List<ResponseTeamBoardDTO> getTeamBoardByProject(Project project) {
+		List<TeamBoard> list = teamBoardRepository.findByProjectOrderByCreatedAtDesc(project);
+		return list.stream().map(teamBoard -> ResponseTeamBoardDTO.fromProject(teamBoard)).toList();
+	}
+
+	public void createTeamBoard(Project project, @Valid CreateTeamBoardDTO dto) throws IOException {
+		TeamBoard teamBoard = TeamBoard.builder()
+				.title(dto.getTitle())
+				.text(dto.getText())
+				.notice(dto.isNotice())
+				.project(project)
+				.user(project.getTeam().getUser())
+				.build();
+		if(dto.getImg()!=null && !dto.getImg().isEmpty()) {
+			String imgUrl = "/upload/images/teamBoard/"+ fileUtil.saveImage(dto.getImg(), "teamBoard");
+			teamBoard.setImgUrl(imgUrl);
+		}
+		teamBoardRepository.save(teamBoard);
+		
+	}
+
+	public ResponseTeamBoardDTO getMainTeamBoardForProject(Project project) {
+		Optional<TeamBoard> teamBoard = teamBoardRepository.findTop1ByProjectAndNoticeOrderByCreatedAtDesc(project, true);
+		if(teamBoard.isEmpty()) {
+			return null;
+		}
+		return ResponseTeamBoardDTO.fromProject(teamBoard.get());
 	}
 }

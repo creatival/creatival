@@ -168,6 +168,39 @@
                 <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${novel.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
                 <button type="button" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
             </div>
+			<h5 class="fw-bold mb-4 ">작품 계보</h5>
+									<div class="row g-4 mb-5 bg-light">
+									    <div class="col-md-6">
+									        <div class="lineage-box h-100">
+									            <h6 class="text-muted fw-bold mb-3">
+									                <i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품
+									            </h6>
+									            <a href="#" class="lineage-card">
+									                <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
+									                <div class="overflow-hidden">
+									                    <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
+									                    <div class="small text-muted text-truncate">@OriginalArtist</div>
+									                </div>
+									            </a>
+									        </div>
+									    </div>
+										<div class="col-md-6">
+																        <div class="lineage-box h-100 d-flex flex-column">
+																            <h6 class="text-muted fw-bold mb-3">
+																                <i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품
+																            </h6>
+																            <div class="d-flex flex-column gap-2 mb-3" style="max-height: 200px; overflow-y: auto;">
+																                <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,5)}">
+																                    <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
+																                    <div class="overflow-hidden">
+																                        <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
+																                        <div class="small text-muted text-truncate">@RemixCreator</div>
+																                    </div>
+																                </a>
+																            </div>
+																        </div>
+																    </div>
+																</div>
         </div>
     </div>
 

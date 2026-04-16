@@ -26,7 +26,7 @@
             margin: 0 auto;
         }
 
-        /* ===== 액션 버튼 (seungjae UI 유지) ===== */
+        /* ===== 액션 버튼 ===== */
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -85,17 +85,16 @@
             background-color: #2D3278;
             color: white;
         }
-		/* 팔로우 상태 */
-		.btn-follow.following {
-		    background-color: #2D3278;
-		    color: white;
-		}
+        
+        .btn-follow.following {
+            background-color: #2D3278;
+            color: white;
+        }
 
-		/* 호버 (언팔 느낌) */
-		.btn-follow.following:hover {
-		    background-color: #dc3545;
-		    border-color: #dc3545;
-		}
+        .btn-follow.following:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
 
         /* ===== 태그 ===== */
         .art-tag {
@@ -123,7 +122,6 @@
             border-bottom: 2px solid #2D3278 !important;
         }
 
-        /* 🔥 댓글 버튼 (HEAD 스타일 유지) */
         .btn-text-action {
             background: none;
             border: none;
@@ -150,63 +148,89 @@
             color: white;
             border-radius: 30px;
         }
+
+        /* ===== 연관 작품 & 갤러리 스타일 ===== */
+        .lineage-box { background: #ffffff; border: 1px solid #e9ecef; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); height: 100%; }
+        .lineage-card { display: flex; align-items: center; padding: 12px; border: 1px solid #dee2e6; border-radius: 8px; text-decoration: none; color: inherit; transition: all 0.2s ease; background-color: #fff; }
+        .lineage-card:hover { background-color: #f8f9fa; border-color: #adb5bd; transform: translateY(-2px); }
+        .lineage-img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 15px; background-color: #eee; }
+
+        .art-grid-item { position: relative; display: block; border-radius: 10px; overflow: hidden; aspect-ratio: 1 / 1; background-color: #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .art-grid-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .art-grid-item:hover .art-grid-img { transform: scale(1.08); }
+        .art-grid-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 20px 10px 10px; opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end; }
+        .art-grid-item:hover .art-grid-overlay { opacity: 1; }
+
+        /* ===== 푸터 스타일 ===== */
+        .full-footer { background-color: #0b152d !important; color: white !important; width: 100%; margin-top: 80px; }
+        .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
+        .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
     </style>
 
-    <!-- 제목 -->
     <div class="container text-center mt-5 mb-4">
         <h3 class="fw-bold" th:text="${art.title}">작품 제목</h3>
     </div>
 
-    <!-- 이미지 -->
     <div class="art-viewer mb-4">
         <div class="container" style="max-width: 800px;">
-            <div id="artSlider" class="carousel slide">
-                <div class="carousel-inner">
-                    <div th:each="file, iter : ${art.fileList}"
-                         class="carousel-item"
-                         th:classappend="${iter.first} ? 'active'">
-                        <img th:src="${file.fileUrl}" class="art-image">
-                    </div>
-                </div>
-            </div>
+			<div id="artSlider" class="carousel slide" data-bs-ride="false"> <div class="carousel-inner">
+			        <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
+			            <img th:src="${file.fileUrl}" class="art-image">
+			        </div>
+			    </div>
+			    
+			    <button class="carousel-control-prev" type="button" data-bs-target="#artSlider" data-bs-slide="prev">
+			        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+			        <span class="visually-hidden">Previous</span>
+			    </button>
+			    <button class="carousel-control-next" type="button" data-bs-target="#artSlider" data-bs-slide="next">
+			        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+			        <span class="visually-hidden">Next</span>
+			    </button>
+			</div>
         </div>
     </div>
 
     <div class="container" style="max-width: 800px;">
-
-        <!-- 정보 + 버튼 -->
         <div class="d-flex justify-content-between mb-4">
             <div>
                 <div class="text-muted small mb-2">
                     <span th:text="${#temporals.format(art.createdAt,'yyyy.MM.dd')}"></span>
                     · 조회수 <span th:text="${art.viewCount}"></span>
-					· 좋아요 <span th:text="${like.count}" id="likeCount">0</span>
+                    · 좋아요 <span th:text="${like.count}" id="likeCount">0</span>
                 </div>
-
                 <div>
-                    <span th:each="tag : ${tagList}" class="art-tag"
-                          th:text="'#' + ${tag.tagText}"></span>
+                    <span th:each="tag : ${tagList}" class="art-tag" th:text="'#' + ${tag.tagText}"></span>
                 </div>
             </div>
 
-			<div class="action-buttons">
-			    <button class="btn-action" 
-			            th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"
-			            th:if="${art.username == #authentication.name}">
-			        <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
-			        <span>수정하기</span>
-			    </button>
+            <div class="action-buttons">
+                <button class="btn-action" 
+                        th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"
+                        th:if="${art.username == #authentication.name}">
+                    <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
+                    <span>수정하기</span>
+                </button>
 
-			    <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
-			    <button th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|" id="bookmarkBtn"  class="btn-action btn-bookmark"><i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span></button>
-			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
-			</div>
+                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
+                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
+                    <span>좋아요</span>
+                </button>
+
+                <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
+                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+                    <span>북마크</span>
+                </button>
+
+                <button class="btn-action btn-share">
+                    <i class="bi bi-share-fill"></i>
+                    <span>공유</span>
+                </button>
+            </div>
         </div>
 
-        <!-- 설명 -->
         <div class="mb-4" style="white-space: pre-wrap;" th:text="${art.description}"></div>
 
-        <!-- 작성자 -->
         <div class="d-flex justify-content-between py-3 border-top border-bottom mb-5">
             <div class="d-flex align-items-center" th:onclick="|location.href='@{/user/myPage/{id}(id=${art.userId})}'|" style="cursor: pointer;">
                 <img th:src="${art.profileImgUrl}" class="artist-avatar me-3">
@@ -215,25 +239,12 @@
             <button id="followBtn" class="btn-follow" th:classappend="${follow.followed} ? ' following'" th:onclick="|toggleFollow(${art.userId}, 'USER')|" th:if="${art.username != #authentication.name}" th:text="${follow.followed} ? '팔로우 중' : '팔로우'"></button>
         </div>
 
-        <!-- 댓글 -->
-        <div th:if="${art.isAllowComment}" class="comment-section">
-
+        <div th:if="${art.isAllowComment}" class="comment-section mb-5">
             <h5 class="text-center fw-bold mb-4">댓글</h5>
-
-            <!-- 입력 -->
-            <form th:action="@{/comment/content/write/{id}(id=${art.id})}"
-                  method="post"
-                  class="d-flex justify-content-center mb-5">
-
-                <input type="text" name="text"
-                       class="form-control comment-input me-3"
-                       placeholder="댓글 쓰기"
-                       style="max-width:500px;">
-
+            <form th:action="@{/comment/content/write/{id}(id=${art.id})}" method="post" class="d-flex justify-content-center mb-5">
+                <input type="text" name="text" class="form-control comment-input me-3" placeholder="댓글 쓰기" style="max-width:500px;">
                 <button type="submit" class="btn btn-navy-custom px-4">작성</button>
             </form>
-
-            <!-- 목록 -->
             <div class="comment-list">
                 <th:block th:each="comment : ${comments}">
                     <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${art.id})}"></div>
@@ -241,20 +252,106 @@
             </div>
         </div>
 
-        <!-- 연관 작품 -->
-        <h5 class="text-center fw-bold mt-5 mb-4">연관 작품</h5>
-        <div class="row g-2 mb-5">
-            <div class="col-4" th:each="i : ${#numbers.sequence(1,12)}">
-                <div style="aspect-ratio:1/1;background:#eee;border-radius:4px;
-                     display:flex;align-items:center;justify-content:center;">
-                    <i class="bi bi-image text-muted"></i>
+        <h5 class="fw-bold mb-4">작품 계보</h5>
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="lineage-box">
+                    <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품</h6>
+                    <a href="#" class="lineage-card" th:if="${parentContent!=null}">
+                        <img th:src="${parentContent.thumbnailUrl}" class="lineage-img" alt="원본">
+                        <div class="overflow-hidden">
+                            <div class="fw-bold text-dark text-truncate mb-1" th:text="${parentContent.title}">여름날의 바다 (Original)</div>
+                            <div class="small text-muted text-truncate" th:text="|${parentContent.type}|">type</div>
+                            <div class="small text-muted text-truncate" th:text="|${parentContent.username}(${parentContent.displayname})|">@OriginalArtist</div>
+                        </div>
+                    </a>
+                    <p class="text-muted text-center " th:if="${parentContent==null}">해당 컨텐츠는 원본 컨텐츠입니다.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="lineage-box">
+                    <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품</h6>
+                    <div class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"  th:each="childContent : ${childContents}" th:href="childContent">
+                        <a  class="lineage-card" th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(childContent.type)},id=${childContent.id})}">
+                            <img th:src="${childContent.thumbnailUrl}" class="lineage-img" alt="파생">
+                            <div class="overflow-hidden">
+                                <div class="fw-bold text-dark text-truncate mb-1" th:text="${childContent.title}">여름날의 바다 (리마스터)</div>
+                                <div class="small text-muted text-truncate" th:text="|${childContent.type}|">type</div>
+                                <div class="small text-muted text-truncate" th:text="|${childContent.username}(${childContent.displayname})|">@RemixCreator</div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-    </div>
+        <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
+            <h5 class="fw-bold mb-0" th:text="${art.displayname} + '님의 다른 작품'">작가의 다른 인기 작품</h5>
+            <a th:href="@{/user/myPage/{id}(id=${art.userId})}" class="text-muted small text-decoration-none">더보기 <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="row g-3 mb-5">
+            <div class="col-6 col-md-3" th:each="aArt : ${anotherArt}">
+                <a href="#" class="art-grid-item">
+                    <img th:src="${aArt.thumbnailUrl}" class="art-grid-img">
+                    <div class="art-grid-overlay">
+                        <span class="small fw-bold text-truncate text-white" th:text="${aArt.title}">작품 타이틀 [[${i}]]</span>
+                        <span class="text-white-50 d-flex" style="font-size: 0.7rem;"><i class="bi bi-heart-fill"></i><div class="ms-2" th:text="| ${aArt.likeCount}|"></div></span>
+                    </div>
+                </a>
+            </div>
+        </div>
 
-    <!-- 태그 모달 -->
+        <h5 class="fw-bold mb-3">다른 작품 추천</h5>
+        <div class="row g-3 mb-5" id="art-list-container">
+            <div class="col-6 col-md-3" th:each="aArt : ${initialArts}">
+                <a th:href="@{/content/detail/{id}(id=${aArt.id})}" class="art-grid-item">
+                    <img th:src="${aArt.thumbnailUrl}" class="art-grid-img">
+                    <div class="art-grid-overlay">
+                        <span class="small fw-bold text-truncate text-white" th:text="${aArt.title}"></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="row g-3 mb-5" id="art-list-container">
+        </div>
+
+        <div id="loading-spinner" class="text-center my-5 d-none">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted fw-bold">새로운 작품을 불러오는 중...</p>
+        </div>
+    </div> 
+    
+    <footer class="full-footer">
+        <div class="container py-5">
+            <div class="row mb-4">
+                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+                    <h6 class="fw-bold mb-3">정보 센터</h6>
+                    <ul class="list-unstyled small opacity-75">
+                        <li>이용 안내</li>
+                        <li>공지사항</li>
+                        <li>고객센터</li>
+                        <li>광고문의</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-line">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+                    <span>이용 약관</span>
+                    <span>개인 정보 보호 정책</span>
+                </div>
+                <div class="col-md-4 text-center small opacity-50">
+                    © 2026 creatival All rights reserved.
+                </div>
+                <div class="col-md-4 text-end">
+                    <img th:src="@{/images/creatival-Photoroom.png}" alt="logo" width="140">
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -269,6 +366,52 @@
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+    let page = 0;
+    let loading = false;
+    let hasNext = true;
 
+    function loadMoreArts() {
+        if (loading || !hasNext) return;
+
+        loading = true;
+        
+        // 1. 로딩 스피너 표시
+        const spinner = document.getElementById('loading-spinner');
+        const container = document.getElementById('art-list-container');
+        spinner.classList.remove('d-none');
+
+        // 테스트를 위해 로딩을 보고 싶다면 서버에서 지연을 주거나, 
+        // 아래 fetch를 setTimeout으로 아주 약간 감싸보세요.
+        fetch(`/content/art/more?page=${page}`)
+            .then(response => response.text())
+            .then(html => {
+                // 1. 공백을 제거한 실제 텍스트가 있는지 확인
+                const trimmedHtml = html.trim();
+                
+                if (trimmedHtml === "") {
+                    console.log("더 이상 불러올 데이터가 없습니다.");
+                    hasNext = false; // 여기서 멈춤
+                } else {
+                    container.insertAdjacentHTML('beforeend', trimmedHtml);
+                    page++; // 다음 페이지 번호 증가
+                    console.log("현재 로딩된 페이지:", page);
+                }
+            })
+            .catch(err => console.error("로딩 실패:", err))
+            .finally(() => {
+                // 2. 로딩 완료 후 스피너 숨기기
+                loading = false;
+                spinner.classList.add('d-none');
+            });
+    }
+
+    // 스크롤 이벤트
+    window.onscroll = function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
+            loadMoreArts();
+        }
+    };
+    </script>	
 </div>
 </html>

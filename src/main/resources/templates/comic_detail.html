@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 <head>
     <style>
         /* 만화 전용 추가 스타일 */
@@ -36,6 +36,18 @@
             background-color: #fff;
         }
 
+		.tag-area { margin-top: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+       .tag-item { color: #3b82f6; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; }
+       .tag-delete-btn {
+           color: #ff5e3a; font-size: 12px; margin-left: 4px; 
+           cursor: pointer; text-decoration: none; font-weight: bold;
+       }
+       .tag-add-trigger {
+           width: 24px; height: 24px; border-radius: 50%; border: 1px solid #3b82f6;
+           color: #3b82f6; background: none; display: flex; align-items: center; 
+           justify-content: center; font-size: 16px; cursor: pointer; transition: 0.2s;
+       }
+       .tag-add-trigger:hover { background: #3b82f6; color: white; }
         .btn-action i {
             font-size: 1.8rem;
             margin-bottom: 5px;
@@ -56,6 +68,19 @@
 
         /* 기타 보조 버튼 */
         .admin-btns { display: flex; flex-direction: column; gap: 5px; }
+
+        /* ===== [추가된 섹션 전용 스타일] ===== */
+        /* 1. 작품 계보 스타일 */
+        .lineage-box { background-color: #f8f9fa; border-radius: 12px; padding: 20px; border: 1px solid #e9ecef; }
+        .lineage-card { display: flex; align-items: center; gap: 12px; background: #fff; padding: 12px; border-radius: 10px; text-decoration: none !important; border: 1px solid #dee2e6; transition: all 0.2s ease; }
+        .lineage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-color: #adb5bd; }
+        .lineage-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+
+        /* 2. 작품 갤러리 그리드 스타일 */
+        .art-grid-item { position: relative; display: block; border-radius: 12px; overflow: hidden; aspect-ratio: 1 / 1; text-decoration: none !important; }
+        .art-grid-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .art-grid-item:hover .art-grid-img { transform: scale(1.08); }
+        .art-grid-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%); padding: 25px 12px 10px; display: flex; flex-direction: column; }
     </style>
 </head>
 
@@ -63,55 +88,77 @@
     <div class="container pt-5 mb-5">
         <div class="row align-items-center">
             <div class="col-md-4 text-center mb-4 mb-md-0">
-                <img src="images/pic.png" alt="만화 썸네일" class="comic-thumbnail" />
+                <img class="comic-thumbnail" th:src="${comic.thumbnailUrl != null ? comic.thumbnailUrl : '/images/pic.png'}" alt="표지">
             </div>
             
             <div class="col-md-8">
                 <div class="comic-info-card shadow-sm">
                     <div class="mb-3">
-                        <span class="badge bg-primary mb-2">월요웹툰</span>
-                        <h1 class="fw-bold mb-1">만화 제목</h1>
-                        <p class="text-muted fs-5 mb-2">작가명 : <span class="text-dark">홍길동 / 임꺽정</span></p>
+                        <h1 class="fw-bold mb-1" th:text="${comic.title}">만화 제목</h1>
+                        <p class="text-muted fs-5 mb-2">작가명 : <span class="text-dark" th:text="|${comic.username}(${comic.displayname})|">홍길동 / 임꺽정</span></p>
                     </div>
 
                     <div class="d-flex gap-4 mb-3 text-secondary border-bottom pb-3">
-                        <span><i class="bi bi-eye"></i> 조회수 1.2M</span>
-                        <span><i class="bi bi-heart-fill text-danger"></i> 추천수 45,000</span>
+                        <span class="d-flex"><i class="bi bi-eye"></i> 조회수 <div class="ms-2" th:text="${comic.viewCount}"></div></span>
+                        <span class="d-flex"><i class="bi bi-heart-fill text-danger"></i> 추천수<div class="ms-2" id="likeCount" th:text="${like.count}"></div></span>
                     </div>
 
-                    <p class="comic-description text-secondary mb-4" style="line-height: 1.8;">
-                        이곳에 만화의 줄거리가 들어갑니다. 주인공이 역경을 딛고 성장하는 흥미진진한 판타지 대작! 
+                    <p class="comic-description text-secondary mb-4" style="line-height: 1.8;" th:text="${comic.description}">
+                        이곳에 만화의 줄거리가 들어갑니다.
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse cum nobis amet fugiat asperiores 
                         harum quas nisi nesciunt aut itaque quisquam non iure illo necessitatibus.
                     </p>
 
-                    <div class="mb-4">
-                        <a href="#" class="tag-badge">#판타지</a>
-                        <a href="#" class="tag-badge">#먼치킨</a>
-                        <a href="#" class="tag-badge">#성장물</a>
+					<div class="tag-area">
+                        <div class="mb-2">
+                            <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal">
+                                <span th:text="'#' + ${tag.tagText}"></span>
+                                <a sec:authorize="isAuthenticated()"
+                                   th:if="${comic.username == #authentication.name}"
+                                   th:href="@{/tag/comic/deleteContentTag(tagId=${tag.id},contentId=${comic.id})}"
+                                   class="text-white ms-1"
+                                   onclick="return confirm('삭제하시겠습니까?');">
+                                    <i class="bi bi-x-circle-fill" style="font-size: 0.7rem;"></i>
+                                </a>
+                            </div>
+
+                            <button type="button"
+                                    sec:authorize="isAuthenticated()"
+                                    th:if="${comic.username == #authentication.name}"
+                                    class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-1"
+                                    style="width:24px;height:24px; vertical-align: middle;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#tagAddModal">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="action-buttons">
-                        <button type="button" class="btn btn-action btn-like">
-                            <i class="bi bi-heart-fill"></i>
-                            <span>좋아요</span>
-                        </button>
-                        <button type="button" class="btn btn-action btn-star">
-                            <i class="bi bi-star-fill"></i>
-                            <span>즐겨찾기</span>
-                        </button>
-                        <button type="button" class="btn btn-action btn-bookmark">
-                            <i class="bi bi-bookmark-fill"></i>
-                            <span>북마크</span>
-                        </button>
-                        <button type="button" class="btn btn-action btn-share">
-                            <i class="bi bi-share-fill"></i>
-                            <span>공유</span>
-                        </button>
+						<button class="btn-action" 
+		                        th:onclick="|location.href='@{/content/comic/update/{id}(id=${comic.id})}'|"
+		                        th:if="${comic.username == #authentication.name}">
+		                    <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
+		                    <span>수정하기</span>
+		                </button>
+
+		                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${comic.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
+		                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
+		                    <span>좋아요</span>
+		                </button>
+
+		                <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${comic.id}, 'CONTENT')|">
+		                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+		                    <span>북마크</span>
+		                </button>
+
+		                <button class="btn-action btn-share">
+		                    <i class="bi bi-share-fill"></i>
+		                    <span>공유</span>
+		                </button>
                         
                         <div class="admin-btns ms-2">
                             <button class="btn btn-primary text-white">팔로우</button>
-                            <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-pencil-square me-1"></i> 수정하기</button>
                         </div>
                     </div>
 
@@ -121,54 +168,110 @@
         </div>
     </div>
 
-    <div class="container mb-5">
-        <div class="row">
-            <div class="col-md-10 mx-auto">
-                <h4 class="fw-bold mb-4 border-bottom pb-2">회차 리스트 (총 123화)</h4>
-                
-                <div class="list-group list-group-flush shadow-sm rounded border">
-                    <a th:href="@{/comic_viewer}" class="list-group-item list-group-item-action py-3">
-                        <div class="d-flex align-items-center">
-                            <img src="images/pic.png" class="episode-img me-3 shadow-sm" alt="123화 썸네일">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold">123화 - 새로운 시작의 서막</h6>
-                                <span class="text-muted small">2026.02.12</span>
-                            </div>
-                            <div class="text-end text-muted small d-none d-md-block">
-                                <span><i class="bi bi-heart"></i> 1.2k</span>
-                            </div>
-                        </div>
-                    </a>
+	<div class="container mb-5">
+	    <div class="col-12 text-end mb-3" th:if="${comic.username == loginUsername}">
+	        <a th:href="@{'/content/comic/episode/write/' + ${comic.id}}"
+	           class="btn btn-outline-dark btn-sm">회차 추가</a>
+	    </div>
 
-                    <a href="#" class="list-group-item list-group-item-action py-3">
-                        <div class="d-flex align-items-center">
-                            <img src="images/pic.png" class="episode-img me-3 shadow-sm" alt="122화 썸네일">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold">122화 - 위기의 순간</h6>
-                                <span class="text-muted small">2026.02.05</span>
-                            </div>
-                            <div class="text-end text-muted small d-none d-md-block">
-                                <span><i class="bi bi-heart"></i> 1.1k</span>
-                            </div>
-                        </div>
-                    </a>
+	    <div class="row">
+	        <div class="col-md-10 mx-auto">
 
-                    <a href="#" class="list-group-item list-group-item-action py-3 text-center text-secondary small">
-                        이전 회차 더보기
-                    </a>
-                </div>
+	            <h4 class="fw-bold mb-4 border-bottom pb-2">
+	                회차 리스트 (총 <span th:text="${paging.totalElements}">0</span>화)
+	            </h4>
 
-                <nav aria-label="Page navigation" class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled"><a class="page-link">이전</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
+	            <div class="list-group list-group-flush shadow-sm rounded border">
+
+	                <div th:each="episode : ${paging}"
+	                     class="list-group-item py-3">
+
+	                    <div class="d-flex align-items-center">
+	                        <a th:href="@{/content/comic/episode/{id}(id=${episode.id})}"
+	                           class="d-flex align-items-center text-decoration-none text-dark flex-grow-1">
+
+	                            <img th:src="${episode.thumbnailUrl != null ? episode.thumbnailUrl : '/images/pic.png'}"
+	                                 class="episode-img me-3 shadow-sm">
+
+	                            <div class="flex-grow-1">
+	                                <h6 class="mb-1 fw-bold"
+	                                    th:text="|${episode.episodeNum}. ${episode.title}|">제목</h6>
+
+	                                <span class="text-muted small"
+	                                      th:text="${#temporals.format(episode.createdAt, 'yyyy.MM.dd')}">
+	                                </span>
+	                            </div>
+
+	                            <div class="text-end text-muted small d-none d-md-block me-3">
+	                                <span>
+	                                    <i class="bi bi-heart"></i>
+	                                    <span th:text="${episode.likeCount ?: 0}">0</span>
+	                                </span>
+	                            </div>
+	                        </a>
+
+	                        <div class="d-flex align-items-center gap-2 ms-2"
+	                             th:if="${comic.username == loginUsername}">
+	                            <a th:href="@{/content/comic/episode/update/{id}(id=${episode.id})}"
+	                               class="btn-action-text">
+	                                수정
+	                            </a>
+
+	                            <a th:href="@{/content/comic/episode/delete/{id}(id=${episode.id})}"
+	                               class="btn-action-text btn-action-delete"
+	                               onclick="return confirm('이 회차를 삭제하시겠습니까?');">
+	                                삭제
+	                            </a>
+	                        </div>
+	                    </div>
+	                </div>
+
+	                <div class="text-center py-3 text-muted small"
+	                     th:if="${paging.isEmpty()}">
+	                    등록된 회차가 없습니다.
+	                </div>
+
+	            </div>
+
+	            <nav class="mt-4 mb-5" th:if="${!paging.isEmpty()}">
+	                <ul class="pagination justify-content-center">
+
+	                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+	                        <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">이전</a>
+	                    </li>
+
+	                    <li class="page-item active">
+	                        <a class="page-link" th:text="${paging.number + 1}">1</a>
+	                    </li>
+
+	                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+	                        <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">다음</a>
+	                    </li>
+
+	                </ul>
+	            </nav>
+
+	        </div>
+	    </div>
+	</div>
+	<div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal" tabindex="-1">
+		        <div class="modal-dialog modal-dialog-centered modal-sm">
+		            <div class="modal-content">
+		                <form th:action="@{/tag/createContentComicTag/{id}(id=${comic.id})}" method="post">
+		                    <div class="modal-body">
+		                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
+		                        <div class="input-group">
+		                            <span class="input-group-text">#</span>
+		                            <input type="text" name="tagName" class="form-control" required>
+		                        </div>
+		                    </div>
+		                    <div class="modal-footer">
+		                        <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
+		                    </div>
+		                </form>
+		            </div>
+		        </div>
+		    </div>
 </div>
+	
 </html>

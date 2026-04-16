@@ -1,26 +1,20 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
-	  
-	  <head>
-	  	  				<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-	  	  				<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
-	  	  		</head>
+
+<head>
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+</head>
+
 <div class="container my-5" layout:fragment="content">
     
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
 
     <style>
-        /* ===== [공통] 카드형 액션 버튼 스타일 ===== */
-        .action-buttons-group { 
-            display: flex; 
-            gap: 10px; 
-            /* justify-content를 flex-end로 수정하여 우측 정렬 */
-            justify-content: flex-end; 
-            margin-bottom: 15px; 
-            flex-wrap: wrap; 
-        }
+        .action-buttons-group { display: flex; gap: 10px; justify-content: flex-md-end; margin-bottom: 15px; flex-wrap: wrap; }
         .btn-action {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             width: 75px; height: 75px; background-color: #ffffff; border: 1px solid #e9ecef;
@@ -37,6 +31,257 @@
         .tag-badge { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 6px 12px; color: #495057; font-weight: 500; }
         .hover-card { transition: transform 0.2s ease; }
         .hover-card:hover { transform: translateY(-3px); }
+
+        /* ===== 프로젝트 소식 보드 (팀 보드 느낌으로 통일) ===== */
+        .post-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #E9ECEF;
+            margin-bottom: 30px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .post-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+        }
+
+        .post-header-area {
+            background-color: #F8F9FF;
+            padding: 2rem 2.2rem;
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        .notice-header {
+            background-color: #EEF0FF;
+        }
+
+        .tag-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tag-common {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .project-tag { background-color: #3B4371; }
+        .notice-tag { background-color: #3B4371; }
+        .normal-tag { background-color: #dfe3f8; color: #3B4371; }
+
+        .post-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin-bottom: 1.2rem;
+            word-break: keep-all;
+            line-height: 1.4;
+            color: #212529;
+        }
+
+        .post-title-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .post-title-link:hover .post-title {
+            color: #3B4371;
+        }
+
+        .post-content {
+            padding: 2rem 2.2rem;
+            line-height: 1.8;
+            font-size: 1.02rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #495057;
+        }
+
+        .author-img {
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #e9ecef;
+        }
+
+        .meta-line {
+            color: #888;
+            font-size: 0.88rem;
+        }
+
+        .post-image-wrapper {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid #E9ECEF;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .team-board-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: #3B4371;
+            text-decoration: none;
+        }
+
+        .team-board-more:hover {
+            color: #23295a;
+        }
+
+        .text-primary-custom {
+            color: #3B4371 !important;
+        }
+
+        .text-primary-custom:hover {
+            color: #23295a !important;
+        }
+
+        @media (max-width: 768px) {
+            .post-header-area,
+            .post-content {
+                padding: 1.4rem;
+            }
+
+            .post-title {
+                font-size: 1.2rem;
+            }
+        }
+		.team-board-highlight {
+		    background: #fff;
+		    border: 1px solid #e9ecef;
+		    border-radius: 18px;
+		    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+		    overflow: hidden;
+		}
+
+		.team-board-highlight.notice {
+		    border-color: #3B4371;
+		    box-shadow: 0 8px 24px rgba(59,67,113,0.12);
+		}
+
+		.team-board-head {
+		    padding: 1.25rem 1.5rem;
+		    background: #f8f9ff;
+		    border-bottom: 1px solid #eef1f4;
+		}
+
+		.team-board-highlight.notice .team-board-head {
+		    background: #eef0ff;
+		}
+
+		.team-board-type {
+		    display: inline-flex;
+		    align-items: center;
+		    gap: 6px;
+		    padding: 6px 12px;
+		    border-radius: 999px;
+		    font-size: 0.78rem;
+		    font-weight: 700;
+		    margin-bottom: 0.9rem;
+		}
+
+		.team-board-type.notice {
+		    background: #3B4371;
+		    color: #fff;
+		}
+
+		.team-board-type.update {
+		    background: #eef0ff;
+		    color: #3B4371;
+		}
+
+		.team-board-title {
+		    font-size: 1.25rem;
+		    font-weight: 800;
+		    color: #212529;
+		    text-decoration: none;
+		    display: inline-block;
+		    margin-bottom: 0.85rem;
+		}
+
+		.team-board-title:hover {
+		    color: #3B4371;
+		}
+
+		.team-board-meta {
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between;
+		    gap: 12px;
+		    flex-wrap: wrap;
+		}
+
+		.team-board-author {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		}
+
+		.team-board-author img {
+		    width: 42px;
+		    height: 42px;
+		    object-fit: cover;
+		    border-radius: 50%;
+		    border: 1px solid #dee2e6;
+		}
+
+		.team-board-meta-text {
+		    font-size: 0.85rem;
+		    color: #6c757d;
+		}
+
+		.team-board-body {
+		    padding: 1.5rem;
+		}
+
+		.team-board-text {
+		    color: #495057;
+		    line-height: 1.75;
+		    white-space: pre-wrap;
+		    word-break: break-word;
+		    margin-bottom: 1rem;
+		}
+
+		.team-board-image {
+		    width: 100%;
+		    max-height: 320px;
+		    object-fit: cover;
+		    border-radius: 14px;
+		    border: 1px solid #e9ecef;
+		}
+
+		.team-board-more {
+		    display: inline-flex;
+		    align-items: center;
+		    gap: 6px;
+		    margin-top: 1rem;
+		    text-decoration: none;
+		    font-weight: 700;
+		    color: #3B4371;
+		}
+
+		.team-board-more:hover {
+		    color: #1f245c;
+		}
     </style>
 
     <div class="row mb-5 pb-4 border-bottom align-items-end">
@@ -56,17 +301,22 @@
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
                     <span>좋아요</span>
                 </button>
-			    <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn" class="btn-action btn-bookmark">
+                <button th:onclick="|toggleBookmark(${dto.id}, 'PROJECT')|" id="bookmarkBtn" class="btn-action btn-bookmark">
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>
                 </button>
-			    <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>	
+                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>    
             </div>
 
             <div class="d-flex justify-content-lg-end gap-2 mt-3">
-                <button class="btn btn-outline-secondary btn-sm px-3 rounded-pill fw-medium">대표 게시물로 고정</button>
+                <button sec:authorize="isAuthenticated()" class="btn btn-outline-secondary btn-sm px-3 rounded-pill fw-medium">
+                    대표 게시물로 고정
+                </button>
                 <a th:href="@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}"
-                   class="btn btn-dark btn-sm px-3 rounded-pill fw-medium">수정하기</a>
+                   sec:authorize="isAuthenticated()"
+                   class="btn btn-dark btn-sm px-3 rounded-pill fw-medium">
+                    수정하기
+                </a>
             </div>
         </div>
     </div>
@@ -81,10 +331,74 @@
                 <div class="lh-lg text-body-secondary fs-6" th:utext="${dto.description}">프로젝트 소개 내용</div>
             </section>
 
+			<!-- 프로젝트 팀 보드 하이라이트 -->
+			<section class="mb-5" th:if="${teamBoard != null}">
+			    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+			        <h4 class="fw-bold mb-0">프로젝트 최신 소식</h4>
+
+			        <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard#board-${teamBoard.id}|"
+			           class="text-decoration-none small text-muted">
+			            전체 보기 >
+			        </a>
+			    </div>
+
+			    <div class="team-board-highlight" th:classappend="${teamBoard.notice} ? ' notice' : ''">
+			        <div class="team-board-head">
+			            <div class="team-board-type"
+			                 th:classappend="${teamBoard.notice} ? ' notice' : ' update'">
+			                <i class="bi" th:classappend="${teamBoard.notice} ? ' bi-megaphone-fill' : ' bi-pencil-square'"></i>
+			                <span th:text="${teamBoard.notice} ? '공지사항' : '업데이트'">공지사항</span>
+			            </div>
+
+			            <div>
+			                <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard#board-${teamBoard.id}|"
+			                   class="team-board-title"
+			                   th:text="${teamBoard.title}">
+			                    게시글 제목
+			                </a>
+			            </div>
+
+			            <div class="team-board-meta">
+			                <div class="team-board-author">
+			                    <img th:src="${teamBoard.profileImgUrl != null ? teamBoard.profileImgUrl : '/images/default-profile.png'}" alt="작성자">
+			                    <div>
+			                        <div class="fw-bold small" th:text="${teamBoard.displayname}">작성자</div>
+			                        <div class="team-board-meta-text">
+			                            <span th:text="${teamBoard.username}">@username</span>
+			                            <span class="mx-1">·</span>
+			                            <span th:text="${#temporals.format(teamBoard.createdAt, 'yyyy.MM.dd HH:mm')}">2026.04.16 12:00</span>
+			                        </div>
+			                    </div>
+			                </div>
+
+			                <div class="team-board-meta-text"
+			                     th:if="${teamBoard.updatedAt != null and !teamBoard.updatedAt.equals(teamBoard.createdAt)}">
+			                    수정됨 ·
+			                    <span th:text="${#temporals.format(teamBoard.updatedAt, 'yyyy.MM.dd HH:mm')}">2026.04.16 13:00</span>
+			                </div>
+			            </div>
+			        </div>
+
+			        <div class="team-board-body">
+			            <div class="team-board-text" th:text="${teamBoard.text}">게시글 내용</div>
+
+			            <img th:if="${teamBoard.imgUrl != null}"
+			                 th:src="${teamBoard.imgUrl}"
+			                 class="team-board-image"
+			                 alt="프로젝트 게시글 이미지">
+
+			            <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard#board-${teamBoard.id}|"
+			               class="team-board-more">
+			                자세히 보기 <i class="bi bi-arrow-right"></i>
+			            </a>
+			        </div>
+			    </div>
+			</section>
+
             <section class="mb-5">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
                     <h4 class="fw-bold mb-0">프로젝트 콘텐츠</h4>
-                    <a th:href="@{/Illustration_list}" class="text-decoration-none small text-primary fw-medium">전체 보기 <i class="bi bi-chevron-right"></i></a>
+                    <a th:href="@{/}" class="text-decoration-none small text-primary fw-medium">전체 보기 <i class="bi bi-chevron-right"></i></a>
                 </div>
                 
                 <div class="row row-cols-2 row-cols-md-3 g-4">
@@ -137,7 +451,7 @@
                             <h6 class="fw-bold small text-muted mb-0">버전</h6>
                             <a th:href="@{/team/{tid}/project/{pid}/history(tid=${dto.teamId}, pid=${dto.id})}" class="text-decoration-none small text-primary">역사 보기 <i class="bi bi-clock-history"></i></a>
                         </div>
-                        <span class="badge bg-dark px-3 py-2 rounded-pill" th:text="${log != null ? log.versionTag : 'v1.0.0'}">v1.0.0</span>
+                        <span class="badge bg-dark px-3 py-2 rounded-pill" th:text="${log != null ? log.versionTag : '현재 버전이 등록되어있지 않습니다.'}">v1.0.0</span>
                     </div>
                 </div>
             </div>
@@ -178,18 +492,75 @@
                 </div>
             </div>
 
+            <div class="d-grid mb-4">
+                <button class="btn btn-light btn-lg border-0 rounded-4 shadow-sm fw-bold text-dark hover-card"><i class="bi bi-megaphone-fill text-warning me-2"></i> 프로젝트 홍보하기</button>
+            </div>
 
-			
-			<div class="d-grid gap-2 mb-4"> <a th:href="@{/team_project_board}" class="btn btn-light btn-lg border-0 rounded-4 shadow-sm fw-bold text-dark hover-card d-flex align-items-center justify-content-center">
-			        <i class="bi bi-megaphone me-2"></i>프로젝트 게시판 이동
-			    </a>
-			    <a href="#" class="btn btn-light btn-lg border-0 rounded-4 shadow-sm fw-bold text-dark hover-card d-flex align-items-center justify-content-center">
-			        리딤코드 발급받기
-			    </a>
-			</div>
+        </div>
+    </div>
 
+    <div class="modal fade" id="createCheckModal" tabindex="-1" sec:authorize="isAuthenticated()">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <form th:action="@{/team/createCheck/{id}(id=${dto.id})}" method="post">
+                    <div class="modal-header border-bottom-0 pb-0 mt-2 px-4">
+                        <h5 class="modal-title fw-bold">새 계획 추가</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body px-4 py-4">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-muted small">제목</label>
+                            <input type="text" name="title" class="form-control form-control-lg bg-light border-0" placeholder="계획을 입력하세요" required>
+                        </div>
+                        <div>
+                            <label class="form-label fw-semibold text-muted small">마감 기한</label>
+                            <input type="datetime-local" name="deadline" class="form-control bg-light border-0">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 pt-0 px-4 mb-2">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">추가하기</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const token = document.querySelector('meta[name="_csrf"]')?.content;
+        const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+        const checkboxes = document.querySelectorAll(".progress-check");
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+
+        function updateProgressUI() {
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+            
+            if (progressBar) {
+                progressBar.style.transition = "width 0.5s ease-in-out";
+                progressBar.style.width = percent + "%";
+            }
+            if (progressText) progressText.innerText = percent + "%";
+        }
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener("change", function () {
+                updateProgressUI();
+                if (header && token) {
+                    fetch("/team/check/update", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", [header]: token },
+                        body: JSON.stringify({ id: this.dataset.id, checked: this.checked })
+                    }).catch(err => console.error("Update failed:", err));
+                }
+            });
+        });
+
+        updateProgressUI();
+    });
+    </script>
+</div>
 </html>

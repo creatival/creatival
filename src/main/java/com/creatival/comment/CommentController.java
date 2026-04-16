@@ -16,6 +16,7 @@ import com.creatival.board.Board;
 import com.creatival.board.BoardService;
 import com.creatival.content.Content;
 import com.creatival.content.ContentService;
+import com.creatival.content.Episode;
 import com.creatival.tag.TagService;
 import com.creatival.team.TeamService;
 import com.creatival.user.UserService;
@@ -318,24 +319,26 @@ public class CommentController {
 	
 	@PostMapping("/episode/write/{id}")
 	public String createCommentForEpisode(@PathVariable("id") Long id, @RequestParam("text") String text, Principal principal, RedirectAttributes redirectAttributes) {
+		Episode episode = contentService.getEpisodeById(id);
 		if(principal == null) {
 			redirectAttributes.addFlashAttribute("isLogMsg", true);
-			return "redirect:/content/novel/episode/"+id;
+			return "redirect:/content/"+episode.getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+id;
 		}
 		Users user = userService.getUserByUsername(principal.getName());
 		try {
 			commentService.createCommentForEpisode(id, text, user);
-			return "redirect:/content/novel/episode/"+id;
+			return "redirect:/content/"+episode.getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+id;
 		} catch (Exception e) {
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 관리자께 문의바랍니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+id;
+			return "redirect:/content/"+episode.getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+id;
 		}
 	}
 	@PostMapping("/episode/update/{id}")
 	public String updateCommentForEpisode(@PathVariable("id") Long id,@RequestParam("text") String text, Principal principal, RedirectAttributes redirectAttributes) {
 		Comment comment = commentService.getCommentById(id);
+		
 		if(comment== null) {
 			redirectAttributes.addFlashAttribute("message", "수정할려는 댓글을 찾을 수 없습니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
@@ -344,24 +347,24 @@ public class CommentController {
 		if(principal == null) {
 			redirectAttributes.addFlashAttribute("message", "댓글을 수정하기 위해서는 로그인이 필수입니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		}
 		
 		if(!comment.getUser().getUsername().equals(principal.getName())) {
 			redirectAttributes.addFlashAttribute("message", "작성자 본인만 수정할 수 있습니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		}
 		try {
 			redirectAttributes.addFlashAttribute("message", "수정 완료되었습니다.");
 			redirectAttributes.addFlashAttribute("icon", "success");
 			commentService.updateCommentForContent(id, text);
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		} catch (Exception e) {
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 관리자께 문의바랍니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		}
 	}
 	
@@ -376,19 +379,19 @@ public class CommentController {
 		if(principal == null) {
 			redirectAttributes.addFlashAttribute("message", "댓글을 수정하기 위해서는 로그인이 필수입니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		}
 		
 		if(!comment.getUser().getUsername().equals(principal.getName()) || !comment.getEpisode().getSeries().getContent().getUser().getUsername().equals(principal.getName())) {
 			redirectAttributes.addFlashAttribute("message", "작성자 본인 혹은 콘텐츠 생성자만 삭제할 수 있습니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		}
 		
 		commentService.delete(comment);
 		redirectAttributes.addFlashAttribute("message", "삭제되었습니다.");
 		redirectAttributes.addFlashAttribute("icon", "success");
-		return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+		return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 	}
 	
 	@PostMapping("/episode/reply/write/{id}")
@@ -398,17 +401,17 @@ public class CommentController {
 		if(principal == null) {
 			redirectAttributes.addFlashAttribute("message", "댓글을 작성하기 위해서는 로그인이 필수입니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		}
 		Users user = userService.getUserByUsername(principal.getName());
 		try {
 			commentService.createCommentForComment(id, text, user);
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		} catch (Exception e) {
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 관리자께 문의바랍니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/novel/episode/"+comment.getEpisode().getId();
+			return "redirect:/content/"+comment.getEpisode().getSeries().getContent().getType().toString().toLowerCase()+"/episode/"+comment.getEpisode().getId();
 		}
 	}
 }

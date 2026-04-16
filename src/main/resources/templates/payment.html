@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>PortOne 후원 테스트</title>
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            margin-bottom: 8px;
+        }
+        .desc {
+            color: #555;
+            margin-bottom: 24px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .row {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        input, select, button, textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .pay-btn {
+            background: #111;
+            color: white;
+        }
+        .server-btn {
+            background: #2d6cdf;
+            color: white;
+            margin-top: 8px;
+        }
+        .result {
+            white-space: pre-wrap;
+            background: #f7f7f7;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 120px;
+        }
+        .hint {
+            color: #777;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>PortOne 후원 테스트</h1>
+    <p class="desc">
+        결제 요청 후 성공하면 paymentId를 서버로 보내서 후원 완료 처리까지 테스트하는 페이지
+    </p>
+
+    <div class="card">
+        <div class="row">
+            <label for="storeId">storeId</label>
+            <input id="storeId" value="store-9e24dee6-82a9-48c5-b561-4aa2bf124ba1" />
+        </div>
+
+        <div class="row">
+            <label for="channelKey">channelKey</label>
+            <input id="channelKey" value="channel-key-4c22d196-f552-424e-8ce7-e73d0209b77a" />
+        </div>
+
+        <div class="row">
+            <label for="orderName">주문명</label>
+            <input id="orderName" value="후원 테스트" />
+        </div>
+
+        <div class="row">
+            <label for="amount">결제 금액</label>
+            <input id="amount" type="number" value="1000" />
+        </div>
+
+        <div class="row">
+            <label for="currency">통화</label>
+            <select id="currency">
+                <option value="KRW" selected>KRW</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <label for="payMethod">결제수단</label>
+            <select id="payMethod">
+                <option value="CARD" selected>CARD</option>
+                <option value="EASY_PAY">EASY_PAY</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <label for="customerName">구매자명</label>
+            <input id="customerName" value="테스트사용자" />
+        </div>
+
+        <div class="row">
+            <label for="customerEmail">구매자 이메일</label>
+            <input id="customerEmail" value="test@test.com" />
+        </div>
+
+        <div class="row">
+            <label for="paymentId">paymentId</label>
+            <input id="paymentId" />
+            <div class="hint">비워두면 자동 생성됨. V2에서는 고객사가 직접 만드는 주문 고유 번호다.</div>
+        </div>
+
+        <button class="pay-btn" onclick="requestPayment()">결제 요청</button>
+        <button class="server-btn" onclick="completeOnServer()">서버 후원 완료 호출</button>
+    </div>
+
+    <div class="card">
+        <label>결과 로그</label>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+		const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+		const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+        let lastPaymentId = null;
+
+        function log(message, data) {
+            const result = document.getElementById("result");
+            const text = typeof data === "undefined"
+                ? String(message)
+                : `${message}\n${JSON.stringify(data, null, 2)}`;
+            result.textContent = text;
+            console.log(message, data ?? "");
+        }
+
+        function generatePaymentId() {
+            const now = Date.now();
+            return `order_test_${now}`;
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("paymentId").value = generatePaymentId();
+        });
+
+		async function requestPayment() {
+		    const merchantUid = (await fetch("/api/sponsorship/create", {
+		        method: "POST",
+				headers: {
+				        [csrfHeader]: csrfToken
+				    }
+		    }).then(res => res.text())).trim();
+
+		    console.log("merchantUid=", merchantUid, "length=", merchantUid.length);
+
+		    document.getElementById("paymentId").value = merchantUid;
+
+		    const storeId = document.getElementById("storeId").value.trim();
+		    const channelKey = document.getElementById("channelKey").value.trim();
+		    const orderName = document.getElementById("orderName").value.trim();
+		    const totalAmount = Number(document.getElementById("amount").value);
+		    const currency = document.getElementById("currency").value;
+		    const payMethod = document.getElementById("payMethod").value;
+		    const customerName = document.getElementById("customerName").value.trim();
+		    const customerEmail = document.getElementById("customerEmail").value.trim();
+
+		    const paymentId = merchantUid;
+
+		    try {
+		        log("결제 요청 시작", {
+		            storeId,
+		            channelKey,
+		            paymentId,
+		            paymentIdLength: paymentId.length,
+		            orderName,
+		            totalAmount,
+		            currency,
+		            payMethod
+		        });
+
+		        const response = await PortOne.requestPayment({
+		            storeId,
+		            channelKey,
+		            paymentId,
+		            orderName,
+		            totalAmount,
+		            currency,
+		            payMethod,
+		            customer: {
+		                fullName: customerName,
+		                email: customerEmail
+		            }
+		        });
+
+		        log("PortOne 응답", response);
+		    } catch (error) {
+		        log("예외 발생", error);
+		        alert("예외 발생. 콘솔/로그 확인");
+		    }
+		}
+
+        async function completeOnServer() {
+            const paymentId = document.getElementById("paymentId").value.trim() || lastPaymentId;
+
+            if (!paymentId) {
+                alert("paymentId가 없습니다.");
+                return;
+            }
+
+            try {
+                const url = `/api/webhook/admin/payment/retry?paymentId=${encodeURIComponent(paymentId)}&merchantUid=${encodeURIComponent(paymentId)}`;
+                const response = await fetch(url);
+                const text = await response.text();
+
+                log("서버 완료 처리 응답", { status: response.status, body: text });
+
+                if (response.ok) {
+                    alert("서버 완료 처리 성공: " + text);
+                } else {
+                    alert("서버 완료 처리 실패: " + text);
+                }
+            } catch (error) {
+                log("서버 호출 예외", error);
+                alert("서버 호출 실패");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,9 +27,17 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.creatival.MailService;
+import com.creatival.bookmark.BookmarkService;
+import com.creatival.content.Content;
+import com.creatival.content.ContentFileService;
 import com.creatival.content.ContentService;
+import com.creatival.content.DTO.ResponseContentListForProject;
+import com.creatival.content.Enum.ContentType;
 import com.creatival.follow.FollowService;
+import com.creatival.like.LikeService;
+import com.creatival.like.Likes;
 import com.creatival.like.TargetType;
+import com.creatival.like.repository.LikeRepository;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.team.TeamService;
@@ -49,6 +58,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/user")
 public class UserController {
 
+    private final ContentFileService contentFileService;
+
     private final MailService mailService;
 	private final UserService userService;
 	private final UserTokenService userTokenService;
@@ -56,6 +67,8 @@ public class UserController {
 	private final FollowService followService;
 	private final TeamService teamService;
 	private final ContentService contentService;
+	private final LikeService likeService;
+	private final BookmarkService bookmarkService;
 	
 	@GetMapping("/signUp")
 	public String signup(Model model) {
@@ -107,6 +120,11 @@ public class UserController {
 		model.addAttribute("novels", contentService.getNovelByUser(user));
 		model.addAttribute("musics", contentService.getMusicByUser(user));
 		model.addAttribute("videos", contentService.getVideoByUser(user));
+		List<ResponseContentListForProject> contentList = likeService.myPageLikePreview(user, TargetType.CONTENT);
+		List<ResponseContentListForProject> bookmarkContentList = bookmarkService.myPageBookmarkPreview(user, TargetType.CONTENT);
+		model.addAttribute("bookmarkContentPreview", bookmarkContentList);
+		
+		model.addAttribute("likeContentPreview", contentList);
 		return "mypage_home";
 	}
 	
@@ -127,6 +145,11 @@ public class UserController {
 		model.addAttribute("novels", contentService.getNovelByUserOnlyPublic(user));
 		model.addAttribute("musics", contentService.getMusicByUserOnlyPublic(user));
 		model.addAttribute("videos", contentService.getVideoByUserOnlyPublic(user));
+		List<ResponseContentListForProject> contentList = likeService.myPageLikePreview(user, TargetType.CONTENT);
+		model.addAttribute("likeContentPreview", contentList);
+		
+		List<ResponseContentListForProject> bookmarkContentList = bookmarkService.myPageBookmarkPreview(user, TargetType.CONTENT);
+		model.addAttribute("bookmarkContentPreview", bookmarkContentList);
 		return "mypage_home";
 	}
 	

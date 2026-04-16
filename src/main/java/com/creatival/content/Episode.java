@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.creatival.comment.Comment;
 import com.creatival.user.userRole;
 
 import jakarta.persistence.CascadeType;
@@ -60,6 +61,8 @@ public class Episode {
 	
 	@Builder.Default
 	private Long viewCount=0L;
+	@Builder.Default
+	private Long likeCount=0L;
 	
 	@Lob
 	private String note;
@@ -75,4 +78,6 @@ public class Episode {
 	@OneToMany(mappedBy = "episode", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ContentFile> contentFile;
 	
+	@OneToMany(mappedBy = "episode" ,cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> comments;
 }

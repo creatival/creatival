@@ -37,7 +37,7 @@ public class ContentFileService {
 				System.out.println("트라이 시작");
 				String fileName = fileUtil.saveImage(file, category);
 				String fileUrl="/upload/images/"+category+"/" + fileName;
-				ContentFile contentFile = ContentFile.createForContent("ART", fileUrl, fileName, file.getOriginalFilename() , sortOrder, content);
+				ContentFile contentFile = ContentFile.createForContent(category.toUpperCase(), fileUrl, fileName, file.getOriginalFilename() , sortOrder, content);
 				System.out.println("저장된 ID: " + contentFile.getId());
 				contentFileRepository.save(contentFile);
 			} catch (Exception e) {
@@ -67,9 +67,7 @@ public class ContentFileService {
 	}
 	
 	public ContentFile getContentFileThumbnail(Content content) {
-		if(content.getType() == ContentType.NOVEL) {
-			return null;
-		}
+	
 		ContentFile contentFile = contentFileRepository.findTopByContentOrderBySortOrderAsc(content);
 		return contentFile;
 	}
@@ -146,5 +144,79 @@ public class ContentFileService {
 			throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + file.getOriginalFilename(), e);
 		}
 		
+	}
+	public ContentFile getContentFileThumbnailForEpisode(Episode episode) {
+		if(episode==null) {
+			return null;
+		}
+		return contentFileRepository.findTop1ByEpisodeOrderBySortOrder(episode);
+		
+	}
+	public void createContentFileImageForForEpisode(Episode episode, List<MultipartFile> files, String category) {
+		if(files == null || files.isEmpty()) {
+			new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		int sortOrder=1;
+		int testNum=1;
+		System.out.println(files.size());
+		for(MultipartFile file : files) {
+			System.out.println(testNum + "번째 반복함");
+			if(file.isEmpty()) {
+				continue;
+			}
+			try {
+				System.out.println("트라이 시작");
+				String fileName = fileUtil.saveImage(file, category);
+				String fileUrl="/upload/images/"+category+"/" + fileName;
+				ContentFile contentFile = ContentFile.createForEpisode(category.toUpperCase(), fileUrl, fileName, file.getOriginalFilename() , sortOrder, episode);
+				System.out.println("저장된 ID: " + contentFile.getId());
+				contentFileRepository.save(contentFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + file.getOriginalFilename(), e);
+			}
+			sortOrder++;
+		}
+	}
+	@Transactional
+	public void updateContentFileImageForForEpisode(Episode episode, List<MultipartFile> files, String category) {
+		if(files == null || files.isEmpty()) {
+			new IllegalArgumentException("파일이 비어있습니다.");
+		}
+		int sortOrder=contentFileRepository.findMaxSortOrderByEpisode(episode) + 1;;
+		int testNum=1;
+		System.out.println(files.size());
+		for(MultipartFile file : files) {
+			System.out.println(testNum + "번째 반복함");
+			if(file.isEmpty()) {
+				continue;
+			}
+			try {
+				System.out.println("트라이 시작");
+				String fileName = fileUtil.saveImage(file, category);
+				String fileUrl="/upload/images/"+category+"/" + fileName;
+				ContentFile contentFile = ContentFile.createForEpisode(category.toUpperCase(), fileUrl, fileName, file.getOriginalFilename() , sortOrder, episode);
+				System.out.println("저장된 ID: " + contentFile.getId());
+				contentFileRepository.save(contentFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("파일 저장 및 DB 기록 중 오류 발생: " + file.getOriginalFilename(), e);
+			}
+			sortOrder++;
+		}
+		normalizeEpisodeFileSortOrder(episode);
+	}
+	
+	@Transactional
+	public void normalizeEpisodeFileSortOrder(Episode episode) {
+	    List<ContentFile> files = contentFileRepository.findByEpisodeOrderBySortOrder(episode);
+
+	    int order = 1;
+	    for (ContentFile file : files) {
+	        file.setSortOrder(order++);
+	    }
+	}
+	public List<ContentFile> getContentFileByEpisode(Episode episode) {
+		return contentFileRepository.findByEpisodeOrderBySortOrder(episode);
 	}
 }

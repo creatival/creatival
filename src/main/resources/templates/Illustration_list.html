@@ -4,53 +4,41 @@
 
 <head>
     <style>
+        /* 1. 카테고리 아이콘 */
+        .category-item { 
+            transition: all 0.3s ease; 
+            text-decoration: none !important;
+        }
+        
+        .icon-box {
+            width: 80px; 
+            height: 80px; 
+            background-color: #F8F9FA;
+            border-radius: 22px;
+            margin: 0 auto 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
 
-		.category-item { 
-		        transition: all 0.3s ease; 
-		        text-decoration: none !important;
-		    }
-		    
-		    .icon-box {
-		        width: 80px; 
-		        height: 80px; 
-		        background-color: #F8F9FA; /* 기본 연회색 배경 */
-		        border-radius: 22px;
-		        margin: 0 auto 12px; 
-		        display: flex; 
-		        align-items: center; 
-		        justify-content: center;
-		        overflow: hidden;
-		        border: 1px solid #eee;
-		        transition: all 0.3s ease;
-		    }
+        .category-icon-img {
+            width: 100%;       
+            height: 100%;      
+            object-fit: contain; 
+            padding: 18px;
+            transition: transform 0.3s ease;
+        }
 
-		    .category-icon-img {
-		        width: 100%;       
-		        height: 100%;      
-		        object-fit: contain; 
-		        padding: 18px; /* 아이콘 크기 통일 */
-		        transition: transform 0.3s ease;
-		    }
-
-		    /* 호버 시 디자인 변경: Creatival 오렌지색 적용 */
-		    .category-item:hover { 
-		        transform: translateY(-8px); 
-		    }
-		    
-
-
-		    .category-item:hover .category-icon-img {
-		        transform: scale(1.1); /* 아이콘 살짝 확대 */
-		    }
-
-		    .category-item .fw-bold {
-		        color: #3B4371; /* 브랜드 네이비 */
-		        font-size: 0.95rem;
-		        transition: color 0.3s ease;
-		    }
-
-
-		
+        .category-item:hover { transform: translateY(-8px); }
+        .category-item:hover .category-icon-img { transform: scale(1.1); }
+        .category-item .fw-bold {
+            color: #3B4371;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
 
         /* 2. 일러스트 카드 */
         .illust-card { transition: transform 0.2s; border: none; background: none; }
@@ -63,94 +51,97 @@
             position: relative;
         }
 
-        /* 3. 시안과 동일한 밑줄 페이지네이션 */
+        /* 3. 밑줄 페이지네이션 */
         .custom-pagination .page-link {
             border: none; color: #333; font-weight: 700;
             background: none; padding: 2px 10px; font-size: 1.1rem;
         }
         .custom-pagination .page-item.active .page-link {
             background: none; color: #333;
-            border-bottom: 3px solid #f05a28; /* 주황-빨강 밑줄 */
+            border-bottom: 3px solid #f05a28;
             border-radius: 0;
         }
         .custom-pagination .page-link:hover { color: #f05a28; }
 
-        /* 4. 딥 블루 푸터 스타일 (이미지 색상 반영) */
-        .full-footer {
-            background-color: #0b152d !important; 
-            color: white !important;
-            width: 100%;
-            margin-top: 80px;
-        }
-        .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
-        .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+        /* 4. 추가 버튼 스타일 */
+        .btn-register { font-size: 0.85rem; color: #888; text-decoration: none; cursor: pointer; }
+        .btn-register:hover { color: #f05a28; }
         
-        .tag-text { color: #4dabf7; font-size: 0.8rem; }
-        .btn-register { font-size: 0.85rem; color: #888; text-decoration: none; }
+        .btn-code-modal {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 4px 15px;
+            font-size: 0.8rem;
+            color: #666;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn-code-modal:hover {
+            background-color: #f05a28;
+            color: white;
+            border-color: #f05a28;
+        }
     </style>
 </head>
 
 <th:block layout:fragment="content">
-	<section class="py-5 bg-white">
-	    <div class="container">
-	        <div class="row text-center g-4 justify-content-center">
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/comic_list}" class="text-decoration-none text-dark category-item d-block">
-	                    <div class="icon-box shadow-sm">
-	                        <img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화">
-	                    </div>
-	                    <div class="fw-bold">만화</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/music_list}" class="text-decoration-none text-dark category-item d-block">
-	                    <div class="icon-box shadow-sm">
-	                        <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
-	                    </div>
-	                    <div class="fw-bold">음악</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/video_list}" class="text-decoration-none text-dark category-item d-block">
-	                    <div class="icon-box shadow-sm">
-	                        <img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오">
-	                    </div>
-	                    <div class="fw-bold">비디오</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/content/novel_list}" class="text-decoration-none text-dark category-item d-block">
-	                    <div class="icon-box shadow-sm">
-	                        <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
-	                    </div>
-	                    <div class="fw-bold">소설</div>
-	                </a>
-	            </div>
-
-	            <div class="col-4 col-md-2">
-	                <a th:href="@{/file_list}" class="text-decoration-none text-dark category-item d-block">
-	                    <div class="icon-box shadow-sm">
-	                        <img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일">
-	                    </div>
-	                    <div class="fw-bold">파일</div>
-	                </a>
-	            </div>
-
-	        </div>
-	    </div>
-	</section>
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row text-center g-4 justify-content-center">
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/comic_list}" class="text-decoration-none text-dark category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화">
+                        </div>
+                        <div class="fw-bold">만화</div>
+                    </a>
+                </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/music_list}" class="text-decoration-none text-dark category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
+                        </div>
+                        <div class="fw-bold">음악</div>
+                    </a>
+                </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/video_list}" class="text-decoration-none text-dark category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오">
+                        </div>
+                        <div class="fw-bold">비디오</div>
+                    </a>
+                </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/novel_list}" class="text-decoration-none text-dark category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
+                        </div>
+                        <div class="fw-bold">소설</div>
+                    </a>
+                </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/file_list}" class="text-decoration-none text-dark category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일">
+                        </div>
+                        <div class="fw-bold">파일</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <div class="container text-center mb-5">
-        <div class="mb-2">
-			<a href="#"
-			   onclick="return requireLoginAction(() => location.href='/content/art/create')"
-			   class="btn-register">
-			   일러스트 등록하기
-			</a>
+        <div class="mb-3 d-flex justify-content-center align-items-center gap-3">
+            <a href="#" onclick="return requireLoginAction(() => location.href='/content/art/create')" class="btn-register">
+               일러스트 등록하기
+            </a>
+            <span class="text-muted" style="font-size: 0.8rem;">|</span>
+            <button type="button" class="btn-code-modal" data-bs-toggle="modal" data-bs-target="#keyRegisterModal">
+                <i class="bi bi-key-fill me-1"></i>코드 등록
+            </button>
         </div>
         <h3 class="fw-bold mb-4">추천 일러스트</h3>
         
@@ -206,6 +197,62 @@
         </nav>
     </div>
 
-    
+    <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">제품 코드 등록</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-3 mb-4 text-muted small">
+                        보유하고 계신 제품 코드(16자리)를 입력해 주세요.<br>
+                        (예: ABCD-EFGH-IJKL-MNOP)
+                    </p>
+                    <input type="text" id="productKeyInput" class="form-control form-control-lg text-center font-monospace" 
+                           placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn text-white px-4" style="background-color: #f05a28;" onclick="submitProductKey()">코드 활성화</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyInput = document.getElementById('productKeyInput');
+            if (keyInput) {
+                keyInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
+                    e.target.value = result;
+                });
+            }
+        });
+
+        function submitProductKey() {
+            const keyInput = document.getElementById('productKeyInput');
+            const val = keyInput.value;
+            if(val.length < 19) {
+                alert('코드를 정확히 입력해 주세요 (16자리).');
+                return;
+            }
+            alert('코드 [' + val + '] 등록이 요청되었습니다.');
+            
+            const modalElement = document.getElementById('keyRegisterModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+            keyInput.value = '';
+        }
+    </script>
 </th:block>
 </html>
