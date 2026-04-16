@@ -1,6 +1,24 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div class="container" layout:fragment="content">
     <style>
+        /* ===== [수정] 후원하기 버튼 스타일 (아이콘 없이 글자만) ===== */
+        .btn-boost {
+            background-color: #f05a28 !important;
+            border-color: #f05a28 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px; /* 네이비 버튼과 높이 밸런스 유지 */
+            transition: all 0.2s;
+        }
+        .btn-boost:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            color: #ffffff !important;
+        }
+
         /* [1. 전체 레이아웃 및 본문 스타일] */
         .detail-container { max-width: 800px; margin: 0 auto; position: relative; }
         .back-btn { position: absolute; left: -60px; top: 5px; font-size: 1.5rem; color: #333; text-decoration: none; }
@@ -10,8 +28,8 @@
         .section-divider { border: none; border-top: 1px solid #eee; margin: 40px 0; }
         .content-area { font-size: 1.1rem; line-height: 1.8; color: #444; min-height: 150px; }
 
-        /* [2. 액션 버튼 - 좋아요, 팔로우, 북마크, 공유] */
-        .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
+        /* [2. 액션 버튼 그룹] */
+        .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap; }
         .btn-action { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; }
         .btn-action:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .btn-action i { font-size: 1.8rem; margin-bottom: 5px; }
@@ -20,20 +38,15 @@
         .btn-follow i { color: #323b6d; }
         .btn-share i { color: #2D3278; }
 
-        /* [3. 첨부파일 디자인 - 카드형 프리뷰] */
+        /* [3. 첨부파일 및 태그] */
         .file-box-wrapper { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .file-preview-box { 
-            background-color: #f8f9fa; width: 160px; height: 110px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            border-radius: 12px; text-decoration: none; color: #666; 
-            transition: all 0.2s; border: 1px solid #eee; 
-        }
+        .file-preview-box { background-color: #f8f9fa; width: 160px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; text-decoration: none; color: #666; transition: all 0.2s; border: 1px solid #eee; }
         .file-preview-box:hover { background-color: #fff; border-color: #323b6d; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); color: #323b6d; }
         .btn-download-sm { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; margin-top: 8px; }
         .tag-badge { background-color: #f1f3f5; color: #495057; padding: 6px 14px; margin: 4px; font-weight: 500; border: none; }
 
-        /* [4. 네이비 버튼 및 하단 섹션 스타일] */
-        .btn-navy { background-color: #323b6d; color: white; padding: 10px 30px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+        /* [4. 네이비 버튼 및 계보 디자인] */
+        .btn-navy { background-color: #323b6d; color: white; height: 45px; display: inline-flex; align-items: center; padding: 0 30px; border-radius: 6px; font-weight: 600; text-decoration: none; }
         .lineage-box { background: #f8f9fa; padding: 1.2rem; border-radius: 1rem; border: 1px solid #eee; }
         .lineage-card { display: flex; align-items: center; gap: 12px; padding: 10px; background: white; border-radius: 12px; text-decoration: none; border: 1px solid transparent; transition: all 0.2s; }
         .lineage-card:hover { border-color: #323b6d; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -97,11 +110,15 @@
                     <a th:href="@{|/content/file/edit/${fileDetail.id}|}" class="text-muted text-decoration-none small me-3">수정</a>
                     <a th:href="@{|/content/file/delete/${fileDetail.id}|}" class="text-danger text-decoration-none small" onclick="return confirm('삭제?')">삭제</a>
                 </div>
-                <a th:href="@{/content/file/list}" class="btn btn-navy px-5">목록보기</a>
+
+                <div class="ms-auto d-flex gap-2">
+                    <a href="#" class="btn btn-boost shadow-sm px-4 rounded-pill">후원하기</a>
+                    <a th:href="@{/content/file/list}" class="btn btn-navy px-5">목록보기</a>
+                </div>
             </div>
 
             <hr class="section-divider">
-
+            
             <div th:if="${fileDetail.allowComment}" class="comment-section mb-5">
                 <h5 class="text-center fw-bold mb-4">댓글</h5>
                 <form th:action="@{/comment/content/write/{id}(id=${fileDetail.id})}" method="post" class="d-flex align-items-center justify-content-center mb-5">
@@ -158,16 +175,6 @@
                     </a>
                 </div>
             </div>
-
-            <h5 class="fw-bold mb-3 mt-5">다른 추천 작품</h5>
-            <div class="row g-3 mb-5">
-                <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,8)}">
-                    <a href="#" class="art-grid-item">
-                        <img src="https://dummyimage.com/300x300/dee2e6/6c757d" class="art-grid-img">
-                    </a>
-                </div>
-            </div>
-
         </div>
     </main>
 </div>

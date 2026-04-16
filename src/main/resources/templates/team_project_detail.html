@@ -27,6 +27,25 @@
         .btn-like i { color: #ff4757; }
         .btn-bookmark i { color: #2D3278; }
 
+        /* ===== 추가된 후원하기 스타일 ===== */
+        .btn-boost-orange {
+            background-color: #f05a28 !important;
+            border: none !important;
+            color: white !important;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-boost-orange:hover {
+            background-color: #d44a1d !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 90, 40, 0.2);
+        }
+        .btn-action.btn-boost-card {
+            background-color: #fff2ee;
+            border-color: #f05a28;
+            color: #f05a28;
+        }
+
         .progress { background-color: #f1f3f5; border-radius: 10px; }
         .tag-badge { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 6px 12px; color: #495057; font-weight: 500; }
         .hover-card { transition: transform 0.2s ease; }
@@ -297,6 +316,7 @@
         
         <div class="col-lg-5 text-lg-end">
             <div class="action-buttons-group">
+
                 <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${dto.id},'PROJECT')|" th:classappend="${like.liked ? ' active' : ''}">
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
                     <span>좋아요</span>
@@ -492,8 +512,11 @@
                 </div>
             </div>
 
-            <div class="d-grid mb-4">
+            <div class="d-grid gap-3 mb-4">
                 <button class="btn btn-light btn-lg border-0 rounded-4 shadow-sm fw-bold text-dark hover-card"><i class="bi bi-megaphone-fill text-warning me-2"></i> 프로젝트 홍보하기</button>
+                <button class="btn btn-boost-orange btn-lg rounded-4 shadow-sm fw-bold hover-card" onclick="location.href='/team_boost'">
+                    <i class="bi bi-lightning-charge-fill me-2"></i> 프로젝트 후원하기
+                </button>
             </div>
 
         </div>

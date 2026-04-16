@@ -25,6 +25,13 @@
         }
         .art-grid-item:hover .art-grid-overlay { opacity: 1; }
         .art-grid-item:hover .art-grid-img { transform: scale(1.05); }
+		
+		.btn-boost{
+					background-color: #f05a28 !important; /* 배경색 변경 */
+					    border-color: #f05a28 !important;     /* 테두리색 변경 */
+					    color: #ffffff !important;            /* 글자색을 흰색으로 고정 */
+		}
+		
     </style>
 
     <div class="row g-5" th:if="${music != null}">
@@ -72,14 +79,18 @@
         </div>
 
         <div class="col-12 col-md-7 col-lg-8">
-            <ul class="nav nav-tabs mb-4" id="musicTab" role="tablist">
-                <li class="nav-item">
-                    <button class="nav-link active text-dark fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button">곡 정보</button>
-                </li>
-                <li class="nav-item" th:if="${music.allowComment}">
-                    <button class="nav-link text-dark fw-bold" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button">댓글</button>
-                </li>
-            </ul>
+			<ul class="nav nav-tabs mb-4" id="musicTab" role="tablist">
+			    <li class="nav-item">
+			        <button class="nav-link active text-dark fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button">곡 정보</button>
+			    </li>
+			    <li class="nav-item" th:if="${music.allowComment}">
+			        <button class="nav-link text-dark fw-bold" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button">댓글</button>
+			    </li>
+
+			    <li class="nav-item ms-auto">
+			        <button class="btn btn-boost shadow-sm">후원하기</button>
+			    </li>
+			</ul>
 
             <div class="tab-content" id="musicTabContent">
                 <div class="tab-pane fade show active" id="info" role="tabpanel">

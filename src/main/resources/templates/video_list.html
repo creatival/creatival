@@ -1,4 +1,6 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+
 <div class="container my-5" layout:fragment="content">
 
     <style>
@@ -42,7 +44,7 @@
                 </a>
             </div>
             <div class="col-4 col-md-2">
-                <a th:href="@{/content/novel_list}" class="category-item d-block">
+                <a th:href="@{/content/novel/list}" class="category-item d-block">
                     <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
                     <div class="fw-bold">소설</div>
                 </a>

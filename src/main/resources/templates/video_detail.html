@@ -1,6 +1,13 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" >
+
 <div class="container my-5" layout:fragment="content">
-    
+	<style>
+		.btn-boost{
+					background-color: #f05a28 !important; /* 배경색 변경 */
+					    border-color: #f05a28 !important;     /* 테두리색 변경 */
+					    color: #ffffff !important;            /* 글자색을 흰색으로 고정 */
+		}
+	</style>
     <div class="row g-4" th:if="${video != null}">
         <div class="col-12 col-lg-8">
             
@@ -30,7 +37,7 @@
                     <i id="followIcon" class="bi me-1" th:classappend="${follow.followed ? ' bi-person-check' : ' bi-person-add'}"></i>
                     <span th:text="${follow.followed ? '팔로잉' : '팔로우'}">팔로우</span>
                 </button>
-
+				<button class="btn btn-boost shadow-sm">후원하기</button>
                 <div class="d-flex gap-2">
                     <div class="btn-group shadow-sm" role="group">
                         <button th:onclick="|toggleLike(${video.id}, 'CONTENT')|" id="likeBtn" type="button" class="btn btn-light border-secondary-subtle d-flex align-items-center">

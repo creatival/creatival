@@ -1,6 +1,7 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-<div class="container my-5" layout:fragment="content">
+<div class="container-fluid" layout:fragment="content">
     <style>
+        /* 1. 카테고리 아이콘 */
         .category-item { transition: all 0.3s ease; text-decoration: none !important; }
         .icon-box {
             width: 80px; height: 80px; background-color: #F8F9FA;
@@ -16,41 +17,47 @@
         .category-item:hover .category-icon-img { transform: scale(1.1); }
         .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; transition: color 0.3s ease; }
         
-        /* 음악 카드 호버 효과 */
+        /* 2. 음악 카드 전용 스타일 */
         .card:hover .hover-overlay { opacity: 1 !important; }
-        .object-fit-cover { object-fit: cover; }
+        .object-fit-cover { object-fit: cover; width: 100%; height: 100%; }
+        
+        /* 제품 코드 전용 폰트 스타일 */
+        #productKeyInput {
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
     </style>
     
     <section class="py-5 bg-white">
         <div class="container">
             <div class="row text-center g-4 justify-content-center">
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/Illustration_list}" class="category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
+                    <a th:href="@{/content/art/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
                         <div class="fw-bold">일러스트</div>
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/comic_list}" class="category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
+                    <a th:href="@{/content/comic/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
                         <div class="fw-bold">만화</div>
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/video_list}" class="category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오"></div>
+                    <a th:href="@{/content/video/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm"><img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오"></div>
                         <div class="fw-bold">비디오</div>
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/novel_list}" class="category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
+                    <a th:href="@{/content/novel/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
                         <div class="fw-bold">소설</div>
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/file_list}" class="category-item d-block">
-                        <div class="icon-box"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
+                    <a th:href="@{/content/file/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
                         <div class="fw-bold">파일</div>
                     </a>
                 </div>
@@ -58,59 +65,64 @@
         </div>
     </section>
     
-    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-        <div>
-            <h2 class="fw-bold mb-0">음악</h2>
-            <p class="text-muted mb-0 mt-2">다양한 장르의 음악을 감상해 보세요.</p>
-        </div>
-        
-        <div class="d-flex gap-2 align-items-center">
-            <button type="button" class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#keyRegisterModal">
-                <i class="bi bi-key-fill me-2"></i>
-                <span class="fw-bold">코드 등록</span>
-            </button>
+    <div class="container mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+            
+            <div style="flex: 1;">
+                <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
+                    <i class="bi bi-house-door-fill me-2"></i>
+                    <span class="fw-bold">홈으로 가기</span>
+                </a>
+            </div>
 
-            <a onclick="return requireLoginAction(() => location.href='/content/music/write')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
-                <i class="bi bi-music-note-list me-2"></i>
-                <span class="fw-bold">음악 등록</span>
-            </a>
+            <div class="text-center" style="flex: 2;">
+                <h2 class="fw-bold mb-0">추천 음악</h2>
+                <p class="text-muted mb-0 mt-1 small">다양한 장르의 감각적인 음악을 감상해 보세요.</p>
+            </div>
 
-            <div class="d-none d-sm-block ms-1">
-                <div class="btn-group" role="group">
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-                    <label class="btn btn-outline-secondary btn-sm" for="btnradio1">최신순</label>
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm" for="btnradio2">인기순</label>
-                </div>
+            <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
+                <button type="button" class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#keyRegisterModal" style="height: 38px;">
+                    <i class="bi bi-key-fill me-2"></i>
+                    <span class="fw-bold">코드 등록</span>
+                </button>
+
+                <a onclick="return requireLoginAction(() => location.href='/content/music/write')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm" style="cursor:pointer; height: 38px;">
+                    <i class="bi bi-music-note-list me-2"></i>
+                    <span class="fw-bold">음악 등록</span>
+                </a>
+
+                
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mb-5">
-        <div th:if="${#lists.isEmpty(musicList)}" class="col-12 text-center py-5">
-            <p class="text-muted">등록된 음악이 없습니다.</p>
-        </div>
+    <div class="container mb-5">
+        <div class="row g-4">
+            <div th:if="${#lists.isEmpty(musicList)}" class="col-12 text-center py-5">
+                <p class="text-muted">등록된 음악이 없습니다.</p>
+            </div>
 
-        <div class="col-6 col-md-4 col-lg-3" th:each="music : ${musicList}">
-            <a th:href="@{|/content/music/detail/${music.id}|}" class="text-decoration-none text-dark">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="ratio ratio-1x1 position-relative bg-light rounded-top overflow-hidden">
-                        <img th:src="${music.thumbnailUrl != null ? music.thumbnailUrl : 'https://dummyimage.com/400x400/ced4da/6c757d&text=No+Image'}" 
-                             class="object-fit-cover" th:alt="${music.title}">
-                        
-                        <div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25 opacity-0 hover-overlay" style="transition: opacity 0.2s;">
-                            <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem;"></i>
+            <div class="col-6 col-md-4 col-lg-3" th:each="music : ${musicList}">
+                <a th:href="@{|/content/music/detail/${music.id}|}" class="text-decoration-none text-dark">
+                    <div class="card border-0 shadow-sm h-100 illust-card">
+                        <div class="ratio ratio-1x1 position-relative bg-light rounded-top overflow-hidden">
+                            <img th:src="${music.thumbnailUrl != null ? music.thumbnailUrl : '/images/music_default.png'}" 
+                                 class="object-fit-cover" th:alt="${music.title}">
+                            
+                            <div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25 opacity-0 hover-overlay" style="transition: opacity 0.2s;">
+                                <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem;"></i>
+                            </div>
+                            
+                            <span th:if="${music.projectName != null}" class="badge bg-primary position-absolute top-0 start-0 m-2 z-1" th:text="${music.projectName}">프로젝트</span>
                         </div>
                         
-                        <span th:if="${music.projectName != null}" class="badge bg-primary position-absolute top-0 start-0 m-2 z-1" th:text="${music.projectName}">프로젝트명</span>
+                        <div class="card-body p-3 text-center">
+                            <h6 class="card-title fw-bold text-truncate mb-1" th:text="${music.title}">곡 제목</h6>
+                            <p class="text-muted small mb-0 text-truncate" th:text="${music.displayname}">작성자</p>
+                        </div>
                     </div>
-                    
-                    <div class="card-body p-3 text-center">
-                        <h6 class="card-title fw-bold text-truncate mb-1" th:text="${music.title}">곡 제목</h6>
-                        <p class="text-muted small mb-0 text-truncate" th:text="${music.displayname}">작성자</p>
-                    </div>
-                </div>
-            </a>
+                </a>
+            </div>
         </div>
     </div>
 

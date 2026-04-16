@@ -244,4 +244,13 @@ public class MainController {
 	public String aboutUs() {
 		return "about_us";
 	}
+	@GetMapping("/creator_profile_boost")
+	public String creator_profile_boost() {
+		return "creator_profile_boost";
+	}
+	
+	@GetMapping("/buy_detail")
+	public String buy_detail() {
+		return "buy_detail";
+	}
 }

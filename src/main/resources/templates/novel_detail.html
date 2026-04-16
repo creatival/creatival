@@ -8,6 +8,13 @@
 	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
 		    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
     <style>
+        /* ===== 추가된 후원하기 버튼 스타일 ===== */
+        .btn-boost {
+            background-color: #f05a28 !important;
+            border-color: #f05a28 !important;
+            color: #ffffff !important;
+        }
+
         /* ===== 전체 레이아웃 ===== */
         .novel-container { max-width: 1100px; margin: 60px auto; }
         
@@ -39,7 +46,7 @@
             min-height: 200px; line-height: 1.8; position: relative;
         }
 
-        /* ===== [수정] 태그 스타일 (이미지 UI 최적화) ===== */
+        /* ===== 태그 스타일 (이미지 UI 최적화) ===== */
         .tag-area { margin-top: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
         .tag-item { color: #3b82f6; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; }
         .tag-delete-btn {
@@ -59,12 +66,10 @@
         .episode-item {
             padding: 20px 25px; position: relative; background: white; margin-bottom: 15px;
         }
-        /* 이미지의 좌측 포인트 바 */
         .episode-item::before {
             content: ""; width: 5px; height: 60%; background: #2f3e75;
             position: absolute; left: 0; top: 20%;
         }
-        /* 이미지의 하단 그라데이션 라인 */
         .episode-item::after {
             content: ""; position: absolute; bottom: 0; left: 25px; right: 0;
             height: 1.5px; background: linear-gradient(to right, #ffb199, #ff0844); opacity: 0.6;
@@ -77,8 +82,8 @@
             background: none !important; color: #ff5e3a !important; border-bottom: 3px solid #ff5e3a; 
         }
 
-        /* ===== [신규] 버튼 액션 디자인 ===== */
-        .action-buttons { display: flex; gap: 12px; margin-top: 25px; }
+        /* ===== 버튼 액션 디자인 ===== */
+        .action-buttons { display: flex; gap: 12px; margin-top: 25px; align-items: center; }
         .btn-action {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             width: 75px; height: 80px; background: white; border: 1px solid #dee2e6;
@@ -167,40 +172,45 @@
             <div class="action-buttons">
                 <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${novel.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
                 <button type="button" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
+                
+                <div class="ms-auto">
+                    <button class="btn btn-boost shadow-sm px-4 py-2 fw-bold rounded-pill">후원하기</button>
+                </div>
             </div>
-			<h5 class="fw-bold mb-4 ">작품 계보</h5>
-									<div class="row g-4 mb-5 bg-light">
-									    <div class="col-md-6">
-									        <div class="lineage-box h-100">
-									            <h6 class="text-muted fw-bold mb-3">
-									                <i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품
-									            </h6>
-									            <a href="#" class="lineage-card">
-									                <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
-									                <div class="overflow-hidden">
-									                    <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
-									                    <div class="small text-muted text-truncate">@OriginalArtist</div>
-									                </div>
-									            </a>
-									        </div>
-									    </div>
-										<div class="col-md-6">
-																        <div class="lineage-box h-100 d-flex flex-column">
-																            <h6 class="text-muted fw-bold mb-3">
-																                <i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품
-																            </h6>
-																            <div class="d-flex flex-column gap-2 mb-3" style="max-height: 200px; overflow-y: auto;">
-																                <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,5)}">
-																                    <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
-																                    <div class="overflow-hidden">
-																                        <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
-																                        <div class="small text-muted text-truncate">@RemixCreator</div>
-																                    </div>
-																                </a>
-																            </div>
-																        </div>
-																    </div>
-																</div>
+
+			<h5 class="fw-bold mb-4 mt-5">작품 계보</h5>
+            <div class="row g-4 mb-5 bg-light p-3 rounded">
+                <div class="col-md-6">
+                    <div class="lineage-box h-100">
+                        <h6 class="text-muted fw-bold mb-3">
+                            <i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품
+                        </h6>
+                        <a href="#" class="lineage-card">
+                            <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
+                            <div class="overflow-hidden">
+                                <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
+                                <div class="small text-muted text-truncate">@OriginalArtist</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="lineage-box h-100 d-flex flex-column">
+                        <h6 class="text-muted fw-bold mb-3">
+                            <i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품
+                        </h6>
+                        <div class="d-flex flex-column gap-2 mb-3" style="max-height: 200px; overflow-y: auto;">
+                            <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,5)}">
+                                <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
+                                <div class="overflow-hidden">
+                                    <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
+                                    <div class="small text-muted text-truncate">@RemixCreator</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -239,42 +249,5 @@
         </ul>
     </nav>
 
-    <div class="modal fade" id="tagAddModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content">
-                <form th:action="@{/tag/createContentNovelTag/{id}(id=${novel.id})}" method="post">
-                    <div class="modal-header"><h6 class="modal-title fw-bold">새 태그 추가</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                    <div class="modal-body">
-                        <div class="input-group">
-                            <span class="input-group-text">#</span>
-                            <input type="text" name="tagName" class="form-control" placeholder="태그 입력" required maxlength="10">
-                        </div>
-                    </div>
-                    <div class="modal-footer p-2"><button type="submit" class="btn btn-primary btn-sm w-100">추가하기</button></div>
-                </form>
-            </div>
-        </div>
     </div>
-
-    <div class="modal fade" id="thumbnailUpdateModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title">소설 표지 변경</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <form th:action="@{/content/updateNovelThumbnail/{id}(id=${novel.id})}" method="post" enctype="multipart/form-data">
-                    <div class="modal-body text-center">
-                        <img id="thumbnailPreview" th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" class="mb-3 border" style="width:200px; height:270px; object-fit:cover;">
-                        <input class="form-control" type="file" id="thumbnailInput" name="thumbnailFile" accept="image/*" required>
-                    </div>
-                    <div class="modal-footer"><button type="submit" class="btn btn-dark w-100">변경하기</button></div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const thumbIn = document.getElementById('thumbnailInput');
-        const thumbPre = document.getElementById('thumbnailPreview');
-        if (thumbIn) { thumbIn.onchange = () => { const [f] = thumbIn.files; if (f) { thumbPre.src = URL.createObjectURL(f); } } }
-    </script>
-</div>
 </html>
