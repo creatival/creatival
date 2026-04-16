@@ -31,6 +31,257 @@
         .tag-badge { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 6px 12px; color: #495057; font-weight: 500; }
         .hover-card { transition: transform 0.2s ease; }
         .hover-card:hover { transform: translateY(-3px); }
+
+        /* ===== 프로젝트 소식 보드 (팀 보드 느낌으로 통일) ===== */
+        .post-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #E9ECEF;
+            margin-bottom: 30px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .post-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+        }
+
+        .post-header-area {
+            background-color: #F8F9FF;
+            padding: 2rem 2.2rem;
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        .notice-header {
+            background-color: #EEF0FF;
+        }
+
+        .tag-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tag-common {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .project-tag { background-color: #3B4371; }
+        .notice-tag { background-color: #3B4371; }
+        .normal-tag { background-color: #dfe3f8; color: #3B4371; }
+
+        .post-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin-bottom: 1.2rem;
+            word-break: keep-all;
+            line-height: 1.4;
+            color: #212529;
+        }
+
+        .post-title-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .post-title-link:hover .post-title {
+            color: #3B4371;
+        }
+
+        .post-content {
+            padding: 2rem 2.2rem;
+            line-height: 1.8;
+            font-size: 1.02rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #495057;
+        }
+
+        .author-img {
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #e9ecef;
+        }
+
+        .meta-line {
+            color: #888;
+            font-size: 0.88rem;
+        }
+
+        .post-image-wrapper {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid #E9ECEF;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .team-board-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: #3B4371;
+            text-decoration: none;
+        }
+
+        .team-board-more:hover {
+            color: #23295a;
+        }
+
+        .text-primary-custom {
+            color: #3B4371 !important;
+        }
+
+        .text-primary-custom:hover {
+            color: #23295a !important;
+        }
+
+        @media (max-width: 768px) {
+            .post-header-area,
+            .post-content {
+                padding: 1.4rem;
+            }
+
+            .post-title {
+                font-size: 1.2rem;
+            }
+        }
+		.team-board-highlight {
+		    background: #fff;
+		    border: 1px solid #e9ecef;
+		    border-radius: 18px;
+		    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+		    overflow: hidden;
+		}
+
+		.team-board-highlight.notice {
+		    border-color: #3B4371;
+		    box-shadow: 0 8px 24px rgba(59,67,113,0.12);
+		}
+
+		.team-board-head {
+		    padding: 1.25rem 1.5rem;
+		    background: #f8f9ff;
+		    border-bottom: 1px solid #eef1f4;
+		}
+
+		.team-board-highlight.notice .team-board-head {
+		    background: #eef0ff;
+		}
+
+		.team-board-type {
+		    display: inline-flex;
+		    align-items: center;
+		    gap: 6px;
+		    padding: 6px 12px;
+		    border-radius: 999px;
+		    font-size: 0.78rem;
+		    font-weight: 700;
+		    margin-bottom: 0.9rem;
+		}
+
+		.team-board-type.notice {
+		    background: #3B4371;
+		    color: #fff;
+		}
+
+		.team-board-type.update {
+		    background: #eef0ff;
+		    color: #3B4371;
+		}
+
+		.team-board-title {
+		    font-size: 1.25rem;
+		    font-weight: 800;
+		    color: #212529;
+		    text-decoration: none;
+		    display: inline-block;
+		    margin-bottom: 0.85rem;
+		}
+
+		.team-board-title:hover {
+		    color: #3B4371;
+		}
+
+		.team-board-meta {
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between;
+		    gap: 12px;
+		    flex-wrap: wrap;
+		}
+
+		.team-board-author {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		}
+
+		.team-board-author img {
+		    width: 42px;
+		    height: 42px;
+		    object-fit: cover;
+		    border-radius: 50%;
+		    border: 1px solid #dee2e6;
+		}
+
+		.team-board-meta-text {
+		    font-size: 0.85rem;
+		    color: #6c757d;
+		}
+
+		.team-board-body {
+		    padding: 1.5rem;
+		}
+
+		.team-board-text {
+		    color: #495057;
+		    line-height: 1.75;
+		    white-space: pre-wrap;
+		    word-break: break-word;
+		    margin-bottom: 1rem;
+		}
+
+		.team-board-image {
+		    width: 100%;
+		    max-height: 320px;
+		    object-fit: cover;
+		    border-radius: 14px;
+		    border: 1px solid #e9ecef;
+		}
+
+		.team-board-more {
+		    display: inline-flex;
+		    align-items: center;
+		    gap: 6px;
+		    margin-top: 1rem;
+		    text-decoration: none;
+		    font-weight: 700;
+		    color: #3B4371;
+		}
+
+		.team-board-more:hover {
+		    color: #1f245c;
+		}
     </style>
 
     <div class="row mb-5 pb-4 border-bottom align-items-end">
@@ -79,6 +330,70 @@
                 <h4 class="fw-bold mb-4 border-bottom pb-3">프로젝트 소개</h4>
                 <div class="lh-lg text-body-secondary fs-6" th:utext="${dto.description}">프로젝트 소개 내용</div>
             </section>
+
+			<!-- 프로젝트 팀 보드 하이라이트 -->
+			<section class="mb-5" th:if="${teamBoard != null}">
+			    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+			        <h4 class="fw-bold mb-0">프로젝트 최신 소식</h4>
+
+			        <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard#board-${teamBoard.id}|"
+			           class="text-decoration-none small text-muted">
+			            전체 보기 >
+			        </a>
+			    </div>
+
+			    <div class="team-board-highlight" th:classappend="${teamBoard.notice} ? ' notice' : ''">
+			        <div class="team-board-head">
+			            <div class="team-board-type"
+			                 th:classappend="${teamBoard.notice} ? ' notice' : ' update'">
+			                <i class="bi" th:classappend="${teamBoard.notice} ? ' bi-megaphone-fill' : ' bi-pencil-square'"></i>
+			                <span th:text="${teamBoard.notice} ? '공지사항' : '업데이트'">공지사항</span>
+			            </div>
+
+			            <div>
+			                <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard#board-${teamBoard.id}|"
+			                   class="team-board-title"
+			                   th:text="${teamBoard.title}">
+			                    게시글 제목
+			                </a>
+			            </div>
+
+			            <div class="team-board-meta">
+			                <div class="team-board-author">
+			                    <img th:src="${teamBoard.profileImgUrl != null ? teamBoard.profileImgUrl : '/images/default-profile.png'}" alt="작성자">
+			                    <div>
+			                        <div class="fw-bold small" th:text="${teamBoard.displayname}">작성자</div>
+			                        <div class="team-board-meta-text">
+			                            <span th:text="${teamBoard.username}">@username</span>
+			                            <span class="mx-1">·</span>
+			                            <span th:text="${#temporals.format(teamBoard.createdAt, 'yyyy.MM.dd HH:mm')}">2026.04.16 12:00</span>
+			                        </div>
+			                    </div>
+			                </div>
+
+			                <div class="team-board-meta-text"
+			                     th:if="${teamBoard.updatedAt != null and !teamBoard.updatedAt.equals(teamBoard.createdAt)}">
+			                    수정됨 ·
+			                    <span th:text="${#temporals.format(teamBoard.updatedAt, 'yyyy.MM.dd HH:mm')}">2026.04.16 13:00</span>
+			                </div>
+			            </div>
+			        </div>
+
+			        <div class="team-board-body">
+			            <div class="team-board-text" th:text="${teamBoard.text}">게시글 내용</div>
+
+			            <img th:if="${teamBoard.imgUrl != null}"
+			                 th:src="${teamBoard.imgUrl}"
+			                 class="team-board-image"
+			                 alt="프로젝트 게시글 이미지">
+
+			            <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard#board-${teamBoard.id}|"
+			               class="team-board-more">
+			                자세히 보기 <i class="bi bi-arrow-right"></i>
+			            </a>
+			        </div>
+			    </div>
+			</section>
 
             <section class="mb-5">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">

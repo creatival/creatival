@@ -222,22 +222,22 @@
     <div class="board-form-wrapper">
 
         <div class="page-title-box">
-            <h1>게시글 작성</h1>
-            <p>팀 또는 프로젝트 공간에 새로운 공지나 업데이트를 등록하세요.</p>
+            <h1>게시글 수정</h1>
+            <p>기존 공지나 업데이트 내용을 수정할 수 있습니다.</p>
         </div>
 
         <div class="form-card">
             <div class="form-card-header">
-                <h2>새 게시글 작성</h2>
-                <p>중요 안내는 공지로, 일반 진행 상황은 업데이트로 등록하면 됩니다.</p>
+                <h2>게시글 수정</h2>
+                <p>공지 여부, 제목, 내용, 대표 이미지를 수정할 수 있습니다.</p>
             </div>
 
             <div class="form-card-body">
 
-                <!-- 팀 작성 -->
+                <!-- 팀 수정 -->
                 <form th:if="${teamId != null}"
-                      th:action="@{/team/{teamId}/teamBoard/create(teamId=${teamId})}"
-                      th:object="${createTeamBoardDTO}"
+                      th:action="@{/team/{teamId}/teamBoard/{boardId}/update(teamId=${teamId}, boardId=${updateTeamBoardDTO.Id})}"
+                      th:object="${updateTeamBoardDTO}"
                       method="post"
                       enctype="multipart/form-data">
 
@@ -267,13 +267,13 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="img" class="form-label">대표 이미지</label>
+                        <label for="img" class="form-label">대표 이미지 변경</label>
                         <input type="file"
                                id="img"
                                th:field="*{img}"
                                class="form-control"
                                accept="image/*">
-                        <div class="form-text">이미지는 1장만 업로드할 수 있습니다.</div>
+                        <div class="form-text">새 이미지를 업로드하면 기존 이미지가 변경됩니다.</div>
                         <div class="preview-box" id="imagePreviewBox">
                             <img id="imagePreview" src="" alt="미리보기 이미지">
                         </div>
@@ -290,20 +290,20 @@
                             </label>
                         </div>
                         <div class="notice-guide">
-                            체크하면 중요 공지로 분류되고, 해제하면 일반 업데이트 글로 등록됩니다.
+                            체크하면 중요 공지로 유지되고, 해제하면 일반 업데이트 글로 변경됩니다.
                         </div>
                     </div>
 
                     <div class="btn-area">
-                        <a th:href="@{/team/{teamId}/board(teamId=${teamId})}" class="btn-cancel">취소</a>
-                        <button type="submit" class="btn-submit">등록하기</button>
+                        <a th:href="@{/team/{teamId}/board/{boardId}(teamId=${teamId}, boardId=${boardId})}" class="btn-cancel">취소</a>
+                        <button type="submit" class="btn-submit">수정하기</button>
                     </div>
                 </form>
 
-                <!-- 프로젝트 작성 -->
+                <!-- 프로젝트 수정 -->
                 <form th:if="${projectId != null}"
-                      th:action="@{/team/project/{projectId}/teamBoard/create(projectId=${projectId})}"
-                      th:object="${createTeamBoardDTO}"
+                      th:action="@{/team/project/{projectId}/teamBoard/{boardId}/update(projectId=${projectId}, boardId=${updateTeamBoardDTO.Id})}"
+                      th:object="${updateTeamBoardDTO}"
                       method="post"
                       enctype="multipart/form-data">
 
@@ -333,13 +333,13 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="projectImg" class="form-label">대표 이미지</label>
+                        <label for="projectImg" class="form-label">대표 이미지 변경</label>
                         <input type="file"
                                id="projectImg"
                                th:field="*{img}"
-                               class="form-control image-input"
+                               class="form-control"
                                accept="image/*">
-                        <div class="form-text">이미지는 1장만 업로드할 수 있습니다.</div>
+                        <div class="form-text">새 이미지를 업로드하면 기존 이미지가 변경됩니다.</div>
                         <div class="preview-box" id="projectImagePreviewBox">
                             <img id="projectImagePreview" src="" alt="미리보기 이미지">
                         </div>
@@ -356,13 +356,13 @@
                             </label>
                         </div>
                         <div class="notice-guide">
-                            체크하면 중요 공지로 분류되고, 해제하면 일반 업데이트 글로 등록됩니다.
+                            체크하면 중요 공지로 유지되고, 해제하면 일반 업데이트 글로 변경됩니다.
                         </div>
                     </div>
 
                     <div class="btn-area">
-                        <a th:href="@{/team/project/{projectId}/board(projectId=${projectId})}" class="btn-cancel">취소</a>
-                        <button type="submit" class="btn-submit">등록하기</button>
+                        <a th:href="@{/team/project/{projectId}/board/{boardId}(projectId=${projectId}, boardId=${boardId})}" class="btn-cancel">취소</a>
+                        <button type="submit" class="btn-submit">수정하기</button>
                     </div>
                 </form>
 
