@@ -62,6 +62,121 @@
         .full-footer { background-color: #0b152d !important; color: white !important; width: 100%; margin-top: 0; }
         .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
         .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+        
+        /* 챗봇 섹션 스타일 */
+        .chatbot-container {
+            background-color: #f4f5f7;
+            border-radius: 24px; 
+            padding: 80px 50px; 
+            max-width: 1000px;  
+            margin: 0 auto;
+            position: relative;
+        }
+        .chat-bubble-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .chat-bubble-right {
+            justify-content: flex-end;
+            padding-right: 10px;
+        }
+        .chat-bubble-left {
+            justify-content: flex-start;
+            padding-left: 10px;
+            margin-bottom: 40px;
+        }
+        .bubble-shape-blue {
+            background-color: #7885b9;
+            height: 45px;
+            border-radius: 25px;
+            width: 55%;
+            margin-right: 15px;
+        }
+        .bubble-shape-orange {
+            background-color: #fcad8b;
+            height: 45px;
+            border-radius: 25px;
+            width: 55%;
+            margin-left: 15px;
+        }
+        .profile-circle-gray {
+            width: 45px;
+            height: 45px;
+            background-color: #d9d9d9;
+            border-radius: 50%;
+        }
+        .profile-mascot {
+            width: 45px;
+            height: 45px;
+            background-color: #9ac2e5; 
+            border-radius: 50%;
+            border: 2px solid #1a1a1a;
+            object-fit: cover;
+        }
+		
+		.chat-bubble-left {
+		    justify-content: flex-start;
+		    padding-left: 10px;
+		    margin-bottom: 60px; /* 기존 40px에서 60px로 늘려 버튼을 아래로 밀어냄 */
+		}
+		.btn-chatbot {
+		    background-color: #323673;
+		    color: white;
+		    border-radius: 12px;
+		    padding: 14px 60px;
+		    font-weight: 700;
+		    text-decoration: none;
+		    transition: all 0.2s ease;
+		    display: inline-block;
+		    margin-top: 20px; /* 버튼 자체 상단 여백 추가 */
+		}
+        .btn-chatbot:hover {
+            background-color: #2c3359;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 67, 113, 0.3);
+        }
+		
+		.chatbot-container {
+		    background-color: #f4f5f7;
+		    border-radius: 24px;
+		    padding: 80px 50px 60px; /* 하단 패딩을 60px로 조절 */
+		    max-width: 1000px;
+		    margin: 0 auto;
+		    position: relative;
+		}
+
+        /* 🌟 챗봇 스크롤 페이드업 애니메이션 🌟 */
+		.fade-up-item {
+		    opacity: 0;
+		    transform: translateY(40px);
+		    transition: none; 
+		}
+        
+        /* 나타나는 순서를 다르게 하기 위한 딜레이 설정 */
+        .delay-1 { transition-delay: 0.1s; } /* 사용자 질문 */
+        .delay-2 { transition-delay: 0.5s; } /* 챗봇 답변 */
+        .delay-3 { transition-delay: 0.9s; } /* 이동 버튼 */
+
+        /* 화면에 보일 때 추가되는 클래스 */
+		.fade-up-item.is-visible {
+		    opacity: 1;
+		    transform: translateY(0);
+		    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+		                transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+		}
+		
+		.chat-bubble-wrapper img {
+		    width: 45px;           /* 이전에 조정한 크기 */
+		    height: 45px;
+		    border-radius: 50%;
+		    border: 2px solid #1a1a1a;
+		    background-color: #9ac2e5; /* 캐릭터 배경색과 유사한 색상 */
+		    
+		    object-fit: cover;     /* 비율을 유지하며 영역을 꽉 채움 */
+		    object-position: center 15%; /* 얼굴이 위쪽에 있으니 위쪽으로 초점 이동 (값 조절 가능) */
+		}
     </style>
 
     <header class="bg-light py-5">
@@ -131,7 +246,7 @@
                     </a>
                 </div>
                 <div class="col-4 col-md-2">
-                    <a th:href="@{/content/novel_list}" class="text-dark category-item d-block text-decoration-none">
+                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
                         <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
                         <div class="fw-bold">소설</div>
                     </a>
@@ -161,7 +276,28 @@
             </div>
         </div>
     </section>
+    
+	<section class="py-5 bg-white">
+	        <div class="container text-center">
+	            <h2 class="fw-bold mb-2">챗봇</h2>
+	            <p class="mb-4 fw-bold">여러 궁금증들을 질문해보세요!</p>
 
+	            <div class="chatbot-container shadow-sm hover-card">
+	                <div class="chat-bubble-wrapper chat-bubble-right fade-up-item delay-1">
+	                    <div class="bubble-shape-blue"></div>
+	                    <div class="profile-circle-gray"></div>
+	                </div>
+
+					<div class="chat-bubble-wrapper chat-bubble-left fade-up-item delay-2">
+					    <img th:src="@{/images/mascot.png}" alt="챗봇" class="profile-mascot">
+					    <div class="bubble-shape-orange"></div>
+					</div>
+
+	                <a th:href="@{/chatbot}" class="btn-chatbot">대화하러 가기</a>
+	            </div>
+	        </div>
+	 </section>
+    
     <section class="py-5 bg-white">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">팀 프로젝트</h2>
@@ -204,7 +340,7 @@
     <section class="bg-white pt-5">
         <div class="container text-center mb-4">
             <h2 class="fw-bold mb-1">추천 소설</h2>
-            <a th:href="@{/content/novel_list}" class="text-muted d-block small text-decoration-none">소설 페이지로 이동 <i class="bi bi-chevron-right"></i></a>
+            <a th:href="@{/content/novel/list}" class="text-muted d-block small text-decoration-none">소설 페이지로 이동 <i class="bi bi-chevron-right"></i></a>
         </div>
         
         <div class="bg-light py-5">
@@ -355,5 +491,42 @@
             </div>
         </div>
     </footer>
+
+	화면에서 벗어날 때마다 상태를 초기화하여, 다시 스크롤을 내릴 때마다 애니메이션이 반복되도록 자바스크립트 로직을 수정했습니다.
+
+	기존 코드에서 observer.unobserve(entry.target) 부분을 삭제하고, 화면에서 나갔을 때(!entry.isIntersecting) 클래스를 다시 제거하는 로직을 추가하면 됩니다.
+
+	수정된 자바스크립트 코드
+	이 코드를 기존 스크립트 영역에 덮어쓰기 해주세요.
+
+	JavaScript
+	<script>
+	    document.addEventListener("DOMContentLoaded", function() {
+	        const observerOptions = {
+	            root: null,
+	            rootMargin: '0px',
+	            // 0.1 정도로 낮추면 요소가 아주 살짝만 보여도 바로 애니메이션이 시작됩니다.
+	            threshold: 0.1 
+	        };
+
+	        const observer = new IntersectionObserver((entries) => {
+	            entries.forEach(entry => {
+	                if (entry.isIntersecting) {
+	                    // 화면에 들어오면 클래스 추가 (애니메이션 시작)
+	                    entry.target.classList.add('is-visible');
+	                } else {
+	                    // 화면에서 완전히 벗어나면 클래스 제거 (초기화)
+	                    entry.target.classList.remove('is-visible');
+	                }
+	            });
+	        }, observerOptions);
+
+	        // 'fade-up-item' 클래스를 가진 요소들 감시
+	        const fadeItems = document.querySelectorAll('.fade-up-item');
+	        fadeItems.forEach(item => {
+	            observer.observe(item);
+	        });
+	    });
+	</script>
 </div>
 </html>
