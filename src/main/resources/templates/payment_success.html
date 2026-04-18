@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>후원 완료</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .card {
+            width: min(520px, 92vw);
+            background: #fff;
+            border-radius: 20px;
+            padding: 36px 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: #eafaf0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        h1 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+        }
+        p {
+            color: #666;
+            line-height: 1.7;
+        }
+        .payment-id {
+            margin: 18px 0;
+            padding: 12px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 700;
+            word-break: break-all;
+        }
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .btn-primary {
+            background: #3B4371;
+            color: white;
+        }
+        .btn-light {
+            background: #eef1f6;
+            color: #3B4371;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="icon">🎉</div>
+    <h1>후원이 완료되었어요</h1>
+    <p>소중한 응원이 창작 활동에 큰 힘이 됩니다.</p>
+
+    <div class="payment-id" th:text="${paymentId}">order_test_123</div>
+
+    <div class="btn-row">
+        <a th:href="${redirectUrl}" class="btn btn-primary">대상 페이지로 이동</a>
+        <a href="/" class="btn btn-light">홈으로 가기</a>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    history.replaceState(null, null, location.href);
+
+    const redirectUrl = [[${redirectUrl}]];
+    setTimeout(() => {
+        window.location.replace(redirectUrl);
+    }, 1800);
+</script>
+</body>
+</html>

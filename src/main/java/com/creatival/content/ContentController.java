@@ -90,24 +90,24 @@ public class ContentController {
 	private final CommentService commentService;
 	private final LikeService likeService;
 
-	@GetMapping("/novel_list")
+	@GetMapping("/novel/list")
 	public String novel_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
 		Page<ResponseNovelList> paging = contentService.getNovelList(page);
 		model.addAttribute("paging", paging);
 		return "novel_list";
 	}
 
-	@GetMapping("/novel_write")
+	@GetMapping("/novel/write")
 	public String novel_write(CreateNovelDTO createNovelDTO, Principal principal,
 			RedirectAttributes redirectAttributes) {
 		if (principal == null) {
 			redirectAttributes.addFlashAttribute("isLogMsg", true);
-			return "redirect:/content/novel_list";
+			return "redirect:/content/novel/list";
 		}
 		return "novel_write";
 	}
 
-	@PostMapping("/novel_write")
+	@PostMapping("/novel/write")
 	public String novel_wrtie(@Valid CreateNovelDTO createNovelDTO, BindingResult bindingResult, Principal principal) {
 		if (bindingResult.hasErrors()) {
 			System.out.println("오류 발생");
@@ -120,7 +120,7 @@ public class ContentController {
 		}
 		try {
 			contentService.createCotentNovel(createNovelDTO, userService.getUserByUsername(principal.getName()));
-			return "redirect:/content/novel_list";
+			return "redirect:/content/novel/list";
 		} catch (IllegalStateException e) {
 			bindingResult.reject("signupFailed", e.getMessage());
 			return "novel_write";
@@ -134,7 +134,7 @@ public class ContentController {
 
 	// 수정할 것
 
-	@GetMapping("/novel_detail/{id}")
+	@GetMapping("/novel/detail/{id}")
 	public String novel_detail(Model model, @PathVariable("id") Long id,
 			@RequestParam(defaultValue = "0", name = "page") int page, Principal principal) {
 		Content content = contentService.getNovel(id);
@@ -163,25 +163,25 @@ public class ContentController {
 		return "novel_detail";
 	}
 
-	@GetMapping("/novel_delete/{id}")
+	@GetMapping("/novel/delete/{id}")
 	public String novel_delete(@PathVariable("id") Long id, Principal principal) {
 		Content content = contentService.getNovel(id);
 
 		if (content.getOwnerType() != OwnerType.TEAM && content.getUser().getUsername() != principal.getName()) {
 			contentService.delete(content);
-			return "redirect:/content/novel_list";
+			return "redirect:/content/novel/list";
 		}
 
 		if (content.getOwnerType() == OwnerType.TEAM) {
-			return "redirect:content/novel_detail/" + id + "?error=팀 컨텐츠를 함부로 지울 수는 없습니다.";
+			return "redirect:content/novel/detail/" + id + "?error=팀 컨텐츠를 함부로 지울 수는 없습니다.";
 		}
 		if (content.getUser().getUsername() != principal.getName()) {
-			return "redirect:content/novel_detail/" + id + "?error=콘텐츠의 소유자가 아닙니다.";
+			return "redirect:content/novel/detail/" + id + "?error=콘텐츠의 소유자가 아닙니다.";
 		}
-		return "redirect:content/novel_detail/" + id + "?error=알 수 없는 오류가 발생했습니다.";
+		return "redirect:content/novel/detail/" + id + "?error=알 수 없는 오류가 발생했습니다.";
 	}
 
-	@GetMapping("/novel_update/{id}")
+	@GetMapping("/novel/update/{id}")
 	public String novel_update(@PathVariable("id") Long id, Model model) {
 		Content novel = contentService.getNovel(id);
 		model.addAttribute("novel", UpdateNovelDTO.from(novel, novel.getSeries()));
@@ -189,7 +189,7 @@ public class ContentController {
 		return "novel_edit";
 	}
 
-	@PostMapping("/novel_update/{id}")
+	@PostMapping("/novel/update/{id}")
 	public String novel_update(@PathVariable("id") Long id,
 			@Valid @ModelAttribute("novel") UpdateNovelDTO updateNovelDTO, BindingResult bindingResult,
 			Principal principal, Model model) {
@@ -200,7 +200,7 @@ public class ContentController {
 
 		try {
 			contentService.updateContentNovel(updateNovelDTO, id, principal.getName());
-			return "redirect:/content/novel_detail/" + id;
+			return "redirect:/content/novel/detail/" + id;
 		} catch (IllegalArgumentException e) {
 			bindingResult.reject("updateNovelFailed", e.getMessage());
 			return "novel_edit";

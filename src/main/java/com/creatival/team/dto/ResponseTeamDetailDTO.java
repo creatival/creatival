@@ -1,5 +1,6 @@
 package com.creatival.team.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class ResponseTeamDetailDTO {
     private Visibility visibility;
 
     private LocalDateTime createdAt;
+    private BigDecimal goalAmount;
+	private boolean supportEnabled;
 
     // 리더 정보
     private Long leaderId;
@@ -49,6 +52,8 @@ public class ResponseTeamDetailDTO {
                 .leaderId(team.getUser().getId())
                 .leaderUsername(team.getUser().getUsername())
                 .leaderProfileImgUrl(team.getUser().getProfileImgUrl())
+                .goalAmount(team.getGoalAmount())
+				.supportEnabled(team.isSupportEnabled())
                 .build();
     }
 }

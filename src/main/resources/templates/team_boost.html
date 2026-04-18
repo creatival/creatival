@@ -1,253 +1,930 @@
-<html layout:decorate="~{layout}">
-	<head>
-					<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-					<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
-			</head>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+</head>
+
 <div layout:fragment="content">
+    <style>
+        :root {
+            --c-navy: #3B4371;
+            --c-orange: #FF7F50;
+            --c-bg: #f8f9fa;
+            --c-text: #222;
+            --c-muted: #666;
+            --c-line: #ececec;
+            --c-soft: #fff5f2;
+        }
 
-<style>
-    /* =========================================
-       [후원 페이지 전용 스타일]
-       ========================================= */
-    :root {
-        --c-navy: #3B4371;
-        --c-orange: #FF7F50;
-        --c-bg: #f8f9fa;
-    }
+        body {
+            background-color: var(--c-bg);
+        }
 
-    body { background-color: var(--c-bg); }
+        .sponsor-page {
+            padding-bottom: 80px;
+        }
 
-    /* 상단 커버 영역 */
-    .boost-header {
-        background: linear-gradient(135deg, var(--c-navy), #2a3152);
-        padding: 80px 0 40px;
-        text-align: center;
-        color: white;
-        position: relative;
-        margin-bottom: 60px;
-    }
-    
-    .boost-profile-img {
-        width: 140px; height: 140px;
-        border-radius: 50%; border: 4px solid white;
-        object-fit: cover;
-        position: absolute; bottom: -70px; left: 50%;
-        transform: translateX(-50%);
-        background-color: #fff;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
+        .sponsor-header {
+            background: linear-gradient(135deg, var(--c-navy), #2b3358);
+            padding: 76px 0 42px;
+            position: relative;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 74px;
+        }
 
-    /* 메인 컨텐츠 컨테이너 */
-    .boost-container { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
-    
-    /* 공통 카드 스타일 */
-    .c-card {
-        background: #fff; border-radius: 16px;
-        padding: 30px; border: 1px solid #eaeaea;
-        height: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        position: relative;
-    }
+        .sponsor-profile-img {
+            width: 144px;
+            height: 144px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #fff;
+            position: absolute;
+            left: 50%;
+            bottom: -72px;
+            transform: translateX(-50%);
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
 
-    .team-title { font-size: 1.8rem; font-weight: 800; color: #222; text-align: center; margin-top: 20px;}
-    .team-desc { color: #666; text-align: center; margin-bottom: 30px; font-size: 1rem; }
+        .sponsor-container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    /* 프로그레스 바 */
-    .goal-box { background-color: #fcfcfc; border-radius: 12px; padding: 20px; border: 1px solid #f0f0f0; }
-    .progress-custom { height: 12px; border-radius: 20px; background-color: #e9ecef; overflow: hidden; margin: 15px 0 10px; }
-    .progress-bar-custom { background-color: var(--c-orange); border-radius: 20px; }
+        .team-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            text-align: center;
+            color: var(--c-text);
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
 
-    /* =========================================
-       [결제 폼 레이아웃]
-       ========================================= */
-    .boost-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px; 
-    }
+        .project-by-team {
+            text-align: center;
+            margin-bottom: 18px;
+            color: var(--c-muted);
+            font-weight: 600;
+        }
 
-    /* 빠른 금액 선택 버튼 그룹 */
-    .amount-btn-group {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); 
-        gap: 10px;
-        margin-bottom: 5px; 
-    }
-    
-    .amount-btn {
-        padding: 12px 0;
-        border: 1px solid #ddd; background: #fff;
-        border-radius: 12px;
-        color: #555; font-weight: 600;
-        cursor: pointer; transition: 0.2s;
-    }
-    .amount-btn:hover, .amount-btn.active {
-        border-color: var(--c-orange);
-        background-color: #fff5f2;
-        color: var(--c-orange);
-    }
+        .project-by-team a {
+            color: var(--c-navy);
+            text-decoration: none;
+            font-weight: 800;
+        }
 
-    /* 금액 입력 필드 컨테이너 */
-    .input-amount-wrapper {
-        position: relative;
-        width: 100%; 
-        box-sizing: border-box; 
-    }
-    
-    .input-amount-custom {
-        width: 100%;
-        box-sizing: border-box; 
-        padding: 16px 20px;
-        border-radius: 12px;
-        border: 2px solid #ddd;
-        font-size: 1.1rem;
-        outline: none;
-        transition: 0.3s;
-        background-color: #fdfdfd;
-    }
-    .input-amount-custom:focus { border-color: var(--c-orange); background-color: #fff; }
+        .project-by-team a:hover {
+            text-decoration: underline;
+        }
 
-    /* 결제/구독 버튼 공통 */
-    .btn-submit-boost {
-        width: 100%; padding: 18px;
-        border-radius: 12px; border: none;
-        background-color: var(--c-navy); color: #fff;
-        font-size: 1.1rem; font-weight: bold;
-        cursor: pointer; transition: 0.3s;
-    }
-    .btn-submit-boost:hover { filter: brightness(0.9); }
+        .team-desc {
+            max-width: 760px;
+            margin: 0 auto 28px;
+            text-align: center;
+            color: var(--c-muted);
+            line-height: 1.7;
+        }
 
-    /* 구독 전용 배지 */
-    .sub-badge {
-        background-color: var(--c-orange);
-        color: white;
-        font-size: 0.8rem;
-        font-weight: bold;
-        padding: 6px 16px;
-        border-radius: 20px;
-        position: absolute;
-        top: -14px;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 4px 10px rgba(255, 127, 80, 0.3);
-    }
+        .project-team-info {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
 
-</style>
+        .project-team-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            padding: 12px 16px;
+            background: #fff;
+            border: 1px solid #ececec;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+        }
 
-<div class="boost-header">
-    <img th:src="${team != null and team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'}" 
-         onerror="this.src='https://dummyimage.com/140x140/cccccc/ffffff&text=Team'" 
-         class="boost-profile-img" alt="팀 프로필">
-</div>
+        .project-team-thumb {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f3f3f3;
+        }
 
-<div class="boost-container">
-    <h2 class="team-title" th:text="${team != null ? team.name : '멋진 창작팀'}">멋진 창작팀</h2>
-    <p class="team-desc" th:text="${team != null ? team.description : '세상에 없던 새로운 가치를 만들어가는 팀입니다.'}">팀 소개글</p>
+        .project-team-text {
+            text-align: left;
+        }
 
-    <div class="row g-4 mt-2">
-        <div class="col-lg-7">
-            <div class="c-card">
-                <h5 class="fw-bold mb-4">✨ 프로젝트 스토리</h5>
-                <p class="text-muted" style="line-height: 1.7;">
-                    팀의 구체적인 창작 계획과 후원금 사용처를 투명하게 공유하여 신뢰를 얻는 공간입니다.
+        .project-team-label {
+            font-size: 0.82rem;
+            color: #888;
+        }
+
+        .project-team-name {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #222;
+        }
+
+        .sponsor-layout {
+            display: grid;
+            grid-template-columns: 1.35fr 0.9fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .s-card {
+            background: #fff;
+            border: 1px solid var(--c-line);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 8px 26px rgba(0,0,0,0.04);
+        }
+
+        .s-card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--c-text);
+            margin-bottom: 18px;
+        }
+
+        .story-text {
+            color: var(--c-muted);
+            line-height: 1.9;
+            font-size: 0.98rem;
+            white-space: pre-line;
+        }
+
+        .mini-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        .mini-stat {
+            border-radius: 14px;
+            background: #fcfcfc;
+            border: 1px solid #f0f0f0;
+            padding: 16px;
+        }
+
+        .mini-stat-label {
+            font-size: 0.86rem;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .mini-stat-value {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--c-text);
+        }
+
+        .goal-box {
+            margin-top: 26px;
+            padding: 20px;
+            border-radius: 16px;
+            background: #fcfcfc;
+            border: 1px solid #f1f1f1;
+        }
+
+        .progress-custom {
+            height: 12px;
+            border-radius: 20px;
+            background: #e9ecef;
+            overflow: hidden;
+            margin: 14px 0 10px;
+        }
+
+        .progress-bar-custom {
+            height: 100%;
+            background: var(--c-orange);
+            border-radius: 20px;
+        }
+
+        .support-card {
+            border-top: 5px solid var(--c-orange);
+            position: sticky;
+            top: 90px;
+        }
+
+        .support-sub {
+            color: #777;
+            font-size: 0.92rem;
+            margin-bottom: 20px;
+        }
+
+        .boost-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .amount-btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .amount-btn {
+            padding: 12px 0;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 12px;
+            color: #555;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .amount-btn:hover,
+        .amount-btn.active {
+            border-color: var(--c-orange);
+            background: var(--c-soft);
+            color: var(--c-orange);
+        }
+
+        .input-amount-custom,
+        .support-message,
+        .support-name {
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            padding: 14px 16px;
+            outline: none;
+            transition: 0.2s ease;
+            background: #fdfdfd;
+        }
+
+        .input-amount-custom:focus,
+        .support-message:focus,
+        .support-name:focus {
+            border-color: var(--c-orange);
+            background: #fff;
+        }
+
+        .support-message {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.92rem;
+        }
+
+        .btn-submit-support {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 12px;
+            background: var(--c-navy);
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.03rem;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn-submit-support:hover {
+            filter: brightness(0.94);
+        }
+
+        .help-text {
+            font-size: 0.84rem;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .subscription-section {
+            margin-top: 64px;
+            padding-top: 48px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--c-text);
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            text-align: center;
+            color: #777;
+            margin-bottom: 22px;
+            line-height: 1.7;
+        }
+
+        .team-subscribe-guide {
+            max-width: 760px;
+            margin: 0 auto 34px;
+            text-align: center;
+            color: #666;
+            line-height: 1.8;
+            background: #fff;
+            border: 1px solid #ececec;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+        }
+
+        .team-subscribe-guide a {
+            display: inline-block;
+            margin-top: 12px;
+            color: #fff;
+            background: var(--c-navy);
+            padding: 10px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .team-subscribe-guide a:hover {
+            filter: brightness(0.95);
+        }
+
+        .sub-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .sub-card {
+            position: relative;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .sub-card.basic {
+            border: 1px solid var(--c-navy);
+        }
+
+        .sub-card.premium {
+            border: 2px solid var(--c-orange);
+        }
+
+        .sub-badge {
+            position: absolute;
+            left: 50%;
+            top: -14px;
+            transform: translateX(-50%);
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #fff;
+            background: var(--c-orange);
+            box-shadow: 0 4px 12px rgba(255,127,80,0.25);
+        }
+
+        .sub-name {
+            margin-top: 10px;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .sub-name.basic {
+            color: var(--c-navy);
+        }
+
+        .sub-name.premium {
+            color: var(--c-orange);
+        }
+
+        .sub-price {
+            margin: 22px 0;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--c-text);
+        }
+
+        .sub-price small {
+            font-size: 0.95rem;
+            color: #777;
+            font-weight: 500;
+        }
+
+        .sub-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 28px;
+            text-align: left;
+            color: #666;
+            line-height: 2;
+        }
+
+        .sub-disabled-note {
+            background: #f8f9fa;
+            border: 1px dashed #d8d8d8;
+            color: #777;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-top: auto;
+            margin-bottom: 14px;
+        }
+
+        .btn-subscribe-disabled {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 12px;
+            background: #d7dbe7;
+            color: #fff;
+            font-weight: 800;
+            cursor: not-allowed;
+        }
+
+        .mt-4 {
+            margin-top: 24px;
+        }
+
+        @media (max-width: 991px) {
+            .sponsor-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .support-card {
+                position: static;
+            }
+
+            .sub-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mini-stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="sponsor-page">
+        <div class="sponsor-header">
+            <img th:src="${project != null and project.bannerImgUrl != null ? project.bannerImgUrl : (project != null and project.profileImgUrl != null ? project.profileImgUrl : (team != null and team.profileImgUrl != null ? team.profileImgUrl : '/images/default-profile.png'))}"
+                 onerror="this.src='https://dummyimage.com/144x144/cccccc/ffffff&text=TEAM'"
+                 class="sponsor-profile-img"
+                 alt="대표 이미지">
+        </div>
+
+        <div class="sponsor-container">
+            <h2 class="team-title"
+                th:text="${project != null ? project.title : (team != null ? team.name : '멋진 창작팀')}">
+                멋진 창작팀
+            </h2>
+
+            <div class="project-by-team"
+                 th:if="${project != null and project.teamId != null and project.teamName != null}">
+                by
+                <a th:href="@{/team/{id}(id=${project.teamId})}"
+                   th:text="${project.teamName}">
+                    팀 이름
+                </a>
+            </div>
+
+            <p class="team-desc"
+               th:text="${project != null and project.description != null and !#strings.isEmpty(project.description) ? project.description : (team != null and team.description != null ? team.description : '세상에 없던 새로운 가치를 만들어가는 팀입니다.')}">
+                소개글
+            </p>
+
+            <div class="project-team-info"
+                 th:if="${project != null and project.teamId != null}">
+                <a th:href="@{/team/{id}(id=${project.teamId})}" class="project-team-link">
+                    <img th:src="${project.profileImgUrl != null ? project.profileImgUrl : '/images/default-profile.png'}"
+                         class="project-team-thumb"
+                         alt="팀 프로필">
+                    <div class="project-team-text">
+                        <div class="project-team-label">이 프로젝트를 진행하는 팀</div>
+                        <div class="project-team-name" th:text="${project.teamName}">팀 이름</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="sponsor-layout">
+                <div class="left-area">
+					
+                    <div class="s-card">
+                        <div class="s-card-title"
+                             th:text="${project != null ? '✨ 프로젝트 설명' : '✨ 팀 스토리'}">
+                            ✨ 프로젝트 설명
+                        </div>
+
+                        <div class="story-text"
+                             th:text="${project != null and project.description != null and !#strings.isEmpty(project.description) ? project.description : (team != null and team.description != null and !#strings.isEmpty(team.description) ? team.description : '이 팀이 어떤 창작을 하고 있고, 왜 후원이 필요한지, 후원금이 어디에 사용되는지를 진솔하게 소개하는 영역입니다.\n\n후원자는 단순히 금액만 보내는 것이 아니라 이 팀의 다음 작업을 함께 만드는 동료라는 느낌을 받을 수 있어야 합니다.')}">
+                            프로젝트 소개
+                        </div>
+
+                        <div class="mini-stat-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-label">누적 후원 금액</div>
+								<div class="mini-stat-value"
+								     th:text="${goalAmount != null ? #numbers.formatInteger(goalAmount, 3, 'COMMA') + '원' : '미설정'}">
+                                    0원
+                                </div>
+                            </div>
+
+                            <div class="mini-stat">
+                                <div class="mini-stat-label">후원 참여 수</div>
+                                <div class="mini-stat-value"
+                                     th:text="${supportCount != null ? supportCount + '회' : '0회'}">
+                                    0회
+                                </div>
+                            </div>
+
+                            <div class="mini-stat">
+                                <div class="mini-stat-label"
+                                     th:text="${project != null ? '프로젝트 목표 금액' : '팀 목표 금액'}">
+                                    목표 금액
+                                </div>
+                                <div class="mini-stat-value"
+                                     th:text="${goalAmount != null ? #numbers.formatInteger(goalAmount, 3, 'COMMA') + '원' : '미설정'}">
+                                    미설정
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="goal-box" th:if="${goalAmount != null and goalAmount > 0}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-dark">목표 달성률</span>
+                                <span class="text-muted small"
+                                      th:text="${progressPercent != null ? progressPercent + '%' : '0%'}">
+                                    0%
+                                </span>
+                            </div>
+
+                            <div class="progress-custom">
+                                <div class="progress-bar-custom"
+                                     th:style="'width:' + (${progressPercent != null ? progressPercent : 0}) + '%'">
+                                </div>
+                            </div>
+
+                            <div class="small text-muted"
+                                 th:text="${totalSupportAmount != null ? #numbers.formatInteger(totalSupportAmount, 3, 'COMMA') : '0'} + ' / ' + ${#numbers.formatInteger(goalAmount, 3, 'COMMA')} + '원'">
+                                0 / 100,000원
+                            </div>
+                        </div>
+                    </div>
+
+					<div class="s-card mt-4">
+					    <div class="s-card-title">💌 최근 후원</div>
+
+					    <div id="supportHistoryList">
+					        <div th:if="${recentSupports == null or #lists.isEmpty(recentSupports)}" class="text-muted" id="emptySupportMessage">
+					            아직 등록된 후원이 없습니다. 첫 번째 후원자가 되어보세요.
+					        </div>
+
+					        <div th:if="${recentSupports != null and !#lists.isEmpty(recentSupports)}">
+					            <div th:each="support : ${recentSupports}"
+					                 class="support-history-item"
+					                 style="padding:16px 0; border-bottom:1px solid #f0f0f0;">
+					                <div class="d-flex justify-content-between align-items-center mb-1">
+					                    <strong th:text="${support.displayName}">후원자</strong>
+					                    <span class="text-muted small"
+					                          th:text="${#numbers.formatInteger(support.amount, 3, 'COMMA') + '원'}">10,000원</span>
+					                </div>
+
+					                <div class="text-muted small mb-2"
+					                     th:text="${#temporals.format(support.paidAt, 'yyyy.MM.dd HH:mm')}">
+					                    2026.04.17 18:00
+					                </div>
+
+					                <div th:if="${support.message != null and !#strings.isEmpty(support.message)}"
+					                     style="white-space: pre-line; color:#555;"
+					                     th:text="${support.message}">
+					                    응원 메시지
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+
+					    <div class="text-center mt-3" th:if="${hasMoreSupports}">
+					        <button type="button" id="loadMoreSupportBtn" class="btn-submit-support" style="padding:12px 16px; font-size:0.95rem;">
+					            더보기
+					        </button>
+					    </div>
+					</div>
+                </div>
+
+                <div class="right-area">
+					
+                    <div class="s-card support-card">
+                        <div class="s-card-title"
+                             th:text="${project != null ? '💝 프로젝트 후원하기' : '💝 팀 후원하기'}">
+                            💝 팀 후원하기
+                        </div>
+
+                        <div class="support-sub"
+                             th:text="${project != null ? '이 프로젝트를 위한 응원을 보내보세요.' : '원하는 금액으로 자유롭게 팀을 응원할 수 있어요.'}">
+                            원하는 금액으로 자유롭게 팀을 응원할 수 있어요.
+                        </div>
+						<form method="post" th:if="${project != null}" th:action="@{/team/project/{id}/support-setting(id=${project.id})}">
+						    <label>
+						        <input type="checkbox" name="supportEnabled" th:checked="${project.supportEnabled}">
+						        후원 받기
+						    </label>
+
+							<input type="number" name="goalAmount"
+						           th:value="${project.goalAmount!=null ? project.goalAmount : '자유후원' }"
+						           min="0" step="1000"
+						           placeholder="목표 후원 금액">
+
+						    <button type="submit">저장</button>
+						</form>
+						<form method="post" th:if="${project == null}" th:action="@{/team/{id}/support-setting(id=${team.id})}" class="mb-4">
+						    <label>
+						        <input type="checkbox" name="supportEnabled" th:checked="${team.supportEnabled}">
+						        후원 받기
+						    </label>
+
+						    <input type="number" name="goalAmount"
+						           th:value="${team.goalAmount!=null ? team.goalAmount : '자유후원' }"
+						           min="0" step="1000"
+						           placeholder="목표 후원 금액">
+
+						    <button type="submit">저장</button>
+						</form>
+						<div th:if="${supportEnabled == false}" class="s-card support-card">
+						    <div class="s-card-title">후원 안내</div>
+						    <div class="text-muted" style="line-height:1.8;">
+						        현재 이 <span th:text="${project != null ? '프로젝트' : '팀'}">팀</span>은
+						        후원을 받고 있지 않습니다.
+						    </div>
+						</div>
+                        <form th:if="${supportEnabled != false}" th:action="${project != null} ? @{/team/project/{id}/boost(id=${project.id})} : @{/team/{id}/boost(id=${team.id})}"
+                              method="post"
+                              class="boost-form">
+
+                            <div class="amount-btn-group">
+                                <button type="button" class="amount-btn" data-value="5000">5천 원</button>
+                                <button type="button" class="amount-btn" data-value="10000">1만 원</button>
+                                <button type="button" class="amount-btn" data-value="30000">3만 원</button>
+                            </div>
+
+                            <input type="number"
+                                   id="supportAmount"
+                                   name="amount"
+                                   class="input-amount-custom"
+                                   min="1000"
+                                   step="100"
+                                   placeholder="후원 금액을 입력해 주세요"
+                                   required>
+
+								   <input type="text"
+								          name="supporterName"
+								          class="support-name"
+								          placeholder="표시할 이름 (미입력 시 계정 이름 또는 익명 사용자)">	
+
+                            <textarea name="message"
+                                      class="support-message"
+                                      placeholder="응원의 메시지를 남겨보세요. (선택)"></textarea>
+
+                            <label class="check-row">
+                                <input type="checkbox" name="anonymous">
+                                익명으로 후원하기
+                            </label>
+
+                            <button type="submit" class="btn-submit-support"
+                                    th:text="${project != null ? '프로젝트 후원하기' : '팀 후원하고 응원하기'}">
+                                후원하고 응원하기
+                            </button>
+
+                            <div class="help-text">
+                                후원은 일회성 결제이며, 결제 완료 후 후원 내역에 반영됩니다.
+                                <span th:if="${project != null}">
+                                    정기적으로 응원하고 싶다면 아래 팀 구독 안내를 확인해 주세요.
+                                </span>
+                                <span th:if="${project == null}">
+                                    구독 기능은 추후 오픈될 예정입니다.
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subscription-section">
+                <h3 class="section-title"
+                    th:text="${project != null ? '팀 구독 안내' : '정기 구독'}">
+                    정기 구독
+                </h3>
+
+                <p class="section-desc"
+                   th:text="${project != null ? '프로젝트는 일회성 후원으로 응원하고, 팀 전체를 꾸준히 응원하고 싶다면 팀 구독을 이용해 주세요.' : '정기 구독 기능은 준비 중입니다. 지금은 일회성 후원으로 먼저 응원할 수 있어요.'}">
+                    정기 구독 안내
                 </p>
 
-                <div class="goal-box mt-5">
-                    <div class="d-flex justify-content-between">
-                        <span class="fw-bold text-dark">목표 달성률</span>
-                        <span class="text-muted small"><strong>65%</strong></span>
+                <div th:if="${project != null}" class="team-subscribe-guide">
+                    이 프로젝트가 마음에 드셨나요?<br>
+                    정기적으로 창작 활동을 응원하고 싶다면
+                    <strong th:text="${project.teamName != null ? project.teamName : '팀'}">팀</strong>
+                    구독을 이용해보세요.
+                    <br>
+                    <a th:if="${project.teamId != null}"
+                       th:href="@{/team/{id}(id=${project.teamId})}">
+                        팀 페이지로 이동
+                    </a>
+                </div>
+
+                <div class="sub-grid" th:if="${project == null}">
+                    <div class="s-card sub-card basic">
+                        <div class="sub-name basic">베이직 플랜</div>
+                        <div class="sub-price">₩ 4,900 <small>/ 월</small></div>
+
+                        <ul class="sub-list">
+                            <li>구독자 전용 게시글 열람</li>
+                            <li>창작 비하인드 공유</li>
+                            <li>프로필 전용 뱃지</li>
+                        </ul>
+
+                        <div class="sub-disabled-note">
+                            구독 기능은 추후 업데이트 예정입니다.
+                            지금은 일회성 후원을 먼저 이용해 주세요.
+                        </div>
+
+                        <button type="button" class="btn-subscribe-disabled" disabled>
+                            베이직 구독 준비중
+                        </button>
                     </div>
-                    <div class="progress-custom">
-                        <div class="progress-bar-custom" style="width: 65%;"></div>
+
+                    <div class="s-card sub-card premium">
+                        <div class="sub-badge">COMING SOON</div>
+                        <div class="sub-name premium">프리미엄 플랜</div>
+                        <div class="sub-price">₩ 9,900 <small>/ 월</small></div>
+
+                        <ul class="sub-list">
+                            <li>베이직 플랜 혜택 포함</li>
+                            <li>미공개 창작물 우선 열람</li>
+                            <li>프로젝트 크레딧 이름 등재</li>
+                        </ul>
+
+                        <div class="sub-disabled-note">
+                            프리미엄 구독도 준비 중입니다.
+                            페이지 구조는 유지하되, 아직 결제는 열지 않는 상태예요.
+                        </div>
+
+                        <button type="button" class="btn-subscribe-disabled" disabled>
+                            프리미엄 구독 준비중
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-5">
-            <div class="c-card border-0" style="border-top: 5px solid var(--c-orange);">
-                <h5 class="fw-bold mb-1">팀 후원하기</h5>
-                <p class="small text-muted mb-4">금액을 선택하거나 직접 입력해 주세요.</p>
-
-                <form th:action="@{/team/{id}/boost(id=${team != null ? team.id : 0})}" method="post" class="boost-form">
-                    
-                    <div class="amount-btn-group" id="amountButtons">
-                        <button type="button" class="amount-btn" data-value="10000">1만 원</button>
-                        <button type="button" class="amount-btn" data-value="30000">3만 원</button>
-                        <button type="button" class="amount-btn" data-value="50000">5만 원</button>
-                    </div>
-
-                    <div class="input-amount-wrapper">
-                        <input type="number" id="supportAmount" name="amount" class="input-amount-custom" placeholder="금액 직접 입력 (₩)" required>
-                    </div>
-
-                    <button type="submit" class="btn-submit-boost">결제하기</button>
-                </form>
-            </div>
-        </div>
     </div>
+	<input type="hidden" id="supportTargetType" th:value="${supportTargetType}">
+	<input type="hidden" id="supportTargetId" th:value="${supportTargetId}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const buttons = document.querySelectorAll(".amount-btn");
+            const inputField = document.getElementById("supportAmount");
 
-    <div class="mt-5 pt-5 border-top">
-        <h3 class="fw-bold text-center mb-2">정기 구독하기</h3>
-        <p class="text-muted text-center mb-5">매월 정기적으로 팀을 응원하고 특별한 혜택을 누려보세요.</p>
-
-        <div class="row g-4 justify-content-center">
-            
-            <div class="col-md-5">
-                <div class="c-card text-center d-flex flex-column" style="border: 1px solid var(--c-navy);">
-                    <h5 class="fw-bold mt-2" style="color: var(--c-navy);">베이직 플랜</h5>
-                    <div class="my-4">
-                        <span class="fs-2 fw-bold text-dark">₩ 4,900</span> <span class="text-muted">/ 월</span>
-                    </div>
-                    <ul class="list-unstyled text-muted mb-5 text-start mx-auto" style="line-height: 2.2;">
-                        <li>구독자 전용 게시글 열람</li>
-                        <li>창작 비하인드 노트 공유</li>
-                        <li>프로필 전용 뱃지 부여</li>
-                    </ul>
-                    <form th:action="@{/team/{id}/subscribe/basic(id=${team != null ? team.id : 0})}" method="post" class="mt-auto">
-                        <button type="submit" class="btn-submit-boost" style="background-color: var(--c-navy);">베이직 구독하기</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="col-md-5">
-                <div class="c-card text-center d-flex flex-column" style="border: 2px solid var(--c-orange);">
-                    <div class="sub-badge">BEST</div>
-                    <h5 class="fw-bold mt-2" style="color: var(--c-orange);">프리미엄 플랜</h5>
-                    <div class="my-4">
-                        <span class="fs-2 fw-bold text-dark">₩ 9,900</span> <span class="text-muted">/ 월</span>
-                    </div>
-                    <ul class="list-unstyled text-muted mb-5 text-start mx-auto" style="line-height: 2.2;">
-                        <li>플랜의 모든 혜택</li>
-                        <li>미공개 창작물 우선 열람권</li>
-                        <li>프로젝트 크레딧 이름 등재</li>
-                    </ul>
-                    <form th:action="@{/team/{id}/subscribe/premium(id=${team != null ? team.id : 0})}" method="post" class="mt-auto">
-                        <button type="submit" class="btn-submit-boost" style="background-color: var(--c-orange);">프리미엄 구독하기</button>
-                    </form>
-                </div>
-            </div>
-
-        </div>
-    </div>
-    </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const buttons = document.querySelectorAll(".amount-btn");
-        const inputField = document.getElementById("supportAmount");
-
-        buttons.forEach(button => {
-            button.addEventListener("click", function() {
-                buttons.forEach(btn => btn.classList.remove("active"));
-                this.classList.add("active");
-                inputField.value = this.getAttribute("data-value");
+            buttons.forEach(button => {
+                button.addEventListener("click", function () {
+                    buttons.forEach(btn => btn.classList.remove("active"));
+                    this.classList.add("active");
+                    inputField.value = this.getAttribute("data-value");
+                });
             });
-        });
 
-        inputField.addEventListener("input", function() {
-            buttons.forEach(btn => btn.classList.remove("active"));
+            if (inputField) {
+                inputField.addEventListener("input", function () {
+                    buttons.forEach(btn => btn.classList.remove("active"));
+                });
+            }
         });
-    });
-</script>
+    </script>
+	<script>
+	    document.addEventListener("DOMContentLoaded", function () {
+	        const buttons = document.querySelectorAll(".amount-btn");
+	        const inputField = document.getElementById("supportAmount");
+
+	        buttons.forEach(button => {
+	            button.addEventListener("click", function () {
+	                buttons.forEach(btn => btn.classList.remove("active"));
+	                this.classList.add("active");
+	                inputField.value = this.getAttribute("data-value");
+	            });
+	        });
+
+	        if (inputField) {
+	            inputField.addEventListener("input", function () {
+	                buttons.forEach(btn => btn.classList.remove("active"));
+	            });
+	        }
+
+	        const loadMoreBtn = document.getElementById("loadMoreSupportBtn");
+	        const supportHistoryList = document.getElementById("supportHistoryList");
+	        const supportTargetType = document.getElementById("supportTargetType")?.value;
+	        const supportTargetId = document.getElementById("supportTargetId")?.value;
+	        const emptySupportMessage = document.getElementById("emptySupportMessage");
+
+	        let currentPage = 1;
+	        const pageSize = 5;
+	        let loading = false;
+
+	        function escapeHtml(str) {
+	            if (str == null) return "";
+	            return str
+	                .replace(/&/g, "&amp;")
+	                .replace(/</g, "&lt;")
+	                .replace(/>/g, "&gt;")
+	                .replace(/"/g, "&quot;")
+	                .replace(/'/g, "&#039;");
+	        }
+
+	        function formatAmount(amount) {
+	            return new Intl.NumberFormat('ko-KR').format(amount) + "원";
+	        }
+
+	        function formatDate(dateString) {
+	            if (!dateString) return "";
+	            const date = new Date(dateString);
+	            const yyyy = date.getFullYear();
+	            const mm = String(date.getMonth() + 1).padStart(2, '0');
+	            const dd = String(date.getDate()).padStart(2, '0');
+	            const hh = String(date.getHours()).padStart(2, '0');
+	            const mi = String(date.getMinutes()).padStart(2, '0');
+	            return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
+	        }
+
+	        function createSupportHtml(support) {
+	            const messageHtml = support.message && support.message.trim() !== ""
+	                ? `<div style="white-space: pre-line; color:#555;">${escapeHtml(support.message)}</div>`
+	                : "";
+
+	            return `
+	                <div class="support-history-item" style="padding:16px 0; border-bottom:1px solid #f0f0f0;">
+	                    <div class="d-flex justify-content-between align-items-center mb-1">
+	                        <strong>${escapeHtml(support.displayName)}</strong>
+	                        <span class="text-muted small">${formatAmount(support.amount)}</span>
+	                    </div>
+	                    <div class="text-muted small mb-2">${formatDate(support.paidAt)}</div>
+	                    ${messageHtml}
+	                </div>
+	            `;
+	        }
+
+	        async function loadMoreSupports() {
+	            if (loading || !supportTargetType || !supportTargetId) return;
+	            loading = true;
+	            loadMoreBtn.disabled = true;
+	            loadMoreBtn.innerText = "불러오는 중...";
+
+	            try {
+	                const response = await fetch(
+	                    `/sponsorship/api/support/history?targetType=${encodeURIComponent(supportTargetType)}&targetId=${encodeURIComponent(supportTargetId)}&page=${currentPage}&size=${pageSize}`
+	                );
+
+	                if (!response.ok) {
+	                    throw new Error("후원 내역 조회 실패");
+	                }
+
+	                const data = await response.json();
+
+	                if (emptySupportMessage) {
+	                    emptySupportMessage.remove();
+	                }
+
+	                if (!data.items || data.items.length === 0) {
+	                    loadMoreBtn.style.display = "none";
+	                    return;
+	                }
+
+	                data.items.forEach(item => {
+	                    supportHistoryList.insertAdjacentHTML("beforeend", createSupportHtml(item));
+	                });
+
+	                if (!data.hasNext) {
+	                    loadMoreBtn.style.display = "none";
+	                } else {
+	                    currentPage++;
+	                    loadMoreBtn.disabled = false;
+	                    loadMoreBtn.innerText = "더보기";
+	                }
+	            } catch (e) {
+	                console.error(e);
+	                loadMoreBtn.disabled = false;
+	                loadMoreBtn.innerText = "다시 시도";
+	            } finally {
+	                loading = false;
+	            }
+	        }
+
+	        if (loadMoreBtn) {
+	            loadMoreBtn.addEventListener("click", loadMoreSupports);
+	        }
+	    });
+	</script>
 </div>
 </html>

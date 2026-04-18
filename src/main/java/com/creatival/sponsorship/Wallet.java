@@ -52,8 +52,10 @@ public class Wallet {
     private BigDecimal currentBalance = BigDecimal.ZERO; // 출금 가능 잔액
 
     // 후원 성공 시 잔액 추가 (동시성 제어 필요)
-    public void addBalance(BigDecimal amount) {
-    	this.totalAmount = this.totalAmount.add(amount);
-        this.currentBalance = this.currentBalance.add(amount);
-    }
+	public void addBalance(BigDecimal amount) {
+	    if (this.totalAmount == null) {
+	        this.totalAmount = BigDecimal.ZERO;
+	    }
+	    this.totalAmount = this.totalAmount.add(amount);
+	}
 }

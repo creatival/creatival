@@ -1,6 +1,7 @@
 package com.creatival.team;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -617,5 +618,21 @@ public class TeamService {
 			return null;
 		}
 		return ResponseTeamBoardDTO.fromProject(teamBoard.get());
+	}
+	
+	@Transactional
+	public void updateProjectSupportSetting(Long projectId, boolean supportEnabled, BigDecimal goalAmount) {
+	    Project project = getProjectById(projectId);
+	    project.setSupportEnabled(supportEnabled);
+	    project.setGoalAmount(goalAmount);
+	    projectRepository.save(project);
+	}
+	
+	@Transactional
+	public void updateTeamSupportSetting(Long teamId, boolean supportEnabled, BigDecimal goalAmount) {
+	    Team team = getTeamById(teamId);
+	    team.setSupportEnabled(supportEnabled);
+	    team.setGoalAmount(goalAmount);
+	    teamRepository.save(team);
 	}
 }
