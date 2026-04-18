@@ -492,14 +492,6 @@
         </div>
     </footer>
 
-	화면에서 벗어날 때마다 상태를 초기화하여, 다시 스크롤을 내릴 때마다 애니메이션이 반복되도록 자바스크립트 로직을 수정했습니다.
-
-	기존 코드에서 observer.unobserve(entry.target) 부분을 삭제하고, 화면에서 나갔을 때(!entry.isIntersecting) 클래스를 다시 제거하는 로직을 추가하면 됩니다.
-
-	수정된 자바스크립트 코드
-	이 코드를 기존 스크립트 영역에 덮어쓰기 해주세요.
-
-	JavaScript
 	<script>
 	    document.addEventListener("DOMContentLoaded", function() {
 	        const observerOptions = {
