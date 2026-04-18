@@ -253,4 +253,9 @@ public class MainController {
 	public String buy_detail() {
 		return "buy_detail";
 	}
+	
+	@GetMapping("/chat_bot")
+	public String chat_bot() {
+		return "chat_bot";
+	}
 }

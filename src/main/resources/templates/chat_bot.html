@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="kr" 
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    
+    <title>Creatival - 챗봇</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link th:href="@{/css/styles.css}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        body { height: 100vh; overflow: hidden; margin: 0; background-color: #ffffff; }
+
+        /* 사이드바 설정 */
+        #sidebar { width: 260px !important; background-color: #9aa2c0; border-right: 3px solid #ff7a36; transition: width 0.3s ease; flex-shrink: 0; }
+        #sidebar.collapsed { width: 80px !important; }
+        #sidebar .sidebar-text { transition: opacity 0.2s; }
+        #sidebar.collapsed .sidebar-text { display: none !important; }
+        #sidebar.collapsed .auth-box { opacity: 0 !important; pointer-events: none !important; display: none !important; }
+        #sidebar.collapsed .sidebar-header { padding-left: 0 !important; padding-right: 0 !important; text-align: center; }
+        #sidebar.collapsed .sidebar-header a { justify-content: center !important; }
+        
+        .main-wrapper { flex-grow: 1; min-width: 0; }
+        .search-container { flex-grow: 1; display: flex; justify-content: center; padding: 0 20px; }
+
+        /* 채팅 애니메이션 및 스타일 */
+        #chatHistory { overflow-y: auto; padding: 20px; }
+        .chat-message { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .user-bubble { background-color: #5e6eb8; color: white; padding: 12px 20px; border-radius: 20px; font-size: 0.95rem; display: inline-block; word-break: break-all; }
+        .bot-text-bubble { background-color: transparent; color: #333; padding: 5px 0; font-size: 0.95rem; font-weight: bold; }
+        .bot-icon { color: #ff7a36; cursor: pointer; font-size: 1.1rem; }
+
+        /* 이미지 박스 (회색 네모 박스) */
+        .img-box { width: 200px; height: 250px; background-color: #ebebeb; border-radius: 15px; overflow: hidden; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* 🌟 입력창 위 이미지 미리보기 유닛 */
+        #previewContainer { 
+            display: none; 
+            padding: 10px; 
+            background: #f8f9fa; 
+            border-radius: 15px 15px 15px 15px; 
+            border: 1px solid #e9ecef;
+            border-bottom: none;
+            width: fit-content;
+            margin-left: 30px;
+            position: relative;
+			margin-bottom: 15px;
+        }
+        #imagePreview { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+        .remove-preview { position: absolute; top: -5px; right: -5px; background: #ff7a36; color: white; border-radius: 50%; cursor: pointer; font-size: 12px; width: 20px; height: 20px; line-height: 18px; text-align: center; font-weight: bold; }
+
+        #inputArea { width: 100%; max-width: 650px; transition: all 0.3s; }
+    </style>
+</head>
+
+<body class="d-flex">
+
+    <div id="sidebar" class="d-flex flex-column justify-content-between h-100">
+        <div class="sidebar-header p-4 text-white">
+            <a th:href="@{/}" class="text-white text-decoration-none d-flex align-items-center mb-4 fw-medium">
+                <i class="bi bi-arrow-left me-2"></i> <span class="sidebar-text">돌아가기</span>
+            </a>
+            <a href="#" onclick="toggleSidebar(event)" class="text-white text-decoration-none d-flex align-items-center fw-medium">
+                <i class="bi bi-list me-2"></i> <span id="toggleText" class="sidebar-text">메뉴바 접기</span>
+            </a>
+        </div>
+        
+        <div class="auth-box p-4 text-center" sec:authorize="isAnonymous()">
+            <p class="text-white small fw-bold mb-3">아직 로그인을 안하셨나요?</p>
+            <a th:href="@{/user/login}" class="btn w-100 rounded-pill text-white fw-bold mb-2 py-2" style="background-color: #31366b;">로그인</a>
+            <p class="text-white small mb-2 opacity-75">혹은</p>
+            <a th:href="@{/user/signUp}" class="btn w-100 rounded-pill fw-bold py-2" style="border: 2px solid #ff7a36; color: #ff7a36; background-color: transparent;">회원가입</a>
+        </div>
+    </div>
+
+    <div class="main-wrapper d-flex flex-column h-100">
+        
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom flex-shrink-0">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" th:href="@{/}">
+                    <img th:src="@{/images/creatival_logoV5-Photoroom.png}" alt="Logo" style="width: 180px;">
+                </a>
+                
+                <div class="search-container">
+                    <div class="input-group search-bar" style="max-width: 500px;">
+                        <input type="text" class="form-control search-input" placeholder="search">
+                        <button class="btn search-btn" type="button"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn position-relative"><i class="bi bi-bell fs-5"></i></button>
+                    <div class="dropdown">
+                        <button class="btn d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img th:src="${#authentication.principal != 'anonymousUser' and user != null and user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/32x32/ced4da/6c757d'}" 
+                                 class="rounded-circle" width="32" height="32">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li sec:authorize="isAnonymous()"><a class="dropdown-item" th:href="@{/user/signUp}">회원가입</a></li>
+                            <li sec:authorize="isAnonymous()"><a class="dropdown-item" th:href="@{/user/login}">로그인</a></li>
+                            <li sec:authorize="isAuthenticated()"><a class="dropdown-item" th:href="@{/user/myPage}">마이페이지</a></li>
+                            <li sec:authorize="isAuthenticated()"><a class="dropdown-item" th:href="@{/user/logout}">로그아웃</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <main class="flex-grow-1 d-flex flex-column position-relative" style="overflow: hidden; background-color: #ffffff;">
+            
+            <div id="chatHistory" class="flex-grow-1 w-100 flex-column d-none"></div>
+
+            <div id="inputWrapper" class="w-100 d-flex flex-column justify-content-center align-items-center h-100">
+                
+                <h5 id="greetingText" class="fw-bold mb-4 text-muted" style="font-size: 1.1rem;">챗봇과 대화를 나눠보세요.</h5>
+                
+                <div id="inputArea">
+                    <div id="previewContainer">
+                        <span class="remove-preview" onclick="cancelImage()">×</span>
+                        <img id="imagePreview" src="">
+                    </div>
+
+                    <div id="inputContainer" class="d-flex align-items-center bg-light rounded-pill px-4 py-3 mx-auto shadow-sm">
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                        <i class="bi bi-plus-lg fs-4 me-3 fw-bold text-dark" style="cursor: pointer;" onclick="document.getElementById('imageUpload').click();"></i>
+                        
+                        <input type="text" id="chatInput" class="form-control border-0 bg-transparent shadow-none p-0" placeholder="메시지를 입력하세요..." oninput="toggleSendBtn()" onkeypress="handleKeyPress(event)">
+                        
+                        <button id="sendBtn" onclick="sendChat()" class="btn ms-3 d-flex justify-content-center align-items-center d-none" style="background-color: #ff7a36; color: white; width: 40px; height: 40px; border-radius: 50%;">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 사이드바 토글
+        function toggleSidebar(e) {
+            e.preventDefault();
+            const sidebar = document.getElementById('sidebar');
+            const toggleText = document.getElementById('toggleText');
+            sidebar.classList.toggle('collapsed');
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.style.setProperty('width', '80px', 'important');
+                toggleText.textContent = '메뉴바 열기';
+            } else {
+                sidebar.style.setProperty('width', '260px', 'important');
+                toggleText.textContent = '메뉴바 접기';
+            }
+        }
+
+        let isFirstMessage = true;
+        let selectedImage = null;
+
+        // 레이아웃 하단 이동
+        function triggerLayout() {
+            if (!isFirstMessage) return;
+            isFirstMessage = false;
+            document.getElementById('greetingText').style.display = 'none';
+            const inputWrapper = document.getElementById('inputWrapper');
+            inputWrapper.classList.remove('h-100', 'justify-content-center', 'align-items-center');
+            inputWrapper.classList.add('p-3', 'flex-shrink-0');
+            inputWrapper.style.borderTop = '1px solid #f0f0f0';
+            
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.classList.remove('d-none');
+            chatHistory.classList.add('d-flex');
+        }
+
+        // 이미지 미리보기
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImage = e.target.result;
+                    document.getElementById('imagePreview').src = selectedImage;
+                    document.getElementById('previewContainer').style.display = 'block';
+                    document.getElementById('sendBtn').classList.remove('d-none');
+                    document.getElementById('chatInput').focus();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 이미지 취소
+        function cancelImage() {
+            selectedImage = null;
+            document.getElementById('previewContainer').style.display = 'none';
+            document.getElementById('imageUpload').value = '';
+            toggleSendBtn();
+        }
+
+        // 전송 버튼 노출 제어
+        function toggleSendBtn() {
+            const inputVal = document.getElementById('chatInput').value.trim();
+            const sendBtn = document.getElementById('sendBtn');
+            if (inputVal || selectedImage) sendBtn.classList.remove('d-none');
+            else sendBtn.classList.add('d-none');
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') sendChat(); }
+
+        // 메시지 전송
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message && !selectedImage) return;
+
+            triggerLayout();
+            const chatHistory = document.getElementById('chatHistory');
+
+            // [사용자 메시지]
+            let content = '';
+            if (selectedImage) content += `<div class="img-box shadow-sm"><img src="${selectedImage}"></div>`;
+            if (message) content += `<div class="user-bubble shadow-sm">${message}</div>`;
+
+            const userHtml = `
+                <div class="d-flex justify-content-end mb-4 chat-message" style="padding-right: 300px;">
+                    <div class="d-flex flex-column align-items-end" style="max-width: 75%;">${content}</div>
+                </div>`;
+            chatHistory.insertAdjacentHTML('beforeend', userHtml);
+
+            // 초기화
+            const lastMsg = message;
+            const lastImg = selectedImage;
+            input.value = '';
+            cancelImage();
+            input.focus();
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            // [봇 대답 시뮬레이션]
+            setTimeout(() => {
+                let botContent = '';
+                if (lastImg) botContent += `<div class="bot-text-bubble">이미지를 확인했습니다! 분석을 시작할까요?</div><div class="img-box shadow-sm"><img src="${lastImg}"></div>`;
+                if (lastMsg) botContent += `<div class="bot-text-bubble">"${lastMsg}" 라고 말씀하셨군요!</div>`;
+                botContent += `<i class="bi bi-copy bot-icon"></i>`;
+
+                const botHtml = `
+                    <div class="d-flex justify-content-start mb-4 chat-message" style="padding-left: 300px;">
+                        <div class="d-flex flex-column align-items-start" style="max-width: 75%;">${botContent}</div>
+                    </div>`;
+                chatHistory.insertAdjacentHTML('beforeend', botHtml);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }, 1000);
+        }
+    </script>
+
+    <script th:inline="javascript">
+        const msg = /*[[${message}]]*/ null;
+        const icon = /*[[${icon}]]*/ "info";
+        const isLogMessage = /*[[${isLogMsg}]]*/ false;
+
+        if(msg){ Swal.fire({ icon: icon, text: msg }); }
+        if(isLogMessage) { showLoginAlert(); }
+
+        function showLoginAlert() {
+            Swal.fire({
+                icon: 'warning',
+                title: '로그인이 필요합니다',
+                text: '해당 기능은 로그인 후 이용할 수 있습니다.',
+                confirmButtonText: '로그인하러 가기',
+                showCancelButton: true,
+                cancelButtonText: '닫기'
+            }).then((result) => {
+                if (result.isConfirmed) { window.location.href = "/user/login"; }
+            });
+        }
+    </script>
+</body>
+</html>
