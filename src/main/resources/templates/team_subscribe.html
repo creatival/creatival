@@ -1,0 +1,141 @@
+<html layout:decorate="~{layout}">
+<head>
+    <title>정기 구독 | Creatival</title>
+</head>
+<div layout:fragment="content">
+    <style>
+        :root { 
+            --c-navy: #3B4371; 
+            --c-orange: #FF7F50; 
+            --c-bg: #f9faff; 
+            --c-gray: #6c757d;
+        }
+        body { background-color: var(--c-bg); }
+
+        /* 헤더 영역 보강 */
+        .sub-header { 
+            padding: 80px 0 60px; 
+            text-align: center; 
+            background: #fff; 
+            border-bottom: 1px solid #f0f0f0; 
+            margin-bottom: 60px; 
+        }
+        .sub-header h2 { font-size: 2.2rem; margin-bottom: 10px; color: var(--c-navy); }
+
+        .sub-container { max-width: 1000px; margin: 0 auto; padding: 0 20px 80px; }
+
+        /* 카드 디자인 디테일 보강 */
+        .c-card { 
+            background: #fff; 
+            border-radius: 24px; 
+            padding: 45px 40px; 
+            border: 1px solid #eee; 
+            transition: all 0.3s ease; 
+            position: relative; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 10px 30px rgba(59, 67, 113, 0.05);
+        }
+        .c-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(59, 67, 113, 0.1);
+        }
+
+        /* 뱃지 디자인 개선 */
+        .sub-badge { 
+            background: linear-gradient(90deg, var(--c-orange), #ff9f7d);
+            color: white; 
+            font-size: 0.85rem; 
+            font-weight: 800; 
+            padding: 8px 20px; 
+            border-radius: 30px; 
+            position: absolute; 
+            top: -18px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            box-shadow: 0 5px 15px rgba(255, 127, 80, 0.3);
+        }
+
+        .price-text { font-size: 2.5rem; font-weight: 800; margin: 25px 0; color: #222; }
+        .price-text small { font-size: 1rem; color: var(--c-gray); font-weight: 500; }
+
+        /* 혜택 리스트 가독성 향상 */
+        .benefit-list { list-style: none; padding: 0; margin-bottom: 45px; text-align: left; }
+        .benefit-list li { 
+            margin-bottom: 16px; 
+            color: #555; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-size: 1.05rem;
+        }
+        .benefit-list li i { 
+            color: var(--c-orange); 
+            font-size: 1.1rem;
+        }
+
+        /* 버튼 애니메이션 추가 */
+        .btn-subscribe { 
+            width: 100%; 
+            padding: 18px; 
+            border-radius: 16px; 
+            border: none; 
+            font-size: 1.1rem;
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: auto; 
+            transition: all 0.3s;
+        }
+        .btn-navy { background: var(--c-navy); color: white; }
+        .btn-navy:hover { background: #2a3152; filter: brightness(1.2); }
+        
+        .btn-orange { background: var(--c-orange); color: white; }
+        .btn-orange:hover { filter: brightness(1.1); box-shadow: 0 8px 20px rgba(255, 127, 80, 0.2); }
+    </style>
+
+    <div class="sub-header">
+        <h2 class="fw-bold" th:text="${team.name + ' 멤버십'}">팀 멤버십</h2>
+        <p class="text-muted">매달 정기적인 후원으로 특별한 혜택을 누리고 성장을 응원해 주세요.</p>
+    </div>
+
+    <div class="sub-container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="c-card">
+                    <h4 class="fw-bold" style="color: var(--c-navy); margin-bottom: 0;">베이직 플랜</h4>
+                    <div class="price-text">₩ 4,900 <small>/ 월</small></div>
+                    
+                    <ul class="benefit-list">
+                        <li><i class="bi bi-check-circle-fill"></i> 구독자 전용 게시글 열람</li>
+                        <li><i class="bi bi-check-circle-fill"></i> 창작 비하인드 노트 공유</li>
+                        <li><i class="bi bi-check-circle-fill"></i> 프로필 전용 뱃지 부여</li>
+                    </ul>
+
+                    <form th:action="@{/team/{id}/subscribe/basic(id=${team.id})}" method="post">
+                        <button type="submit" class="btn-subscribe btn-navy">베이직 구독하기</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="c-card" style="border: 2px solid var(--c-orange);">
+                    <div class="sub-badge">BEST CHOICE</div>
+                    <h4 class="fw-bold" style="color: var(--c-orange); margin-bottom: 0;">프리미엄 플랜</h4>
+                    <div class="price-text">₩ 9,900 <small>/ 월</small></div>
+                    
+                    <ul class="benefit-list">
+                        <li><i class="bi bi-check-circle-fill"></i> 베이직 플랜의 모든 혜택</li>
+                        <li><i class="bi bi-check-circle-fill"></i> 미공개 창작물 우선 열람권</li>
+                        <li><i class="bi bi-check-circle-fill"></i> 프로젝트 크레딧 성함 등재</li>
+                    </ul>
+
+                    <form th:action="@{/team/{id}/subscribe/premium(id=${team.id})}" method="post">
+                        <button type="submit" class="btn-subscribe btn-orange">프리미엄 구독하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
