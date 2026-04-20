@@ -6,29 +6,9 @@
 <div layout:fragment="content">
 
     <style>
-        /* ===== 추가된 후원하기 버튼 스타일 (아이콘 없이) ===== */
-        .btn-boost {
-            background-color: #f05a28 !important;
-            border-color: #f05a28 !important;
-            color: #ffffff !important;
-            font-weight: bold;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 15px;
-            min-width: 80px;
-            border: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-        .btn-boost:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-            color: #ffffff !important;
-        }
+        /* ===== 추가된 후원하기 버튼 스타일 ===== */
+        .btn-boost { background-color: #f05a28 !important; border-color: #f05a28 !important; color: #ffffff !important; font-weight: bold; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 8px 15px; min-width: 80px; border: none; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; font-size: 0.85rem; }
+        .btn-boost:hover { transform: translateY(-2px); opacity: 0.9; color: #ffffff !important; }
 
         /* ===== 기존 스타일 유지 ===== */
         .art-viewer { background-color: #f8f9fa; min-height: 500px; display: flex; align-items: center; justify-content: center; padding: 40px 0; }
@@ -58,7 +38,22 @@
         .art-grid-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
         .art-grid-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 20px 10px 10px; opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end; }
         .art-grid-item:hover .art-grid-overlay { opacity: 1; }
-        .full-footer { background-color: #0b152d !important; color: white !important; width: 100%; margin-top: 80px; }
+
+        /* 🔥 푸터 강제 활성화 스타일 */
+        .full-footer { 
+            background-color: #0b152d !important; 
+            color: white !important; 
+            margin-top: 100px;
+            /* 부모의 제약을 무시하고 화면 끝까지 채우는 공식 */
+            width: 100vw; 
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding: 60px 0;
+            z-index: 10;
+        }
         .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
     </style>
 
@@ -68,12 +63,12 @@
 
     <div class="art-viewer mb-4">
         <div class="container" style="max-width: 800px;">
-			<div id="artSlider" class="carousel slide" data-bs-ride="false"> <div class="carousel-inner">
+			<div id="artSlider" class="carousel slide" data-bs-ride="false">
+			    <div class="carousel-inner">
 			        <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
 			            <img th:src="${file.fileUrl}" class="art-image">
 			        </div>
 			    </div>
-			    
 			    <button class="carousel-control-prev" type="button" data-bs-target="#artSlider" data-bs-slide="prev">
 			        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(100%);"></span>
 			        <span class="visually-hidden">Previous</span>
@@ -98,21 +93,16 @@
                     <span th:each="tag : ${tagList}" class="art-tag" th:text="'#' + ${tag.tagText}"></span>
                 </div>
             </div>
-
             <div class="action-buttons">
                 <button class="btn-boost shadow-sm me-2">후원하기</button>
-
                 <button class="btn-action" th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|" th:if="${art.username == #authentication.name}">
-                    <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
-                    <span>수정하기</span>
+                    <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i><span>수정하기</span>
                 </button>
                 <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
-                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
-                    <span>좋아요</span>
+                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span>
                 </button>
                 <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
-                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
-                    <span>북마크</span>
+                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span>
                 </button>
                 <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
             </div>
@@ -200,25 +190,35 @@
         <div id="loading-spinner" class="text-center my-5 d-none">
             <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
         </div>
-    </div>
-
-    <footer class="full-footer">
-        <div class="container py-5">
-            <div class="row mb-4">
-                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-                    <h6 class="fw-bold mb-3">정보 센터</h6>
-                    <ul class="list-unstyled small opacity-75">
-                        <li>이용 안내</li><li>공지사항</li><li>고객센터</li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="footer-line">
-            <div class="row align-items-center">
-                <div class="col-md-4 text-center small opacity-50">© 2026 creatival All rights reserved.</div>
-                <div class="col-md-4 text-end"><img th:src="@{/images/creatival-Photoroom.png}" width="140"></div>
-            </div>
-        </div>
-    </footer>
+    </div> 		<footer class="full-footer">
+		        <div class="container py-5">
+		            <div class="row mb-4">
+		                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+		                    <h6 class="fw-bold mb-3">회사 정보</h6>
+		                    <ul class="list-unstyled small opacity-75">
+		                        <li>이용 안내</li>
+		                        <li>공지사항</li>
+		                        <li>고객센터</li>
+		                        <li>도움말</li>
+		                        <li>광고문의</li>
+		                    </ul>
+		                </div>
+		            </div>
+		            <hr class="footer-line">
+		            <div class="row align-items-center">
+		                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+		                    <span>이용 약관</span>
+		                    <span>개인 정보 보호 정책</span>
+		                </div>
+		                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+		                    © 2026 creatival All rights reserved.
+		                </div>
+		                <div class="col-md-4 text-end">
+		                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
+		                </div>
+		            </div>
+		        </div>
+		    </footer>
 
     <div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal">
         <div class="modal-dialog modal-sm">
@@ -253,8 +253,9 @@
             .finally(() => { loading = false; spinner.classList.add('d-none'); });
     }
 
+    // 화면이 큰 모니터의 경우 스크롤이 트리거되지 않을 수 있으므로, 임계값을 300에서 100으로 줄여 민감도를 조절합니다.
     window.onscroll = function() {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) { loadMoreArts(); }
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) { loadMoreArts(); }
     };
     </script>	
 </div>
