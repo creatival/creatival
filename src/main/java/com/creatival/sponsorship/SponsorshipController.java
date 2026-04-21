@@ -25,13 +25,14 @@ import lombok.RequiredArgsConstructor;
 public class SponsorshipController {
 	private final TeamService teamService;
 	private final SponsorshipService sponsorshipService;
+	
+	
 	@GetMapping("/success")
 	public String sponsorshipSuccess(@RequestParam("paymentId") String paymentId,
 	                                 @RequestParam("targetType") String targetType,
 	                                 @RequestParam("targetId") Long targetId,
 	                                 @RequestParam(value = "teamId", required = false) Long teamId,
 	                                 Model model) {
-
 	    String redirectUrl;
 
 	    if ("PROJECT".equalsIgnoreCase(targetType)) {
@@ -42,7 +43,7 @@ public class SponsorshipController {
 	    } else if ("TEAM".equalsIgnoreCase(targetType)) {
 	        redirectUrl = "/team/" + targetId;
 	    } else if ("USER".equalsIgnoreCase(targetType)) {
-	        redirectUrl = "/user/" + targetId;
+	        redirectUrl = "/user/myPage/" + targetId;
 	    } else {
 	        redirectUrl = "/";
 	    }

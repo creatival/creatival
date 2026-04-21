@@ -1,5 +1,6 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ public class UpdateComicEpisodeDTO {
 	boolean free;
 	
 	private String note;
+	private BigDecimal price;
 	
 	public static UpdateComicEpisodeDTO from(Episode episode, List<ContentFile> files) {
 		return UpdateComicEpisodeDTO.builder()
@@ -41,6 +43,7 @@ public class UpdateComicEpisodeDTO {
 				.free(episode.isFree())
 				.note(episode.getNote())
 				.images(files.stream().map(file -> ResponseContentFileImageDTO.from(file)).toList())
+				.price(episode.getPrice())
 				.build();
 				
 	}

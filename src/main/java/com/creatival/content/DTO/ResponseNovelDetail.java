@@ -55,6 +55,8 @@ public class ResponseNovelDetail {
 	private Long originalContentId;
 	private String originalContentName;
 	
+
+	
 	public static ResponseNovelDetail from(Content content) {
 		return ResponseNovelDetail.builder()
 				.id(content.getId())

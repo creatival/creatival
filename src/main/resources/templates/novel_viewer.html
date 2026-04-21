@@ -1,81 +1,81 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-	
-	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
     <style>
-        /* 1. 상단 내비게이션 바 (image_8f341a.png 반영) */
         .reader-header {
             border-bottom: 1px solid #dee2e6;
             padding: 15px 0;
             background-color: #fff;
         }
-		.comment-section {
-		            background-color: #f8f9fa;
-		            border-radius: 15px;
-		            padding: 40px 20px;
-		        }
 
-		        .comment-input {
-		            border: none !important;
-		            border-bottom: 1px solid #dee2e6 !important;
-		            background-color: transparent !important;
-		        }
+        .comment-section {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px 20px;
+        }
 
-		        .comment-input:focus {
-		            border-bottom: 2px solid #2D3278 !important;
-		        }
-				/* 🔥 댓글 버튼 (HEAD 스타일 유지) */
-				        .btn-text-action {
-				            background: none;
-				            border: none;
-				            font-size: 0.8rem;
-				            font-weight: 700;
-				            color: #878a8c;
-				            cursor: pointer;
-				        }
+        .comment-input {
+            border: none !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            background-color: transparent !important;
+        }
 
-				        .btn-text-action:hover {
-				            text-decoration: underline;
-				            color: #1a1a1b;
-				        }
+        .comment-input:focus {
+            border-bottom: 2px solid #2D3278 !important;
+        }
 
-				        .reply-wrapper {
-				            margin-left: 12px;
-				            border-left: 2px solid #edeff1;
-				            padding-left: 20px;
-				            margin-top: 5px;
-				        }
+        .btn-text-action {
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #878a8c;
+            cursor: pointer;
+        }
 
-				        .btn-navy-custom {
-				            background-color: #2D3278;
-				            color: white;
-				            border-radius: 30px;
-				        }
-        /* 2. 본문 뷰어 스타일 */
+        .btn-text-action:hover {
+            text-decoration: underline;
+            color: #1a1a1b;
+        }
+
+        .reply-wrapper {
+            margin-left: 12px;
+            border-left: 2px solid #edeff1;
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+
+        .btn-navy-custom {
+            background-color: #2D3278;
+            color: white;
+            border-radius: 30px;
+        }
+
         .novel-body {
-            font-size: 1.25rem; 
-            line-height: 2.3; /* 가독성을 위한 넓은 줄간격 */
+            font-size: 1.25rem;
+            line-height: 2.3;
             color: #212529;
             min-height: 60vh;
             padding-bottom: 50px;
         }
 
-        /* 3. 작가의 코멘트 영역 (image_8ed5dd.png 완벽 재현) */
         .author-comment-wrapper {
             margin: 60px 0;
             text-align: center;
         }
+
         .author-comment-box {
-            background-color: #e9ecef; /* 시안과 동일한 연회색 배경 */
-            border-radius: 20px;       /* 둥근 사각형 */
+            background-color: #e9ecef;
+            border-radius: 20px;
             padding: 25px 30px;
             display: inline-block;
             width: 100%;
             max-width: 550px;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
+
         .author-comment-header {
             font-size: 0.8rem;
             color: #495057;
@@ -86,6 +86,7 @@
             max-width: 400px;
             padding-bottom: 8px;
         }
+
         .author-comment-content {
             font-weight: 700;
             font-size: 1.05rem;
@@ -93,9 +94,8 @@
             word-break: break-all;
         }
 
-        /* 4. 다음 화 시청하기 버튼 (image_8ed1c1.png 스타일) */
         .btn-next-action {
-            background-color: #3b447a; /* 짙은 남색 */
+            background-color: #3b447a;
             color: white !important;
             border-radius: 50px;
             padding: 12px 60px;
@@ -107,128 +107,315 @@
             transition: all 0.2s;
             border: none;
         }
-        .btn-next-action:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* 5. 하단 고정 주황색 바 (image_8f341a.png) */
-        .sticky-bottom-control {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background-color: #f05a28; color: white; z-index: 1050; padding: 12px 0;
+        .btn-next-action:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
-        .sticky-bottom-control a { color: white !important; text-decoration: none; font-size: 0.95rem; }
-        
-        /* 푸터가 없으므로 바닥 여백만 확보 */
-        body { padding-bottom: 80px !important; }
+
+        .sticky-bottom-control {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f05a28;
+            color: white;
+            z-index: 1050;
+            padding: 12px 0;
+        }
+
+        .sticky-bottom-control a {
+            color: white !important;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .episode-lock-box {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(180deg, #fcfcff 0%, #f7f8fc 100%);
+            border-radius: 18px;
+            border: 1px solid #eceef5;
+            padding: 50px 20px;
+        }
+
+        .episode-lock-inner {
+            max-width: 480px;
+        }
+
+        .episode-lock-icon {
+            width: 78px;
+            height: 78px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            color: #8a6d3b;
+            font-size: 1.9rem;
+        }
+
+        .episode-lock-price {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #2D3278;
+            margin: 18px 0;
+        }
+
+        #redeemCodeInput {
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        body {
+            padding-bottom: 80px !important;
+        }
     </style>
 </head>
 
 <body class="d-flex flex-column h-100">
-    <div layout:fragment="content">
+<div layout:fragment="content">
 
-        <nav class="reader-header sticky-top shadow-sm">
-            <div class="container d-flex justify-content-between align-items-center">
-                <a th:href="@{/content/novel_detail/{id}(id=${contentId})}" class="text-dark text-decoration-none small">
-                    <i class="bi bi-chevron-left"></i> <span th:text="|${episode.episodeNum}화 (회차)|">01(회차)</span>
-                </a>
-                <h5 class="fw-bold mb-0 text-truncate mx-3" th:text="${episode.episodeNum+'. '+episode.title}">에피소드 제목</h5>
-                <div class="d-flex gap-3 text-muted" style="cursor:pointer;">
-                    <i class="bi bi-star"></i> <i class="bi bi-bookmark"></i>
-                </div>
+    <nav class="reader-header sticky-top shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a th:href="@{/content/novel_detail/{id}(id=${contentId})}" class="text-dark text-decoration-none small">
+                <i class="bi bi-chevron-left"></i> <span th:text="|${episode.episodeNum}화 (회차)|">01(회차)</span>
+            </a>
+            <h5 class="fw-bold mb-0 text-truncate mx-3" th:text="${episode.episodeNum+'. '+episode.title}">에피소드 제목</h5>
+            <div class="d-flex gap-3 text-muted" style="cursor:pointer;">
+                <i class="bi bi-star"></i> <i class="bi bi-bookmark"></i>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <div class="container my-5 pb-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    
-                    <article class="novel-body text-start" sec:authorize="isAuthenticated()">
-                        <div style="white-space: pre-line;" th:text="${episode.novelContent}">
-                            본문 텍스트가 노출되는 영역입니다.
+    <div class="container my-5 pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <article class="novel-body text-start" th:if="${#bools.isTrue(hasAccess)}">
+                    <div style="white-space: pre-line;" th:text="${episode.novelContent}">
+                        본문 텍스트가 노출되는 영역입니다.
+                    </div>
+                </article>
+
+                <div class="episode-lock-box" th:if="${!#bools.isTrue(hasAccess)}">
+                    <div class="episode-lock-inner">
+                        <div class="episode-lock-icon">
+                            <i class="bi bi-lock-fill"></i>
                         </div>
-                    </article>
 
-                    <div class="author-comment-wrapper" th:if="${episode.note != null and !#strings.isEmpty(episode.note)}">
-                        <div class="author-comment-box">
-                            <div class="author-comment-header text-muted">작가의 코멘트</div>
-                            <div class="author-comment-content" th:text="${episode.note}">
-                                쉽지않네
+                        <h3 class="fw-bold mb-3">이 회차는 구매 후 열람할 수 있습니다</h3>
+
+                        <p class="text-secondary" style="line-height:1.8;">
+                            유료 회차입니다.<br>
+                            구매를 완료하거나 리딤 코드를 사용하면 본문 전체를 바로 읽을 수 있습니다.
+                        </p>
+
+                        <div class="episode-lock-price"
+                             th:text="${episode.price != null ? #numbers.formatInteger(episode.price, 3, 'COMMA') + '원' : '가격 정보 없음'}">
+                            1,000원
+                        </div>
+
+                        <div sec:authorize="isAuthenticated()" class="d-flex flex-column align-items-center gap-2">
+                            <form th:action="@{/episode/{id}/purchase(id=${episode.id})}"
+                                  method="post">
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+                                <button type="submit" class="btn btn-warning px-4 py-2 fw-bold rounded-pill">
+                                    <i class="bi bi-credit-card me-1"></i> 회차 구매하기
+                                </button>
+                            </form>
+
+                            <button type="button"
+                                    class="btn btn-outline-dark px-4 py-2 fw-bold rounded-pill"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#redeemCodeModal">
+                                <i class="bi bi-key-fill me-1"></i> 리딤 코드 사용
+                            </button>
+                        </div>
+
+                        <div sec:authorize="isAnonymous()" class="mt-3 d-flex flex-column align-items-center gap-2">
+                            <a th:href="@{/user/login}" class="btn btn-outline-dark px-4 py-2 rounded-pill fw-bold">
+                                로그인 후 구매하기
+                            </a>
+                            <a th:href="@{/user/login}" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-bold">
+                                로그인 후 리딤 코드 사용
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="author-comment-wrapper"
+                     th:if="${#bools.isTrue(hasAccess) and episode.note != null and !#strings.isEmpty(episode.note)}">
+					 <div class="d-flex justify-content-center gap-2 mt-3"
+					      sec:authorize="isAuthenticated()">
+
+
+					     <!-- 🔑 리딤 코드 발급 (작성자만) -->
+					     <form th:if="${episode.username == #authentication.name}"
+					           th:action="@{/redeem/create/episode/{id}(id=${episode.id})}"
+					           method="post">
+
+					         <input type="hidden"
+					                th:name="${_csrf.parameterName}"
+					                th:value="${_csrf.token}">
+
+					         <button type="submit"
+					                 class="btn btn-outline-dark btn-sm rounded-pill px-4">
+					             <i class="bi bi-key-fill me-1"></i>
+					             코드 발급
+					         </button>
+					     </form>
+
+					 </div>
+                    <div class="author-comment-box">
+                        <div class="author-comment-header text-muted">작가의 코멘트</div>
+                        <div class="author-comment-content" th:text="${episode.note}">
+                            쉽지않네
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title fw-bold" id="commentModalLabel">댓글</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="mb-4" sec:authorize="isAuthenticated()">
+                                    <form th:action="@{/comment/episode/write/{id}(id=${episode.id})}"
+                                          method="post"
+                                          class="d-flex justify-content-center mb-5">
+                                        <input type="hidden"
+                                               th:name="${_csrf.parameterName}"
+                                               th:value="${_csrf.token}">
+
+                                        <input type="text" name="text"
+                                               class="form-control comment-input me-3"
+                                               placeholder="댓글 쓰기"
+                                               style="max-width:500px;">
+
+                                        <button type="submit" class="btn btn-navy-custom px-4">작성</button>
+                                    </form>
+                                </div>
+
+                                <div class="pb-3 border-bottom mb-4">
+                                    <span class="fw-bold">전체 댓글</span> <span class="text-primary fw-bold" th:text="${commentCount}"></span>개
+                                </div>
+
+                                <div class="comment-list">
+                                    <th:block th:each="comment : ${comments}">
+                                        <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='episode', targetId=${episode.id})}"></div>
+                                    </th:block>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">닫기</button>
                             </div>
                         </div>
-
                     </div>
+                </div>
 
-                    <div sec:authorize="isAnonymous()" class="alert alert-secondary text-center py-5">
-                        로그인 후 열람이 가능합니다.
+                <div class="modal fade" id="redeemCodeModal" tabindex="-1" aria-labelledby="redeemCodeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light border-0">
+                                <h5 class="modal-title fw-bold" id="redeemCodeModalLabel" style="color: #3B4371;">리딤 코드 사용</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <form th:action="@{/redeem/episode/{id}(id=${episode.id})}" method="post">
+                                <div class="modal-body p-4 text-center">
+                                    <input type="hidden"
+                                           th:name="${_csrf.parameterName}"
+                                           th:value="${_csrf.token}">
+
+                                    <i class="bi bi-key-fill text-muted" style="font-size: 3rem;"></i>
+                                    <p class="mt-3 mb-4 text-muted small">
+                                        보유하고 계신 리딤 코드를 입력해 주세요.<br>
+                                        (예: ABCD-EFGH-IJKL-MNOP)
+                                    </p>
+
+                                    <input type="text"
+                                           id="redeemCodeInput"
+                                           name="code"
+                                           class="form-control form-control-lg text-center font-monospace"
+                                           placeholder="XXXX-XXXX-XXXX-XXXX"
+                                           maxlength="19"
+                                           required>
+                                </div>
+
+                                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                                    <button type="submit"
+                                            class="btn text-white px-4"
+                                            style="background-color: #f05a28;">
+                                        코드 사용
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-					<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
-					    <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-lg">
-					        <div class="modal-content">
-					            <div class="modal-header">
-					                <h5 class="modal-title fw-bold" id="commentModalLabel">댓글</h5>
-					                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					            </div>
+                </div>
 
-					            <div class="modal-body">
-					                <div class="mb-4" sec:authorize="isAuthenticated()">
-										<!-- 입력 -->
-								           <form th:action="@{/comment/episode/write/{id}(id=${episode.id})}"
-								                 method="post"
-								                 class="d-flex justify-content-center mb-5">
+            </div>
+        </div>
+    </div>
 
-								               <input type="text" name="text"
-								                      class="form-control comment-input me-3"
-								                      placeholder="댓글 쓰기"
-								                      style="max-width:500px;">
-
-								               <button type="submit" class="btn btn-navy-custom px-4">작성</button>
-								           </form>
-					                </div>
-
-					                <div class="pb-3 border-bottom mb-4">
-					                    <span class="fw-bold">전체 댓글</span> <span class="text-primary fw-bold" th:text="${commentCount}"></span>개
-					                </div>
-
-									<div class="comment-list">
-						                <th:block th:each="comment : ${comments}">
-						                    <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='episode', targetId=${episode.id})}"></div>
-						                </th:block>
-						            </div>
-					            </div>
-
-					            <div class="modal-footer">
-					                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">닫기</button>
-					            </div>
-					        </div>
-					    </div>
-					</div>
-
+    <div class="sticky-bottom-control shadow-lg">
+        <div class="container">
+            <div class="row text-center align-items-center">
+                <div class="col-4">
+                    <a th:if="${prevEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${prevEpisode.id})}">
+                        <i class="bi bi-caret-left-fill"></i> 이전
+                    </a>
+                    <span th:if="${prevEpisode == null}" class="opacity-50">이전</span>
+                </div>
+                <div class="col-4 border-start border-end border-white border-opacity-25">
+                    <a data-bs-toggle="modal" data-bs-target="#commentModal" style="cursor:pointer;">
+                        <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a th:if="${nextEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${nextEpisode.id})}">
+                        다음 <i class="bi bi-caret-right-fill"></i>
+                    </a>
+                    <span th:if="${nextEpisode == null}" class="opacity-50">다음</span>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="sticky-bottom-control shadow-lg">
-            <div class="container">
-                <div class="row text-center align-items-center">
-                    <div class="col-4">
-                        <a th:if="${prevEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${prevEpisode.id})}">
-                            <i class="bi bi-caret-left-fill"></i> 이전
-                        </a>
-                        <span th:if="${prevEpisode == null}" class="opacity-50">이전</span>
-                    </div>
-					<div class="col-4 border-start border-end border-white border-opacity-25">
-					    <a data-bs-toggle="modal" data-bs-target="#commentModal" style="cursor:pointer;">
-					        <i class="bi bi-chat-dots-fill"></i> 댓글 작성하기
-					    </a>
-					</div>
-                    <div class="col-4">
-                        <a th:if="${nextEpisode != null}" th:href="@{/content/novel/episode/{id}(id=${nextEpisode.id})}">
-                            다음 <i class="bi bi-caret-right-fill"></i>
-                        </a>
-                        <span th:if="${nextEpisode == null}" class="opacity-50">다음</span>
-                    </div>
-                </div>
-            </div>
-			
-        </div>
+</div>
 
-    </div> </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const codeInput = document.getElementById('redeemCodeInput');
+
+        if (codeInput) {
+            codeInput.addEventListener('input', function (e) {
+                let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                let result = '';
+
+                for (let i = 0; i < val.length; i++) {
+                    if (i > 0 && i % 4 === 0) result += '-';
+                    result += val[i];
+                }
+
+                e.target.value = result;
+            });
+        }
+    });
+</script>
+</body>
 </html>

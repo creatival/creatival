@@ -6,7 +6,6 @@
 <div layout:fragment="content">
 
     <style>
-        /* ===== 추가된 후원하기 버튼 스타일 (아이콘 없이) ===== */
         .btn-boost {
             background-color: #f05a28 !important;
             border-color: #f05a28 !important;
@@ -30,11 +29,37 @@
             color: #ffffff !important;
         }
 
-        /* ===== 기존 스타일 유지 ===== */
-        .art-viewer { background-color: #f8f9fa; min-height: 500px; display: flex; align-items: center; justify-content: center; padding: 40px 0; }
-        .art-image { max-width: 100%; max-height: 80vh; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 4px; display: block; margin: 0 auto; }
+        .art-viewer {
+            background-color: #f8f9fa;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+        .art-image {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            display: block;
+            margin: 0 auto;
+        }
         .action-buttons { display: flex; gap: 10px; align-items: center; }
-        .btn-action { background: white; border: 1px solid #dee2e6; border-radius: 10px; padding: 8px 12px; display: flex; flex-direction: column; align-items: center; min-width: 65px; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
+        .btn-action {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 65px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
         .btn-action:hover { background-color: #f8f9fa; transform: translateY(-2px); }
         .btn-like i { color: #ff4757; font-size: 1.3rem; }
         .btn-star i { color: #ffc107; font-size: 1.3rem; }
@@ -60,32 +85,134 @@
         .art-grid-item:hover .art-grid-overlay { opacity: 1; }
         .full-footer { background-color: #0b152d !important; color: white !important; width: 100%; margin-top: 80px; }
         .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+
+        .lock-box {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #fcfcff 0%, #f7f8fc 100%);
+            border: 1px solid #eceef5;
+            border-radius: 18px;
+            padding: 48px 24px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+        }
+        .lock-icon {
+            width: 78px;
+            height: 78px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            color: #8a6d3b;
+            font-size: 1.9rem;
+        }
+        .lock-price {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #2D3278;
+            margin: 18px 0;
+        }
+        #redeemCodeInput {
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
     </style>
 
     <div class="container text-center mt-5 mb-4">
         <h3 class="fw-bold" th:text="${art.title}">작품 제목</h3>
+
+        <div th:if="${art.paid}">
+            <div th:if="${hasAccess}">
+                <span class="badge bg-success">구매 완료</span>
+            </div>
+
+            <div th:if="${!hasAccess}">
+                <span class="badge bg-warning text-dark">유료 콘텐츠</span>
+            </div>
+        </div>
+
+        <div th:if="${!art.paid}">
+            <span class="badge bg-secondary">무료 콘텐츠</span>
+        </div>
     </div>
 
     <div class="art-viewer mb-4">
         <div class="container" style="max-width: 800px;">
-			<div id="artSlider" class="carousel slide" data-bs-ride="false"> <div class="carousel-inner">
-			        <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
-			            <img th:src="${file.fileUrl}" class="art-image">
-			        </div>
-			    </div>
-			    
-			    <button class="carousel-control-prev" type="button" data-bs-target="#artSlider" data-bs-slide="prev">
-			        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(100%);"></span>
-			        <span class="visually-hidden">Previous</span>
-			    </button>
-			    <button class="carousel-control-next" type="button" data-bs-target="#artSlider" data-bs-slide="next">
-			        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(100%);"></span>
-			        <span class="visually-hidden">Next</span>
-			    </button>
-			</div>
+
+            <div th:if="${!art.paid or hasAccess}">
+                <div id="artSlider" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">
+                        <div th:each="file, iter : ${art.fileList}" class="carousel-item" th:classappend="${iter.first} ? 'active'">
+                            <img th:src="${file.fileUrl}" class="art-image">
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-control-prev" type="button" data-bs-target="#artSlider" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#artSlider" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+            <div th:if="${art.paid and !hasAccess}">
+                <div class="lock-box">
+                    <div class="lock-icon">
+                        <i class="bi bi-lock-fill"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-3">이 작품은 구매 후 열람할 수 있습니다</h4>
+
+                    <p class="text-secondary" style="line-height:1.8;">
+                        유료 일러스트입니다.<br>
+                        구매를 완료하거나 리딤 코드를 사용하면 작품 이미지를 바로 감상할 수 있습니다.
+                    </p>
+
+                    <div class="lock-price"
+                         th:text="${art.price != null ? #numbers.formatInteger(art.price, 3, 'COMMA') + '원' : '가격 정보 없음'}">
+                        10,000원
+                    </div>
+
+                    <div sec:authorize="isAuthenticated()" class="d-flex flex-column align-items-center gap-2">
+                        <form th:action="@{/content/{id}/purchase(id=${art.id})}" method="post" id="purchaseForm">
+                            <input type="hidden"
+                                   th:name="${_csrf.parameterName}"
+                                   th:value="${_csrf.token}">
+                            <button type="button"
+                                    class="btn btn-primary btn-lg rounded-pill fw-bold"
+                                    onclick="confirmPurchase()">
+                                <i class="bi bi-credit-card me-1"></i> 지금 구매하기
+                            </button>
+                        </form>
+
+                        <button type="button"
+                                class="btn btn-outline-dark btn-lg rounded-pill fw-bold"
+                                data-bs-toggle="modal"
+                                data-bs-target="#redeemCodeModal">
+                            <i class="bi bi-key-fill me-1"></i> 리딤 코드 사용
+                        </button>
+                    </div>
+
+                    <div sec:authorize="isAnonymous()" class="mt-3 d-flex flex-column align-items-center gap-2">
+                        <a th:href="@{/user/login}" class="btn btn-outline-dark px-4 py-2 rounded-pill fw-bold">
+                            로그인 후 구매하기
+                        </a>
+                        <a th:href="@{/user/login}" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-bold">
+                            로그인 후 리딤 코드 사용
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
+	
     <div class="container" style="max-width: 800px;">
         <div class="d-flex justify-content-between mb-4">
             <div>
@@ -102,6 +229,8 @@
             <div class="action-buttons">
                 <button class="btn-boost shadow-sm me-2">후원하기</button>
 
+                
+
                 <button class="btn-action" th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|" th:if="${art.username == #authentication.name}">
                     <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
                     <span>수정하기</span>
@@ -117,7 +246,18 @@
                 <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
             </div>
         </div>
-
+		
+		<form th:if="${art.username == #authentication.name}"
+		                      th:action="@{/redeem/create/content/{id}(id=${art.id})}"
+		                      method="post"
+		                      class="me-2 d-flex  justify-content-end">
+		                    <input type="hidden"
+		                           th:name="${_csrf.parameterName}"
+		                           th:value="${_csrf.token}">
+		                    <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3" style="height: 42px;">
+		                        <i class="bi bi-key-fill me-1"></i> 리딤 코드 발급
+		                    </button>
+		                </form>
         <div class="mb-4" style="white-space: pre-wrap;" th:text="${art.description}"></div>
 
         <div class="d-flex justify-content-between py-3 border-top border-bottom mb-5">
@@ -231,6 +371,48 @@
         </div>
     </div>
 
+    <div class="modal fade" id="redeemCodeModal" tabindex="-1" aria-labelledby="redeemCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="redeemCodeModalLabel" style="color: #3B4371;">리딤 코드 사용</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form th:action="@{/redeem/content/{id}(id=${art.id})}" method="post">
+                    <div class="modal-body p-4 text-center">
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <i class="bi bi-key-fill text-muted" style="font-size: 3rem;"></i>
+                        <p class="mt-3 mb-4 text-muted small">
+                            보유하고 계신 리딤 코드를 입력해 주세요.<br>
+                            (예: ABCD-EFGH-IJKL-MNOP)
+                        </p>
+
+                        <input type="text"
+                               id="redeemCodeInput"
+                               name="code"
+                               class="form-control form-control-lg text-center font-monospace"
+                               placeholder="XXXX-XXXX-XXXX-XXXX"
+                               maxlength="19"
+                               required>
+                    </div>
+
+                    <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                        <button type="submit"
+                                class="btn text-white px-4"
+                                style="background-color: #f05a28;">
+                            코드 사용
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script th:inline="javascript">
     let page = 0;
     let loading = false;
@@ -256,6 +438,41 @@
     window.onscroll = function() {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) { loadMoreArts(); }
     };
+
+    function confirmPurchase() {
+        Swal.fire({
+            title: '콘텐츠를 구매하시겠습니까?',
+            text: [[${art.title}]] + "을(를) 결제합니다.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#fe8e3e',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '결제하기',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('purchaseForm').submit();
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const codeInput = document.getElementById('redeemCodeInput');
+
+        if (codeInput) {
+            codeInput.addEventListener('input', function (e) {
+                let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                let result = '';
+
+                for (let i = 0; i < val.length; i++) {
+                    if (i > 0 && i % 4 === 0) result += '-';
+                    result += val[i];
+                }
+
+                e.target.value = result;
+            });
+        }
+    });
     </script>	
 </div>
 </html>

@@ -20,8 +20,41 @@
         /* 2. 음악 카드 전용 스타일 */
         .card:hover .hover-overlay { opacity: 1 !important; }
         .object-fit-cover { object-fit: cover; width: 100%; height: 100%; }
+
+        .locked-thumb-box {
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            text-align: center;
+            padding: 16px;
+        }
+
+        .locked-thumb-box i {
+            font-size: 2.3rem;
+            color: #f05a28;
+            margin-bottom: 10px;
+        }
+
+        .paid-badge-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #8a6d3b;
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            border-radius: 999px;
+            padding: 3px 8px;
+            margin-bottom: 6px;
+        }
         
-        /* 제품 코드 전용 폰트 스타일 */
+        /* 리딤 코드 입력 전용 폰트 스타일 */
         #productKeyInput {
             letter-spacing: 2px;
             font-weight: bold;
@@ -81,7 +114,11 @@
             </div>
 
             <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
-                <button type="button" class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#keyRegisterModal" style="height: 38px;">
+                <button type="button"
+                        class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#keyRegisterModal"
+                        style="height: 38px;">
                     <i class="bi bi-key-fill me-2"></i>
                     <span class="fw-bold">코드 등록</span>
                 </button>
@@ -90,8 +127,6 @@
                     <i class="bi bi-music-note-list me-2"></i>
                     <span class="fw-bold">음악 등록</span>
                 </a>
-
-                
             </div>
         </div>
     </div>
@@ -106,17 +141,36 @@
                 <a th:href="@{|/content/music/detail/${music.id}|}" class="text-decoration-none text-dark">
                     <div class="card border-0 shadow-sm h-100 illust-card">
                         <div class="ratio ratio-1x1 position-relative bg-light rounded-top overflow-hidden">
-                            <img th:src="${music.thumbnailUrl != null ? music.thumbnailUrl : '/images/music_default.png'}" 
-                                 class="object-fit-cover" th:alt="${music.title}">
+
+                            <img th:if="${!music.paid}"
+                                 th:src="${music.thumbnailUrl != null ? music.thumbnailUrl : '/images/music_default.png'}"
+                                 class="object-fit-cover"
+                                 th:alt="${music.title}">
+
+                            <div th:if="${music.paid}" class="locked-thumb-box">
+                                <i class="bi bi-lock-fill"></i>
+                                <div class="fw-bold">유료 음악</div>
+                                <div class="small text-muted mt-1">
+                                    썸네일은 구매 후 확인할 수 있습니다
+                                </div>
+                            </div>
                             
-                            <div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25 opacity-0 hover-overlay" style="transition: opacity 0.2s;">
+                            <div th:if="${!music.paid}"
+                                 class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25 opacity-0 hover-overlay"
+                                 style="transition: opacity 0.2s;">
                                 <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem;"></i>
                             </div>
                             
-                            <span th:if="${music.projectName != null}" class="badge bg-primary position-absolute top-0 start-0 m-2 z-1" th:text="${music.projectName}">프로젝트</span>
+                            <span th:if="${music.projectName != null}"
+                                  class="badge bg-primary position-absolute top-0 start-0 m-2 z-1"
+                                  th:text="${music.projectName}">프로젝트</span>
                         </div>
                         
                         <div class="card-body p-3 text-center">
+                            <div th:if="${music.paid}" class="paid-badge-inline">
+                                <i class="bi bi-lock-fill"></i>
+                                유료
+                            </div>
                             <h6 class="card-title fw-bold text-truncate mb-1" th:text="${music.title}">곡 제목</h6>
                             <p class="text-muted small mb-0 text-truncate" th:text="${music.displayname}">작성자</p>
                         </div>
@@ -130,22 +184,35 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light border-0">
-                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">제품 코드 등록</h5>
+                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">리딤 코드 사용</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4 text-center">
-                    <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
-                    <p class="mt-3 mb-4 text-muted small">
-                        보유하고 계신 제품 코드(16자리)를 입력해 주세요.<br>
-                        (예: ABCD-EFGH-IJKL-MNOP)
-                    </p>
-                    <input type="text" id="productKeyInput" class="form-control form-control-lg text-center font-monospace" 
-                           placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
-                </div>
-                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
-                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn text-white px-4" style="background-color: #f05a28;" onclick="submitProductKey()">코드 활성화</button>
-                </div>
+
+                <!-- 여기 action만 네가 만든 기존 리딤 코드 컨트롤러 경로로 맞추면 됨 -->
+                <form th:action="@{/redeem/use}" method="post">
+                    <div class="modal-body p-4 text-center">
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+                        <p class="mt-3 mb-4 text-muted small">
+                            보유하고 계신 리딤 코드를 입력해 주세요.<br>
+                            (예: ABCD-EFGH-IJKL-MNOP)
+                        </p>
+                        <input type="text"
+                               id="productKeyInput"
+                               name="code"
+                               class="form-control form-control-lg text-center font-monospace"
+                               placeholder="XXXX-XXXX-XXXX-XXXX"
+                               maxlength="19"
+                               required>
+                    </div>
+                    <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn text-white px-4" style="background-color: #f05a28;">코드 사용</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -165,23 +232,6 @@
                 });
             }
         });
-
-        function submitProductKey() {
-            const keyInput = document.getElementById('productKeyInput');
-            const val = keyInput.value;
-            if(val.length < 19) {
-                alert('코드를 정확히 입력해 주세요 (16자리).');
-                return;
-            }
-            alert('코드 [' + val + '] 등록이 요청되었습니다.');
-            
-            const modalElement = document.getElementById('keyRegisterModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-            keyInput.value = '';
-        }
     </script>
 </div>
 </html>

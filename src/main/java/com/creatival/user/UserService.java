@@ -162,4 +162,11 @@ public class UserService {
 	public Users getUserById(Long userId) {
 		return userRepository.findById(userId).get();
 	}
+	@Transactional
+	public void updateSupportSetting(String username, boolean supportEnabled) {
+	    Users user = userRepository.findByUsername(username)
+	            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+	    user.setSupportEnabled(supportEnabled);
+	}
 }

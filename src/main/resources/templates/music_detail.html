@@ -102,7 +102,26 @@
                                 <li class="col-6 mb-2"><strong>구분:</strong> <span th:text="${music.fanWork ? '2차 창작' : '오리지널'}"></span></li>
                                 <li class="col-6"><strong>조회수:</strong> <span th:text="${music.viewCount}"></span>회</li>
                                 <li class="col-6"><strong>공개 범위:</strong> <span th:text="${music.visibility}"></span></li>
+								
                             </ul>
+							<div th:if="${music.paid}">
+								    <div th:if="${hasAccess}">
+								        <span class="badge bg-success">구매 완료</span>
+								    </div>
+
+								    <div th:if="${!hasAccess}">
+								        <p class="fw-bold"
+								           th:text="${#numbers.formatInteger(music.price, 3, 'COMMA') + '원'}">10,000원</p>
+
+								        <form th:action="@{/content/{id}/purchase(id=${music.id})}" method="post">
+								            <button type="submit" class="btn btn-primary">구매하기</button>
+								        </form>
+								    </div>
+								</div>
+
+								<div th:if="${!music.paid}">
+								    <span class="badge bg-secondary">무료 콘텐츠</span>
+								</div>
                         </div>
                     </div>
 

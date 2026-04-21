@@ -62,6 +62,8 @@ import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.follow.FollowService;
 import com.creatival.like.LikeService;
 import com.creatival.like.TargetType;
+import com.creatival.purchase.Purchase;
+import com.creatival.purchase.PurchaseService;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.user.UserService;
@@ -89,6 +91,7 @@ public class ContentController {
 	private final TagService tagService;
 	private final CommentService commentService;
 	private final LikeService likeService;
+	private final PurchaseService purchaseService;
 
 	@GetMapping("/novel/list")
 	public String novel_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
@@ -148,6 +151,15 @@ public class ContentController {
 		} else {
 			model.addAttribute("loginUsername", null);
 		}
+
+		boolean hasAccess = purchaseService.hasAccess(user, content);
+
+		if (content.isPaid() && !hasAccess) {
+		    model.addAttribute("content", content);
+		    model.addAttribute("hasAccess", false);
+		    return "locked_content";
+		}
+		
 		Page<ResponseNovelEpisodeList> paging = contentService.getEpisodeBySeries(content.getSeries(), page);
 		model.addAttribute("paging", paging);
 
@@ -215,7 +227,7 @@ public class ContentController {
 	public String updateNovelThumbnail(@PathVariable("id") Long id, @RequestParam("thumbnailFile") MultipartFile img,
 			Principal principal) throws IOException {
 		contentService.updateNovelThumbnail(id, img, principal.getName());
-		return "redirect:/content/novel_detail/" + id;
+		return "redirect:/content/novel/detail/" + id;
 	}
 
 	@GetMapping("/novel/episode/write/{id}")
@@ -239,7 +251,7 @@ public class ContentController {
 
 		try {
 			contentService.createNovelEpisode(id, createNovelEpisodeDTO, principal.getName());
-			return "redirect:/content/novel_detail/" + id;
+			return "redirect:/content/novel/detail/" + id;
 		} catch (Exception e) {
 			bindingResult.reject("createEpisodeFailed", e.getMessage());
 			return "novel_episode_write";
@@ -248,8 +260,13 @@ public class ContentController {
 
 	// 나중에 권한 체크 넣을 것
 	@GetMapping("/novel/episode/{id}")
-	public String novelEpisodeDetail(@PathVariable("id") Long episodeId, Model model) {
+	public String novelEpisodeDetail(@PathVariable("id") Long episodeId, Model model, Principal principal, RedirectAttributes redirectAttributes) {
 		Episode episode = contentService.getNovelEpisode(episodeId);
+		if(episode ==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 episode가 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
 		contentService.upViewCount(episode.getSeries().getContent());
 		ResponseNovelEpisodeDetail episodeDetail = ResponseNovelEpisodeDetail.from(episode);
 		model.addAttribute("episode", episodeDetail);
@@ -262,6 +279,14 @@ public class ContentController {
 		model.addAttribute("prevEpisode", contentService.getPrevEpisode(episode));
 		model.addAttribute("nextEpisode", contentService.getNextEpisode(episode));
 		model.addAttribute("contentId", episode.getSeries().getContent().getId());
+		
+		Users loginUser = null;
+	    if (principal != null) {
+	        loginUser = userService.getUserByUsername(principal.getName());
+	    }
+
+		boolean hasAccess = purchaseService.hasEpisodeAccess(loginUser, episode);
+		model.addAttribute("hasAccess", hasAccess);
 		return "novel_viewer";
 	}
 
@@ -378,8 +403,8 @@ public class ContentController {
 			} else {
 				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
 			}
-
 		}
+		
 		List<ResponseArtList> anotherArt = contentService.getAutherArt(content.getUser());
 		model.addAttribute("anotherArt", anotherArt);
 		List<ResponseContentListForProject> childContentList = new ArrayList<>();
@@ -403,10 +428,19 @@ public class ContentController {
 		if (principal != null) {
 			user = userService.getUserByUsername(principal.getName());
 		}
+		boolean hasAccess = purchaseService.hasAccess(user, content);
+
+		if (content.isPaid() && !hasAccess) {
+		    model.addAttribute("content", content);
+		    model.addAttribute("hasAccess", false);
+		    return "locked_content";
+		}
 
 		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		model.addAttribute("hasAccess", hasAccess);
+		
 		return "illustration_detail";
 	}
 
@@ -510,9 +544,17 @@ public class ContentController {
 		if (principal != null) {
 			user = userService.getUserByUsername(principal.getName());
 		}
+		boolean hasAccess = purchaseService.hasAccess(user, content);
+
+		if (content.isPaid() && !hasAccess) {
+		    model.addAttribute("content", content);
+		    model.addAttribute("hasAccess", false);
+		    return "locked_content";
+		}
 		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		model.addAttribute("hasAccess", hasAccess);
 		return "video_detail";
 	}
 
@@ -667,9 +709,17 @@ public class ContentController {
 		if (principal != null) {
 			user = userService.getUserByUsername(principal.getName());
 		}
+		boolean hasAccess = purchaseService.hasAccess(user, content);
+
+		if (content.isPaid() && !hasAccess) {
+		    model.addAttribute("content", content);
+		    model.addAttribute("hasAccess", false);
+		    return "locked_content";
+		}
 		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		model.addAttribute("hasAccess", hasAccess);
 		return "music_detail";
 	}
 
@@ -782,9 +832,17 @@ public class ContentController {
 		if (principal != null) {
 			user = userService.getUserByUsername(principal.getName());
 		}
+		boolean hasAccess = purchaseService.hasAccess(user, content);
+
+		if (content.isPaid() && !hasAccess) {
+		    model.addAttribute("content", content);
+		    model.addAttribute("hasAccess", false);
+		    return "locked_content";
+		}
 		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		model.addAttribute("hasAccess", hasAccess);
 		return "file_detail";
 	}
 
@@ -992,6 +1050,13 @@ public class ContentController {
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 
+		boolean hasAccess = purchaseService.hasAccess(user, content);
+
+		if (content.isPaid() && !hasAccess) {
+		    model.addAttribute("content", content);
+		    model.addAttribute("hasAccess", false);
+		    return "locked_content";
+		}
 		return "comic_detail";
 	}
 	
@@ -1044,6 +1109,12 @@ public class ContentController {
 				return "redirect:/content/comic/detail/"+id;
 			}
 		}
+		Users loginUser = null;
+	    if (principal != null) {
+	        loginUser = userService.getUserByUsername(principal.getName());
+	    }
+
+	    boolean hasAccess = purchaseService.hasEpisodeAccess(loginUser, episode);
 		episode.setViewCount(episode.getViewCount()+1);
 		contentService.upViewCountForEpisode(episode);
 		Content content = episode.getSeries().getContent();
@@ -1054,6 +1125,7 @@ public class ContentController {
 		model.addAttribute("commentCount", commentsCount);
 		model.addAttribute("episodeDetail", ResponseComicEpisodeDetail.from(episode, contentFileService.getContentFileByEpisode(episode)));
 		contentService.upViewCountForEpisode(episode);
+		model.addAttribute("hasAccess", hasAccess);
 		return "comic_viewer";
 	}
 	

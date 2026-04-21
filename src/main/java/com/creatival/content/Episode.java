@@ -1,5 +1,6 @@
 package com.creatival.content;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,6 +67,11 @@ public class Episode {
 	
 	@Lob
 	private String note;
+	
+	@Column(nullable = false)
+	private boolean paid;
+	
+	private BigDecimal price;
 	
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)

@@ -1,5 +1,6 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,9 @@ public class UpdateFileDTO {
 	private boolean allowComment;
 	private Visibility visibility;
 	
+	private boolean paid;
+	private BigDecimal price;
+	
 	public static UpdateFileDTO from(Content content, ContentFile file) {
 		return UpdateFileDTO.builder()
 				.id(content.getId())
@@ -38,6 +42,8 @@ public class UpdateFileDTO {
 				.fileUrl(file.getFileUrl())
 				.allowComment(content.isAllowComment())
 				.visibility(content.getVisibility())
+				.paid(content.isPaid())
+				.price(content.getPrice())
 				.build();
 	}
 	
@@ -51,6 +57,8 @@ public class UpdateFileDTO {
 				.visibility(content.getVisibility())
 				.extraImgUrl(extraImg.getFileUrl())
 				.extraImgName(extraImg.getOriginalFileName())
+				.paid(content.isPaid())
+				.price(content.getPrice())
 				.build();
 	}
 }

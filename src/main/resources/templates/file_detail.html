@@ -68,6 +68,24 @@
                     <a href="#" class="user-id" th:text="${fileDetail.displayname}">작가명</a> · 
                     <span th:text="${#temporals.format(fileDetail.createdAt, 'yyyy.MM.dd')}">날짜</span>
                 </div>
+				<div th:if="${fileDetail.paid}">
+					    <div th:if="${hasAccess}">
+					        <span class="badge bg-success">구매 완료</span>
+					    </div>
+
+					    <div th:if="${!hasAccess}">
+					        <p class="fw-bold"
+					           th:text="${#numbers.formatInteger(fileDetail.price, 3, 'COMMA') + '원'}">10,000원</p>
+
+					        <form th:action="@{/content/{id}/purchase(id=${fileDetail.id})}" method="post">
+					            <button type="submit" class="btn btn-primary">구매하기</button>
+					        </form>
+					    </div>
+					</div>
+
+					<div th:if="${!fileDetail.paid}">
+					    <span class="badge bg-secondary">무료 콘텐츠</span>
+					</div>
                 <hr class="section-divider">
             </div>
 

@@ -635,4 +635,11 @@ public class TeamService {
 	    team.setGoalAmount(goalAmount);
 	    teamRepository.save(team);
 	}
+	
+	public boolean isMemberByUserAndTeam(Users user, Team team) {
+		if(user==null || team==null) {
+			return false;
+		}
+		return teamMemberRepository.existsByTeamAndUser(team, user);
+	}
 }

@@ -4,221 +4,271 @@
       layout:decorate="~{layout}">
 	
 <head>
-    <title>게시글 작성 | Creatival</title>
+    <title>프로젝트 공지 작성 | Creatival</title>
 	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
 	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
 </head>
 
 <div layout:fragment="content">
     <style>
+        /* [핵심] 모든 요소의 너비 계산 방식 고정 (터짐 방지) */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         :root {
             --brand-navy: #3B4371;
             --brand-orange: #FF7F50;
-            --bg-light: #F8F9FA;
             --border-color: #E9ECEF;
+            --bg-light: #F8F9FA;
         }
 
         .write-container {
-            max-width: 960px;
+            max-width: 900px;
             margin: 3rem auto 5rem;
             padding: 0 20px;
         }
 
-        /* 상단 헤더 */
+        /* 상단 헤더 중앙 정렬 */
         .write-header {
-            margin-bottom: 2.5rem;
-            border-left: 5px solid var(--brand-navy);
-            padding-left: 20px;
+            text-align: center;
+            margin-bottom: 3rem;
         }
         .write-header h2 {
             font-weight: 800;
             color: var(--brand-navy);
-            margin-bottom: 5px;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
-        .write-header p { color: #777; margin-bottom: 0; }
+        .write-header p { color: #666; font-size: 1.1rem; }
 
         /* 카드 스타일 */
         .write-card {
             background: #fff;
             border: 1px solid var(--border-color);
-            padding: 45px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            width: 100%;
         }
 
+        /* 섹션 타이틀 - 주황색 세로 바 포인트 */
         .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 1.2rem;
+            font-weight: 800;
             color: var(--brand-navy);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-title i { color: var(--brand-orange); font-size: 1.2rem; }
-
-        /* 폼 요소 디자인 */
-        .form-label {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #444;
-            margin-bottom: 10px;
-        }
-        .form-control, .form-select {
-            border: 1.5px solid #E5E5E5;
-            border-radius: 10px;
-            padding: 12px 18px;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: var(--brand-navy);
-            box-shadow: 0 0 0 4px rgba(59, 67, 113, 0.1);
-            outline: none;
-        }
-
-        /* 작성자 정보 바 */
-        .author-box {
-            background-color: #F9FAFF;
-            border: 1px solid #EEF0FF;
-            border-radius: 10px;
-            padding: 12px 20px;
+            margin-bottom: 1.8rem;
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .author-box img { width: 32px; height: 32px; object-fit: cover; }
-
-        /* 연관 리소스 영역 (ID 입력) */
-        .resource-group {
-            background: #fdfdfd;
-            border: 1px dashed #ddd;
-            border-radius: 12px;
-            padding: 20px;
-        }
-        .preview-box {
-            font-size: 0.85rem;
-            margin-top: 8px;
-            min-height: 20px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* 파일 리스트 스타일 */
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-top: 8px;
-            border: 1px solid #eee;
-        }
-        .btn-remove-file {
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
-        }
-
-        /* 버튼 그룹 */
-        .btn-group-custom {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 2.5rem;
-        }
-        .btn-creativ {
-            padding: 15px 40px;
-            font-weight: 700;
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--brand-orange);
             border-radius: 10px;
+        }
+
+        /* [수정] 입력 그룹 - 라벨과 입력창 수직 정렬 */
+        .form-row-custom {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+        .form-row-custom .form-label {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        .form-row-custom .form-control, 
+        .form-row-custom .form-select {
+            width: 100% !important;
+            max-width: 100%;
+            border: 1.5px solid #E9ECEF;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 1rem;
             transition: all 0.2s;
         }
-        .btn-cancel { background: #eee; color: #555; border: none; text-decoration: none; text-align: center; }
-        .btn-cancel:hover { background: #e0e0e0; }
-        .btn-submit { background: var(--brand-navy); color: #fff; border: none; }
-        .btn-submit:hover { background: #2c3359; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(59,67,113,0.25); }
+        .form-row-custom .form-control:focus {
+            border-color: var(--brand-navy);
+            box-shadow: 0 0 0 4px rgba(59, 67, 113, 0.05);
+            outline: none;
+        }
 
-        .divider { height: 1px; background: #f0f0f0; margin: 2.5rem 0; }
+        /* 작성자 정보 박스 */
+        .info-box-static {
+            background-color: #F8F9FF;
+            border: 1px solid #EEF0FF;
+            border-radius: 12px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 52px;
+        }
+
+        /* 연관 리소스 영역 (점선 박스) */
+        .resource-group {
+            background: #fdfdfd;
+            border: 1px dashed #DDE2E6;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 1rem;
+        }
+        .preview-box {
+            font-size: 0.8rem;
+            margin-top: 6px;
+            min-height: 18px;
+            color: #777;
+        }
+
+        /* 파일 업로드 영역 */
+        .file-upload-zone {
+            border: 2px dashed #E9ECEF;
+            border-radius: 15px;
+            padding: 20px;
+            background: #FAFBFC;
+        }
+
+        /* [수정] 하단 버튼 그룹 - 주황 아웃라인 & 네이비 */
+        .btn-action-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 3.5rem;
+        }
+        .btn-creativ {
+            padding: 15px 50px;
+            font-weight: 700;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 취소 버튼 (주황 아웃라인) */
+        .btn-cancel-outline {
+            background: #fff;
+            color: var(--brand-orange);
+            border: 2px solid var(--brand-orange);
+        }
+        .btn-cancel-outline:hover {
+            background: #FFF5F2;
+            transform: translateY(-2px);
+        }
+
+        /* 등록 버튼 (네이비 솔리드) */
+        .btn-submit-solid {
+            background: var(--brand-navy);
+            color: #fff;
+            border: none;
+        }
+        .btn-submit-solid:hover {
+            background: #2c3359;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 67, 113, 0.2);
+        }
+
+        .divider { height: 1px; background: #F0F2F5; margin: 2.5rem 0; }
     </style>
 
     <div class="write-container">
         <div class="write-header">
-            <h2>프로젝트 건의사항 작성</h2>
-            <p>팀원들과 공유하고 싶은 건의사항을 작성해주세요.</p>
+            <h2>프로젝트 공지사항 작성</h2>
+            <p>팀 프로젝트의 새로운 소식이나 공지사항을 등록해 주세요.</p>
         </div>
 
         <form th:action="@{/board/write}" method="post" enctype="multipart/form-data">
             <div class="write-card">
                 
-                <div class="row g-4 mb-2">
+                <div class="row g-4">
                     <div class="col-md-6">
-                        <label class="form-label">카테고리 선택</label>
-                        <select class="form-select" name="boardType">
-                            <option value="NORMAL" selected>프로젝트 게시판 (일반 프로젝트 소식)</option>
-                            <option value="CREATOR">공지사항 (전체 팀원 필독)</option>
-                        </select>
+                        <div class="form-row-custom">
+                            <label class="form-label">카테고리 선택</label>
+                            <select class="form-select" name="boardType">
+                                <option value="NORMAL" selected>프로젝트 게시판 (일반)</option>
+                                <option value="CREATOR">📢 공지사항 (필독)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">작성자</label>
-                        <div class="author-box">
-                            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="rounded-circle">
-                            <span class="fw-bold text-dark" th:text="${#authentication.name}">사용자명</span>
+                        <div class="form-row-custom">
+                            <label class="form-label">작성자</label>
+                            <div class="info-box-static">
+                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="26" class="rounded-circle">
+                                <span class="fw-bold text-dark" th:text="${#authentication.name}">사용자명</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="divider"></div>
 
-                <div class="section-title"><i class="bi bi-box-seam-fill"></i> 연관 리소스 연결 <small class="text-muted fw-normal">(선택)</small></div>
+                <div class="section-title">연관 리소스 연결 <small class="text-muted fw-normal ms-2">(선택)</small></div>
                 <div class="resource-group">
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label">컨텐츠 ID</label>
-                            <input type="number" class="form-control" name="contentId" id="contentId" placeholder="ID 입력" oninput="debouncedFetchInfo('content', this.value)">
-                            <div id="contentPreview" class="preview-box"></div>
+                            <div class="form-row-custom mb-0">
+                                <label class="form-label small">컨텐츠 ID</label>
+                                <input type="number" class="form-control" name="contentId" id="contentId" placeholder="ID 입력" oninput="debouncedFetchInfo('content', this.value)">
+                                <div id="contentPreview" class="preview-box"></div>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">프로젝트 ID</label>
-                            <input type="number" class="form-control" name="projectId" id="projectId" placeholder="ID 입력" oninput="debouncedFetchInfo('project', this.value)">
-                            <div id="projectPreview" class="preview-box"></div>
+                            <div class="form-row-custom mb-0">
+                                <label class="form-label small">프로젝트 ID</label>
+                                <input type="number" class="form-control" name="projectId" id="projectId" placeholder="ID 입력" oninput="debouncedFetchInfo('project', this.value)">
+                                <div id="projectPreview" class="preview-box"></div>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">팀 ID</label>
-                            <input type="number" class="form-control" name="teamId" id="teamId" placeholder="ID 입력" oninput="debouncedFetchInfo('team', this.value)">
-                            <div id="teamPreview" class="preview-box"></div>
+                            <div class="form-row-custom mb-0">
+                                <label class="form-label small">팀 ID</label>
+                                <input type="number" class="form-control" name="teamId" id="teamId" placeholder="ID 입력" oninput="debouncedFetchInfo('team', this.value)">
+                                <div id="teamPreview" class="preview-box"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="divider"></div>
 
-                <div class="section-title"><i class="bi bi-pencil-square"></i> 게시글 내용 작성</div>
-                <div class="mb-4">
+                <div class="section-title">게시글 내용 작성</div>
+                
+                <div class="form-row-custom">
                     <label class="form-label">제목</label>
-                    <input type="text" class="form-control form-control-lg" name="title" placeholder="제목을 입력해 주세요" required>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">상세 내용</label>
-                    <textarea class="form-control" id="contentArea" name="boardText" style="min-height: 300px; resize: none;" 
-                              placeholder="내용을 입력해 주세요. HTML이나 마크다운 형식은 지원되지 않습니다."></textarea>
+                    <input type="text" class="form-control" name="title" placeholder="공지 제목을 입력해 주세요" required>
                 </div>
 
-                <div class="mb-0">
-                    <label class="form-label"><i class="bi bi-paperclip me-1"></i> 파일 첨부 <small class="text-muted">(이미지, 영상 최대 3개)</small></label>
-                    <div id="fileInputs">
-                        <input class="form-control" type="file" name="images" accept="image/*,video/*" multiple id="file_input" onchange="handleFileSelect(this)">
+                <div class="form-row-custom">
+                    <label class="form-label">상세 내용</label>
+                    <textarea class="form-control" id="contentArea" name="boardText" style="min-height: 320px; resize: none;" 
+                              placeholder="팀원들과 공유할 내용을 상세히 작성해 주세요."></textarea>
+                </div>
+
+                <div class="form-row-custom mb-0">
+                    <label class="form-label">파일 첨부 <small class="text-muted fw-normal">(최대 3개)</small></label>
+                    <div class="file-upload-zone">
+                        <input class="form-control mb-3" type="file" name="images" accept="image/*,video/*" multiple id="file_input" onchange="handleFileSelect(this)">
+                        <div id="fileList"></div>
+                        <div class="text-center text-muted small mt-2">
+                            <i class="bi bi-info-circle me-1"></i> 이미지나 영상 파일을 선택해 주세요.
+                        </div>
                     </div>
-                    <div id="fileList" class="mt-2"></div>
                 </div>
             </div>
 
-            <div class="btn-group-custom">
-                <a th:href="@{/board}" class="btn btn-creativ btn-cancel">돌아가기</a>
-                <button type="submit" class="btn btn-creativ btn-submit">게시글 등록하기</button>
+            <div class="btn-action-group">
+                <a th:href="@{/board}" class="btn btn-creativ btn-cancel-outline">돌아가기</a>
+                <button type="submit" class="btn btn-creativ btn-submit-solid">게시글 등록하기</button>
             </div>
         </form>
     </div>
@@ -232,11 +282,8 @@
         function debouncedFetchInfo(type, id) {
             const preview = document.getElementById(type + 'Preview');
             clearTimeout(debounceTimer);
-            
             if(!id) { preview.innerHTML = ""; return; }
-            
-            preview.innerHTML = '<small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span>조회 중...</small>';
-            
+            preview.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>조회 중...';
             debounceTimer = setTimeout(() => {
                 fetch(`/board/info/${type}?id=${id}`)
                     .then(res => res.json())
@@ -244,7 +291,7 @@
                         if (data.name) {
                             preview.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> <strong class="text-dark">${data.name}</strong>`;
                         } else {
-                            preview.innerHTML = `<i class="bi bi-exclamation-circle-fill text-danger"></i> 존재하지 않는 ID`;
+                            preview.innerHTML = `<i class="bi bi-exclamation-circle-fill text-danger"></i> 존재하지 않음`;
                         }
                     })
                     .catch(() => { 
@@ -257,19 +304,17 @@
         function handleFileSelect(input) {
             const fileList = document.getElementById('fileList');
             fileList.innerHTML = '';
-            
             if (input.files.length > 3) {
                 alert("파일은 최대 3개까지만 첨부할 수 있습니다.");
                 input.value = "";
                 return;
             }
-
-            Array.from(input.files).forEach((file, index) => {
+            Array.from(input.files).forEach((file) => {
                 const item = document.createElement('div');
-                item.className = 'file-item';
+                item.className = 'p-2 bg-white border rounded-3 mb-2 small d-flex justify-content-between align-items-center shadow-sm';
                 item.innerHTML = `
-                    <span><i class="bi bi-file-earmark-check me-2"></i>${file.name} <small class="text-muted">(${Math.round(file.size/1024)}KB)</small></span>
-                    <i class="bi bi-check2 text-success"></i>
+                    <span><i class="bi bi-file-earmark-check me-2 text-primary"></i>${file.name}</span>
+                    <span class="badge bg-light text-dark border">${Math.round(file.size/1024)} KB</span>
                 `;
                 fileList.appendChild(item);
             });

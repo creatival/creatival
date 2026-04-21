@@ -272,8 +272,7 @@ public class UserController {
 	    model.addAttribute("recentSupports", recentSupports);
 	    model.addAttribute("supportTargetType", "USER");
 	    model.addAttribute("supportTargetId", userId);
-	    model.addAttribute("supportEnabled", true);
-
+	    model.addAttribute("supportEnabled", targetUser.isSupportEnabled());
 	    return "user_boost";
 	}
 	
@@ -283,14 +282,18 @@ public class UserController {
 	                        @RequestParam(value = "supporterName", required = false) String supporterName,
 	                        @RequestParam(value = "message", required = false) String message,
 	                        @RequestParam(value = "anonymous", required = false, defaultValue = "false") boolean anonymous,
-	                        Principal principal,
+	                        Principal principal, RedirectAttributes redirectAttributes,
 	                        Model model) {
-
+		Users targetUser = userService.getUserById(userId);
 	    Users user = null;
 	    if (principal != null) {
 	        user = userService.getUserByUsername(principal.getName());
 	    }
-
+	    if (!targetUser.isSupportEnabled()) {
+	        redirectAttributes.addFlashAttribute("message", "해당 유저는 후원을 받지 않습니다.");
+	        redirectAttributes.addFlashAttribute("icon", "warning");
+	        return "redirect:/user/myPage/"+userId;
+	    }
 	    String paymentId = sponsorshipService.createSponsorship(
 	            TargetType.USER,
 	            userId,
@@ -308,5 +311,16 @@ public class UserController {
 
 	    return "payment_ready";
 	}
-	
+	@PostMapping("/support-setting")
+	public String updateUserSupportSetting(@RequestParam(value = "supportEnabled", defaultValue = "false") boolean supportEnabled,
+	                                       Principal principal) {
+
+	    if (principal == null) {
+	        throw new IllegalStateException("로그인이 필요합니다.");
+	    }
+
+	    userService.updateSupportSetting(principal.getName(), supportEnabled);
+
+	    return "redirect:/user/myPage";
+	}
 }

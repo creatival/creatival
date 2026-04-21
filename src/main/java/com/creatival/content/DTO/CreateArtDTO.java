@@ -1,5 +1,6 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,8 @@ public class CreateArtDTO {
 	private Visibility visibility;
 	
 	private String projectTag;
+	private boolean paid;
+	private BigDecimal price;
 	
 	private boolean allowComment;
 	private boolean fanWork;

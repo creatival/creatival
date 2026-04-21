@@ -58,6 +58,11 @@
             .back-btn { position: static; display: inline-block; margin-bottom: 20px; }
             .input-title { padding: 0; }
         }
+		.price-input {
+		    max-width: 180px;
+		    font-size: 0.9rem;
+		    border-radius: 20px;
+		}
     </style>
 
     <main class="py-5">
@@ -112,7 +117,25 @@
                 </div>
                 <input type="hidden" name="tagString" id="finalTagString">
             </div>
+			<div class="mb-3 text-center">
+			    <label class="form-label fw-bold">유료 콘텐츠 설정</label>
 
+			    <div class="form-check mb-2 d-flex justify-content-center">
+			        <input class="form-check-input" type="checkbox" id="paidCheck" th:field="*{paid}">
+			        <label class="form-check-label ms-2" for="paidCheck">
+			            유료 콘텐츠로 등록
+			        </label>
+			    </div>
+
+			    <input type="number"
+			           class="form-control text-center mx-auto price-input"
+			           id="priceInput"
+			           min="100"
+			           step="100"
+			           placeholder="가격 입력 (예: 5000)"
+			           th:field="*{price}"
+			           disabled>
+			</div>
             <hr class="section-divider">
 
             <div class="row g-4 mb-4 text-start bg-light p-4 rounded-4 shadow-sm">
@@ -236,6 +259,38 @@
                 e.preventDefault();
             }
         });
+		document.addEventListener("DOMContentLoaded", function () {
+							        const paidCheck = document.getElementById("paidCheck");
+							        const priceInput = document.getElementById("priceInput");
+
+							        function togglePriceInput() {
+							            if (paidCheck.checked) {
+							                priceInput.disabled = false;
+							            } else {
+							                priceInput.disabled = true;
+							                priceInput.value = "";
+							            }
+							        }
+
+							        if (paidCheck && priceInput) {
+							            paidCheck.addEventListener("change", togglePriceInput);
+							            togglePriceInput();
+							        }
+							    });
+					function validateForm() {
+							    const paidCheck = document.getElementById("paidCheck").checked;
+							    const priceValue = document.getElementById("priceInput").value;
+							    const submitBtn = document.querySelector("button[type='submit']");
+							    
+							    if (paidCheck && (!priceValue || priceValue < 100)) {
+							        submitBtn.disabled = true; // 조건 안 맞으면 버튼 클릭 불가
+							    } else {
+							        submitBtn.disabled = false;
+							    }
+							}
+							
+							document.getElementById("paidCheck").addEventListener("change", validateForm);
+							document.getElementById("priceInput").addEventListener("input", validateForm);
     </script>
 </div>
 </html>

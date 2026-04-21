@@ -1,5 +1,7 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.content.Enum.OwnerType;
@@ -39,4 +41,7 @@ public class CreateVideoDTO {
 	private Long originalContentId;
 	
 	private String projectTag;
+	
+	private boolean paid;
+	private BigDecimal price;
 }
