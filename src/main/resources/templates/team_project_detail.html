@@ -514,9 +514,9 @@
 
             <div class="d-grid gap-3 mb-4">
                 <button class="btn btn-light btn-lg border-0 rounded-4 shadow-sm fw-bold text-dark hover-card"><i class="bi bi-megaphone-fill text-warning me-2"></i> 프로젝트 홍보하기</button>
-                <button class="btn btn-boost-orange btn-lg rounded-4 shadow-sm fw-bold hover-card" onclick="location.href='/team_boost'">
+                <a class="btn btn-boost-orange btn-lg rounded-4 shadow-sm fw-bold hover-card" th:href="@{/team/project/{id}/boost(id=${dto.id})}">
                     <i class="bi bi-lightning-charge-fill me-2"></i> 프로젝트 후원하기
-                </button>
+                </a>
             </div>
 
         </div>

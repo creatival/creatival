@@ -1,5 +1,6 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.creatival.content.Episode;
@@ -29,6 +30,10 @@ public class ResponseNovelEpisodeDetail {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	
+	private BigDecimal price;
+	
+	private String username;
+	
 	public static ResponseNovelEpisodeDetail from(Episode episode) {
 		return ResponseNovelEpisodeDetail.builder()
 				.id(episode.getId())
@@ -39,6 +44,8 @@ public class ResponseNovelEpisodeDetail {
 				.note(episode.getNote())
 				.createdAt(episode.getCreatedAt())
 				.updatedAt(episode.getUpdatedAt())
+				.price(episode.getPrice())
+				.username(episode.getSeries().getContent().getUser().getUsername())
 				.build();
 	}
 }

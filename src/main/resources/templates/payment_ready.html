@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>결제 진행중</title>
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+</head>
+<body>
+
+	<script th:inline="javascript">
+	    const paymentId = [[${paymentId}]];
+	    const amount = [[${amount}]];
+	    const targetType = [[${targetType}]];
+	    const targetId = [[${targetId}]];
+
+	    PortOne.requestPayment({
+	        storeId: "store-9e24dee6-82a9-48c5-b561-4aa2bf124ba1",
+	        channelKey: "channel-key-4c22d196-f552-424e-8ce7-e73d0209b77a",
+	        paymentId: paymentId,
+	        orderName: targetType === "PROJECT" ? "프로젝트 후원" : "팀 후원",
+	        totalAmount: amount,
+	        currency: "KRW",
+	        payMethod: "CARD",
+	        customer: {
+	            fullName: "테스트 유저"
+	        }
+	    }).then(function (res) {
+
+	        if (res.code != null) {
+	            window.location.replace("/sponsorship/fail");
+	            return;
+	        }
+
+	        fetch("/api/webhook/complete", {
+	            method: "POST",
+	            headers: {"Content-Type": "application/json"},
+	            body: JSON.stringify({
+	                paymentId: paymentId,
+	                merchantUid: paymentId
+	            })
+	        }).then(async (response) => {
+	            if (!response.ok) {
+	                window.location.replace("/sponsorship/fail");
+	                return;
+	            }
+
+	            window.location.replace(
+	                "/sponsorship/success?paymentId=" + encodeURIComponent(paymentId)
+	                + "&targetType=" + encodeURIComponent(targetType)
+	                + "&targetId=" + encodeURIComponent(targetId)
+	            );
+	        }).catch(() => {
+	            window.location.replace("/sponsorship/fail");
+	        });
+	    }).catch(() => {
+	        window.location.replace("/sponsorship/fail");
+	    });
+	</script>
+</body>
+</html>

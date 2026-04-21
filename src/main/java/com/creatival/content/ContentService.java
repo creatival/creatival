@@ -1,6 +1,7 @@
 package com.creatival.content;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -222,6 +223,7 @@ public class ContentService {
 		Series series = content.getSeries();
 		series.setEnd(updateNovelDTO.isEnd());
 		
+		
 		contentRepository.save(content);
 		seriesRepository.save(series);
 	}
@@ -253,6 +255,18 @@ public class ContentService {
 				.series(series)
 				.episodeNum(maxNum+1)
 				.build();
+		
+		episode.setPaid(!episode.isFree());
+
+		if (!episode.isFree()) {
+		    if (createNovelEpisodeDTO.getPrice() == null || createNovelEpisodeDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+		        throw new IllegalArgumentException("유료 회차는 가격을 입력해야 합니다.");
+		    } else {
+		    	episode.setPrice(createNovelEpisodeDTO.getPrice());
+		    }
+		} else {
+		    episode.setPrice(null);
+		}
 		episodeRepository.save(episode);
 		
 		// 시리즈에 저장되는 총 화 수
@@ -282,6 +296,18 @@ public class ContentService {
 		episode.setNote(updateNovelEpisodeDTO.getNote());
 		episode.setFree(updateNovelEpisodeDTO.isFree());
 		episode.setDeleted(updateNovelEpisodeDTO.isDeleted());
+		episode.setPaid(!episode.isFree());
+
+		if (!updateNovelEpisodeDTO.isFree()) {
+		    if (updateNovelEpisodeDTO.getPrice() == null || updateNovelEpisodeDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+		        throw new IllegalArgumentException("유료 회차는 가격을 입력해야 합니다.");
+		    } else {
+		    	episode.setPrice(updateNovelEpisodeDTO.getPrice());
+		    }
+		    
+		} else {
+		    episode.setPrice(null);
+		}
 		
 		episodeRepository.save(episode);
 	}
@@ -335,7 +361,16 @@ public class ContentService {
 			}
 			content.setProject(project);
 		}
-		
+		content.setPaid(createArtDTO.isPaid());
+
+		if (createArtDTO.isPaid()) {
+		    if (createArtDTO.getPrice() == null || createArtDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+		        throw new IllegalArgumentException("유료 콘텐츠는 가격을 입력해야 합니다.");
+		    }
+		    content.setPrice(createArtDTO.getPrice());
+		} else {
+		    content.setPrice(null);
+		}
 		contentRepository.save(content);
 		System.out.println(createArtDTO.getImages().size() + "개수");
 		contentFileService.createContentFileImageForContent(content, createArtDTO.getImages(), "art");
@@ -367,6 +402,8 @@ public class ContentService {
 	    content.setDescription(dto.getDescription());
 	    content.setVisibility(dto.getVisibility());
 	    content.setAllowComment(dto.isAllowComment());
+	    content.setPaid(dto.isPaid());
+	    content.setPrice(dto.getPrice());
 	    
 	    if (dto.getDeleteFileIds() != null && !dto.getDeleteFileIds().isEmpty()) {
 	        for (Long fileId : dto.getDeleteFileIds()) {
@@ -412,6 +449,16 @@ public class ContentService {
 				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
 			}
 			content.setProject(project);
+		}
+		content.setPaid(createVideoDTO.isPaid());
+
+		if (createVideoDTO.isPaid()) {
+		    if (createVideoDTO.getPrice() == null || createVideoDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+		        throw new IllegalArgumentException("유료 콘텐츠는 가격을 입력해야 합니다.");
+		    }
+		    content.setPrice(createVideoDTO.getPrice());
+		} else {
+		    content.setPrice(null);
 		}
 		contentRepository.save(content);
 		
@@ -468,6 +515,8 @@ public class ContentService {
 		content.setDescription(dto.getDescription());
 		content.setVisibility(dto.getVisibility());
 		content.setAllowComment(dto.isAllowComment());
+		content.setPaid(dto.isPaid());
+		content.setPrice(dto.getPrice());
 		
 		if(dto.getThumbnailFile() != null && !dto.getThumbnailFile().isEmpty()) {
 			String imgurl = "/upload/images/thumbnail/";
@@ -518,6 +567,16 @@ public class ContentService {
 			}
 			content.setProject(project);
 		}
+		content.setPaid(createMusicDTO.isPaid());
+
+		if (createMusicDTO.isPaid()) {
+		    if (createMusicDTO.getPrice() == null || createMusicDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+		        throw new IllegalArgumentException("유료 콘텐츠는 가격을 입력해야 합니다.");
+		    }
+		    content.setPrice(createMusicDTO.getPrice());
+		} else {
+		    content.setPrice(null);
+		}
 		contentRepository.save(content);
 		
 		String tagString = createMusicDTO.getTagString();
@@ -565,6 +624,8 @@ public class ContentService {
 		content.setDescription(dto.getDescription());
 		content.setVisibility(dto.getVisibility());
 		content.setAllowComment(dto.isAllowComment());
+		content.setPaid(dto.isPaid());
+		content.setPrice(dto.getPrice());
 		if(dto.getThumbnailFile() != null && !dto.getThumbnailFile().isEmpty()) {
 			String imgurl = "/upload/images/thumbnail/";
 			imgurl += fileUtil.saveImage(dto.getThumbnailFile(), "thumbnail");
@@ -606,6 +667,16 @@ public class ContentService {
 				throw new IllegalArgumentException("오직 해당 프로젝트의 팀에 소속된 멤버들만 추가할 수 있습니다!");
 			}
 			content.setProject(project);
+		}
+		content.setPaid(createFileDTO.isPaid());
+
+		if (createFileDTO.isPaid()) {
+		    if (createFileDTO.getPrice() == null || createFileDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+		        throw new IllegalArgumentException("유료 콘텐츠는 가격을 입력해야 합니다.");
+		    }
+		    content.setPrice(createFileDTO.getPrice());
+		} else {
+		    content.setPrice(null);
 		}
 		contentRepository.save(content);
 		
@@ -666,6 +737,8 @@ public class ContentService {
 		content.setDescription(dto.getDescription());
 		content.setAllowComment(dto.isAllowComment());
 		content.setVisibility(dto.getVisibility());
+		content.setPaid(dto.isPaid());
+		content.setPrice(dto.getPrice());
 		
 		List<ContentFile> files = contentFileService.getContentFileByContent(content);
 		if(dto.getFile() != null && !dto.getFile().isEmpty()) {
@@ -879,6 +952,19 @@ public class ContentService {
 				.series(series)
 				.episodeNum(maxNum+1)
 				.build();
+		episode.setPaid(!episode.isFree());
+
+		if (!episode.isFree()) {
+		    if (dto.getPrice() == null || dto.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+		    	System.out.println("free = " + dto.isFree());
+	        	System.out.println("price = " + dto.getPrice());
+		        throw new IllegalArgumentException("유료 회차는 가격을 입력해야 합니다.");
+		    } else {
+		    	episode.setPrice(dto.getPrice());
+		    }
+		} else {
+		    episode.setPrice(null);
+		}
 		episodeRepository.save(episode);
 		
 		int totalCount = episodeRepository.countBySeries(series);
@@ -908,6 +994,20 @@ public class ContentService {
 	        	contentFileService.updateContentFileImageForForEpisode(episode, dto.getFileList(), "comic");
 	        }
 	    }
+	    episode.setPaid(!episode.isFree());
+
+	    if (!episode.isFree()) {
+	        if (dto.getPrice() == null || dto.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+	        	System.out.println("free = " + dto.isFree());
+	        	System.out.println("price = " + dto.getPrice());
+	            throw new IllegalArgumentException("유료 회차는 가격을 입력해야 합니다.");
+	        } else {
+	        	episode.setPrice(dto.getPrice());
+	        }
+	    } else {
+	        episode.setPrice(null);
+	    }
+	    episodeRepository.save(episode);
 		
 	}
 	@Transactional

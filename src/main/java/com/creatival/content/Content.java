@@ -1,5 +1,6 @@
 package com.creatival.content;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +90,13 @@ public class Content {
 	
 	private boolean isAllowComment;
 	private boolean isFanWork;
+	
+	@Column(nullable = false)
+	@Builder.Default
+	private boolean paid = false;
+
+	@Column
+	private BigDecimal price;
 	
 	@Builder.Default
 	@Column(nullable = false)

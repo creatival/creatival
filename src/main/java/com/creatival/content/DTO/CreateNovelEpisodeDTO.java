@@ -1,5 +1,7 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.content.Enum.OwnerType;
@@ -24,4 +26,7 @@ public class CreateNovelEpisodeDTO {
 	boolean free;
 	
 	private String note;
+	
+	private boolean paid;
+	private BigDecimal price;
 }

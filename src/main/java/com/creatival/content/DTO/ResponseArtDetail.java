@@ -41,6 +41,7 @@ public class ResponseArtDetail {
     private String displayname;
     private String profileImgUrl;
 
+    private boolean paid;
     // 이미지 파일 리스트
     private List<ResponseContentFileImageDTO> fileList;
     
@@ -62,6 +63,7 @@ public class ResponseArtDetail {
                 .fileList(files.stream()
                         .map(ResponseContentFileImageDTO::from)
                         .collect(Collectors.toList()))
+                .paid(content.isPaid())
                 .build();
     }
 }

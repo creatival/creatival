@@ -42,6 +42,7 @@
         .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
     </style>
 
+<<<<<<< HEAD
     <div class="container my-5">
         <div class="row g-5" th:if="${music != null}">
             <div class="col-12 col-md-5 col-lg-4 text-center">
@@ -51,6 +52,97 @@
                              class="object-fit-cover" 
                              th:alt="${music.title}"
                              onerror="this.src='https://dummyimage.com/400x400/ced4da/6c757d&text=Cover'">
+=======
+    <div class="row g-5" th:if="${music != null}">
+        <div class="col-12 col-md-5 col-lg-4 text-center">
+            <div class="shadow rounded-4 overflow-hidden mb-4 mx-auto" style="max-width: 350px;">
+                <div class="ratio ratio-1x1 bg-light">
+                    <img th:src="${music.thumbnailUrl}" 
+                         class="object-fit-cover" 
+                         th:alt="${music.title}"
+                         onerror="this.src='https://dummyimage.com/400x400/ced4da/6c757d&text=Cover'">
+                </div>
+            </div>
+            
+            <h4 class="fw-bold mb-1" th:text="${music.title}">곡 제목</h4>
+            <a class="text-muted d-block mb-4 text-decoration-none" th:href="@{/user/myPage/{id}(id=${music.userId})}" th:text="${music.displayname}">아티스트명</a>
+
+            <audio controls class="w-100 shadow-sm rounded-pill mb-3" style="height: 50px;">
+                <source th:src="${music.music.fileUrl}" type="audio/mpeg">
+            </audio>
+
+            <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+                <button id="likeBtn" class="btn btn-outline-danger rounded-pill px-3" th:onclick="|toggleLikeHeart(${music.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
+                    <i class="bi me-1" id="likeIcon" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i> 
+                    <span th:text="${like.count}" id="likeCount">0</span>
+                </button>
+
+                <button id="followBtn" class="btn btn-primary rounded-pill px-3" 
+                        th:if="${music.username != #authentication.name}"
+                        th:onclick="|toggleFollow(${music.userId},'USER')|"
+                        th:text="${follow.followed ? '팔로우 중' : '팔로우'}">팔로우</button>
+
+                <button class="btn btn-outline-secondary rounded-pill px-2">
+                    <i class="bi bi-share"></i>
+                </button>
+
+                <button th:onclick="|toggleBookmark(${music.id}, 'CONTENT')|" id="bookmarkBtn" class="btn btn-outline-secondary rounded-pill px-2">
+					<i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? 'bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+				</button>
+
+                <div class="w-100 mt-2 d-flex justify-content-center gap-2" th:if="${music.username == #authentication.name}">
+                    <a th:href="@{|/content/music/edit/${music.id}|}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">수정</a>
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" th:onclick="|confirmDelete(${music.id})|">삭제</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-7 col-lg-8">
+			<ul class="nav nav-tabs mb-4" id="musicTab" role="tablist">
+			    <li class="nav-item">
+			        <button class="nav-link active text-dark fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button">곡 정보</button>
+			    </li>
+			    <li class="nav-item" th:if="${music.allowComment}">
+			        <button class="nav-link text-dark fw-bold" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button">댓글</button>
+			    </li>
+
+			    <li class="nav-item ms-auto">
+			        <button class="btn btn-boost shadow-sm">후원하기</button>
+			    </li>
+			</ul>
+
+            <div class="tab-content" id="musicTabContent">
+                <div class="tab-pane fade show active" id="info" role="tabpanel">
+                    <div class="bg-light p-4 rounded-3 mb-5">
+                        <p class="mb-4 text-break" th:text="${music.description}"></p>
+                        <div class="text-muted p-3 border rounded bg-white small">
+                            <ul class="list-unstyled mb-0 row">
+                                <li class="col-6 mb-2"><strong>등록일:</strong> <span th:text="${#temporals.format(music.createdAt, 'yyyy.MM.dd')}"></span></li>
+                                <li class="col-6 mb-2"><strong>구분:</strong> <span th:text="${music.fanWork ? '2차 창작' : '오리지널'}"></span></li>
+                                <li class="col-6"><strong>조회수:</strong> <span th:text="${music.viewCount}"></span>회</li>
+                                <li class="col-6"><strong>공개 범위:</strong> <span th:text="${music.visibility}"></span></li>
+								
+                            </ul>
+							<div th:if="${music.paid}">
+								    <div th:if="${hasAccess}">
+								        <span class="badge bg-success">구매 완료</span>
+								    </div>
+
+								    <div th:if="${!hasAccess}">
+								        <p class="fw-bold"
+								           th:text="${#numbers.formatInteger(music.price, 3, 'COMMA') + '원'}">10,000원</p>
+
+								        <form th:action="@{/content/{id}/purchase(id=${music.id})}" method="post">
+								            <button type="submit" class="btn btn-primary">구매하기</button>
+								        </form>
+								    </div>
+								</div>
+
+								<div th:if="${!music.paid}">
+								    <span class="badge bg-secondary">무료 콘텐츠</span>
+								</div>
+                        </div>
+>>>>>>> branch 'jinhoe' of https://github.com/creatival/creatival.git
                     </div>
                 </div>
                 

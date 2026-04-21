@@ -1,6 +1,7 @@
 package com.creatival.user;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.catalina.User;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +40,8 @@ import com.creatival.like.LikeService;
 import com.creatival.like.Likes;
 import com.creatival.like.TargetType;
 import com.creatival.like.repository.LikeRepository;
+import com.creatival.sponsorship.SponsorshipService;
+import com.creatival.sponsorship.dto.ResponseSupportHistoryListDTO;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.team.TeamService;
@@ -59,6 +63,8 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final ContentFileService contentFileService;
+    
+    private final SponsorshipService sponsorshipService;
 
     private final MailService mailService;
 	private final UserService userService;
@@ -245,5 +251,76 @@ public class UserController {
 			return "active_fail?error=Exception&message=예상치 못 오류가 발견되었습니다.";
 		}
 	}
+	@GetMapping("/{id}/boost")
+	public String userBoostPage(@PathVariable("id") Long userId, Model model) {
+	    Users targetUser = userService.getUserById(userId);
+
+	    BigDecimal totalSupportAmount = sponsorshipService.getsumPaidAmountByTarget(TargetType.USER, userId);
+
+	    long supportCount = sponsorshipService.getCountPaidByTarget(TargetType.USER, userId);
+
+	    List<ResponseSupportHistoryListDTO> recentSupports = 
+	            sponsorshipService.getRecentSupportHistory(TargetType.USER, userId, PageRequest.of(0, 5));
+
+	    model.addAttribute("targetUser", ResponseProfile.from(targetUser));
+	    model.addAttribute("team", null);
+	    model.addAttribute("project", null);
+	    model.addAttribute("totalSupportAmount", totalSupportAmount);
+	    model.addAttribute("supportCount", supportCount);
+	    model.addAttribute("goalAmount", null);
+	    model.addAttribute("progressPercent", 0);
+	    model.addAttribute("recentSupports", recentSupports);
+	    model.addAttribute("supportTargetType", "USER");
+	    model.addAttribute("supportTargetId", userId);
+	    model.addAttribute("supportEnabled", targetUser.isSupportEnabled());
+	    return "user_boost";
+	}
 	
+	@PostMapping("/{id}/boost")
+	public String boostUser(@PathVariable("id") Long userId,
+	                        @RequestParam("amount") BigDecimal amount,
+	                        @RequestParam(value = "supporterName", required = false) String supporterName,
+	                        @RequestParam(value = "message", required = false) String message,
+	                        @RequestParam(value = "anonymous", required = false, defaultValue = "false") boolean anonymous,
+	                        Principal principal, RedirectAttributes redirectAttributes,
+	                        Model model) {
+		Users targetUser = userService.getUserById(userId);
+	    Users user = null;
+	    if (principal != null) {
+	        user = userService.getUserByUsername(principal.getName());
+	    }
+	    if (!targetUser.isSupportEnabled()) {
+	        redirectAttributes.addFlashAttribute("message", "해당 유저는 후원을 받지 않습니다.");
+	        redirectAttributes.addFlashAttribute("icon", "warning");
+	        return "redirect:/user/myPage/"+userId;
+	    }
+	    String paymentId = sponsorshipService.createSponsorship(
+	            TargetType.USER,
+	            userId,
+	            amount,
+	            supporterName,
+	            message,
+	            anonymous,
+	            user
+	    );
+
+	    model.addAttribute("paymentId", paymentId);
+	    model.addAttribute("targetType", "USER");
+	    model.addAttribute("targetId", userId);
+	    model.addAttribute("amount", amount);
+
+	    return "payment_ready";
+	}
+	@PostMapping("/support-setting")
+	public String updateUserSupportSetting(@RequestParam(value = "supportEnabled", defaultValue = "false") boolean supportEnabled,
+	                                       Principal principal) {
+
+	    if (principal == null) {
+	        throw new IllegalStateException("로그인이 필요합니다.");
+	    }
+
+	    userService.updateSupportSetting(principal.getName(), supportEnabled);
+
+	    return "redirect:/user/myPage";
+	}
 }

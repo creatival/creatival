@@ -23,8 +23,10 @@ public class ResponseProfile {
     private boolean isCreator;
     private boolean isVerification;
     private LocalDateTime createdAt;
+    private boolean supportEnabled;
     
     public static ResponseProfile from(Users users) {
+    	if (users == null) return null;
     	return ResponseProfile.builder()
     			.id(users.getId())
     			.username(users.getUsername())
@@ -36,6 +38,7 @@ public class ResponseProfile {
     			.isCreator(users.isCreator())
     			.isVerification(users.isVerification())
     			.createdAt(users.getCreatedAt())
+    			.supportEnabled(users.isSupportEnabled())
     			.build(); // 마지막에 무조건 달아줘야 하는거
     			
     }

@@ -76,7 +76,49 @@
             border-bottom: 1px solid #f1f3f5;
         }
 
-        /* 댓글 모달 전용 */
+        .episode-lock-box {
+            min-height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #fafbff 0%, #f7f8fc 100%);
+            border-top: 1px solid #f1f3f5;
+            border-bottom: 1px solid #f1f3f5;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .episode-lock-inner {
+            max-width: 420px;
+        }
+
+        .episode-lock-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff3cd;
+            color: #8a6d3b;
+            font-size: 1.8rem;
+            margin-bottom: 18px;
+            border: 1px solid #ffe69c;
+        }
+
+        .episode-lock-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2D3278;
+            margin-bottom: 18px;
+        }
+
+        .episode-lock-desc {
+            color: #6c757d;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
         .comment-input {
             border: none !important;
             border-bottom: 1px solid #dee2e6 !important;
@@ -103,7 +145,6 @@
             color: white;
         }
 
-        /* comment-line fragment가 기대하는 스타일 */
         .btn-action {
             background: none;
             border: none;
@@ -140,6 +181,11 @@
 
         .comment-list .comment-item + .comment-item {
             margin-top: 0.75rem;
+        }
+
+        #redeemCodeInput {
+            letter-spacing: 2px;
+            font-weight: bold;
         }
 
         @media (max-width: 768px) {
@@ -193,7 +239,7 @@
                 </div>
             </div>
 
-            <div class="toon-viewer">
+            <div class="toon-viewer" th:if="${#bools.isTrue(hasAccess)}">
                 <th:block th:if="${episodeDetail.fileList != null and !episodeDetail.fileList.isEmpty()}">
                     <th:block th:each="file, stat : ${episodeDetail.fileList}">
                         <img th:src="@{${file.fileUrl}}"
@@ -204,6 +250,55 @@
                 <div class="empty-image-box"
                      th:if="${episodeDetail.fileList == null or episodeDetail.fileList.isEmpty()}">
                     등록된 이미지가 없습니다.
+                </div>
+            </div>
+
+            <div class="episode-lock-box" th:if="${!#bools.isTrue(hasAccess)}">
+                <div class="episode-lock-inner">
+                    <div class="episode-lock-icon">
+                        <i class="bi bi-lock-fill"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-3">이 회차는 구매 후 열람할 수 있습니다</h4>
+
+                    <p class="episode-lock-desc">
+                        유료 회차입니다.<br>
+                        구매를 완료하거나 리딤 코드를 사용하면 이 회차의 이미지를 바로 감상할 수 있습니다.
+                    </p>
+
+                    <div class="episode-lock-price"
+                         th:text="${episodeDetail.price != null ? #numbers.formatInteger(episodeDetail.price, 3, 'COMMA') + '원' : '가격 정보 없음'}">
+                        1,000원
+                    </div>
+
+                    <div sec:authorize="isAuthenticated()" class="d-flex flex-column align-items-center gap-2">
+                        <form th:action="@{/episode/{id}/purchase(id=${episodeDetail.id})}"
+                              method="post">
+                            <input type="hidden"
+                                   th:name="${_csrf.parameterName}"
+                                   th:value="${_csrf.token}">
+                            <button type="submit"
+                                    class="btn btn-warning px-4 py-2 fw-bold rounded-pill">
+                                <i class="bi bi-credit-card me-1"></i> 회차 구매하기
+                            </button>
+                        </form>
+
+                        <button type="button"
+                                class="btn btn-outline-dark px-4 py-2 fw-bold rounded-pill"
+                                data-bs-toggle="modal"
+                                data-bs-target="#redeemCodeModal">
+                            <i class="bi bi-key-fill me-1"></i> 리딤 코드 사용
+                        </button>
+                    </div>
+
+                    <div sec:authorize="isAnonymous()" class="mt-3 d-flex flex-column align-items-center gap-2">
+                        <a th:href="@{/user/login}" class="btn btn-outline-dark px-4 py-2 rounded-pill fw-bold">
+                            로그인 후 구매하기
+                        </a>
+                        <a th:href="@{/user/login}" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-bold">
+                            로그인 후 리딤 코드 사용
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -222,12 +317,34 @@
                     등록된 작가의 말이 없습니다.
                 </p>
 
-                <button type="button"
-                        class="btn btn-outline-danger btn-sm rounded-pill px-4 mt-2">
-                    <i class="bi bi-heart-fill"></i>
-                    좋아요
-                    <span th:text="${episodeDetail.likeCount != null ? #numbers.formatInteger(episodeDetail.likeCount, 0, 'COMMA') : 0}">0</span>
-                </button>
+				<div class="d-flex justify-content-center gap-2 mt-2"
+				     sec:authorize="isAuthenticated()">
+
+				    <!-- 좋아요 -->
+				    <button type="button"
+				            class="btn btn-outline-danger btn-sm rounded-pill px-4">
+				        <i class="bi bi-heart-fill"></i>
+				        좋아요
+				        <span th:text="${episodeDetail.likeCount != null ? #numbers.formatInteger(episodeDetail.likeCount, 0, 'COMMA') : 0}">0</span>
+				    </button>
+
+				    <!-- 🔥 리딤 코드 발급 (작성자만) -->
+				    <form th:if="${episodeDetail.username != null and episodeDetail.username == #authentication.name}"
+				          th:action="@{/redeem/create/episode/{id}(id=${episodeDetail.id})}"
+				          method="post">
+
+				        <input type="hidden"
+				               th:name="${_csrf.parameterName}"
+				               th:value="${_csrf.token}">
+
+				        <button type="submit"
+				                class="btn btn-outline-dark btn-sm rounded-pill px-4">
+				            <i class="bi bi-key-fill me-1"></i>
+				            코드 발급
+				        </button>
+				    </form>
+
+				</div>
             </div>
         </div>
     </div>
@@ -350,6 +467,68 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="redeemCodeModal" tabindex="-1" aria-labelledby="redeemCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="redeemCodeModalLabel" style="color: #3B4371;">리딤 코드 사용</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form th:action="@{/redeem/episode/{id}(id=${episodeDetail.id})}" method="post">
+                    <div class="modal-body p-4 text-center">
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <i class="bi bi-key-fill text-muted" style="font-size: 3rem;"></i>
+                        <p class="mt-3 mb-4 text-muted small">
+                            보유하고 계신 리딤 코드를 입력해 주세요.<br>
+                            (예: ABCD-EFGH-IJKL-MNOP)
+                        </p>
+
+                        <input type="text"
+                               id="redeemCodeInput"
+                               name="code"
+                               class="form-control form-control-lg text-center font-monospace"
+                               placeholder="XXXX-XXXX-XXXX-XXXX"
+                               maxlength="19"
+                               required>
+                    </div>
+
+                    <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                        <button type="submit"
+                                class="btn text-white px-4"
+                                style="background-color: #f05a28;">
+                            코드 사용
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const codeInput = document.getElementById('redeemCodeInput');
+
+            if (codeInput) {
+                codeInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
+
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
+
+                    e.target.value = result;
+                });
+            }
+        });
+    </script>
 
 </div>
 </html>

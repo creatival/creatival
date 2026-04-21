@@ -1,5 +1,7 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.creatival.content.Content;
@@ -35,6 +37,8 @@ private Long id;
 	
 	private boolean allowComment;
 	
+	private boolean paid;
+	private BigDecimal price;
 	
 	public static UpdateMusicDTO from(Content content, ContentFile contentFile) {
 		return UpdateMusicDTO.builder()
@@ -45,6 +49,8 @@ private Long id;
 	            .thumbnailFileUrl(content.getThumbnailImgUrl())
 	            .musicUrl(contentFile.getFileUrl())
 	            .allowComment(content.isAllowComment())
+	            .paid(content.isPaid())
+	            .price(content.getPrice())
 	            .build();
 	}
 }

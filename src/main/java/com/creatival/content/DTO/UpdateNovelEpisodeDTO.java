@@ -1,5 +1,7 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
+
 import com.creatival.content.Episode;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +27,8 @@ public class UpdateNovelEpisodeDTO {
 	
 	private String note;
 	
+	private BigDecimal price;
+	
 	public static UpdateNovelEpisodeDTO from(Episode episode) {
 		return UpdateNovelEpisodeDTO.builder()
 				.id(episode.getId())
@@ -34,6 +38,7 @@ public class UpdateNovelEpisodeDTO {
 				.free(episode.isFree())
 				.deleted(episode.isDeleted())
 				.note(episode.getNote())
+				.price(episode.getPrice())
 				.build();
 	}
 }

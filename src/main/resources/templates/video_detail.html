@@ -26,8 +26,9 @@
 				.footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
 	</style>
     <div class="row g-4" th:if="${video != null}">
+		
         <div class="col-12 col-lg-8">
-            
+			
             <div class="ratio ratio-16x9 bg-dark rounded-3 overflow-hidden shadow-sm mb-3">
                 <video controls class="object-fit-cover">
                     <source th:src="${video.video?.fileUrl}" type="video/mp4">
@@ -96,8 +97,25 @@
                 <p class="mb-3 text-break text-muted" style="white-space: pre-wrap;" th:text="${video.description}">
                     영상 설명이 들어가는 곳입니다.
                 </p>
+				<div th:if="${video.paid}">
+					    <div th:if="${hasAccess}">
+					        <span class="badge bg-success">구매 완료</span>
+					    </div>
 
-                <div class="tag-area">
+					    <div th:if="${!hasAccess}">
+					        <p class="fw-bold"
+					           th:text="${#numbers.formatInteger(video.price, 3, 'COMMA') + '원'}">10,000원</p>
+
+					        <form th:action="@{/content/{id}/purchase(id=${video.id})}" method="post">
+					            <button type="submit" class="btn btn-primary">구매하기</button>
+					        </form>
+					    </div>
+					</div>
+
+					<div th:if="${!video.paid}">
+					    <span class="badge bg-secondary">무료 콘텐츠</span>
+					</div>
+                <div class="tag-area mt-4">
                     <div th:each="tag : ${tagList}" class="badge rounded-pill bg-white text-dark border me-1 mb-1 shadow-sm">
                         <span th:text="'#' + ${tag.tagText}">#태그</span>
                         <a sec:authorize="isAuthenticated()"

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>구매 진행중</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+<body>
+
+<script th:inline="javascript">
+    const paymentId = [[${paymentId}]];
+    const amount = [[${amount}]];
+    const targetType = [[${targetType}]];
+    const targetId = [[${targetId}]];
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+    PortOne.requestPayment({
+        storeId: "store-9e24dee6-82a9-48c5-b561-4aa2bf124ba1",
+        channelKey: "channel-key-4c22d196-f552-424e-8ce7-e73d0209b77a",
+        paymentId: paymentId,
+        orderName: targetType === "EPISODE" ? "에피소드 구매" : "콘텐츠 구매",
+        totalAmount: amount,
+        currency: "KRW",
+        payMethod: "CARD",
+        customer: {
+            fullName: "구매자"
+        }
+    }).then(function (res) {
+        console.log("PortOne 응답 =", res);
+
+        if (res.code != null) {
+            alert("결제 실패: " + res.message);
+            window.location.href = "/purchase/fail";
+            return;
+        }
+
+        fetch("/api/purchase/complete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({
+                paymentId: paymentId,
+                targetType: targetType,
+                targetId: targetId
+            })
+        }).then(async response => {
+            if (!response.ok) {
+                const text = await response.text();
+                console.error(text);
+                alert("구매 저장 실패");
+                window.location.href = "/purchase/fail";
+                return;
+            }
+
+            window.location.href =
+                "/purchase/success?targetType=" + encodeURIComponent(targetType)
+                + "&targetId=" + encodeURIComponent(targetId);
+        }).catch((e) => {
+            console.error(e);
+            alert("구매 저장 중 오류");
+            window.location.href = "/purchase/fail";
+        });
+    }).catch((e) => {
+        console.error(e);
+        alert("결제 요청 오류");
+        window.location.href = "/purchase/fail";
+    });
+</script>
+
+</body>
+</html>

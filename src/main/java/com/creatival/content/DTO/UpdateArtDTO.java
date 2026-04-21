@@ -1,5 +1,6 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -32,12 +33,17 @@ public class UpdateArtDTO {
 	
 	private List<Long> deleteFileIds;
 	
+	private boolean paid;
+	private BigDecimal price;
+	
 	public static UpdateArtDTO from(Content content) {
 		return UpdateArtDTO.builder()
 				.title(content.getTitle())
 				.description(content.getDescription())
 				.visibility(content.getVisibility())
 				.allowComment(content.isAllowComment())
+				.paid(content.isPaid())
+				.price(content.getPrice())
 				.build();
 	}
 }

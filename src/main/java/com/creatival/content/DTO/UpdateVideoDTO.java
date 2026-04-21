@@ -1,5 +1,6 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,8 @@ public class UpdateVideoDTO {
 	
 	private boolean allowComment;
 	
+	private boolean paid;
+	private BigDecimal price;
 	
 	public static UpdateVideoDTO from(Content content, ContentFile contentFile) {
 		return UpdateVideoDTO.builder()
@@ -49,6 +52,8 @@ public class UpdateVideoDTO {
 	            .thumbnailFileUrl(content.getThumbnailImgUrl())
 	            .videoUrl(contentFile.getFileUrl())
 	            .allowComment(content.isAllowComment())
+	            .paid(content.isPaid())
+	            .price(content.getPrice())
 	            .build();
 	}
 }

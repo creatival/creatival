@@ -77,6 +77,9 @@ public class Users {
 	
 	private LocalDateTime deletedAt;
 	
+	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+	private boolean supportEnabled = false;
+	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TagToUsers> tagToUsers = new ArrayList<>();
 	

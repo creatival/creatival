@@ -64,7 +64,25 @@
                 <input type="number" th:field="*{originalContentId}" id="originalContentIdInput" class="form-control"
                     placeholder="원본 작품 ID를 입력하세요">
             </div>
+			<div class="mb-3">
+			    <label class="form-label fw-bold">유료 콘텐츠 설정</label>
 
+			    <div class="form-check mb-2">
+			        <input class="form-check-input" type="checkbox" id="paidCheck" name="paid">
+			        <label class="form-check-label" for="paidCheck">
+			            유료 콘텐츠로 등록
+			        </label>
+			    </div>
+
+			    <input type="number"
+			           class="form-control"
+			           id="priceInput"
+			           name="price"
+			           min="100"
+			           step="100"
+			           placeholder="가격 입력 (예: 5000)"
+			           disabled>
+			</div>
             <div class="mb-5 text-center p-3 bg-light rounded shadow-sm">
                 <label class="form-label fw-bold"><i class="bi bi-hash"></i> 태그 설정</label>
                 <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
@@ -234,6 +252,25 @@
         document.addEventListener("DOMContentLoaded", function () {
             toggleOriginalInput();
         });
+		document.addEventListener("DOMContentLoaded", function () {
+		        const paidCheck = document.getElementById("paidCheck");
+		        const priceInput = document.getElementById("priceInput");
+
+		        function togglePriceInput() {
+		            if (paidCheck.checked) {
+		                priceInput.disabled = false;
+		            } else {
+		                priceInput.disabled = true;
+		                priceInput.value = "";
+		            }
+		        }
+
+		        if (paidCheck && priceInput) {
+		            paidCheck.addEventListener("change", togglePriceInput);
+		            togglePriceInput();
+		        }
+		    });
+			
     </script>
 </div>
 </html>

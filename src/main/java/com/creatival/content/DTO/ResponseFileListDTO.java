@@ -17,6 +17,7 @@ public class ResponseFileListDTO {
 	private String displayname;
 	private String username;
 	private String title;
+	private boolean paid;
 	
 	public static ResponseFileListDTO from(Content content) {
 		return ResponseFileListDTO.builder()
@@ -24,6 +25,7 @@ public class ResponseFileListDTO {
 				.displayname(content.getUser().getDisplayName())
 				.username(content.getUser().getUsername())
 				.title(content.getTitle())
+				.paid(content.isPaid())
 				.build();
 	}
 }

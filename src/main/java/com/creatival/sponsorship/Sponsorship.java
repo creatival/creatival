@@ -66,6 +66,15 @@ public class Sponsorship {
 	@Enumerated(EnumType.STRING)
 	private SponsorshipStatus status;
 	
+	@Column
+	private String supporterName;
+
+	@Column(columnDefinition = "TEXT")
+	private String message;
+
+	@Column
+	private boolean anonymous;
+	
 	@OneToOne(mappedBy = "sponsorship", cascade = CascadeType.ALL)
 	private Payment payment;
 	

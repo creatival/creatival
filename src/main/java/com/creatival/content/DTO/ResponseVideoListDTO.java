@@ -32,6 +32,8 @@ public class ResponseVideoListDTO {
 	
 	private String thumbnailUrl;
 	
+	private boolean paid;
+	
 	public static ResponseVideoListDTO from(Content content) {
 		return ResponseVideoListDTO.builder()
 				.id(content.getId())
@@ -43,6 +45,7 @@ public class ResponseVideoListDTO {
 				.profileImgUrl(content.getUser().getProfileImgUrl())
 				.thumbnailUrl(content.getThumbnailImgUrl())
 				.formattedDate(formatRelativeTime(content.getCreatedAt()))
+				.paid(content.isPaid())
 				.build();
 	}
 	

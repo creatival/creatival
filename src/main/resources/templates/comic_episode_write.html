@@ -23,11 +23,11 @@
                               enctype="multipart/form-data"
                               th:object="${createComicEpisodeDTO}"
                               id="comicEpisodeForm"
-							  th:action="@{/content/comic/{id}/episode/write(id=${content.id})}">
-							  <input type="hidden"
-							         th:name="${_csrf.parameterName}"
-							         th:value="${_csrf.token}">
-                            <!-- 회차 제목 -->
+                              th:action="@{/content/comic/{id}/episode/write(id=${content.id})}">
+                            <input type="hidden"
+                                   th:name="${_csrf.parameterName}"
+                                   th:value="${_csrf.token}">
+
                             <div class="mb-4">
                                 <label for="title" class="form-label fw-bold">회차 제목</label>
                                 <input type="text"
@@ -40,7 +40,6 @@
                                      th:errors="*{title}"></div>
                             </div>
 
-                            <!-- 무료 / 유료 -->
                             <div class="mb-4">
                                 <label class="form-label fw-bold d-block">유료 여부</label>
                                 <div class="btn-group w-100" role="group">
@@ -67,7 +66,23 @@
                                 </small>
                             </div>
 
-                            <!-- 이미지 업로드 -->
+                            <div class="mb-4" id="priceSection" style="display:none;">
+                                <label for="episodePrice" class="form-label fw-bold">회차 가격</label>
+                                <input type="number"
+                                       id="episodePrice"
+                                       th:field="*{price}"
+                                       class="form-control border-2"
+                                       min="100"
+                                       step="100"
+                                       placeholder="가격을 입력하세요. 예: 1000">
+                                <div class="text-danger small mt-1"
+                                     th:if="${#fields.hasErrors('price')}"
+                                     th:errors="*{price}"></div>
+                                <small class="text-muted mt-2 d-block">
+                                    유료 연재 선택 시에만 가격이 적용됩니다.
+                                </small>
+                            </div>
+
                             <div class="mb-4">
                                 <label class="form-label fw-bold">만화 원고 등록</label>
 
@@ -95,7 +110,6 @@
                                 <div id="previewContainer" class="mt-3 d-flex flex-wrap gap-3"></div>
                             </div>
 
-                            <!-- 작가의 말 -->
                             <div class="mb-4">
                                 <label for="note" class="form-label fw-bold">작가의 말</label>
                                 <textarea id="note"
@@ -106,7 +120,6 @@
                                           placeholder="독자들에게 전할 메시지를 입력하세요."></textarea>
                             </div>
 
-                            <!-- 버튼 -->
                             <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
                                 <a th:href="${content != null} ? @{/content/comic/detail/{id}(id=${content.id})} : @{/content/comic}"
                                    class="btn btn-link text-decoration-none text-secondary">
@@ -257,12 +270,29 @@
         const previewEmptyMessage = document.getElementById('previewEmptyMessage');
         const comicEpisodeForm = document.getElementById('comicEpisodeForm');
 
+        const freeRadio = document.getElementById('is_free_true');
+        const paidRadio = document.getElementById('is_free_false');
+        const priceSection = document.getElementById('priceSection');
+        const priceInput = document.getElementById('episodePrice');
+
         let selectedFiles = [];
         let fileIdSeq = 0;
         let draggedItem = null;
 
         const placeholder = document.createElement('div');
         placeholder.className = 'drop-placeholder';
+
+        function togglePriceSection() {
+            const isPaid = paidRadio.checked;
+            priceSection.style.display = isPaid ? 'block' : 'none';
+
+            if (!isPaid && priceInput) {
+                priceInput.value = '';
+            }
+        }
+
+        freeRadio.addEventListener('change', togglePriceSection);
+        paidRadio.addEventListener('change', togglePriceSection);
 
         imageInput.addEventListener('change', function () {
             const files = Array.from(this.files);
@@ -500,6 +530,28 @@
         }
 
         comicEpisodeForm.addEventListener('submit', function (e) {
+            if (!document.getElementById('title').value.trim()) {
+                e.preventDefault();
+                alert("회차 제목을 입력해주세요.");
+                return;
+            }
+
+            if (paidRadio.checked) {
+                const priceValue = priceInput.value.trim();
+
+                if (!priceValue) {
+                    e.preventDefault();
+                    alert("유료 연재는 가격을 입력해주세요.");
+                    return;
+                }
+
+                if (Number(priceValue) <= 0) {
+                    e.preventDefault();
+                    alert("가격은 0보다 커야 합니다.");
+                    return;
+                }
+            }
+
             if (selectedFiles.length === 0) {
                 e.preventDefault();
                 alert("이미지를 최소 1장 이상 추가해주세요.");
@@ -510,6 +562,7 @@
         });
 
         toggleEmptyMessage();
+        togglePriceSection();
     </script>
 </div>
 </html>

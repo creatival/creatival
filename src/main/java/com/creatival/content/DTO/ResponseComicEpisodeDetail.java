@@ -1,5 +1,6 @@
 package com.creatival.content.DTO;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.creatival.content.ContentFile;
@@ -32,6 +33,10 @@ public class ResponseComicEpisodeDetail {
 	private Long likeCount;
 	private Long viewCount;
 	
+	private BigDecimal price;
+	
+	private String username;
+	
 	public static ResponseComicEpisodeDetail from(Episode episode, List<ContentFile> files) {
 		return ResponseComicEpisodeDetail.builder()
 				.id(episode.getId())
@@ -44,6 +49,8 @@ public class ResponseComicEpisodeDetail {
 				.free(episode.isFree())
 				.likeCount(episode.getLikeCount())
 				.viewCount(episode.getViewCount())
+				.price(episode.getPrice())
+				.username(episode.getSeries().getContent().getUser().getUsername())
 				.build();
 	}
 }

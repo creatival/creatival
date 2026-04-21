@@ -41,6 +41,8 @@ public class ResponseMusicDetailDTO {
 	
 	private ResponseContentFileMusicDTO music;
 	
+	private boolean paid;
+	
 	public static ResponseMusicDetailDTO from(Content content, ContentFile contentFile) {
 		return ResponseMusicDetailDTO.builder()
 				.id(content.getId())
@@ -58,6 +60,7 @@ public class ResponseMusicDetailDTO {
 				.createdAt(content.getCreatedAt())
 				.updatedAt(content.getUpdatedAt())
 				.music(ResponseContentFileMusicDTO.from(contentFile))
+				.paid(content.isPaid())
 				.build();
 	}
 }

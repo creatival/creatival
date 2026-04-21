@@ -23,6 +23,8 @@ public class ResponseMusicListDTO {
 	
 	private String thumbnailUrl;
 	
+	private boolean paid;
+	
 	public static ResponseMusicListDTO from(Content content) {
 		ResponseMusicListDTO dto = new ResponseMusicListDTO();
 		dto.setId(content.getId());
@@ -31,6 +33,7 @@ public class ResponseMusicListDTO {
 		dto.setUsername(content.getUser().getUsername());
 		dto.setDisplayname(content.getUser().getDisplayName());
 		dto.setThumbnailUrl(content.getThumbnailImgUrl());
+		dto.setPaid(content.isPaid());
 		
 		if(content.getProject()!=null) {
 			dto.setProjectName(content.getProject().getTitle());

@@ -2,12 +2,14 @@ package com.creatival.team;
 
 import java.awt.print.Pageable;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +38,8 @@ import com.creatival.content.ContentService;
 import com.creatival.content.DTO.ResponseContentListForProject;
 import com.creatival.like.LikeService;
 import com.creatival.like.TargetType;
+import com.creatival.sponsorship.SponsorshipService;
+import com.creatival.sponsorship.dto.ResponseSupportHistoryListDTO;
 import com.creatival.tag.ResponseTagDTO;
 import com.creatival.tag.TagService;
 import com.creatival.team.Enum.TeamRole;
@@ -86,6 +90,7 @@ public class TeamController {
 	private final CommentService commentService;
 	private final LikeService likeService;
 	private final BookmarkService bookmarkService;
+	private final SponsorshipService sponsorshipService;
 
 
 	
@@ -798,10 +803,6 @@ public class TeamController {
 		
 	}
 	
-	@GetMapping("/{id}/boost")
-	public String sponsorship() {
-		return "team_boost";
-	}
 	
 	@GetMapping("/{id}/teamBoard")
 	public String teamBoard(Model model, @PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
@@ -1173,4 +1174,158 @@ public class TeamController {
 		redirectAttributes.addFlashAttribute("icon", "success");
 		return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
 	}
+	@GetMapping("/{id}/boost")
+    public String supportPage(@PathVariable("id") Long id, Model model) {
+        Team team = teamService.getTeamById(id);
+
+        BigDecimal totalSupportAmount = sponsorshipService.getsumPaidAmountByTarget(TargetType.TEAM,id);
+
+        long supportCount = sponsorshipService.getCountPaidByTarget(TargetType.TEAM,id); 
+
+        BigDecimal goalAmount = team.getGoalAmount() != null ? team.getGoalAmount() : BigDecimal.ZERO;	
+        int progressPercent = sponsorshipService.calculateProgressPercent(totalSupportAmount, goalAmount);
+        
+        List<ResponseSupportHistoryListDTO> recentSupports = sponsorshipService.getRecentSupportHistory(TargetType.TEAM, id, PageRequest.of(0, 5));
+        model.addAttribute("recentSupports", recentSupports);
+
+        boolean supportEnabled = team.isSupportEnabled();
+        model.addAttribute("supportEnabled", supportEnabled);
+        model.addAttribute("team", ResponseTeamDetailDTO.from(team));
+        model.addAttribute("totalSupportAmount", totalSupportAmount);
+        model.addAttribute("supportCount", supportCount);
+        model.addAttribute("goalAmount", goalAmount);
+        model.addAttribute("progressPercent", progressPercent);
+        model.addAttribute("hasMoreSupports", recentSupports.size() == 5);
+        model.addAttribute("supportTargetType", "TEAM");
+        model.addAttribute("supportTargetId", team.getId());
+        return "team_boost";
+    }
+	 @PostMapping("/{id}/boost")
+	    public String boostTeam(@PathVariable("id") Long teamId,@RequestParam("amount") BigDecimal amount,@RequestParam(value = "supporterName", required = false) String supporterName,
+	    		@RequestParam(value = "message", required = false) String message, @RequestParam(value = "anonymous", required = false, defaultValue = "false") boolean anonymous,Model model
+	    		,Principal principal, RedirectAttributes redirectAttributes) {
+		 Team team = teamService.getTeamById(teamId);
+		 if(team==null) {
+			 redirectAttributes.addFlashAttribute("message", "해당하는 팀이 없습니다.");
+			 redirectAttributes.addFlashAttribute("icon", "error");
+			 return "redirect:/";
+		 }
+		 if (!team.isSupportEnabled()) {
+			    redirectAttributes.addFlashAttribute("message", "현재 이 팀은 후원을 받고 있지 않습니다.");
+				 redirectAttributes.addFlashAttribute("icon", "warning");
+				 return "redirect:/team/"+team.getId();
+			}
+		 Users user = null;
+	     if (principal != null) {
+	         user = userService.getUserByUsername(principal.getName());
+	     }
+        String paymentId = sponsorshipService.createSponsorship(
+                TargetType.TEAM,
+                teamId,
+                amount,
+                supporterName,
+                message,
+                anonymous,
+                user
+	    );
+	        
+	        
+
+        model.addAttribute("paymentId", paymentId);
+        model.addAttribute("targetType", "TEAM");
+        model.addAttribute("targetId", teamId);
+        model.addAttribute("amount", amount);
+
+        return "payment_ready";
+	  }
+	 
+	 @GetMapping("/project/{id}/boost")
+	 public String projectBoostPage(@PathVariable("id") Long projectId, Model model) {
+	     Project project = teamService.getProjectById(projectId);
+
+	     BigDecimal totalSupportAmount = sponsorshipService.getsumPaidAmountByTarget(TargetType.PROJECT,projectId);
+
+	     long supportCount = sponsorshipService.getCountPaidByTarget(TargetType.PROJECT,projectId);
+
+	     List<ResponseSupportHistoryListDTO> recentSupports =
+	             sponsorshipService.getRecentSupportHistory(TargetType.PROJECT, projectId, PageRequest.of(0, 5));
+
+	     BigDecimal goalAmount = project.getGoalAmount() != null ? project.getGoalAmount() : BigDecimal.ZERO;
+	     boolean supportEnabled = project.isSupportEnabled();
+	     model.addAttribute("supportEnabled", supportEnabled);
+
+	     int progressPercent = sponsorshipService.calculateProgressPercent(totalSupportAmount, goalAmount);
+
+	     model.addAttribute("team", null);
+	     model.addAttribute("project", ResponseProjectDeatilDTO.from(project));
+	     model.addAttribute("totalSupportAmount", totalSupportAmount);
+	     model.addAttribute("supportCount", supportCount);
+	     model.addAttribute("goalAmount", goalAmount);
+	     model.addAttribute("progressPercent", progressPercent);
+	     model.addAttribute("recentSupports", recentSupports);
+	     model.addAttribute("hasMoreSupports", recentSupports.size() == 5);
+	     model.addAttribute("supportTargetType", "PROJECT");
+	     model.addAttribute("supportTargetId", project.getId());
+	     return "team_boost";
+	 }
+	 @PostMapping("/project/{id}/boost")
+	 public String boostProject(@PathVariable("id") Long projectId,@RequestParam("amount") BigDecimal amount,@RequestParam(value = "supporterName", required = false) String supporterName,
+	                            @RequestParam(value = "message", required = false) String message,@RequestParam(value = "anonymous", required = false, defaultValue = "false") boolean anonymous,
+	                            Principal principal,Model model, RedirectAttributes redirectAttributes) {
+
+	     Users user = null;
+	     if (principal != null) {
+	         user = userService.getUserByUsername(principal.getName());
+	     }
+	     Project project = teamService.getProjectById(projectId);
+	     if(project==null) {
+			 redirectAttributes.addFlashAttribute("message", "해당하는 팀이 없습니다.");
+			 redirectAttributes.addFlashAttribute("icon", "error");
+			 return "redirect:/";
+		 }
+		 if (!project.isSupportEnabled()) {
+			    redirectAttributes.addFlashAttribute("message", "현재 이 팀은 후원을 받고 있지 않습니다.");
+				 redirectAttributes.addFlashAttribute("icon", "warning");
+				 return "redirect:/team/"+project.getTeam().getId();
+			}
+
+	     String paymentId = sponsorshipService.createSponsorship(
+	             TargetType.PROJECT,
+	             projectId,
+	             amount,
+	             supporterName,
+	             message,
+	             anonymous,
+	             user
+	     );
+
+	     model.addAttribute("paymentId", paymentId);
+	     model.addAttribute("targetType", "PROJECT");
+	     model.addAttribute("targetId", projectId);
+	     model.addAttribute("teamId", teamService.getProjectById(projectId).getTeam().getId());
+	     model.addAttribute("amount", amount);
+	    
+
+	     return "payment_ready";
+	 }
+	 
+	 @PostMapping("/project/{id}/support-setting")
+	 public String updateProjectSupportSetting(@PathVariable("id") Long projectId,
+	                                           @RequestParam(value = "supportEnabled", defaultValue = "false") boolean supportEnabled,
+	                                           @RequestParam(value = "goalAmount", required = false) BigDecimal goalAmount) {
+
+	     teamService.updateProjectSupportSetting(projectId, supportEnabled, goalAmount);
+
+	     return "redirect:/project/" + projectId + "/boost";
+	 }
+	 
+	 @PostMapping("/{id}/support-setting")
+	 public String updateTeamSupportSetting(@PathVariable("id") Long teamId,
+	                                        @RequestParam(value = "supportEnabled", defaultValue = "false") boolean supportEnabled,
+	                                        @RequestParam(value = "goalAmount", required = false) BigDecimal goalAmount) {
+
+		 teamService.updateTeamSupportSetting(teamId, supportEnabled, goalAmount);
+
+	     return "redirect:/team/" + teamId + "/boost";
+	 }
 }

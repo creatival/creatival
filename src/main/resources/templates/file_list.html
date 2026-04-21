@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div class="container-fluid" layout:fragment="content">
     <style>
@@ -239,4 +240,343 @@
         }
     </script>
 </div>
+=======
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<div class="container-fluid" layout:fragment="content">
+    <style>
+        /* 1. 카테고리 아이콘 */
+        .category-item {
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background-color: #F8F9FA;
+            border-radius: 22px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .category-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .category-item:hover {
+            transform: translateY(-8px);
+        }
+
+        .category-item:hover .category-icon-img {
+            transform: scale(1.1);
+        }
+
+        .category-item .fw-bold {
+            color: #3B4371;
+            font-size: 0.95rem;
+        }
+
+        /* 2. 리스트 디자인 */
+        .list-row {
+            border-bottom: 1px solid #eee;
+            padding: 16px 10px;
+            transition: background-color 0.2s;
+        }
+
+        .list-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .locked-file-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #666;
+        }
+
+        .locked-file-title i {
+            color: #f05a28;
+        }
+
+        /* 3. 밑줄 페이지네이션 */
+        .pagination-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .pagination-numbers {
+            display: flex;
+            gap: 20px;
+            font-weight: bold;
+            border-bottom: 2px solid #f05a28;
+            padding-bottom: 5px;
+        }
+
+        .pagination-numbers a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.2s;
+        }
+
+        .pagination-numbers a.active {
+            color: #f05a28;
+        }
+
+        .pagination-numbers a.disabled {
+            visibility: hidden;
+        }
+
+        /* 리딤 코드 전용 폰트 스타일 */
+        #productKeyInput {
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+    </style>
+
+    <!-- 카테고리 -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row text-center g-4 justify-content-center">
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/art/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트">
+                        </div>
+                        <div class="fw-bold">일러스트</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/comic/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화">
+                        </div>
+                        <div class="fw-bold">만화</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/music/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
+                        </div>
+                        <div class="fw-bold">음악</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/video/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오">
+                        </div>
+                        <div class="fw-bold">비디오</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/novel/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
+                        </div>
+                        <div class="fw-bold">소설</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/file/list}" class="category-item d-block">
+                        <div class="icon-box shadow-sm">
+                            <img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일">
+                        </div>
+                        <div class="fw-bold">파일</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 헤더 -->
+    <div class="container mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+
+            <div style="flex: 1;">
+                <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
+                    <i class="bi bi-house-door-fill me-2"></i>
+                    <span class="fw-bold">홈으로 가기</span>
+                </a>
+            </div>
+
+            <div class="text-center" style="flex: 2;">
+                <h2 class="fw-bold mb-0">파일 자료실</h2>
+                <p class="text-muted mb-0 mt-1 small">다양한 유틸리티와 파일을 공유해 보세요.</p>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
+                <button type="button"
+                        class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#keyRegisterModal"
+                        style="height: 38px;">
+                    <i class="bi bi-key-fill me-2"></i>
+                    <span class="fw-bold">코드 등록</span>
+                </button>
+
+                <a onclick="return requireLoginAction(() => location.href='/content/file/write')"
+                   class="btn btn-primary d-flex align-items-center px-3 shadow-sm"
+                   style="cursor:pointer; height: 38px;">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    <span class="fw-bold">파일 등록</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 리스트 -->
+    <main class="container pb-5 mx-auto" style="max-width: 900px;">
+        <div class="mb-5">
+            <div class="d-flex text-muted small fw-bold px-2 mb-2 border-bottom pb-2">
+                <div class="col-4 text-start">작성자</div>
+                <div class="col-4 text-center">파일명</div>
+                <div class="col-4 text-end">상태</div>
+            </div>
+
+            <div th:each="file : ${fileList}" class="list-row d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center col-4">
+                    <i class="bi bi-person-circle me-2 text-muted"></i>
+                    <span class="small fw-medium"
+                          th:text="${file.displayname + ' (' + file.username + ')'}">작성자</span>
+                </div>
+
+                <div class="text-center col-4">
+					<a class="text-decoration-none"
+					                       th:if="${file.paid}"
+					                       th:href="@{/content/file/detail/{id}(id=${file.id})}">
+					                        <span class="locked-file-title">
+					                            <i class="bi bi-lock-fill"></i>
+					                            (유료파일)
+					                        </span>
+					                    </a>
+                    <a class="small fw-bold text-dark text-decoration-none"
+                       th:text="${file.title}"
+                       th:href="@{/content/file/detail/{id}(id=${file.id})}">파일 제목</a>
+
+                    
+                </div>
+
+                <div class="col-4 text-end">
+                    <span th:if="${!file.paid}"
+                          class="badge rounded-pill bg-light text-dark border fw-normal"
+                          style="font-size: 0.7rem;">공유중</span>
+
+                    <span th:if="${file.paid}"
+                          class="badge rounded-pill bg-warning-subtle text-dark border fw-normal"
+                          style="font-size: 0.7rem;">유료</span>
+                </div>
+            </div>
+
+            <div th:if="${fileList.isEmpty()}" class="py-5 text-center text-muted">
+                등록된 파일이 없습니다.
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination-container" th:if="${!fileList.isEmpty()}">
+            <div class="pagination-numbers">
+                <a th:href="@{|?page=${fileList.number - 1}|}"
+                   th:classappend="${!fileList.hasPrevious} ? 'disabled' : ''">&lt;</a>
+
+                <th:block th:each="page : ${#numbers.sequence(0, fileList.totalPages - 1)}">
+                    <a th:if="${page >= fileList.number - 2 and page <= fileList.number + 2}"
+                       th:href="@{|?page=${page}|}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == fileList.number} ? 'active' : ''"></a>
+                </th:block>
+
+                <a th:href="@{|?page=${fileList.number + 1}|}"
+                   th:classappend="${!fileList.hasNext} ? 'disabled' : ''">&gt;</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 리딤 코드 모달 -->
+    <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">리딤 코드 사용</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- 여기 action만 네 기존 리딤 코드 컨트롤러 경로로 바꾸면 됨 -->
+                <form th:action="@{/redeem/use}" method="post">
+                    <div class="modal-body p-4 text-center">
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+                        <p class="mt-3 mb-4 text-muted small">
+                            보유하고 계신 리딤 코드를 입력해 주세요.<br>
+                            (예: ABCD-EFGH-IJKL-MNOP)
+                        </p>
+                        <input type="text"
+                               id="productKeyInput"
+                               name="code"
+                               class="form-control form-control-lg text-center font-monospace"
+                               placeholder="XXXX-XXXX-XXXX-XXXX"
+                               maxlength="19"
+                               required>
+                    </div>
+
+                    <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                        <button type="submit"
+                                class="btn text-white px-4"
+                                style="background-color: #f05a28;">
+                            코드 사용
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const keyInput = document.getElementById('productKeyInput');
+
+            if (keyInput) {
+                keyInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
+
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
+
+                    e.target.value = result;
+                });
+            }
+        });
+    </script>
+</div>
+>>>>>>> branch 'jinhoe' of https://github.com/creatival/creatival.git
 </html>

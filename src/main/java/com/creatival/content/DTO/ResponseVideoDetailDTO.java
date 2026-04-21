@@ -43,6 +43,8 @@ public class ResponseVideoDetailDTO {
 	
 	private ResponseContentFileVideoDTO video;
 	
+	private boolean paid;
+	
 	public static ResponseVideoDetailDTO from(Content content, ContentFile contentFile) {
 		return ResponseVideoDetailDTO.builder()
 				.id(content.getId())
@@ -60,6 +62,7 @@ public class ResponseVideoDetailDTO {
 				.createdAt(content.getCreatedAt())
 				.updatedAt(content.getUpdatedAt())
 				.video(ResponseContentFileVideoDTO.from(contentFile))
+				.paid(content.isPaid())
 				.build();
 	}
 }

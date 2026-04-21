@@ -1,5 +1,6 @@
 package com.creatival.team;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,4 +94,10 @@ public class Team {
 	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<Project> teamProjects = new ArrayList<>();
+	
+	@Column(nullable = false)
+	private boolean supportEnabled = true;
+
+	@Column
+	private BigDecimal goalAmount;
 }

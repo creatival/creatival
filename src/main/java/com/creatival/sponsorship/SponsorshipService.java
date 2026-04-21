@@ -2,20 +2,25 @@ package com.creatival.sponsorship;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import com.creatival.like.TargetType;
 import com.creatival.sponsorship.dto.PortOneTokenResponse;
 import com.creatival.sponsorship.dto.ResponsePaymentDTO;
+import com.creatival.sponsorship.dto.ResponseSupportHistoryListDTO;
 import com.creatival.sponsorship.repository.PaymentRepository;
 import com.creatival.sponsorship.repository.SponsorshipRepository;
 import com.creatival.sponsorship.repository.WalletRepository;
+import com.creatival.user.Users;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -169,8 +174,75 @@ public class SponsorshipService {
         Wallet wallet = walletRepository.findByOwnerWithLock(
                 sponsorship.getTargetType(),
                 sponsorship.getTargetId()
-        ).orElseThrow(() -> new EntityNotFoundException("지갑 없음"));
+        ).orElseGet(() -> {
+            Wallet newWallet = Wallet.builder()
+                    .ownerType(sponsorship.getTargetType())
+                    .ownerId(sponsorship.getTargetId())
+                    .totalAmount(BigDecimal.ZERO)
+                    .build();
+
+            return walletRepository.save(newWallet);
+        });
 
         wallet.addBalance(sponsorship.getAmount());
     }
+
+	public BigDecimal getsumPaidAmountByTarget(TargetType targetType,Long id) {
+		return  sponsorshipRepository.sumPaidAmountByTarget(targetType,id)
+                .orElse(BigDecimal.ZERO);
+	}
+
+	public long getCountPaidByTarget(TargetType targetType,Long id) {
+		return sponsorshipRepository.countPaidByTarget(targetType,id);
+	}
+	
+	public int calculateProgressPercent(BigDecimal total, BigDecimal goal) {
+        if (goal == null || goal.compareTo(BigDecimal.ZERO) <= 0) {
+            return 0;
+        }
+
+        int percent = total.multiply(BigDecimal.valueOf(100))
+                .divide(goal, 0, java.math.RoundingMode.DOWN)
+                .intValue();
+
+        return Math.min(percent, 100);
+    }
+
+	public String createSponsorship(TargetType targetType,Long targetId,BigDecimal amount,String supporterName,String message,boolean anonymous,Users user) {
+
+			String paymentId = "order_" + System.currentTimeMillis();
+			
+			supporterName = supporterName.trim();
+			message = message.trim();
+			
+			Sponsorship sponsorship = Sponsorship.builder()
+			.merchantUid(paymentId)
+			.user(user)
+			.targetType(targetType)
+			.targetId(targetId)
+			.amount(amount)
+			.supporterName(supporterName)
+			.message(message)
+			.anonymous(anonymous)
+			.status(SponsorshipStatus.PENDING)
+			.build();
+			
+			sponsorshipRepository.save(sponsorship);
+			
+			return paymentId;
+		}
+
+	public List<ResponseSupportHistoryListDTO> getRecentSupportHistory(TargetType team, Long id, PageRequest of) {
+		System.out.println("targetType = " + team);
+	    System.out.println("targetId = " + id);
+	    System.out.println("pageable = " + of);
+
+	    List<ResponseSupportHistoryListDTO> result =
+	            paymentRepository.findRecentSupportHistory(team, id, of);
+
+	    System.out.println("recentSupports result size = " + result.size());
+
+	    return result;
+	}
+
 }

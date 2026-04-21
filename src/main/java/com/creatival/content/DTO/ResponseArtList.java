@@ -26,6 +26,8 @@ public class ResponseArtList {
 	
 	private String thumbnailUrl; //contentFile의 sortOrder가 1인 것
 	
+	private boolean paid;
+	
 	public static ResponseArtList from(Content content, ContentFile contentFile) {
 		return ResponseArtList.builder()
 				.id(content.getId())
@@ -36,6 +38,7 @@ public class ResponseArtList {
 				.username(content.getUser().getUsername())
 				.displayname(content.getUser().getDisplayName())
 				.thumbnailUrl(contentFile.getFileUrl())
+				.paid(content.isPaid())
 				.build();
 	}
 }
