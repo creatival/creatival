@@ -1,6 +1,7 @@
 package com.creatival.sponsorship.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,8 +11,12 @@ import org.springframework.data.repository.query.Param;
 import com.creatival.like.TargetType;
 import com.creatival.sponsorship.Sponsorship;
 import com.creatival.sponsorship.Wallet;
+import com.creatival.user.Users;
+
 
 public interface SponsorshipRepository extends JpaRepository<Sponsorship, Long> {
+
+	List<Sponsorship> findByUser(Users user);
 
 	Optional<Sponsorship> findByMerchantUid(String merchantUid);
 	Optional<Sponsorship> findByPaymentId(String paymentId);

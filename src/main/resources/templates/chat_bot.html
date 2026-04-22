@@ -19,44 +19,210 @@
         body { height: 100vh; overflow: hidden; margin: 0; background-color: #ffffff; }
 
         /* 사이드바 */
-        #sidebar { width: 260px !important; background-color: #9aa2c0; border-right: 3px solid #ff7a36; transition: width 0.3s ease; flex-shrink: 0; }
+        #sidebar {
+            width: 260px !important;
+            background-color: #9aa2c0;
+            border-right: 3px solid #ff7a36;
+            transition: width 0.3s ease;
+            flex-shrink: 0;
+        }
+
         #sidebar.collapsed { width: 80px !important; }
         #sidebar .sidebar-text { transition: opacity 0.2s; }
         #sidebar.collapsed .sidebar-text { display: none !important; }
-        #sidebar.collapsed .auth-box { opacity: 0 !important; pointer-events: none !important; display: none !important; }
+        #sidebar.collapsed .auth-box {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            display: none !important;
+        }
         
         .main-wrapper { flex-grow: 1; min-width: 0; }
-        .search-container { flex-grow: 1; display: flex; justify-content: center; padding: 0 20px; }
+        .search-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 0 20px;
+        }
 
         /* 채팅 영역 */
-        #chatHistory { overflow-y: auto; padding: 20px; }
-        .chat-message { animation: slideUp 0.3s ease-out forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        #chatHistory {
+            overflow-y: auto;
+            padding: 20px;
+        }
 
-        .user-bubble { background-color: #5e6eb8; color: white; padding: 12px 20px; border-radius: 20px; font-size: 0.95rem; display: inline-block; word-break: break-all; }
-        .bot-text-bubble { background-color: transparent; color: #333; padding: 5px 0; font-size: 0.95rem; font-weight: bold; }
-        .bot-icon { color: #ff7a36; cursor: pointer; font-size: 1.1rem; }
+        .chat-message {
+            animation: slideUp 0.3s ease-out forwards;
+        }
 
-        .img-box { width: 200px; height: 250px; background-color: #ebebeb; border-radius: 15px; overflow: hidden; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* 🌟 이미지 미리보기 위치 조정 */
-        #previewContainer { 
-            display: none; 
-            padding: 10px; 
-            background: #f8f9fa; 
-            border-radius: 15px; 
+        .user-bubble {
+            background-color: #5e6eb8;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            display: inline-block;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .bot-text-bubble {
+            background-color: transparent;
+            color: #333;
+            padding: 5px 0;
+            font-size: 0.95rem;
+            font-weight: bold;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.7;
+        }
+
+        .bot-icon {
+            color: #ff7a36;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .img-box {
+            width: 200px;
+            height: 250px;
+            background-color: #ebebeb;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #previewContainer {
+            display: none;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 15px;
             border: 1px solid #e9ecef;
             width: fit-content;
-            margin-left: 20px; /* 입력창 아이콘 위치와 맞춤 */
+            margin-left: 20px;
             position: relative;
-            margin-bottom: 15px; /* 입력창과의 간격 (원하신 높이 조절) */
+            margin-bottom: 15px;
         }
-        #imagePreview { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
-        .remove-preview { position: absolute; top: -5px; right: -5px; background: #ff7a36; color: white; border-radius: 50%; cursor: pointer; font-size: 12px; width: 20px; height: 20px; line-height: 18px; text-align: center; font-weight: bold; }
 
-        /* 🌟 입력 영역 너비 고정 및 중앙 정렬 유지 */
-        #inputArea { width: 100%; max-width: 650px; }
+        #imagePreview {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .remove-preview {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff7a36;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            width: 20px;
+            height: 20px;
+            line-height: 18px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #inputArea {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .typing-text {
+            color: #999;
+            font-size: 0.9rem;
+            padding: 5px 0;
+            font-weight: 500;
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #31366b;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.25s ease;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .recommend-card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 14px;
+            width: 100%;
+        }
+
+        .recommend-card {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #ececec;
+            border-radius: 16px;
+            padding: 14px 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+
+        .recommend-title {
+            font-weight: 700;
+            color: #31366b;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .recommend-title:hover {
+            text-decoration: underline;
+            color: #ff7a36;
+        }
+
+        .recommend-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .recommend-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .recommend-tag {
+            background: #f3f5ff;
+            color: #5e6eb8;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 
@@ -65,12 +231,15 @@
     <div id="sidebar" class="d-flex flex-column justify-content-between h-100">
         <div class="sidebar-header p-4 text-white">
             <a th:href="@{/}" class="text-white text-decoration-none d-flex align-items-center mb-4 fw-medium">
-                <i class="bi bi-arrow-left me-2"></i> <span class="sidebar-text">돌아가기</span>
+                <i class="bi bi-arrow-left me-2"></i>
+                <span class="sidebar-text">돌아가기</span>
             </a>
             <a href="#" onclick="toggleSidebar(event)" class="text-white text-decoration-none d-flex align-items-center fw-medium">
-                <i class="bi bi-list me-2"></i> <span id="toggleText" class="sidebar-text">메뉴바 접기</span>
+                <i class="bi bi-list me-2"></i>
+                <span id="toggleText" class="sidebar-text">메뉴바 접기</span>
             </a>
         </div>
+
         <div class="auth-box p-4 text-center" sec:authorize="isAnonymous()">
             <p class="text-white small fw-bold mb-3">아직 로그인을 안하셨나요?</p>
             <a th:href="@{/user/login}" class="btn w-100 rounded-pill text-white fw-bold mb-2 py-2" style="background-color: #31366b;">로그인</a>
@@ -81,13 +250,17 @@
     <div class="main-wrapper d-flex flex-column h-100">
         <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom flex-shrink-0">
             <div class="container-fluid px-4">
-                <a class="navbar-brand" th:href="@{/}"><img th:src="@{/images/creatival_logoV5-Photoroom.png}" alt="Logo" style="width: 180px;"></a>
+                <a class="navbar-brand" th:href="@{/}">
+                    <img th:src="@{/images/creatival_logoV5-Photoroom.png}" alt="Logo" style="width: 180px;">
+                </a>
+
                 <div class="search-container">
                     <div class="input-group search-bar" style="max-width: 500px;">
                         <input type="text" class="form-control search-input" placeholder="search">
                         <button class="btn search-btn" type="button"><i class="bi bi-search"></i></button>
                     </div>
                 </div>
+
                 <div class="d-flex align-items-center gap-3">
                     <button class="btn position-relative"><i class="bi bi-bell fs-5"></i></button>
                     <div class="dropdown">
@@ -129,6 +302,8 @@
         </main>
     </div>
 
+    <div id="copyToast" class="copy-toast">복사되었습니다.</div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -142,17 +317,16 @@
 
         let isFirstMessage = true;
         let selectedImage = null;
+        let isSending = false;
 
-        // 🌟 레이아웃 변경 함수 (수정됨)
         function triggerLayout() {
             if (!isFirstMessage) return;
             isFirstMessage = false;
             document.getElementById('greetingText').style.display = 'none';
             
             const inputWrapper = document.getElementById('inputWrapper');
-            // 'align-items-center'는 유지해서 가로 중앙 정렬을 지킵니다.
-            inputWrapper.classList.remove('h-100', 'justify-content-center'); 
-            inputWrapper.classList.add('p-4', 'flex-shrink-0'); // p-4로 아래쪽/전체 패딩 확보
+            inputWrapper.classList.remove('h-100', 'justify-content-center');
+            inputWrapper.classList.add('p-4', 'flex-shrink-0');
             inputWrapper.style.borderTop = '1px solid #f0f0f0';
             
             const chatHistory = document.getElementById('chatHistory');
@@ -185,49 +359,209 @@
         function toggleSendBtn() {
             const inputVal = document.getElementById('chatInput').value.trim();
             const sendBtn = document.getElementById('sendBtn');
-            if (inputVal || selectedImage) sendBtn.classList.remove('d-none');
-            else sendBtn.classList.add('d-none');
+
+            if ((inputVal || selectedImage) && !isSending) {
+                sendBtn.classList.remove('d-none');
+            } else {
+                sendBtn.classList.add('d-none');
+            }
         }
 
-        function handleKeyPress(e) { if (e.key === 'Enter') sendChat(); }
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChat();
+            }
+        }
 
-        function sendChat() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message && !selectedImage) return;
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-            triggerLayout();
+        function nl2br(str) {
+            return str.replace(/\n/g, "<br>");
+        }
+
+        function appendUserMessage(message, image) {
             const chatHistory = document.getElementById('chatHistory');
 
             let content = '';
-            if (selectedImage) content += `<div class="img-box shadow-sm"><img src="${selectedImage}"></div>`;
-            if (message) content += `<div class="user-bubble shadow-sm">${message}</div>`;
+            if (image) {
+                content += `<div class="img-box shadow-sm"><img src="${image}" alt="업로드 이미지"></div>`;
+            }
+            if (message) {
+                content += `<div class="user-bubble shadow-sm">${escapeHtml(message)}</div>`;
+            }
 
             const userHtml = `
                 <div class="d-flex justify-content-end mb-4 chat-message" style="padding-right: 300px;">
                     <div class="d-flex flex-column align-items-end" style="max-width: 75%;">${content}</div>
                 </div>`;
             chatHistory.insertAdjacentHTML('beforeend', userHtml);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
 
-            const lastMsg = message;
-            const lastImg = selectedImage;
+        function appendTypingMessage() {
+            const chatHistory = document.getElementById('chatHistory');
+            const typingId = 'typing-' + Date.now();
+
+            const typingHtml = `
+                <div id="${typingId}" class="d-flex justify-content-start mb-4 chat-message" style="padding-left: 300px;">
+                    <div class="d-flex flex-column align-items-start" style="max-width: 75%;">
+                        <div class="typing-text">챗봇이 답변을 작성 중입니다...</div>
+                    </div>
+                </div>`;
+            chatHistory.insertAdjacentHTML('beforeend', typingHtml);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            return typingId;
+        }
+
+        function renderRecommendationCards(recommendations) {
+            if (!recommendations || recommendations.length === 0) {
+                return '';
+            }
+
+            const cardsHtml = recommendations.map(item => {
+                const tags = Array.isArray(item.tags) ? item.tags : [];
+                const tagsHtml = tags.map(tag =>
+                    `<span class="recommend-tag">${escapeHtml(tag)}</span>`
+                ).join('');
+
+                return `
+                    <div class="recommend-card">
+                        <a class="recommend-title" href="${escapeHtml(item.url)}">${escapeHtml(item.title)}</a>
+                        <div class="recommend-meta">
+                            타입: ${escapeHtml(item.type)} · 좋아요 ${item.likeCount ?? 0} · 조회수 ${item.viewCount ?? 0}
+                        </div>
+                        ${tags.length > 0 ? `<div class="recommend-tags">${tagsHtml}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            return `<div class="recommend-card-list">${cardsHtml}</div>`;
+        }
+
+        function appendBotMessage(reply, image, recommendations = []) {
+            const chatHistory = document.getElementById('chatHistory');
+            const safeReply = nl2br(escapeHtml(reply));
+
+            let botContent = `<div class="bot-text-bubble">${safeReply}</div>`;
+
+            if (image) {
+                botContent += `<div class="img-box shadow-sm mt-2"><img src="${image}" alt="업로드 이미지"></div>`;
+            }
+
+            if (recommendations && recommendations.length > 0) {
+                botContent += renderRecommendationCards(recommendations);
+            }
+
+            botContent += `<i class="bi bi-copy bot-icon mt-2" onclick="copyBotMessage(this)"></i>`;
+
+            const botHtml = `
+                <div class="d-flex justify-content-start mb-4 chat-message" style="padding-left: 300px;">
+                    <div class="d-flex flex-column align-items-start" style="max-width: 75%;">${botContent}</div>
+                </div>`;
+            chatHistory.insertAdjacentHTML('beforeend', botHtml);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function removeTypingMessage(typingId) {
+            const el = document.getElementById(typingId);
+            if (el) el.remove();
+        }
+
+        async function sendChat() {
+            if (isSending) return;
+
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message && !selectedImage) return;
+
+            triggerLayout();
+            appendUserMessage(message, selectedImage);
+
+            const lastMessage = message;
+            const lastImage = selectedImage;
+
             input.value = '';
             cancelImage();
             input.focus();
-            chatHistory.scrollTop = chatHistory.scrollHeight;
 
+            isSending = true;
+            toggleSendBtn();
+
+            const typingId = appendTypingMessage();
+
+            try {
+                const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
+
+                const response = await fetch('/chat/ask', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        message: lastMessage
+                    })
+                });
+
+                removeTypingMessage(typingId);
+
+                if (!response.ok) {
+                    appendBotMessage('죄송합니다. 답변을 가져오는 중 오류가 발생했습니다.', null, []);
+                    return;
+                }
+
+                const data = await response.json();
+                const reply = data.reply || '응답이 비어 있습니다.';
+                const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
+
+                appendBotMessage(reply, lastImage, recommendations);
+
+            } catch (error) {
+                removeTypingMessage(typingId);
+                appendBotMessage('서버와 통신하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', null, []);
+                console.error(error);
+            } finally {
+                isSending = false;
+                toggleSendBtn();
+            }
+        }
+
+        async function copyBotMessage(iconEl) {
+            const bubble = iconEl.parentElement.querySelector('.bot-text-bubble');
+            if (!bubble) return;
+
+            const text = bubble.innerText;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                showCopyToast();
+            } catch (e) {
+                console.error('복사 실패', e);
+            }
+        }
+
+        function showCopyToast() {
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
             setTimeout(() => {
-                let botContent = `<div class="bot-text-bubble">메시지를 받았습니다!</div>`;
-                if (lastImg) botContent += `<div class="img-box shadow-sm"><img src="${lastImg}"></div>`;
-                botContent += `<i class="bi bi-copy bot-icon"></i>`;
-
-                const botHtml = `
-                    <div class="d-flex justify-content-start mb-4 chat-message" style="padding-left: 300px;">
-                        <div class="d-flex flex-column align-items-start" style="max-width: 75%;">${botContent}</div>
-                    </div>`;
-                chatHistory.insertAdjacentHTML('beforeend', botHtml);
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-            }, 1000);
+                toast.classList.remove('show');
+            }, 1500);
         }
     </script>
 </body>
