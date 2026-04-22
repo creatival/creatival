@@ -642,4 +642,15 @@ public class TeamService {
 		}
 		return teamMemberRepository.existsByTeamAndUser(team, user);
 	}
+
+	public List<Team> getTeamsByMember(Users user) {
+		List<Team> list = new ArrayList<>();
+		List<TeamMember> members = teamMemberRepository.findByUser(user);
+		
+		for(TeamMember member : members) {
+			list.add(member.getTeam());
+		}
+		
+		return list;
+	}
 }

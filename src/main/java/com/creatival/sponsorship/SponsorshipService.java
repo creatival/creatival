@@ -245,4 +245,8 @@ public class SponsorshipService {
 	    return result;
 	}
 
+	public List<Sponsorship> getSponsorshipsByUser(Users user) {
+		return sponsorshipRepository.findByUser(user);
+	}
+
 }
