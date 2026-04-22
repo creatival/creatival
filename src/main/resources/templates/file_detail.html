@@ -1,43 +1,238 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-<div class="container" layout:fragment="content">
-    <style>
-        /* ===== [수정] 후원하기 버튼 스타일 (아이콘 없이 글자만) ===== */
-        .btn-boost {
-            background-color: #f05a28 !important;
-            border-color: #f05a28 !important;
-            color: #ffffff !important;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 45px; /* 네이비 버튼과 높이 밸런스 유지 */
-            transition: all 0.2s;
-        }
-        .btn-boost:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            color: #ffffff !important;
-        }
+	<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+	<div class="container" layout:fragment="content">
+	    <style>
+	        /* ===== [수정] 후원하기 버튼 스타일 (아이콘 없이 글자만) ===== */
+	        .btn-boost {
+	            background-color: #f05a28 !important;
+	            border-color: #f05a28 !important;
+	            color: #ffffff !important;
+	            font-weight: bold;
+	            display: inline-flex;
+	            align-items: center;
+	            justify-content: center;
+	            height: 45px; /* 네이비 버튼과 높이 밸런스 유지 */
+	            transition: all 0.2s;
+	        }
+	        .btn-boost:hover {
+	            opacity: 0.9;
+	            transform: translateY(-2px);
+	            color: #ffffff !important;
+	        }
+	
+	        /* [1. 전체 레이아웃 및 본문 스타일] */
+	        .detail-container { max-width: 800px; margin: 0 auto; position: relative; }
+	        .back-btn { position: absolute; left: -60px; top: 5px; font-size: 1.5rem; color: #333; text-decoration: none; }
+	        .detail-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; color: #111; }
+	        .user-info { color: #888; font-size: 0.95rem; }
+	        .user-id { color: #333; font-weight: 600; text-decoration: none; }
+	        .section-divider { border: none; border-top: 1px solid #eee; margin: 40px 0; }
+	        .content-area { font-size: 1.1rem; line-height: 1.8; color: #444; min-height: 150px; }
+	
+	        /* [2. 액션 버튼 그룹] */
+	        .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap; }
+	        .btn-action { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; }
+	        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+	        .btn-action i { font-size: 1.8rem; margin-bottom: 5px; }
+	        .btn-action span { font-size: 0.85rem; font-weight: 600; }
+	        .btn-like i { color: #ff4757; }
+	        .btn-follow i { color: #323b6d; }
+	        .btn-share i { color: #2D3278; }
+	
+	        /* [3. 첨부파일 및 태그] */
+	        .file-box-wrapper { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+	        .file-preview-box { background-color: #f8f9fa; width: 160px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; text-decoration: none; color: #666; transition: all 0.2s; border: 1px solid #eee; }
+	        .file-preview-box:hover { background-color: #fff; border-color: #323b6d; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); color: #323b6d; }
+	        .btn-download-sm { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; margin-top: 8px; }
+	        .tag-badge { background-color: #f1f3f5; color: #495057; padding: 6px 14px; margin: 4px; font-weight: 500; border: none; }
+	
+	        /* [4. 네이비 버튼 및 계보 디자인] */
+	        .btn-navy { background-color: #323b6d; color: white; height: 45px; display: inline-flex; align-items: center; padding: 0 30px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+	        .lineage-box { background: #f8f9fa; padding: 1.2rem; border-radius: 1rem; border: 1px solid #eee; }
+	        .lineage-card { display: flex; align-items: center; gap: 12px; padding: 10px; background: white; border-radius: 12px; text-decoration: none; border: 1px solid transparent; transition: all 0.2s; }
+	        .lineage-card:hover { border-color: #323b6d; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+	        .lineage-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+	        .art-grid-item { position: relative; display: block; border-radius: 12px; overflow: hidden; aspect-ratio: 1/1; background: #eee; }
+	        .art-grid-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+	        .art-grid-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 10px 10px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s; }
+	        .art-grid-item:hover .art-grid-overlay { opacity: 1; }
+	        .art-grid-item:hover .art-grid-img { transform: scale(1.05); }
+			
+			.full-footer {
+			    background-color: #0b152d !important;
+			    color: white !important;
 
-        /* [1. 전체 레이아웃 및 본문 스타일] */
-        .detail-container { max-width: 800px; margin: 0 auto; position: relative; }
-        .back-btn { position: absolute; left: -60px; top: 5px; font-size: 1.5rem; color: #333; text-decoration: none; }
-        .detail-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; color: #111; }
-        .user-info { color: #888; font-size: 0.95rem; }
-        .user-id { color: #333; font-weight: 600; text-decoration: none; }
-        .section-divider { border: none; border-top: 1px solid #eee; margin: 40px 0; }
-        .content-area { font-size: 1.1rem; line-height: 1.8; color: #444; min-height: 150px; }
+			    /* 🔥 핵심 */
+			    width: 100vw;
+			    margin-left: calc(-50vw + 50%);
+			    
+			    margin-top: 150px;
+			}
 
-        /* [2. 액션 버튼 그룹] */
-        .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap; }
-        .btn-action { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; }
-        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn-action i { font-size: 1.8rem; margin-bottom: 5px; }
-        .btn-action span { font-size: 0.85rem; font-weight: 600; }
-        .btn-like i { color: #ff4757; }
-        .btn-follow i { color: #323b6d; }
-        .btn-share i { color: #2D3278; }
+			.full-footer span,
+			.full-footer h6,
+			.full-footer li {
+			    color: #ffffff !important;
+			}
 
+<<<<<<< HEAD
+			.footer-line {
+			    border-top: 1px solid rgba(255,255,255,0.1);
+			    margin: 30px 0;
+			}
+	    </style>
+	
+	    <main class="py-5">
+	        <div class="detail-container" th:if="${fileDetail != null}">
+	            
+	            <a th:href="@{/content/file/list}" class="back-btn"><i class="bi bi-arrow-left"></i></a>
+	            <div class="text-center">
+	                <h1 class="detail-title" th:text="${fileDetail.title}">제목</h1>
+	                <div class="user-info">
+	                    <a href="#" class="user-id" th:text="${fileDetail.displayname}">작가명</a> · 
+	                    <span th:text="${#temporals.format(fileDetail.createdAt, 'yyyy.MM.dd')}">날짜</span>
+	                </div>
+	                <hr class="section-divider">
+	            </div>
+	
+	            <div class="content-area text-center">
+	                <p th:text="${fileDetail.description}">설명</p>
+	                <div class="mt-4" th:if="${fileDetail.preview != null}">
+	                    <img th:src="${fileDetail.preview.fileUrl}" class="img-fluid rounded-4 shadow-sm" style="max-height: 500px;">
+	                </div>
+	            </div>
+	
+	            <div class="action-buttons-group">
+	                <a href="#" class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></a>
+	                <a href="#" class="btn-action btn-follow"><i class="bi bi-person-plus-fill"></i><span>팔로우</span></a>
+	                <a href="#" class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></a>
+	                <a href="#" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></a>
+	            </div>
+	
+	            <hr class="section-divider">
+	
+	            <div class="text-center">
+	                <p class="small fw-bold mb-3 text-muted">ATTACHMENTS</p>
+	                <div class="file-box-wrapper">
+	                    <div class="file-item text-center" th:if="${fileDetail.file != null}">
+	                        <a th:href="${fileDetail.file.fileUrl}" class="file-preview-box shadow-sm" target="_blank">
+	                            <i class="bi bi-file-earmark-zip fs-2 mb-1"></i>
+	                            <span class="small fw-bold text-truncate px-2 w-100" th:text="${fileDetail.file.originalFileName}">파일.zip</span>
+	                        </a>
+	                        <a th:href="${fileDetail.file.fileUrl}" class="btn btn-outline-dark btn-download-sm" download>다운로드</a>
+	                    </div>
+	                </div>
+	                <div class="tag-area mt-4 mb-4">
+	                    <div th:each="tag : ${tagList}" class="badge rounded-pill tag-badge">
+	                        <span th:text="'#' + ${tag.tagText}"></span>
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <div class="d-flex justify-content-between align-items-center mb-5 mt-4">
+	                <div sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
+	                    <a th:href="@{|/content/file/edit/${fileDetail.id}|}" class="text-muted text-decoration-none small me-3">수정</a>
+	                    <a th:href="@{|/content/file/delete/${fileDetail.id}|}" class="text-danger text-decoration-none small" onclick="return confirm('삭제?')">삭제</a>
+	                </div>
+	
+	                <div class="ms-auto d-flex gap-2">
+	                    <a href="#" class="btn btn-boost shadow-sm px-4 rounded-pill">후원하기</a>
+	                    <a th:href="@{/content/file/list}" class="btn btn-navy px-5">목록보기</a>
+	                </div>
+	            </div>
+	
+	            <hr class="section-divider">
+	            
+	            <div th:if="${fileDetail.allowComment}" class="comment-section mb-5">
+	                <h5 class="text-center fw-bold mb-4">댓글</h5>
+	                <form th:action="@{/comment/content/write/{id}(id=${fileDetail.id})}" method="post" class="d-flex align-items-center justify-content-center mb-5">
+	                    <input type="text" name="text" class="form-control me-3" placeholder="댓글을 입력하세요" style="max-width:500px;">
+	                    <button type="submit" class="btn btn-sm btn-primary rounded-pill px-4">작성</button>
+	                </form>
+	                <div class="comment-list ms-md-5">
+	                    <th:block th:each="comment : ${comments}">
+	                        <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${fileDetail.id})}"></div>
+	                    </th:block>
+	                </div>
+	            </div>
+	
+	            <hr class="section-divider">
+	
+	            <h5 class="fw-bold mb-4">작품 계보</h5>
+	            <div class="row g-4 mb-5">
+	                <div class="col-md-6">
+	                    <div class="lineage-box h-100">
+	                        <h6 class="text-muted fw-bold mb-3 small">ORIGINAL</h6>
+	                        <a href="#" class="lineage-card">
+	                            <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img">
+	                            <div class="overflow-hidden">
+	                                <div class="fw-bold text-dark text-truncate mb-1">원본 콘텐츠 제목</div>
+	                                <div class="small text-muted text-truncate">@OriginalArtist</div>
+	                            </div>
+	                        </a>
+	                    </div>
+	                </div>
+	                <div class="col-md-6">
+	                    <div class="lineage-box h-100">
+	                        <h6 class="text-muted fw-bold mb-3 small">RELATED</h6>
+	                        <div class="d-flex flex-column gap-2">
+	                            <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,2)}">
+	                                <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img">
+	                                <div class="overflow-hidden">
+	                                    <div class="fw-bold text-dark text-truncate mb-1">파생 작품 [[${i}]]</div>
+	                                    <div class="small text-muted text-truncate">@Creator</div>
+	                                </div>
+	                            </a>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <h5 class="fw-bold mb-3 mt-5">이 작가의 다른 작품</h5>
+	            <div class="row g-3 mb-5">
+	                <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,4)}">
+	                    <a href="#" class="art-grid-item">
+	                        <img src="https://dummyimage.com/300x300/e9ecef/495057" class="art-grid-img">
+	                        <div class="art-grid-overlay">
+	                            <span class="small fw-bold text-truncate text-white">작품 [[${i}]]</span>
+	                        </div>
+	                    </a>
+	                </div>
+	            </div>
+	        </div>
+	    </main>
+		
+		<footer class="full-footer">
+		        <div class="container py-5">
+		            <div class="row mb-4">
+		                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+		                    <h6 class="fw-bold mb-3">회사 정보</h6>
+		                    <ul class="list-unstyled small opacity-75">
+		                        <li>이용 안내</li>
+		                        <li>공지사항</li>
+		                        <li>고객센터</li>
+		                        <li>도움말</li>
+		                        <li>광고문의</li>
+		                    </ul>
+		                </div>
+		            </div>
+		            <hr class="footer-line">
+		            <div class="row align-items-center">
+		                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+		                    <span>이용 약관</span>
+		                    <span>개인 정보 보호 정책</span>
+		                </div>
+		                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+		                    © 2026 creatival All rights reserved.
+		                </div>
+		                <div class="col-md-4 text-end">
+		                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
+		                </div>
+		            </div>
+		        </div>
+		    </footer>
+	</div>
+	</html>
+=======
         /* [3. 첨부파일 및 태그] */
         .file-box-wrapper { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
         .file-preview-box { background-color: #f8f9fa; width: 160px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; text-decoration: none; color: #666; transition: all 0.2s; border: 1px solid #eee; }
@@ -197,3 +392,4 @@
     </main>
 </div>
 </html>
+>>>>>>> branch 'jinhoe' of https://github.com/creatival/creatival.git

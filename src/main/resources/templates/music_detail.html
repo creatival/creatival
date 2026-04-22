@@ -1,8 +1,8 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-<div class="container my-5" layout:fragment="content">
+<div class="container-fluid p-0" layout:fragment="content">
     
     <style>
-        /* 작품 계보 스타일 */
+        /* 1. 작품 계보 스타일 */
         .lineage-box { background: #f8f9fa; padding: 1.5rem; border-radius: 1rem; border: 1px solid #eee; }
         .lineage-card { 
             display: flex; align-items: center; gap: 12px; padding: 10px; 
@@ -12,7 +12,7 @@
         .lineage-card:hover { border-color: #0d6efd; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .lineage-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
 
-        /* 작품 그리드 스타일 */
+        /* 2. 작품 그리드 스타일 */
         .art-grid-item { 
             position: relative; display: block; border-radius: 12px; overflow: hidden; 
             aspect-ratio: 1/1; background: #eee; 
@@ -26,14 +26,33 @@
         .art-grid-item:hover .art-grid-overlay { opacity: 1; }
         .art-grid-item:hover .art-grid-img { transform: scale(1.05); }
 		
-		.btn-boost{
-					background-color: #f05a28 !important; /* 배경색 변경 */
-					    border-color: #f05a28 !important;     /* 테두리색 변경 */
-					    color: #ffffff !important;            /* 글자색을 흰색으로 고정 */
-		}
-		
+        /* 3. 버튼 및 푸터 전용 스타일 */
+        .btn-boost {
+            background-color: #f05a28 !important;
+            border-color: #f05a28 !important;
+            color: #ffffff !important;
+        }
+        .full-footer { 
+            background-color: #0b152d !important; 
+            color: white !important; 
+            width: 100%; 
+            margin-top: 100px; 
+        }
+        .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
+        .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
     </style>
 
+<<<<<<< HEAD
+    <div class="container my-5">
+        <div class="row g-5" th:if="${music != null}">
+            <div class="col-12 col-md-5 col-lg-4 text-center">
+                <div class="shadow rounded-4 overflow-hidden mb-4 mx-auto" style="max-width: 350px;">
+                    <div class="ratio ratio-1x1 bg-light">
+                        <img th:src="${music.thumbnailUrl}" 
+                             class="object-fit-cover" 
+                             th:alt="${music.title}"
+                             onerror="this.src='https://dummyimage.com/400x400/ced4da/6c757d&text=Cover'">
+=======
     <div class="row g-5" th:if="${music != null}">
         <div class="col-12 col-md-5 col-lg-4 text-center">
             <div class="shadow rounded-4 overflow-hidden mb-4 mx-auto" style="max-width: 350px;">
@@ -123,94 +142,187 @@
 								    <span class="badge bg-secondary">무료 콘텐츠</span>
 								</div>
                         </div>
+>>>>>>> branch 'jinhoe' of https://github.com/creatival/creatival.git
                     </div>
+                </div>
+                
+                <h4 class="fw-bold mb-1" th:text="${music.title}">곡 제목</h4>
+                <a class="text-muted d-block mb-4 text-decoration-none" th:href="@{/user/myPage/{id}(id=${music.userId})}" th:text="${music.displayname}">아티스트명</a>
 
-                    <h5 class="fw-bold mb-4">작품 계보</h5>
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-6">
-                            <div class="lineage-box h-100">
-                                <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품</h6>
-                                <a href="#" class="lineage-card">
-                                    <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
-                                    <div class="overflow-hidden">
-                                        <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
-                                        <div class="small text-muted text-truncate">@OriginalArtist</div>
-                                    </div>
-                                </a>
+                <audio controls class="w-100 shadow-sm rounded-pill mb-3" style="height: 50px;">
+                    <source th:src="${music.music.fileUrl}" type="audio/mpeg">
+                </audio>
+
+                <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+                    <button id="likeBtn" class="btn btn-outline-danger rounded-pill px-3" th:onclick="|toggleLikeHeart(${music.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
+                        <i class="bi me-1" id="likeIcon" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i> 
+                        <span th:text="${like.count}" id="likeCount">0</span>
+                    </button>
+
+                    <button id="followBtn" class="btn btn-primary rounded-pill px-3" 
+                            th:if="${music.username != #authentication.name}"
+                            th:onclick="|toggleFollow(${music.userId},'USER')|"
+                            th:text="${follow.followed ? '팔로우 중' : '팔로우'}">팔로우</button>
+
+                    <button class="btn btn-outline-secondary rounded-pill px-2">
+                        <i class="bi bi-share"></i>
+                    </button>
+
+                    <button th:onclick="|toggleBookmark(${music.id}, 'CONTENT')|" id="bookmarkBtn" class="btn btn-outline-secondary rounded-pill px-2">
+                        <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? 'bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+                    </button>
+
+                    <div class="w-100 mt-2 d-flex justify-content-center gap-2" th:if="${music.username == #authentication.name}">
+                        <a th:href="@{|/content/music/edit/${music.id}|}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">수정</a>
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" th:onclick="|confirmDelete(${music.id})|">삭제</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-7 col-lg-8">
+                <ul class="nav nav-tabs mb-4" id="musicTab" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active text-dark fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button">곡 정보</button>
+                    </li>
+                    <li class="nav-item" th:if="${music.allowComment}">
+                        <button class="nav-link text-dark fw-bold" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button">댓글</button>
+                    </li>
+                    <li class="nav-item ms-auto">
+                        <button class="btn btn-boost shadow-sm px-4 rounded-pill">후원하기</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="musicTabContent">
+                    <div class="tab-pane fade show active" id="info" role="tabpanel">
+                        <div class="bg-light p-4 rounded-3 mb-5">
+                            <p class="mb-4 text-break" th:text="${music.description}"></p>
+                            <div class="text-muted p-3 border rounded bg-white small">
+                                <ul class="list-unstyled mb-0 row">
+                                    <li class="col-6 mb-2"><strong>등록일:</strong> <span th:text="${#temporals.format(music.createdAt, 'yyyy.MM.dd')}"></span></li>
+                                    <li class="col-6 mb-2"><strong>구분:</strong> <span th:text="${music.fanWork ? '2차 창작' : '오리지널'}"></span></li>
+                                    <li class="col-6"><strong>조회수:</strong> <span th:text="${music.viewCount}"></span>회</li>
+                                    <li class="col-6"><strong>공개 범위:</strong> <span th:text="${music.visibility}"></span></li>
+                                </ul>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="lineage-box h-100 d-flex flex-column">
-                                <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품</h6>
-                                <div class="d-flex flex-column gap-2 mb-3" style="max-height: 165px; overflow-y: auto;">
-                                    <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,3)}">
-                                        <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
+
+                        <h5 class="fw-bold mb-4">작품 계보</h5>
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <div class="lineage-box h-100">
+                                    <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품</h6>
+                                    <a href="#" class="lineage-card">
+                                        <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
                                         <div class="overflow-hidden">
-                                            <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
-                                            <div class="small text-muted text-truncate">@RemixCreator</div>
+                                            <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
+                                            <div class="small text-muted text-truncate">@OriginalArtist</div>
                                         </div>
                                     </a>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
-                        <h5 class="fw-bold mb-0" th:text="${music.displayname} + '님의 다른 작품'">작가의 다른 작품</h5>
-                        <a href="#" class="text-muted small text-decoration-none">더보기 <i class="bi bi-chevron-right"></i></a>
-                    </div>
-                    <div class="row g-3 mb-5">
-                        <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,4)}">
-                            <a href="#" class="art-grid-item">
-                                <img src="https://dummyimage.com/300x300/e9ecef/495057" class="art-grid-img">
-                                <div class="art-grid-overlay">
-                                    <span class="small fw-bold text-truncate text-white">작품 타이틀 [[${i}]]</span>
-                                    <span class="text-white-50" style="font-size: 0.7rem;"><i class="bi bi-heart-fill"></i> 120</span>
+                            <div class="col-md-6">
+                                <div class="lineage-box h-100 d-flex flex-column">
+                                    <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품</h6>
+                                    <div class="d-flex flex-column gap-2 mb-3" style="max-height: 165px; overflow-y: auto;">
+                                        <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,3)}">
+                                            <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
+                                            <div class="overflow-hidden">
+                                                <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
+                                                <div class="small text-muted text-truncate">@RemixCreator</div>
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
-						<h5 class="fw-bold mb-0">다른 추천 작품</h5>
-                        <a href="#" class="text-muted small text-decoration-none">더보기 <i class="bi bi-chevron-right"></i></a>
-                    </div>
-                    <div class="row g-3 mb-5">
-                        <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,4)}">
-                            <a href="#" class="art-grid-item">
-                                <img src="https://dummyimage.com/300x300/e9ecef/495057" class="art-grid-img">
-                                <div class="art-grid-overlay">
-                                    <span class="small fw-bold text-truncate text-white">추천 타이틀 [[${i}]]</span>
-                                    <span class="text-white-50" style="font-size: 0.7rem;"><i class="bi bi-heart-fill"></i> 95</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="comments" role="tabpanel" th:if="${music.allowComment}">
-                    <h5 class="fw-bold mb-4" th:text="${'댓글 ' + commentCount + '개'}"></h5>
-                    <div class="d-flex align-items-start mb-4">
-                        <img src="https://dummyimage.com/40x40/adb5bd/fff" class="rounded-circle me-3 mt-1" alt="프로필" style="width: 40px; height: 40px;">
-                        <form th:action="@{/comment/content/write/{id}(id=${music.id})}" method="post" class="w-100">
-                            <div class="d-flex gap-2">
-                                <input type="text" name="text" class="form-control" placeholder="댓글을 남겨보세요.">
-                                <button type="submit" class="btn btn-primary px-4">작성</button>
                             </div>
-                        </form>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
+                            <h5 class="fw-bold mb-0" th:text="${music.displayname} + '님의 다른 작품'">작가의 다른 작품</h5>
+                            <a href="#" class="text-muted small text-decoration-none">더보기 <i class="bi bi-chevron-right"></i></a>
+                        </div>
+                        <div class="row g-3 mb-5">
+                            <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,4)}">
+                                <a href="#" class="art-grid-item">
+                                    <img src="https://dummyimage.com/300x300/e9ecef/495057" class="art-grid-img">
+                                    <div class="art-grid-overlay">
+                                        <span class="small fw-bold text-truncate text-white">작품 타이틀 [[${i}]]</span>
+                                        <span class="text-white-50" style="font-size: 0.7rem;"><i class="bi bi-heart-fill"></i> 120</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
+                            <h5 class="fw-bold mb-0">다른 추천 작품</h5>
+                            <a href="#" class="text-muted small text-decoration-none">더보기 <i class="bi bi-chevron-right"></i></a>
+                        </div>
+                        <div class="row g-3 mb-5">
+                            <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,4)}">
+                                <a href="#" class="art-grid-item">
+                                    <img src="https://dummyimage.com/300x300/e9ecef/495057" class="art-grid-img">
+                                    <div class="art-grid-overlay">
+                                        <span class="small fw-bold text-truncate text-white">추천 타이틀 [[${i}]]</span>
+                                        <span class="text-white-50" style="font-size: 0.7rem;"><i class="bi bi-heart-fill"></i> 95</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="comment-list">
-                        <th:block th:each="comment : ${comments}">
-                            <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${music.id})}"></div>
-                        </th:block>
+
+                    <div class="tab-pane fade" id="comments" role="tabpanel" th:if="${music.allowComment}">
+                        <h5 class="fw-bold mb-4" th:text="${'댓글 ' + commentCount + '개'}"></h5>
+                        <div class="d-flex align-items-start mb-4">
+                            <img src="https://dummyimage.com/40x40/adb5bd/fff" class="rounded-circle me-3 mt-1" alt="프로필" style="width: 40px; height: 40px;">
+                            <form th:action="@{/comment/content/write/{id}(id=${music.id})}" method="post" class="w-100">
+                                <div class="d-flex gap-2">
+                                    <input type="text" name="text" class="form-control" placeholder="댓글을 남겨보세요.">
+                                    <button type="submit" class="btn btn-primary px-4">작성</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="comment-list">
+                            <th:block th:each="comment : ${comments}">
+                                <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${music.id})}"></div>
+                            </th:block>
+                        </div>
                     </div>
-                </div>
+                </div> 
             </div> 
-        </div> 
+        </div>
     </div>
 
     <form id="deleteForm" method="post" style="display:none;">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     </form>
+	
+    <footer class="full-footer">
+        <div class="container py-5">
+            <div class="row mb-4">
+                <div class="col-6 col-md-2" th:each="i : ${#numbers.sequence(1, 5)}">
+                    <h6 class="fw-bold mb-3">회사 정보</h6>
+                    <ul class="list-unstyled small opacity-75">
+                        <li class="mb-1">이용 안내</li>
+                        <li class="mb-1">공지사항</li>
+                        <li class="mb-1">고객센터</li>
+                        <li class="mb-1">도움말</li>
+                        <li>광고문의</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-line">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+                    <span>이용 약관</span>
+                    <span>개인 정보 보호 정책</span>
+                </div>
+                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+                    © 2026 creatival All rights reserved.
+                </div>
+                <div class="col-md-4 text-end">
+                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140" onerror="this.src='https://dummyimage.com/140x40/000/fff&text=LOGO'">
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
 </html>
