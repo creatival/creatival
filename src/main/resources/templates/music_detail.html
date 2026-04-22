@@ -102,6 +102,7 @@
                                     <li class="col-6"><strong>조회수:</strong> <span th:text="${music.viewCount}"></span>회</li>
                                     <li class="col-6"><strong>공개 범위:</strong> <span th:text="${music.visibility}"></span></li>
                                 </ul>
+								
                                 <div th:if="${music.paid}" class="mt-3 pt-3 border-top">
                                     <div th:if="${hasAccess}"><span class="badge bg-success">구매 완료</span></div>
                                     <div th:if="${!hasAccess}" class="d-flex align-items-center gap-3">
@@ -111,8 +112,35 @@
                                         </form>
                                     </div>
                                 </div>
+								
                                 <div th:if="${!music.paid}" class="mt-3"><span class="badge bg-secondary">무료 콘텐츠</span></div>
+								<div class="tag-area">
+								                                <div class="mb-2">
+								                                    <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal">
+								                                        <span th:text="'#' + ${tag.tagText}"></span>
+								                                        <a sec:authorize="isAuthenticated()"
+								                                           th:if="${music.username == #authentication.name}"
+								                                           th:href="@{/tag/music/deleteContentTag(tagId=${tag.id},contentId=${music.id})}"
+								                                           class="text-white ms-1"
+								                                           onclick="return confirm('삭제하시겠습니까?');">
+								                                            <i class="bi bi-x-circle-fill" style="font-size: 0.7rem;"></i>
+								                                        </a>
+								                                    </div>
+
+								                                    <button type="button"
+								                                            sec:authorize="isAuthenticated()"
+								                                            th:if="${music.username == #authentication.name}"
+								                                            class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-1"
+								                                            style="width:24px;height:24px; vertical-align: middle;"
+								                                            data-bs-toggle="modal"
+								                                            data-bs-target="#tagAddModal">
+								                                        <i class="bi bi-plus"></i>
+								                                    </button>
+								                                </div>
+								                            </div>
+								
                             </div>
+							
                         </div>
 
                         <h5 class="fw-bold mb-4">작품 계보</h5>
