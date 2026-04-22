@@ -109,6 +109,36 @@ public class ContentController {
 		}
 		return "novel_write";
 	}
+	
+	@GetMapping("/delete/{id}")
+	public String deleteContent(@PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
+		Content content = contentService.getContent(id);
+		if(content==null) {
+			redirectAttributes.addFlashAttribute("message", "해당하는 콘텐츠가 없습니다.");
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/";
+		}
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/";
+		}
+		if (!content.getUser().getUsername().equals(principal.getName())) {
+			redirectAttributes.addFlashAttribute("message", "오직 본인만 삭제할 수 있습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:/content/"+content.getType().toString().toLowerCase()+"/detail/"+content.getId();
+		}
+		try {
+			contentService.delete(content);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:/content/"+content.getType().toString().toLowerCase()+"/list";
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "오류가 발생했습니다. 반복 발동시 문의바랍니다." + e.getMessage());
+			redirectAttributes.addFlashAttribute("icon", "error");
+			return "redirect:/content/"+content.getType().toString().toLowerCase()+"/list";
+		}
+	}
 
 	@PostMapping("/novel/write")
 	public String novel_wrtie(@Valid CreateNovelDTO createNovelDTO, BindingResult bindingResult, Principal principal) {

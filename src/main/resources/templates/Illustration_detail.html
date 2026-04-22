@@ -226,25 +226,49 @@
                 </div>
             </div>
 
-            <div class="action-buttons">
-                <button class="btn-boost shadow-sm me-2">후원하기</button>
 
-                
-
-                <button class="btn-action" th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|" th:if="${art.username == #authentication.name}">
-                    <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
-                    <span>수정하기</span>
-                </button>
-                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
-                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
-                    <span>좋아요</span>
-                </button>
-                <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
-                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
-                    <span>북마크</span>
-                </button>
-                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
-            </div>
+			<div class="action-buttons">
+			    <button class="btn-boost shadow-sm me-2"
+			            th:if="${art.username != #authentication.name}">
+			        후원하기
+			    </button>
+			
+			    <button class="btn-action"
+			            th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"
+			            th:if="${art.username == #authentication.name}">
+			        <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
+			        <span>수정하기</span>
+			    </button>
+			
+			    <button id="likeBtn"
+			            class="btn-action btn-like"
+			            th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|"
+			            th:classappend="${like.liked ? ' active' : ''}">
+			        <i id="likeIcon" class="bi"
+			           th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
+			        <span>좋아요</span>
+			    </button>
+			
+			    <button id="bookmarkBtn"
+			            class="btn-action btn-bookmark"
+			            th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
+			        <i id="bookmarkIcon" class="bi"
+			           th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+			        <span>북마크</span>
+			    </button>
+			
+			    <button class="btn-action btn-share">
+			        <i class="bi bi-share-fill"></i>
+			        <span>공유</span>
+			    </button>
+			
+			    <button class="btn-action"
+			            th:onclick="|confirmDelete(${art.id})|"
+			            th:if="${art.username == #authentication.name}">
+			        <i class="bi bi-trash3" style="color: #dc3545; font-size: 1.3rem;"></i>
+			        <span>삭제하기</span>
+			    </button>
+			</div>
         </div>
 		
 		<form th:if="${art.username == #authentication.name}"
