@@ -157,8 +157,8 @@
 		    </button>
 
 		    <div class="d-flex justify-content-center gap-2 mt-2" th:if="${novel.username == #authentication.name}">
-		        <a th:href="@{/content/novel_update/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-primary">수정하기</a>
-		        <a th:href="@{/content/novel_delete/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('삭제하시겠습니까?');">삭제하기</a>
+		        <a th:href="@{/content/novel/update/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-primary">수정하기</a>
+		        <a th:href="@{/content/novel/delete/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('삭제하시겠습니까?');">삭제하기</a>
 		    </div>
 		</div>
 

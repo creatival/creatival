@@ -66,7 +66,7 @@
     <div class="container mt-5 mb-5 d-flex justify-content-center">
         <div class="col-lg-8">
 
-            <form th:action="@{/content/novel_write}" method="post" enctype="multipart/form-data" th:object="${createNovelDTO}" id="novelForm">
+            <form th:action="@{/content/novel/write}" method="post" enctype="multipart/form-data" th:object="${createNovelDTO}" id="novelForm">
                 
                 <div class="mb-5">
                     <input type="text" th:field="*{title}" class="form-control form-control-custom fs-3 fw-bold" placeholder="작품 제목을 입력하세요" required>

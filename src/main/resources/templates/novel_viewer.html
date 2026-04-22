@@ -184,7 +184,7 @@
 
     <nav class="reader-header sticky-top shadow-sm">
         <div class="container d-flex justify-content-between align-items-center">
-            <a th:href="@{/content/novel_detail/{id}(id=${contentId})}" class="text-dark text-decoration-none small">
+            <a th:href="@{/content/novel/detail/{id}(id=${contentId})}" class="text-dark text-decoration-none small">
                 <i class="bi bi-chevron-left"></i> <span th:text="|${episode.episodeNum}화 (회차)|">01(회차)</span>
             </a>
             <h5 class="fw-bold mb-0 text-truncate mx-3" th:text="${episode.episodeNum+'. '+episode.title}">에피소드 제목</h5>
