@@ -75,9 +75,20 @@
             transform: translateY(-2px);
         }
 
-        .btn-like i { color: #ff4757; font-size: 1.3rem; }
-        .btn-bookmark i { color: #333; font-size: 1.3rem; }
-        .btn-share i { color: #2D3278; font-size: 1.3rem; }
+        .btn-like i {
+            color: #ff4757;
+            font-size: 1.3rem;
+        }
+
+        .btn-bookmark i {
+            color: #333;
+            font-size: 1.3rem;
+        }
+
+        .btn-share i {
+            color: #2D3278;
+            font-size: 1.3rem;
+        }
 
         .btn-action span {
             font-size: 0.75rem;
@@ -151,12 +162,33 @@
             border-color: #dc3545;
         }
 
+        .tag-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
         .art-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             background-color: #e9ecef;
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.85rem;
-            margin-right: 6px;
+            color: #495057;
+        }
+
+        .tag-delete-link {
+            color: #6c757d;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .tag-delete-link:hover {
+            color: #dc3545;
         }
 
         .btn-tag-add {
@@ -217,6 +249,10 @@
             color: inherit;
             transition: all 0.2s ease;
             background-color: #fff;
+        }
+
+        .lineage-card:hover {
+            background-color: #f8f9fa;
         }
 
         .lineage-img {
@@ -363,9 +399,22 @@
                     · 조회수 <span th:text="${art.viewCount}"></span>
                     · 좋아요 <span id="likeCount" th:text="${like.count}">0</span>
                 </div>
-                <div>
-                    <span th:each="tag : ${tagList}" class="art-tag" th:text="'#' + ${tag.tagText}"></span>
+
+                <div class="tag-area">
+                    <span th:each="tag : ${tagList}" class="art-tag">
+                        <span th:text="'#' + ${tag.tagText}"></span>
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${art.username == #authentication.name}"
+                           th:href="@{/tag/art/deleteContentTag(tagId=${tag.id},contentId=${art.id})}"
+                           class="tag-delete-link"
+                           onclick="return confirm('삭제하시겠습니까?');">
+                            <i class="bi bi-x-circle-fill" style="font-size: 0.75rem;"></i>
+                        </a>
+                    </span>
+
                     <button class="btn-tag-add ms-1"
+                            type="button"
+                            sec:authorize="isAuthenticated()"
                             th:if="${art.username == #authentication.name}"
                             data-bs-toggle="modal"
                             data-bs-target="#tagAddModal">
@@ -416,10 +465,10 @@
             </div>
         </div>
 
-		<form th:if="${art.username == #authentication.name and art.paid}"
-		      th:action="@{/redeem/create/content/{id}(id=${art.id})}"
-		      method="post"
-		      class="d-flex justify-content-end mb-3">
+        <form th:if="${art.username == #authentication.name and art.paid}"
+              th:action="@{/redeem/create/content/{id}(id=${art.id})}"
+              method="post"
+              class="d-flex justify-content-end mb-3">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3">
                 <i class="bi bi-key-fill me-1"></i> 리딤 코드 발급
@@ -463,8 +512,7 @@
                     <h6 class="text-muted fw-bold mb-3">
                         <i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품
                     </h6>
-                    <a href="#"
-                       class="lineage-card"
+                    <a class="lineage-card"
                        th:if="${parentContent!=null}"
                        th:href="@{/content/detail/{id}(id=${parentContent.id})}">
                         <img th:src="${parentContent.thumbnailUrl}" class="lineage-img" alt="원본">
@@ -620,6 +668,7 @@
 
         function loadMoreArts() {
             if (loading || !hasNext) return;
+
             loading = true;
 
             const spinner = document.getElementById('loading-spinner');
@@ -648,12 +697,6 @@
                 loadMoreArts();
             }
         };
-
-        function confirmDelete(id) {
-            if (confirm("정말로 이 작품을 삭제하시겠습니까? 삭제된 작품은 복구할 수 없습니다.")) {
-                location.href = "/content/art/delete/" + id;
-            }
-        }
 
         function confirmPurchase() {
             Swal.fire({

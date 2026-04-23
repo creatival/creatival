@@ -40,7 +40,7 @@ public class TagController {
 	@PostMapping("/createContentNovelTag/{id}")
 	public String createTagForNovel(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
 		createTagForContent(tagName, id, principal.getName());
-		return "redirect:/content/novel_detail/"+id;
+		return "redirect:/content/novel/detail/"+id;
 	}
 	@PostMapping("/createContentArtTag/{id}")
 	public String createTagForArt(@RequestParam("tagName") String tagName, @PathVariable("id") Long id, Principal principal) {
@@ -89,7 +89,7 @@ public class TagController {
 	public String deleteContentNovelTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
 		tagService.deleteMappingForContent(contentId, tagId);
 		
-		return "redirect:/content/novel_detail/"+contentId;
+		return "redirect:/content/novel/detail/"+contentId;
 	}
 	@GetMapping("/art/deleteContentTag")
 	public String deleteContentArtTag(@RequestParam("tagId") Long tagId, @RequestParam("contentId") Long contentId) {
