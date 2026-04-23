@@ -123,10 +123,17 @@
     </section>
 
     <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-        <div>
-            <h2 class="fw-bold mb-0">비디오</h2>
-            <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
-        </div>
+		<div style="flex: 1;">
+		                <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
+		                    <i class="bi bi-house-door-fill me-2"></i>
+		                    <span class="fw-bold">홈으로 가기</span>
+		                </a>
+		            </div>
+
+		    <div class="text-center" style="flex: 2;">
+		        <h2 class="fw-bold mb-0">비디오</h2>
+		        <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
+		    </div>
         
         <div class="d-flex gap-2 align-items-center">
             <button type="button"
@@ -144,14 +151,7 @@
                 <span class="fw-bold">비디오 등록</span>
             </a>
 
-            <div class="d-none d-sm-block ms-2">
-                <div class="btn-group" role="group">
-                    <input type="radio" class="btn-check" name="sort" id="latest" checked>
-                    <label class="btn btn-outline-secondary btn-sm" for="latest">최신순</label>
-                    <input type="radio" class="btn-check" name="sort" id="popular">
-                    <label class="btn btn-outline-secondary btn-sm" for="popular">인기순</label>
-                </div>
-            </div>
+            
         </div>
     </div>
 
@@ -205,6 +205,7 @@
             <li class="page-item active"><a class="page-link" href="#">1</a></li>
             <li class="page-item"><a class="page-link" href="#">다음</a></li>
         </ul>
+		
     </nav>
 
     <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">

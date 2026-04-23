@@ -28,6 +28,7 @@ public class ResponseFileDetailDTO {
 	
 	private String username;
 	private String displayname;
+	private Long userId;
 	
 	private boolean allowComment;
 	
@@ -43,6 +44,7 @@ public class ResponseFileDetailDTO {
 		dto.setViewCount(content.getViewCount());
 		dto.setUsername(content.getUser().getUsername());
 		dto.setDisplayname(content.getUser().getDisplayName());
+		dto.setUserId(content.getUser().getId());
 		dto.setFile(ResponseContentFileDTO.from(file));
 		dto.setAllowComment(content.isAllowComment());
 		dto.setPaid(content.isPaid());
@@ -61,6 +63,7 @@ public class ResponseFileDetailDTO {
 		dto.setUsername(content.getUser().getUsername());
 		dto.setDisplayname(content.getUser().getDisplayName());
 		dto.setFile(ResponseContentFileDTO.from(file));
+		dto.setUserId(content.getUser().getId());
 		dto.setPreview(ResponseContentFileImageDTO.from(previewImg));
 		dto.setAllowComment(content.isAllowComment());
 		dto.setPaid(content.isPaid());

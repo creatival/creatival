@@ -140,7 +140,7 @@
                 </button>
                 <button type="button" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
                 <div class="ms-auto">
-                    <button class="btn btn-boost shadow-sm px-4 py-2 fw-bold rounded-pill">후원하기</button>
+                    <button class="btn btn-boost shadow-sm px-4 py-2 fw-bold rounded-pill" th:onclick="|location.href='@{/user/{id}/boost(id=${novel.userId})}'|">후원하기</button>
                 </div>
             </div>
 

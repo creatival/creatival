@@ -56,7 +56,7 @@
                     <span th:text="${follow.followed ? '팔로잉' : '팔로우'}">팔로우</span>
                 </button>
 
-				<button class="btn btn-boost shadow-sm">후원하기</button>
+				<button class="btn btn-boost shadow-sm" th:onclick="|location.href='@{/user/{id}/boost(id=${video.userId})}'|">후원하기</button>
 
                 <div class="d-flex gap-2">
                     <div class="btn-group shadow-sm" role="group">
@@ -100,6 +100,16 @@
                     영상 설명이 들어가는 곳입니다.
                 </p>
 
+				<form th:if="${video.username == #authentication.name and video.paid}"
+				      th:action="@{/redeem/create/content/{id}(id=${video.id})}"
+				      method="post"
+				      class="d-flex justify-content-end mb-3">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+				    <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3">
+                        <i class="bi bi-key-fill me-1"></i> 리딤 코드 발급
+                    </button>
+				</form>
+				
 				<div th:if="${video.paid}">
 					<div th:if="${hasAccess}">
 						<span class="badge bg-success">구매 완료</span>
@@ -131,12 +141,15 @@
                             <i class="bi bi-x-circle-fill ms-1"></i>
                         </a>
                     </div>
+					
                     <button type="button" sec:authorize="isAuthenticated()" th:if="${video.username == #authentication.name}"
                             class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2" style="width:24px;height:24px;"
                             data-bs-toggle="modal" data-bs-target="#tagAddModal">
                         <i class="bi bi-plus"></i>
                     </button>
+					
                 </div>
+				
             </div>
 
             <div th:if="${video.isAllowComment}">
