@@ -104,6 +104,7 @@
                            th:text="${#numbers.formatInteger(fileDetail.price, 3, 'COMMA') + '원'}">10,000원</p>
 
                         <form th:action="@{/content/{id}/purchase(id=${fileDetail.id})}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                             <button type="submit" class="btn btn-primary">구매하기</button>
                         </form>
                     </div>
@@ -194,6 +195,7 @@
             <div th:if="${fileDetail.allowComment}" class="comment-section mb-5">
                 <h5 class="text-center fw-bold mb-4">댓글</h5>
                 <form th:action="@{/comment/content/write/{id}(id=${fileDetail.id})}" method="post" class="d-flex align-items-center justify-content-center mb-5">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <input type="text" name="text" class="form-control me-3" placeholder="댓글을 입력하세요" style="max-width:500px;">
                     <button type="submit" class="btn btn-sm btn-primary rounded-pill px-4">작성</button>
                 </form>
@@ -210,43 +212,47 @@
             <div class="row g-4 mb-5">
                 <div class="col-md-6">
                     <div class="lineage-box h-100">
-                        <h6 class="text-muted fw-bold mb-3 small">ORIGINAL</h6>
-                        <a href="#" class="lineage-card">
-                            <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img">
+                        <h6 class="text-muted fw-bold mb-3 small">원본 작품</h6>
+
+                        <a th:if="${parentContent != null}"
+                           th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(parentContent.type)},id=${parentContent.id})}"
+                           class="lineage-card">
+                            <img th:src="${parentContent.thumbnailUrl != null ? parentContent.thumbnailUrl : 'https://dummyimage.com/60x60/ced4da/6c757d'}" class="lineage-img">
                             <div class="overflow-hidden">
-                                <div class="fw-bold text-dark text-truncate mb-1">원본 콘텐츠 제목</div>
-                                <div class="small text-muted text-truncate">@OriginalArtist</div>
+                                <div class="fw-bold text-dark text-truncate mb-1" th:text="${parentContent.title}">원본 콘텐츠 제목</div>
+                                <div class="small text-muted text-truncate" th:text="${parentContent.username}">@OriginalArtist</div>
                             </div>
                         </a>
+
+                        <p class="text-muted text-center py-4 mb-0" th:if="${parentContent == null}">
+                            원본 작품이 없습니다.
+                        </p>
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="lineage-box h-100">
-                        <h6 class="text-muted fw-bold mb-3 small">RELATED</h6>
+                        <h6 class="text-muted fw-bold mb-3 small">연관 작품</h6>
                         <div class="d-flex flex-column gap-2">
-                            <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,2)}">
-                                <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img">
+                            <a th:each="childContent : ${childContents}"
+                               th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(childContent.type)},id=${childContent.id})}"
+                               class="lineage-card">
+							   <img th:src="${childContent.thumbnailUrl != null and !#strings.isEmpty(childContent.thumbnailUrl) ? childContent.thumbnailUrl : 'https://dummyimage.com/60x60/adb5bd/495057'}"
+							        class="lineage-img">
                                 <div class="overflow-hidden">
-                                    <div class="fw-bold text-dark text-truncate mb-1">파생 작품 [[${i}]]</div>
-                                    <div class="small text-muted text-truncate">@Creator</div>
+                                    <div class="fw-bold text-dark text-truncate mb-1" th:text="${childContent.title}">파생 작품</div>
+                                    <div class="small text-muted text-truncate" th:text="${childContent.username}">@Creator</div>
                                 </div>
                             </a>
+
+                            <p class="text-muted text-center py-4 mb-0" th:if="${#lists.isEmpty(childContents)}">
+                                연관 작품이 없습니다.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <h5 class="fw-bold mb-3 mt-5">이 작가의 다른 작품</h5>
-            <div class="row g-3 mb-5">
-                <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(1,4)}">
-                    <a href="#" class="art-grid-item">
-                        <img src="https://dummyimage.com/300x300/e9ecef/495057" class="art-grid-img">
-                        <div class="art-grid-overlay">
-                            <span class="small fw-bold text-truncate text-white">작품 [[${i}]]</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -254,6 +260,7 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 <form th:action="@{/tag/createContentFileTag/{id}(id=${fileDetail.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <div class="modal-body">
                         <h6 class="fw-bold mb-3">새 태그 추가</h6>
                         <div class="input-group">

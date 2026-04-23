@@ -146,10 +146,12 @@ public class ContentController {
 			System.out.println("오류 발생");
 			return "novel_write";
 		}
-		if (createNovelDTO.getOriginalContentId() != null
-				&& (createNovelDTO.getProjectTag() != null || createNovelDTO.getProjectTag().isEmpty())) {
-			bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 content에 속하거나 하나만 할 수 있습니다");
-			return "illustration_write";
+		boolean hasOriginal = createNovelDTO.getOriginalContentId() != null;
+		boolean hasProjectTag = createNovelDTO.getProjectTag() != null && !createNovelDTO.getProjectTag().trim().isEmpty();
+
+		if (hasOriginal && hasProjectTag) {
+		    bindingResult.reject("createArtFailed", "프로젝트에 속하거나 원본 콘텐츠에 속하거나 하나만 선택해야 합니다.");
+		    return "novel_write";
 		}
 		try {
 			contentService.createCotentNovel(createNovelDTO, userService.getUserByUsername(principal.getName()));
@@ -201,6 +203,28 @@ public class ContentController {
 		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
+		
+		if (content.getOriginalContent() != null) {
+			Content parentContent = content.getOriginalContent();
+			if (parentContent.getType() == ContentType.ART) {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(content,
+						contentFileService.getContentFileThumbnail(content).getFileUrl()));
+			} else {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
+			}
+		}
+		List<ResponseContentListForProject> childContentList = new ArrayList<>();
+		List<Content> childContents = content.getChildContents();
+		
+		for (Content childContent : childContents) {
+			if (childContent.getType() == ContentType.ART) {
+				childContentList.add(ResponseContentListForProject.fromArt(childContent,
+						contentFileService.getContentFileThumbnail(childContent).getFileUrl()));
+			} else {
+				childContentList.add(ResponseContentListForProject.fromNovel(childContent));
+			}
+		}
+		model.addAttribute("childContents", childContentList);
 
 		return "novel_detail";
 	}
@@ -447,11 +471,9 @@ public class ContentController {
 				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
 			}
 		}
-		
-		List<ResponseArtList> anotherArt = contentService.getAutherArt(content.getUser());
-		model.addAttribute("anotherArt", anotherArt);
 		List<ResponseContentListForProject> childContentList = new ArrayList<>();
 		List<Content> childContents = content.getChildContents();
+		
 		for (Content childContent : childContents) {
 			if (childContent.getType() == ContentType.ART) {
 				childContentList.add(ResponseContentListForProject.fromArt(childContent,
@@ -461,6 +483,12 @@ public class ContentController {
 			}
 		}
 		model.addAttribute("childContents", childContentList);
+		
+		List<ResponseArtList> anotherArt = contentService.getAutherArt(content.getUser());
+		model.addAttribute("anotherArt", anotherArt);
+		
+		
+		
 
 		model.addAttribute("tagList", contentTags);
 		List<ResponseCommentDTO> comments = commentService.getCommentListByContent(id);
@@ -594,6 +622,29 @@ public class ContentController {
 		    model.addAttribute("hasAccess", false);
 		    return "locked_content";
 		}
+		
+		if (content.getOriginalContent() != null) {
+			Content parentContent = content.getOriginalContent();
+			if (parentContent.getType() == ContentType.ART) {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(content,
+						contentFileService.getContentFileThumbnail(content).getFileUrl()));
+			} else {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
+			}
+		}
+		List<ResponseContentListForProject> childContentList = new ArrayList<>();
+		List<Content> childContents = content.getChildContents();
+		
+		for (Content childContent : childContents) {
+			if (childContent.getType() == ContentType.ART) {
+				childContentList.add(ResponseContentListForProject.fromArt(childContent,
+						contentFileService.getContentFileThumbnail(childContent).getFileUrl()));
+			} else {
+				childContentList.add(ResponseContentListForProject.fromNovel(childContent));
+			}
+		}
+		model.addAttribute("childContents", childContentList);
+		
 		model.addAttribute("like", likeService.getLike(user, TargetType.CONTENT, id));
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
@@ -763,6 +814,28 @@ public class ContentController {
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 		model.addAttribute("hasAccess", hasAccess);
+		
+		if (content.getOriginalContent() != null) {
+			Content parentContent = content.getOriginalContent();
+			if (parentContent.getType() == ContentType.ART) {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(content,
+						contentFileService.getContentFileThumbnail(content).getFileUrl()));
+			} else {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
+			}
+		}
+		List<ResponseContentListForProject> childContentList = new ArrayList<>();
+		List<Content> childContents = content.getChildContents();
+		
+		for (Content childContent : childContents) {
+			if (childContent.getType() == ContentType.ART) {
+				childContentList.add(ResponseContentListForProject.fromArt(childContent,
+						contentFileService.getContentFileThumbnail(childContent).getFileUrl()));
+			} else {
+				childContentList.add(ResponseContentListForProject.fromNovel(childContent));
+			}
+		}
+		model.addAttribute("childContents", childContentList);
 		return "music_detail";
 	}
 
@@ -886,6 +959,28 @@ public class ContentController {
 		model.addAttribute("bookmark", bookmarkService.getBookmark(user, TargetType.CONTENT, id));
 		model.addAttribute("follow", followService.getFollow(user, TargetType.USER, content.getUser().getId()));
 		model.addAttribute("hasAccess", hasAccess);
+		
+		if (content.getOriginalContent() != null) {
+			Content parentContent = content.getOriginalContent();
+			if (parentContent.getType() == ContentType.ART) {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(content,
+						contentFileService.getContentFileThumbnail(content).getFileUrl()));
+			} else {
+				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
+			}
+		}
+		List<ResponseContentListForProject> childContentList = new ArrayList<>();
+		List<Content> childContents = content.getChildContents();
+		
+		for (Content childContent : childContents) {
+			if (childContent.getType() == ContentType.ART) {
+				childContentList.add(ResponseContentListForProject.fromArt(childContent,
+						contentFileService.getContentFileThumbnail(childContent).getFileUrl()));
+			} else {
+				childContentList.add(ResponseContentListForProject.fromNovel(childContent));
+			}
+		}
+		model.addAttribute("childContents", childContentList);
 		return "file_detail";
 	}
 

@@ -149,10 +149,10 @@ public class ContentService {
 				.isAllowComment(createNovelDTO.isAllowComment())
 				.isFanWork(createNovelDTO.isFanWork())
 				.build();
-		String imgurl = "/upload/images/thumbnail/";
+		String imgurl = null;
 		
 		if(createNovelDTO.getThumbnailFile() != null && !createNovelDTO.getThumbnailFile().isEmpty()) {
-			imgurl += fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
+			imgurl += "/upload/images/thumbnail/"+ fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
 			content.setThumbnailImgUrl(imgurl);
 		}
 		if(content.isFanWork() && createNovelDTO.getOriginalContentId() != null) {
