@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link th:href="@{/css/styles.css}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.6/dist/driver.css">
     <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
     
     <style>
@@ -22,6 +23,25 @@
             padding: 5px 12px;
             background-color:#fe8e3e; 
         }
+
+        .guide-icon-btn {
+            border: none;
+            background: transparent;
+            padding: 0.375rem 0.5rem;
+            color: #495057;
+            transition: color 0.2s ease;
+        }
+
+        .guide-icon-btn:hover {
+            color: #212529;
+        }
+
+        .guide-icon-btn:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+	
     </style>
 </head>
 <body class="d-flex flex-column h-100">
@@ -43,7 +63,6 @@
                             <i class="bi bi-search"></i>
                         </button>
 
-                        <!-- 검색 선택 박스 -->
                         <div id="searchOptions" style="
                             position:absolute;
                             top:110%;
@@ -65,7 +84,6 @@
                             </div>
                         </div>
 
-                        <!-- 실시간 추천 -->
                         <div id="searchSuggestBox" style="
                             position:absolute;
                             top:110%;
@@ -86,7 +104,14 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <button class="btn position-relative"><i class="bi bi-bell fs-5"></i></button>
+                    <button type="button"
+                            class="guide-icon-btn"
+                            id="startGuideBtn"
+                            title="사이트 이용 안내"
+                            aria-label="사이트 이용 안내">
+                        <i class="bi bi-question-circle fs-5"></i>
+                    </button>
+
                     <div class="dropdown">
                         <button class="btn d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <img th:src="${#authentication.principal != 'anonymousUser' and user != null and user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/32x32/ced4da/6c757d'}" 
@@ -108,19 +133,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.6/dist/driver.js.iife.js"></script>
     <th:block layout:fragment="script"></th:block>
     
     <script th:inline="javascript">
-        /* 서버 메시지 처리 */
         const msg = /*[[${message}]]*/ null;
         const icon = /*[[${icon}]]*/ "info";
         const isLogMessage = /*[[${isLogMsg}]]*/ false;
 
-        if(msg){
+        if (msg) {
             Swal.fire({ icon: icon, text: msg });
         }
 
-        if(isLogMessage) {
+        if (isLogMessage) {
             showLoginAlert();
         }
 
@@ -152,6 +177,7 @@
         function toggleLike(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
+
             requireLoginAction(() => {
                 fetch('/like/toggle', { 
                     method: 'POST',
@@ -162,8 +188,9 @@
                 .then(data => {
                     const countElem = document.getElementById('likeCount');
                     const iconElem = document.getElementById('likeIcon');
-                    if(countElem) countElem.innerText = data.count;
-                    if(iconElem) {
+
+                    if (countElem) countElem.innerText = data.count;
+                    if (iconElem) {
                         iconElem.classList.toggle('bi-hand-thumbs-up-fill', data.liked);
                         iconElem.classList.toggle('bi-hand-thumbs-up', !data.liked);
                     }
@@ -174,6 +201,7 @@
         function toggleLikeHeart(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
+
             requireLoginAction(() => {
                 fetch('/like/toggle', { 
                     method: 'POST',
@@ -184,8 +212,9 @@
                 .then(data => {
                     const countElem = document.getElementById('likeCount');
                     const iconElem = document.getElementById('likeIcon');
-                    if(countElem) countElem.innerText = data.count;
-                    if(iconElem) {
+
+                    if (countElem) countElem.innerText = data.count;
+                    if (iconElem) {
                         iconElem.classList.toggle('bi-heart-fill', data.liked);
                         iconElem.classList.toggle('bi-heart', !data.liked);
                     }
@@ -196,6 +225,7 @@
         function toggleBookmark(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
+
             requireLoginAction(() => {
                 fetch("/bookmark/toggle", {
                     method: "POST",
@@ -205,7 +235,7 @@
                 .then(res => res.json())
                 .then(data => {
                     const iconElem = document.getElementById('bookmarkIcon');
-                    if(iconElem) {
+                    if (iconElem) {
                         iconElem.classList.toggle('bi-bookmark-check-fill', data.bookmarked);
                         iconElem.classList.toggle('bi-bookmark-check', !data.bookmarked);
                     }
@@ -216,6 +246,7 @@
         function toggleFollow(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
+
             requireLoginAction(() => {
                 fetch("/follow/toggle", {
                     method: "POST",
@@ -225,7 +256,7 @@
                 .then(res => res.json())
                 .then(data => {
                     const btn = document.getElementById('followBtn');
-                    if(btn) {
+                    if (btn) {
                         btn.classList.toggle('following', data.followed);
                         btn.innerText = data.followed ? '팔로우 중' : '팔로우';
                     }
@@ -250,74 +281,112 @@
             });
         }
 
-        /* =========================
-           검색 기능
-        ========================= */
-		/* 검색 기능 */
-		const searchInput = document.getElementById('searchInput');
-		const searchBtn = document.getElementById('searchBtn');
-		const searchOptions = document.getElementById('searchOptions');
-		const searchOptionItems = document.querySelectorAll('.search-option');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchOptions = document.getElementById('searchOptions');
+        const searchOptionItems = document.querySelectorAll('.search-option');
 
-		function showSearchOptions() {
-		    const keyword = searchInput.value.trim();
-		    if (keyword.length > 0) {
-		        searchOptions.style.display = 'block';
-		    } else {
-		        searchOptions.style.display = 'none';
-		    }
-		}
+        function showSearchOptions() {
+            const keyword = searchInput.value.trim();
+            if (keyword.length > 0) {
+                searchOptions.style.display = 'block';
+            } else {
+                searchOptions.style.display = 'none';
+            }
+        }
 
-		function hideSearchOptions() {
-		    searchOptions.style.display = 'none';
-		}
+        function hideSearchOptions() {
+            searchOptions.style.display = 'none';
+        }
 
-		function goSearch(type) {
-		    const keyword = searchInput.value.trim();
-		    if (!keyword) return;
-		    location.href = `/search?keyword=${encodeURIComponent(keyword)}&type=${type}`;
-		}
+        function goSearch(type) {
+            const keyword = searchInput.value.trim();
+            if (!keyword) return;
+            location.href = `/search?keyword=${encodeURIComponent(keyword)}&type=${type}`;
+        }
 
-		if (searchInput && searchBtn && searchOptions) {
-		    searchInput.addEventListener('input', () => {
-		        showSearchOptions();
-		    });
+        if (searchInput && searchBtn && searchOptions) {
+            searchInput.addEventListener('input', () => {
+                showSearchOptions();
+            });
 
-		    searchInput.addEventListener('focus', () => {
-		        showSearchOptions();
-		    });
+            searchInput.addEventListener('focus', () => {
+                showSearchOptions();
+            });
 
-		    searchBtn.addEventListener('click', () => {
-		        showSearchOptions();
-		    });
+            searchBtn.addEventListener('click', () => {
+                showSearchOptions();
+            });
 
-		    searchInput.addEventListener('keydown', (e) => {
-		        if (e.key === 'Enter') {
-		            e.preventDefault();
-		            showSearchOptions();
-		        }
-		    });
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    showSearchOptions();
+                }
+            });
 
-		    searchOptionItems.forEach(item => {
-		        item.addEventListener('click', () => {
-		            goSearch(item.dataset.type);
-		        });
+            searchOptionItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    goSearch(item.dataset.type);
+                });
 
-		        item.addEventListener('mouseenter', () => {
-		            item.style.backgroundColor = '#f8f9fa';
-		        });
+                item.addEventListener('mouseenter', () => {
+                    item.style.backgroundColor = '#f8f9fa';
+                });
 
-		        item.addEventListener('mouseleave', () => {
-		            item.style.backgroundColor = '#fff';
-		        });
-		    });
+                item.addEventListener('mouseleave', () => {
+                    item.style.backgroundColor = '#fff';
+                });
+            });
 
-		    document.addEventListener('click', (e) => {
-		        if (!e.target.closest('.search-bar')) {
-		            hideSearchOptions();
-		        }
-		    });
-		}
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-bar')) {
+                    hideSearchOptions();
+                }
+            });
+        }
+
+        function startSiteGuide() {
+            if (window.location.pathname !== '/') return;
+            if (typeof window.createIndexGuideSteps !== 'function') return;
+
+            const steps = window.createIndexGuideSteps();
+            if (!steps || !steps.length) return;
+
+            const driver = window.driver.js.driver;
+            const guide = driver({
+                showProgress: true,
+                allowClose: true,
+                overlayClickBehavior: 'close',
+                smoothScroll: true,
+                doneBtnText: '완료',
+                nextBtnText: '다음',
+                prevBtnText: '이전',
+                steps: steps,
+                onDestroyed: () => {
+                    localStorage.setItem('creativalIndexGuideSeen', 'true');
+                }
+            });
+
+            guide.drive();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const startGuideBtn = document.getElementById('startGuideBtn');
+
+            if (startGuideBtn) {
+                startGuideBtn.addEventListener('click', startSiteGuide);
+            }
+
+            const currentPath = window.location.pathname;
+            const guideSeen = localStorage.getItem('creativalIndexGuideSeen');
+
+            if (currentPath === '/' && !guideSeen) {
+                setTimeout(() => {
+                    startSiteGuide();
+                }, 500);
+            }
+        });
     </script>
 </body>
 </html>

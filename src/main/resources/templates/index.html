@@ -147,7 +147,7 @@
 		    position: relative;
 		}
 
-        /* 🌟 챗봇 스크롤 페이드업 애니메이션 🌟 */
+        /* 챗봇 스크롤 페이드업 애니메이션 */
 		.fade-up-item {
 		    opacity: 0;
 		    transform: translateY(40px);
@@ -176,7 +176,7 @@
 		}
     </style>
 
-    <header class="bg-light py-5">
+    <header class="bg-light py-5" data-guide="main-banner">
         <div id="mainCarousel" class="carousel slide container" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
@@ -209,7 +209,7 @@
         </div>
     </header>
 
-    <section class="py-5 bg-white">
+    <section class="py-5 bg-white" data-guide="main-category">
         <div class="container">
             <div class="row text-center g-4 justify-content-center">
                 <div class="col-4 col-md-2">
@@ -260,7 +260,7 @@
         </div>
     </section>
 
-    <section class="py-5 bg-white border-top">
+    <section class="py-5 bg-white border-top" data-guide="community-section">
         <div class="container text-center">
             <div class="p-5 bg-light rounded-5 shadow-sm d-flex flex-column flex-md-row align-items-center justify-content-between px-md-5 hover-card">
                 <div class="text-md-start mb-3 mb-md-0">
@@ -274,7 +274,7 @@
         </div>
     </section>
     
-	<section class="py-5 bg-white">
+	<section class="py-5 bg-white" data-guide="chatbot-section">
 	        <div class="container text-center">
 	            <h2 class="fw-bold mb-2">챗봇</h2>
 	            <p class="mb-4 fw-bold">여러 궁금증들을 질문해보세요!</p>
@@ -295,7 +295,7 @@
 	        </div>
 	 </section>
     
-    <section class="py-5 bg-white">
+    <section class="py-5 bg-white" data-guide="teamProject-section">
         <div class="container text-center">
             <h2 class="fw-bold mb-1">팀 프로젝트</h2>
             <p class="mb-5"><a th:href="@{/team/list}" class="text-muted text-decoration-none">팀 프로젝트 가입하기 <i class="bi bi-chevron-right small"></i></a></p>
@@ -476,30 +476,101 @@
             </div>
         </div>
     </footer>
-
-	<script>
-	    document.addEventListener("DOMContentLoaded", function() {
-	        const observerOptions = {
-	            root: null,
-	            rootMargin: '0px',
-	            threshold: 0.1 
-	        };
-
-	        const observer = new IntersectionObserver((entries) => {
-	            entries.forEach(entry => {
-	                if (entry.isIntersecting) {
-	                    entry.target.classList.add('is-visible');
-	                } else {
-	                    entry.target.classList.remove('is-visible');
-	                }
-	            });
-	        }, observerOptions);
-
-	        const fadeItems = document.querySelectorAll('.fade-up-item');
-	        fadeItems.forEach(item => {
-	            observer.observe(item);
-	        });
-	    });
-	</script>
 </div>
+
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            }, observerOptions);
+
+            const fadeItems = document.querySelectorAll('.fade-up-item');
+            fadeItems.forEach(item => {
+                observer.observe(item);
+            });
+        });
+
+        window.createIndexGuideSteps = function () {
+            const steps = [
+                document.querySelector('[data-guide="main-banner"]') && {
+                    element: '[data-guide="main-banner"]',
+                    popover: {
+                        title: '메인 배너',
+                        description: '이곳에서 Creatival의 대표 이미지와 분위기를 먼저 확인할 수 있습니다.',
+                        side: 'bottom',
+                        align: 'center'
+                    }
+                },
+                document.querySelector('[data-guide="main-category"]') && {
+                    element: '[data-guide="main-category"]',
+                    popover: {
+                        title: '카테고리',
+                        description: '일러스트, 만화, 음악, 비디오, 소설, 파일 중 원하는 분야로 바로 이동할 수 있습니다.',
+                        side: 'top',
+                        align: 'center'
+                    }
+                },
+                document.querySelector('[data-guide="community-section"]') && {
+                    element: '[data-guide="community-section"]',
+                    popover: {
+                        title: '커뮤니티 광장',
+                        description: '창작자들과 자유롭게 소통하고 게시판으로 이동할 수 있는 공간입니다.',
+                        side: 'top',
+                        align: 'center'
+                    }
+                },
+                document.querySelector('[data-guide="chatbot-section"]') && {
+                    element: '[data-guide="chatbot-section"]',
+                    popover: {
+                        title: '챗봇',
+                        description: '궁금한 점이 있다면 챗봇과 바로 대화할 수 있습니다.',
+                        side: 'top',
+                        align: 'center'
+                    }
+                },
+                document.querySelector('[data-guide="teamProject-section"]') && {
+                    element: '[data-guide="teamProject-section"]',
+                    popover: {
+                        title: '팀&프로젝트',
+                        description: '대표 프로젝트를 확인하고 팀에 가입하고 활동하세요!',
+                        side: 'top',
+                        align: 'center'
+                    }
+                },
+				{
+				    popover: {
+				        title: 'Creatival을 즐기세요!',
+				        description: `
+				            <div style="text-align:center;">
+				                <p style="margin-bottom:10px;">
+				                    그 외에도 하단의 여러 인기 콘텐츠들을 확인하시고<br>
+				                    콘텐츠들의 축제를 즐기세요!
+				                </p>
+				                <img src="/images/mascot.png" 
+				                     style="width:120px; margin-top:5px; border-radius:12px;" />
+				            </div>
+				        `,
+				        side: 'top',
+				        align: 'center'
+				    }
+				}
+            ];
+
+            return steps.filter(Boolean);
+        };
+    </script>
+</th:block>
 </html>

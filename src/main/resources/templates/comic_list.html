@@ -90,25 +90,31 @@
 
 	<div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
 	            
-	            <div style="flex: 1;">
-	                <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
-	                    <i class="bi bi-house-door-fill me-2"></i>
-	                    <span class="fw-bold">홈으로 가기</span>
-	                </a>
-	            </div>
+	    <div style="flex: 1;">
+	        <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
+	            <i class="bi bi-house-door-fill me-2"></i>
+	            <span class="fw-bold">홈으로 가기</span>
+	        </a>
+	    </div>
+
         <div class="text-center" style="flex: 2;">
             <h2 class="fw-bold">추천 만화</h2>
             <p class="text-muted mb-0">이번 주 가장 인기 있는 작품들을 만나보세요.</p>
         </div>
+
         <div class="d-flex gap-2">
 			<button type="button"
-			                        class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
-			                        data-bs-toggle="modal"
-			                        data-bs-target="#keyRegisterModal">
-			                    <i class="bi bi-key-fill me-2"></i>
-			                    <span class="fw-bold">코드 등록</span>
-			                </button>
-            <a th:href="@{/content/comic/write}" class="btn btn-dark px-4 shadow-sm">
+                    id="redeemCodeBtn"
+                    class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#keyRegisterModal">
+                <i class="bi bi-key-fill me-2"></i>
+                <span class="fw-bold">코드 등록</span>
+            </button>
+
+            <a th:href="@{/content/comic/write}"
+               id="comicCreateBtn"
+               class="btn btn-dark px-4 shadow-sm">
                 작품 등록
             </a>
         </div>
@@ -133,56 +139,56 @@
     </div>
 	
 	<div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
-	        <div class="modal-dialog modal-dialog-centered">
-	            <div class="modal-content border-0 shadow">
-	                <div class="modal-header bg-light border-0">
-	                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">리딤 코드 사용</h5>
-	                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-	                </div>
-
-	                <!-- 여기 action만 네가 이미 만들어둔 기존 리딤 코드 컨트롤러 경로로 맞춰 -->
-	                <form th:action="@{/redeem/use}" method="post">
-	                    <div class="modal-body p-4 text-center">
-	                        <input type="hidden"
-	                               th:name="${_csrf.parameterName}"
-	                               th:value="${_csrf.token}">
-
-	                        <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
-	                        <p class="mt-3 mb-4 text-muted small">
-	                            보유하고 계신 리딤 코드를 입력해 주세요.<br>
-	                            (예: ABCD-EFGH-IJKL-MNOP)
-	                        </p>
-	                        <input type="text"
-	                               id="productKeyInput"
-	                               name="code"
-	                               class="form-control form-control-lg text-center font-monospace" 
-	                               placeholder="XXXX-XXXX-XXXX-XXXX"
-	                               maxlength="19"
-	                               required>
-	                    </div>
-	                    <div class="modal-footer border-0 d-flex justify-content-center pb-4">
-	                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
-	                        <button type="submit" class="btn text-white px-4" style="background-color: #f05a28;">코드 사용</button>
-	                    </div>
-	                </form>
+	    <div class="modal-dialog modal-dialog-centered">
+	        <div class="modal-content border-0 shadow">
+	            <div class="modal-header bg-light border-0">
+	                <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">리딤 코드 사용</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 	            </div>
+
+	            <form th:action="@{/redeem/use}" method="post">
+	                <div class="modal-body p-4 text-center">
+	                    <input type="hidden"
+	                           th:name="${_csrf.parameterName}"
+	                           th:value="${_csrf.token}">
+
+	                    <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+	                    <p class="mt-3 mb-4 text-muted small">
+	                        보유하고 계신 리딤 코드를 입력해 주세요.<br>
+	                        (예: ABCD-EFGH-IJKL-MNOP)
+	                    </p>
+	                    <input type="text"
+	                           id="productKeyInput"
+	                           name="code"
+	                           class="form-control form-control-lg text-center font-monospace" 
+	                           placeholder="XXXX-XXXX-XXXX-XXXX"
+	                           maxlength="19"
+	                           required>
+	                </div>
+	                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+	                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+	                    <button type="submit" class="btn text-white px-4" style="background-color: #f05a28;">코드 사용</button>
+	                </div>
+	            </form>
 	        </div>
 	    </div>
-		<nav class="mt-5" th:if="${paging != null and !paging.isEmpty()}">
-		            <ul class="pagination justify-content-center custom-pagination">
-		                <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-		                    <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">&lt;</a>
-		                </li>
-		                <li th:each="page: ${#numbers.sequence(0, paging.totalPages - 1)}"
-		                    th:if="${page >= paging.number - 2 and page <= paging.number + 2}"
-		                    th:classappend="${page == paging.number} ? 'active'" class="page-item">
-		                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
-		                </li>
-		                <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-		                    <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">&gt;</a>
-		                </li>
-		            </ul>
-		        </nav>
+	</div>
+
+	<nav class="mt-5" th:if="${paging != null and !paging.isEmpty()}">
+        <ul class="pagination justify-content-center custom-pagination">
+            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">&lt;</a>
+            </li>
+            <li th:each="page: ${#numbers.sequence(0, paging.totalPages - 1)}"
+                th:if="${page >= paging.number - 2 and page <= paging.number + 2}"
+                th:classappend="${page == paging.number} ? 'active'" class="page-item">
+                <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+            </li>
+            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">&gt;</a>
+            </li>
+        </ul>
+    </nav>
 	
     <footer class="full-footer">
         <div class="container py-5">
@@ -213,6 +219,98 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyInput = document.getElementById('productKeyInput');
+            const redeemCodeBtn = document.getElementById('redeemCodeBtn');
+            const comicCreateBtn = document.getElementById('comicCreateBtn');
+            const redeemModal = document.getElementById('keyRegisterModal');
+
+            let hasShownComicCreateGuide = false;
+            let hasShownRedeemGuide = false;
+
+            if (keyInput) {
+                keyInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
+                    e.target.value = result;
+                });
+            }
+
+            function showComicCreateGuide() {
+                Swal.fire({
+                    icon: 'info',
+                    title: '만화 등록 안내',
+                    text: '이 버튼을 누르면 새로운 만화 작품을 등록할 수 있습니다.',
+                    confirmButtonText: '확인'
+                });
+            }
+
+            function showRedeemGuide() {
+                if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+                    const guide = window.driver.js.driver({
+                        showProgress: false,
+                        allowClose: true,
+                        overlayClickBehavior: 'close',
+                        doneBtnText: '확인',
+                        steps: [
+                            {
+                                element: '#productKeyInput',
+                                popover: {
+                                    title: '리딤 코드 입력',
+                                    description: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+                                    side: 'bottom',
+                                    align: 'center'
+                                }
+                            }
+                        ]
+                    });
+
+                    guide.drive();
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: '리딤 코드 안내',
+                        text: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+                        confirmButtonText: '확인'
+                    }).then(() => {
+                        if (keyInput) keyInput.focus();
+                    });
+                }
+            }
+
+            if (comicCreateBtn) {
+                comicCreateBtn.addEventListener('mouseenter', function () {
+                    if (!hasShownComicCreateGuide) {
+                        hasShownComicCreateGuide = true;
+                        showComicCreateGuide();
+                    }
+                }, { once: true });
+            }
+
+            if (redeemCodeBtn) {
+                redeemCodeBtn.addEventListener('click', function () {
+                    hasShownRedeemGuide = false;
+                });
+            }
+
+            if (redeemModal) {
+                redeemModal.addEventListener('shown.bs.modal', function () {
+                    if (!hasShownRedeemGuide) {
+                        hasShownRedeemGuide = true;
+                        setTimeout(() => {
+                            showRedeemGuide();
+                        }, 150);
+                    }
+                });
+            }
+        });
+    </script>
 
 </div>
 </html>

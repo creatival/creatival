@@ -221,21 +221,104 @@
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const keyInput = document.getElementById('productKeyInput');
-            if (keyInput) {
-                keyInput.addEventListener('input', function (e) {
-                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-                    let result = '';
-                    for (let i = 0; i < val.length; i++) {
-                        if (i > 0 && i % 4 === 0) result += '-';
-                        result += val[i];
-                    }
-                    e.target.value = result;
-                });
-            }
-        });
-    </script>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+
+	    const keyInput = document.getElementById('productKeyInput');
+	    const redeemBtn = document.querySelector('[data-bs-target="#keyRegisterModal"]');
+	    const fileCreateBtn = document.querySelector('[onclick*="file/write"]');
+	    const modal = document.getElementById('keyRegisterModal');
+
+	    let hasShownFileGuide = false;
+	    let hasShownRedeemGuide = false;
+
+	    // 코드 자동 포맷
+	    if (keyInput) {
+	        keyInput.addEventListener('input', function (e) {
+	            let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+	            let result = '';
+	            for (let i = 0; i < val.length; i++) {
+	                if (i > 0 && i % 4 === 0) result += '-';
+	                result += val[i];
+	            }
+	            e.target.value = result;
+	        });
+	    }
+
+	    // 파일 등록 안내
+	    function showFileGuide() {
+	        Swal.fire({
+	            icon: 'info',
+	            title: '파일 등록 안내',
+	            text: '이 버튼을 누르면 새로운 파일 자료를 업로드할 수 있습니다.',
+	            confirmButtonText: '확인'
+	        });
+	    }
+
+	    // 리딤 코드 안내 (핵심)
+	    function showRedeemGuide() {
+	        if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+	            const guide = window.driver.js.driver({
+	                showProgress: false,
+	                allowClose: true,
+	                overlayClickBehavior: 'close',
+	                doneBtnText: '확인',
+	                steps: [
+	                    {
+	                        element: '#productKeyInput',
+	                        popover: {
+	                            title: '리딤 코드 입력',
+	                            description: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+	                            side: 'bottom',
+	                            align: 'center'
+	                        }
+	                    }
+	                ]
+	            });
+
+	            guide.drive();
+	        } else {
+	            Swal.fire({
+	                icon: 'info',
+	                title: '리딤 코드 안내',
+	                text: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+	                confirmButtonText: '확인'
+	            }).then(() => {
+	                if (keyInput) keyInput.focus();
+	            });
+	        }
+	    }
+
+	    // 파일 등록 버튼 hover 시 설명
+	    if (fileCreateBtn) {
+	        fileCreateBtn.addEventListener('mouseenter', function () {
+	            if (!hasShownFileGuide) {
+	                hasShownFileGuide = true;
+	                showFileGuide();
+	            }
+	        }, { once: true });
+	    }
+
+	    // 코드 버튼 클릭 시 초기화
+	    if (redeemBtn) {
+	        redeemBtn.addEventListener('click', function () {
+	            hasShownRedeemGuide = false;
+	        });
+	    }
+
+	    // 모달 열리면 강조
+	    if (modal) {
+	        modal.addEventListener('shown.bs.modal', function () {
+	            if (!hasShownRedeemGuide) {
+	                hasShownRedeemGuide = true;
+	                setTimeout(() => {
+	                    showRedeemGuide();
+	                }, 150);
+	            }
+	        });
+	    }
+
+	});
+	</script>
 </div>
 </html>

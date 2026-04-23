@@ -1,199 +1,471 @@
-<html layout:decorate="~{layout}">
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div class="container-fluid" layout:fragment="content">
     <style>
-        .detail-container { margin: 0 auto; position: relative; }
-        
-        /* 뒤로가기 버튼: seungjae 디자인 */
+        .file-create-page {
+            padding-top: 2.5rem;
+            padding-bottom: 4rem;
+        }
+
+        .detail-container {
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .page-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-hero h2 {
+            font-weight: 800;
+            color: #1f2a44;
+            margin-bottom: 0.45rem;
+        }
+
+        .page-hero p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
         .back-btn {
-            position: absolute; left: 0; top: 0; font-size: 1.8rem;
-            color: #333; text-decoration: none; z-index: 10;
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1.8rem;
+            color: #333;
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .editor-card {
+            background: #ffffff;
+            border: 1px solid #eceff4;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .editor-card + .editor-card {
+            margin-top: 1.5rem;
+        }
+
+        .editor-card-body {
+            padding: 1.75rem;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #24304f;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.92rem;
+            color: #7a8494;
+            margin-bottom: 1rem;
         }
 
         .input-title {
-            font-size: 2.2rem; font-weight: bold; border: none; outline: none;
-            width: 100%; text-align: center; background: transparent; padding: 0 50px;
+            font-size: 2rem;
+            font-weight: 800;
+            border: 1px solid #dde4f0;
+            outline: none;
+            width: 100%;
+            text-align: center;
+            background: #fff;
+            padding: 18px 22px;
+            border-radius: 18px;
+            box-shadow: none !important;
         }
-        
+
+        .input-title:focus {
+            border-color: #8aa6e8;
+        }
+
+        .user-info {
+            color: #6c757d;
+        }
+
         .input-content {
-            border: none; outline: none; width: 100%; min-height: 300px;
-            text-align: center; font-size: 1.15rem; font-weight: 500;
-            background: transparent; resize: none;
+            border: 1px solid #dde4f0;
+            outline: none;
+            width: 100%;
+            min-height: 260px;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 500;
+            background: #fbfcfe;
+            resize: vertical;
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: none !important;
         }
 
-        .section-divider { border: none; border-top: 2px solid #ffcec5; margin: 40px 0; }
+        .input-content:focus {
+            border-color: #8aa6e8;
+            background: #fff;
+        }
 
-        /* 파일 프리뷰 박스: HEAD의 명확한 점선 + seungjae의 라운딩 결합 */
+        .file-preview-grid {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
         .file-preview-box {
-            background-color: #eaebf3; width: 160px; height: 120px;
-            display: inline-flex; flex-direction: column; align-items: center;
-            justify-content: center; margin: 8px; cursor: pointer;
-            overflow: hidden; transition: all 0.2s; vertical-align: top;
-            border: 2px dashed #6a76ab; border-radius: 15px;
+            background: linear-gradient(180deg, #f3f5ff 0%, #e9edf8 100%);
+            width: 180px;
+            height: 135px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.2s;
+            vertical-align: top;
+            border: 2px dashed #6a76ab;
+            border-radius: 18px;
+            text-align: center;
+            padding: 10px;
         }
-        
-        .file-preview-box img { width: 100%; height: 100%; object-fit: cover; }
-        .file-preview-box:hover { background-color: #daddf0; transform: scale(1.02); }
 
-        .file-label { font-size: 0.8rem; color: #6a76ab; font-weight: bold; margin-top: 5px; }
+        .file-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        /* 태그 스타일: seungjae 디자인 적용 */
+        .file-preview-box:hover {
+            background-color: #daddf0;
+            transform: translateY(-2px);
+        }
+
+        .file-label {
+            font-size: 0.82rem;
+            color: #5a679b;
+            font-weight: 700;
+            margin-top: 6px;
+            line-height: 1.35;
+        }
+
+        .tag-panel {
+            background: #f8faff;
+            border: 1px solid #e3eaf8;
+            border-radius: 20px;
+            padding: 1.25rem;
+        }
+
         .tag-badge {
-            background-color: #eef2ff; color: #3b82f6; border: 1px solid #d1dbff;
-            padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;
-            display: inline-flex; align-items: center; transition: 0.2s;
+            background-color: #eef2ff;
+            color: #3b82f6;
+            border: 1px solid #d1dbff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            transition: 0.2s;
+            font-weight: 600;
         }
-        .tag-badge i { cursor: pointer; margin-left: 8px; color: #ff5e3a; font-size: 14px; }
-        .tag-badge:hover { background-color: #d1dbff; }
+
+        .tag-badge i {
+            cursor: pointer;
+            margin-left: 8px;
+            color: #ff5e3a;
+            font-size: 14px;
+        }
+
+        .tag-badge:hover {
+            background-color: #d1dbff;
+        }
+
+        .settings-label {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .settings-group {
+            background: #fbfcff;
+            border-radius: 22px;
+            padding: 1.5rem;
+            border: 1px solid #e6ebf4;
+        }
+
+        .price-input {
+            max-width: 220px;
+            font-size: 0.95rem;
+            border-radius: 20px;
+        }
+
+        .hint-box {
+            background: #f6f8fc;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 1rem 1.1rem;
+        }
+
+        .hint-box .small {
+            color: #6c757d;
+        }
 
         .btn-action {
-            background-color: #323b6d; color: white; padding: 12px 80px;
-            border: none; border-radius: 8px; font-weight: bold;
-            font-size: 1.1rem; transition: background 0.2s;
+            background-color: #323b6d;
+            color: white;
+            padding: 13px 80px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            transition: background 0.2s;
         }
-        .btn-action:hover { background-color: #242a50; color: white; }
 
-        .settings-label { font-weight: bold; font-size: 0.9rem; color: #555; margin-bottom: 8px; display: block; }
+        .btn-action:hover {
+            background-color: #242a50;
+            color: white;
+        }
+
+        .submit-bar {
+            background: #ffffff;
+            border: 1px solid #eceff4;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+            padding: 1.25rem;
+        }
 
         @media (max-width: 992px) {
-            .back-btn { position: static; display: inline-block; margin-bottom: 20px; }
-            .input-title { padding: 0; }
+            .back-btn {
+                position: static;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
         }
-		.price-input {
-		    max-width: 180px;
-		    font-size: 0.9rem;
-		    border-radius: 20px;
-		}
+
+        @media (max-width: 767.98px) {
+            .file-create-page {
+                padding-top: 2rem;
+                padding-bottom: 3rem;
+            }
+
+            .editor-card-body,
+            .settings-group {
+                padding: 1.2rem;
+            }
+
+            .input-title {
+                font-size: 1.4rem;
+                padding: 15px 16px;
+            }
+
+            .file-preview-box {
+                width: 150px;
+                height: 120px;
+            }
+
+            .btn-action {
+                width: 100%;
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
     </style>
 
-    <main class="py-5">
-        <form th:action="@{/content/file/write}" method="post" enctype="multipart/form-data" 
+    <main class="py-5 file-create-page">
+        <form th:action="@{/content/file/write}" method="post" enctype="multipart/form-data"
               class="detail-container col-11 col-lg-10 mx-auto" th:object="${createFileDTO}" id="fileUploadForm">
-            
-            <a href="javascript:history.back()" class="back-btn">
-                <i class="bi bi-arrow-left"></i>
-            </a>
 
-            <div class="text-center pt-2">
-                <input type="text" th:field="*{title}" class="input-title" placeholder="제목을 입력하세요" required>
-                <div class="user-info mt-3">
-                    <span class="user-id fw-medium text-secondary" th:text="${#authentication.name}">사용자 아이디</span> 
-                </div>
-                <hr class="section-divider">
+            <div class="page-hero">
+                <a href="javascript:history.back()" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2>새 파일 등록</h2>
+                <p>자료와 설명을 함께 정리해서 업로드해 보세요.</p>
             </div>
 
-            <div class="text-center mb-4">
-                <input type="file" id="extraImg" name="extraImg" class="d-none" accept="image/*" onchange="previewSingleFile(this, 'extra-preview')">
-                <div id="extra-preview" class="file-preview-box" onclick="document.getElementById('extraImg').click()">
-                    <i class="bi bi-image fs-2" style="color: #6a76ab;"></i>
-                    <span class="file-label">대표 이미지 등록</span>
-                </div>
-                <p class="small mt-2 text-muted">설명을 위한 이미지를 등록해주세요.(필수 아님)</p>
-            </div>
+            <div class="editor-card">
+                <div class="editor-card-body">
+                    <div class="section-title">기본 정보</div>
 
-            <div class="content-area text-center">
-                <textarea th:field="*{description}" class="input-content" placeholder="파일에 대한 상세 설명을 입력하세요" required></textarea>
-            </div>
-
-            <hr class="section-divider">
-
-            <div class="text-center mb-5">
-                <p class="small fw-bold mb-3" style="color: #6a76ab;">첨부파일 추가 (클릭하여 파일 선택)</p>
-                <div id="preview-list" class="d-flex justify-content-center gap-2 flex-wrap">
-                    <input type="file" id="mainFile" name="file" class="d-none" onchange="previewSingleFile(this, 'main-preview')">
-                    <div id="main-preview" class="file-preview-box" onclick="document.getElementById('mainFile').click()">
-                        <i class="bi bi-file-earmark-plus fs-2" style="color: #6a76ab;"></i>
-                        <span class="file-label">주 파일 선택</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-5 text-center">
-                <label class="settings-label"><i class="bi bi-hash"></i> 태그 설정</label>
-                <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
-                <div class="input-group mx-auto shadow-sm" style="max-width: 450px;">
-                    <span class="input-group-text bg-white border-end-0 text-muted">#</span>
-                    <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그 입력 후 엔터" onkeypress="handleTagKey(event)">
-                    <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
-                </div>
-                <input type="hidden" name="tagString" id="finalTagString">
-            </div>
-			<div class="mb-3 text-center">
-			    <label class="form-label fw-bold">유료 콘텐츠 설정</label>
-
-			    <div class="form-check mb-2 d-flex justify-content-center">
-			        <input class="form-check-input" type="checkbox" id="paidCheck" th:field="*{paid}">
-			        <label class="form-check-label ms-2" for="paidCheck">
-			            유료 콘텐츠로 등록
-			        </label>
-			    </div>
-
-			    <input type="number"
-			           class="form-control text-center mx-auto price-input"
-			           id="priceInput"
-			           min="100"
-			           step="100"
-			           placeholder="가격 입력 (예: 5000)"
-			           th:field="*{price}"
-			           disabled>
-			</div>
-            <hr class="section-divider">
-
-            <div class="row g-4 mb-4 text-start bg-light p-4 rounded-4 shadow-sm">
-                <div class="col-md-4">
-                    <label class="settings-label">공개 범위</label>
-                    <div class="btn-group w-100">
-                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public" checked>
-                        <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
-                        <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
-                        <label class="btn btn-outline-primary" for="vis-private">비공개</label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <label class="settings-label">댓글 설정</label>
-                    <div class="btn-group w-100">
-                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on" checked>
-                        <label class="btn btn-outline-secondary" for="comment-on">허용</label>
-                        <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
-                        <label class="btn btn-outline-secondary" for="comment-off">차단</label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <label class="settings-label">소유자 유형</label>
-                    <div class="btn-group w-100">
-                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER" checked>
-                        <label class="btn btn-outline-primary" for="owner-USER">개인</label>
-                        <input type="radio" class="btn-check" th:field="*{ownerType}" value="TEAM" id="owner-TEAM">
-                        <label class="btn btn-outline-primary" for="owner-TEAM">팀</label>
-                    </div>
-                </div>
-
-                <div class="col-12 mt-4 pt-3 border-top">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" th:field="*{fanWork}" id="fanWorkCheck">
-                        <label class="form-check-label fw-bold" for="fanWorkCheck">2차 창작물(팬워크)인 경우 체크</label>
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <input type="text" th:field="*{projectTag}" class="form-control form-control-sm" placeholder="프로젝트 연결 키워드 (선택)">
-                        </div>
-                        <div class="col-md-6">
-                            <input type="number" th:field="*{originalContentId}" class="form-control form-control-sm" placeholder="원본 작품 ID (선택)">
+                    <div class="text-center">
+                        <input type="text" th:field="*{title}" class="input-title" placeholder="제목을 입력하세요" required>
+                        <div class="user-info mt-3">
+                            <span class="user-id fw-medium text-secondary" th:text="${#authentication.name}">사용자 아이디</span>
                         </div>
                     </div>
+
+                    <div class="mt-4">
+                        <label class="settings-label text-center d-block">파일 설명</label>
+                        <textarea th:field="*{description}" class="input-content" placeholder="파일에 대한 상세 설명을 입력하세요" required></textarea>
+                    </div>
                 </div>
             </div>
 
-            <div class="text-center mt-5">
+            <div class="editor-card">
+                <div class="editor-card-body text-center">
+                    <div class="section-title">미리보기 및 첨부 파일</div>
+                    <div class="section-subtitle">대표 이미지는 선택 사항이고, 주 파일은 필수입니다.</div>
+
+                    <div class="mb-4">
+                        <input type="file" id="extraImg" name="extraImg" class="d-none" accept="image/*" onchange="previewSingleFile(this, 'extra-preview')">
+                        <div class="file-preview-grid">
+                            <div id="extra-preview" class="file-preview-box" onclick="document.getElementById('extraImg').click()">
+                                <i class="bi bi-image fs-2" style="color: #6a76ab;"></i>
+                                <span class="file-label">대표 이미지 등록</span>
+                            </div>
+
+                            <input type="file" id="mainFile" name="file" class="d-none" onchange="previewSingleFile(this, 'main-preview')">
+                            <div id="main-preview" class="file-preview-box" onclick="document.getElementById('mainFile').click()">
+                                <i class="bi bi-file-earmark-plus fs-2" style="color: #6a76ab;"></i>
+                                <span class="file-label">주 파일 선택</span>
+                            </div>
+                        </div>
+                        <p class="small mt-3 text-muted">설명을 위한 이미지는 선택 사항이며, 주 파일은 반드시 등록해 주세요.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-card">
+                <div class="editor-card-body">
+                    <div class="section-title text-center">태그 설정</div>
+                    <div class="tag-panel text-center">
+                        <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
+                        <div class="input-group mx-auto shadow-sm" style="max-width: 450px;">
+                            <span class="input-group-text bg-white border-end-0 text-muted">#</span>
+                            <input type="text" id="tagInput" class="form-control border-start-0" placeholder="태그 입력 후 엔터" onkeypress="handleTagKey(event)">
+                            <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
+                        </div>
+                        <input type="hidden" name="tagString" id="finalTagString">
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-card">
+                <div class="editor-card-body">
+                    <div class="section-title">상세 설정</div>
+                    <div class="section-subtitle">공개 방식, 유료 여부, 연결 정보를 설정하세요.</div>
+
+                    <div class="mb-4 text-center">
+                        <label class="form-label fw-bold">유료 콘텐츠 설정</label>
+
+                        <div class="form-check mb-2 d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox" id="paidCheck" th:field="*{paid}">
+                            <label class="form-check-label ms-2" for="paidCheck">
+                                유료 콘텐츠로 등록
+                            </label>
+                        </div>
+
+                        <input type="number"
+                               class="form-control text-center mx-auto price-input"
+                               id="priceInput"
+                               min="100"
+                               step="100"
+                               placeholder="가격 입력 (예: 5000)"
+                               th:field="*{price}"
+                               disabled>
+                    </div>
+
+                    <div class="row g-4 mb-2 text-start settings-group">
+                        <div class="col-md-4">
+                            <label class="settings-label">공개 범위</label>
+                            <div class="btn-group w-100">
+                                <input type="radio" class="btn-check" th:field="*{visibility}" value="PUBLIC" id="vis-public" checked>
+                                <label class="btn btn-outline-primary" for="vis-public">전체 공개</label>
+                                <input type="radio" class="btn-check" th:field="*{visibility}" value="PRIVATE" id="vis-private">
+                                <label class="btn btn-outline-primary" for="vis-private">비공개</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="settings-label">댓글 설정</label>
+                            <div class="btn-group w-100">
+                                <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="true" id="comment-on" checked>
+                                <label class="btn btn-outline-secondary" for="comment-on">허용</label>
+                                <input type="radio" class="btn-check" th:field="*{allowComment}" th:value="false" id="comment-off">
+                                <label class="btn btn-outline-secondary" for="comment-off">차단</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="settings-label">소유자 유형</label>
+                            <div class="btn-group w-100">
+                                <input type="radio" class="btn-check" th:field="*{ownerType}" value="USER" id="owner-USER" checked>
+                                <label class="btn btn-outline-primary" for="owner-USER">개인</label>
+                                <input type="radio" class="btn-check" th:field="*{ownerType}" value="TEAM" id="owner-TEAM">
+                                <label class="btn btn-outline-primary" for="owner-TEAM">팀</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-2">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" th:field="*{fanWork}" id="fanWorkCheck">
+                                <label class="form-check-label fw-bold" for="fanWorkCheck">2차 창작물(팬워크)인 경우 체크</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="settings-label">프로젝트 연결 (선택)</label>
+                            <input type="text"
+                                   th:field="*{projectTag}"
+                                   id="projectTagInput"
+                                   class="form-control form-control-sm"
+                                   placeholder="프로젝트 연결 키워드 (선택)">
+                        </div>
+
+                        <div class="col-md-6" id="originalContentWrapper">
+                            <label class="settings-label">원본 작품 ID (선택)</label>
+                            <input type="number"
+                                   th:field="*{originalContentId}"
+                                   id="originalContentIdInput"
+                                   class="form-control form-control-sm"
+                                   placeholder="원본 작품 ID (선택)">
+                        </div>
+
+                        <div class="col-12">
+                            <div class="hint-box">
+                                <div class="small">
+                                    프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.  
+                                    프로젝트 태그를 사용하는 경우 소유자 유형은 팀(TEAM)으로 맞춰 주세요.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submit-bar text-center mt-4">
                 <button type="submit" class="btn btn-action">등록 완료</button>
             </div>
         </form>
     </main>
 
     <script>
-        // 파일 미리보기 (이미지 및 파일명 대응)
+        let tagArray = [];
+        let hasShownProjectTagGuide = false;
+        let hasShownFanWorkGuide = false;
+
+        const fileUploadForm = document.getElementById("fileUploadForm");
+        const projectTagInput = document.getElementById("projectTagInput");
+        const originalContentIdInput = document.getElementById("originalContentIdInput");
+        const fanWorkCheck = document.getElementById("fanWorkCheck");
+        const originalContentWrapper = document.getElementById("originalContentWrapper");
+
+        function getSelectedOwnerType() {
+            const checked = document.querySelector("input[name='ownerType']:checked");
+            return checked ? checked.value : "";
+        }
+
+        // 파일 미리보기
         function previewSingleFile(input, previewId) {
             const previewBox = document.getElementById(previewId);
             const file = input.files[0];
+
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -205,7 +477,7 @@
                     } else {
                         previewBox.innerHTML = `
                             <i class="bi bi-file-earmark-check fs-2 text-success"></i>
-                            <span class="file-label" style="font-size: 0.7rem; padding: 5px; word-break: break-all;">
+                            <span class="file-label" style="font-size: 0.75rem; padding: 5px; word-break: break-all;">
                                 ${file.name}
                             </span>`;
                     }
@@ -214,11 +486,10 @@
             }
         }
 
-        // 태그 로직 (HEAD 기능 + seungjae 전송방지 디테일)
-        let tagArray = [];
+        // 태그 로직
         function handleTagKey(e) {
             if (e.key === 'Enter') {
-                e.preventDefault(); // 폼 전송 방지 (중요)
+                e.preventDefault();
                 addTag();
             }
         }
@@ -226,8 +497,12 @@
         function addTag() {
             const input = document.getElementById('tagInput');
             const value = input.value.trim().replace(/#/g, '');
+
             if (value && !tagArray.includes(value)) {
-                if (tagArray.length >= 10) { alert("태그는 최대 10개까지 가능합니다."); return; }
+                if (tagArray.length >= 10) {
+                    alert("태그는 최대 10개까지 가능합니다.");
+                    return;
+                }
                 tagArray.push(value);
                 updateTags();
                 input.value = '';
@@ -249,48 +524,125 @@
             hiddenInput.value = tagArray.join(',');
         }
 
-        // 폼 제출 검증 (HEAD의 핵심 데이터 무결성 로직)
-        document.getElementById("fileUploadForm").addEventListener("submit", function(e) {
-            const projectTag = document.querySelector("input[name='projectTag']").value.trim();
-            const originalContentId = document.querySelector("input[name='originalContentId']").value.trim();
-            
-            if (projectTag !== "" && originalContentId !== "") {
-                alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
-                e.preventDefault();
+        function showProjectTagGuide() {
+            Swal.fire({
+                icon: 'info',
+                title: '프로젝트 태그 안내',
+                text: '연결하려는 프로젝트가 있다면 해당 프로젝트의 프로젝트 태그를 입력해 프로젝트와 연결하세요.',
+                confirmButtonText: '확인'
+            });
+        }
+
+        function showOriginalContentGuide() {
+            if (!originalContentWrapper) return;
+
+            if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+                const guide = window.driver.js.driver({
+                    showProgress: false,
+                    allowClose: true,
+                    overlayClickBehavior: 'close',
+                    doneBtnText: '확인',
+                    steps: [
+                        {
+                            element: '#originalContentWrapper',
+                            popover: {
+                                title: '원본 작품 ID',
+                                description: '2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.',
+                                side: 'bottom',
+                                align: 'start'
+                            }
+                        }
+                    ]
+                });
+
+                guide.drive();
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: '원본 작품 ID 안내',
+                    text: '2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.',
+                    confirmButtonText: '확인'
+                }).then(() => {
+                    if (originalContentIdInput) {
+                        originalContentIdInput.focus();
+                    }
+                });
+            }
+        }
+
+        if (projectTagInput) {
+            projectTagInput.addEventListener("focus", function () {
+                if (!hasShownProjectTagGuide) {
+                    hasShownProjectTagGuide = true;
+                    showProjectTagGuide();
+                }
+            });
+        }
+
+        if (fanWorkCheck) {
+            fanWorkCheck.addEventListener("change", function () {
+                if (this.checked && !hasShownFanWorkGuide) {
+                    hasShownFanWorkGuide = true;
+                    setTimeout(() => {
+                        showOriginalContentGuide();
+                    }, 150);
+                }
+            });
+        }
+
+        // 폼 제출 검증
+        if (fileUploadForm) {
+            fileUploadForm.addEventListener("submit", function(e) {
+                const projectTag = projectTagInput ? projectTagInput.value.trim() : "";
+                const originalContentId = originalContentIdInput ? originalContentIdInput.value.trim() : "";
+                const ownerType = getSelectedOwnerType();
+
+                if (projectTag !== "" && originalContentId !== "") {
+                    alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
+                    e.preventDefault();
+                    return;
+                }
+
+                if (projectTag !== "" && ownerType !== "TEAM") {
+                    alert("프로젝트 태그가 있는 콘텐츠는 소유자 유형을 'TEAM'으로 선택해야 합니다.");
+                    e.preventDefault();
+                    return;
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const paidCheck = document.getElementById("paidCheck");
+            const priceInput = document.getElementById("priceInput");
+            const submitBtn = document.querySelector("button[type='submit']");
+
+            function togglePriceInput() {
+                if (paidCheck.checked) {
+                    priceInput.disabled = false;
+                } else {
+                    priceInput.disabled = true;
+                    priceInput.value = "";
+                }
+                validateForm();
+            }
+
+            function validateForm() {
+                const paid = paidCheck.checked;
+                const priceValue = priceInput.value;
+
+                if (paid && (!priceValue || Number(priceValue) < 100)) {
+                    submitBtn.disabled = true;
+                } else {
+                    submitBtn.disabled = false;
+                }
+            }
+
+            if (paidCheck && priceInput) {
+                paidCheck.addEventListener("change", togglePriceInput);
+                priceInput.addEventListener("input", validateForm);
+                togglePriceInput();
             }
         });
-		document.addEventListener("DOMContentLoaded", function () {
-							        const paidCheck = document.getElementById("paidCheck");
-							        const priceInput = document.getElementById("priceInput");
-
-							        function togglePriceInput() {
-							            if (paidCheck.checked) {
-							                priceInput.disabled = false;
-							            } else {
-							                priceInput.disabled = true;
-							                priceInput.value = "";
-							            }
-							        }
-
-							        if (paidCheck && priceInput) {
-							            paidCheck.addEventListener("change", togglePriceInput);
-							            togglePriceInput();
-							        }
-							    });
-					function validateForm() {
-							    const paidCheck = document.getElementById("paidCheck").checked;
-							    const priceValue = document.getElementById("priceInput").value;
-							    const submitBtn = document.querySelector("button[type='submit']");
-							    
-							    if (paidCheck && (!priceValue || priceValue < 100)) {
-							        submitBtn.disabled = true; // 조건 안 맞으면 버튼 클릭 불가
-							    } else {
-							        submitBtn.disabled = false;
-							    }
-							}
-							
-							document.getElementById("paidCheck").addEventListener("change", validateForm);
-							document.getElementById("priceInput").addEventListener("input", validateForm);
     </script>
 </div>
 </html>

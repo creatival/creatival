@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content">
 
     <div class="container py-5" style="max-width: 900px;">
@@ -64,25 +64,27 @@
                 <input type="number" th:field="*{originalContentId}" id="originalContentIdInput" class="form-control"
                     placeholder="원본 작품 ID를 입력하세요">
             </div>
-			<div class="mb-3">
-			    <label class="form-label fw-bold">유료 콘텐츠 설정</label>
 
-			    <div class="form-check mb-2">
-			        <input class="form-check-input" type="checkbox" id="paidCheck" name="paid">
-			        <label class="form-check-label" for="paidCheck">
-			            유료 콘텐츠로 등록
-			        </label>
-			    </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">유료 콘텐츠 설정</label>
 
-			    <input type="number"
-			           class="form-control"
-			           id="priceInput"
-			           name="price"
-			           min="100"
-			           step="100"
-			           placeholder="가격 입력 (예: 5000)"
-			           disabled>
-			</div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="paidCheck" name="paid">
+                    <label class="form-check-label" for="paidCheck">
+                        유료 콘텐츠로 등록
+                    </label>
+                </div>
+
+                <input type="number"
+                       class="form-control"
+                       id="priceInput"
+                       name="price"
+                       min="100"
+                       step="100"
+                       placeholder="가격 입력 (예: 5000)"
+                       disabled>
+            </div>
+
             <div class="mb-5 text-center p-3 bg-light rounded shadow-sm">
                 <label class="form-label fw-bold"><i class="bi bi-hash"></i> 태그 설정</label>
                 <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
@@ -123,9 +125,13 @@
         const projectTagInput = document.getElementById('projectTagInput');
         const originalContentIdInput = document.getElementById('originalContentIdInput');
         const ownerTypeSelect = document.getElementById('ownerTypeSelect');
+        const fanWorkCheck = document.getElementById('fanWorkCheck');
+        const originalContentWrapper = document.getElementById('originalContentWrapper');
 
         let selectedFiles = [];
         let tagArray = [];
+        let hasShownProjectTagGuide = false;
+        let hasShownFanWorkGuide = false;
 
         function triggerImageInput() {
             if (selectedFiles.length >= 4) {
@@ -212,13 +218,67 @@
             hiddenInput.value = tagArray.join(',');
         }
 
+        function showProjectTagGuide() {
+            Swal.fire({
+                icon: 'info',
+                title: '프로젝트 태그 안내',
+                text: '연결할려는 프로젝트가 있으면 해당 프로젝트의 프로젝트 태그를 넣어서 해당 프로젝트와 연결하세요',
+                confirmButtonText: '확인'
+            });
+        }
+
+        function showOriginalContentGuide() {
+            if (!originalContentWrapper || originalContentWrapper.classList.contains('d-none')) return;
+
+            if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+                const guide = window.driver.js.driver({
+                    allowClose: true,
+                    showProgress: false,
+                    overlayClickBehavior: 'close',
+                    doneBtnText: '확인',
+                    nextBtnText: '다음',
+                    prevBtnText: '이전',
+                    steps: [
+                        {
+                            element: '#originalContentWrapper',
+                            popover: {
+                                title: '원본 콘텐츠 ID',
+                                description: '2차 창작인 경우 이곳에 원본이 되는 콘텐츠의 ID(상단 주소의 번호)를 입력해 연결하세요.',
+                                side: 'bottom',
+                                align: 'start'
+                            }
+                        }
+                    ]
+                });
+
+                guide.drive();
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: '원본 콘텐츠 ID 안내',
+                    text: '2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.',
+                    confirmButtonText: '확인'
+                }).then(() => {
+                    originalContentIdInput?.focus();
+                });
+            }
+        }
+
         function toggleOriginalInput() {
             const check = document.getElementById("fanWorkCheck");
             const wrapper = document.getElementById("originalContentWrapper");
+
             if (check.checked) {
                 wrapper.classList.remove("d-none");
+
+                if (!hasShownFanWorkGuide) {
+                    hasShownFanWorkGuide = true;
+                    setTimeout(() => {
+                        showOriginalContentGuide();
+                    }, 150);
+                }
             } else {
-                originalContentIdInput.value = null; 
+                originalContentIdInput.value = "";
                 wrapper.classList.add("d-none");
             }
         }
@@ -251,26 +311,35 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             toggleOriginalInput();
+
+            if (projectTagInput) {
+                projectTagInput.addEventListener("focus", function () {
+                    if (!hasShownProjectTagGuide) {
+                        hasShownProjectTagGuide = true;
+                        showProjectTagGuide();
+                    }
+                });
+            }
         });
-		document.addEventListener("DOMContentLoaded", function () {
-		        const paidCheck = document.getElementById("paidCheck");
-		        const priceInput = document.getElementById("priceInput");
 
-		        function togglePriceInput() {
-		            if (paidCheck.checked) {
-		                priceInput.disabled = false;
-		            } else {
-		                priceInput.disabled = true;
-		                priceInput.value = "";
-		            }
-		        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const paidCheck = document.getElementById("paidCheck");
+            const priceInput = document.getElementById("priceInput");
 
-		        if (paidCheck && priceInput) {
-		            paidCheck.addEventListener("change", togglePriceInput);
-		            togglePriceInput();
-		        }
-		    });
-			
+            function togglePriceInput() {
+                if (paidCheck.checked) {
+                    priceInput.disabled = false;
+                } else {
+                    priceInput.disabled = true;
+                    priceInput.value = "";
+                }
+            }
+
+            if (paidCheck && priceInput) {
+                paidCheck.addEventListener("change", togglePriceInput);
+                togglePriceInput();
+            }
+        });
     </script>
 </div>
 </html>

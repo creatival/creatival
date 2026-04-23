@@ -1,231 +1,489 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <style>
-        /* 1. 파일 업로드 및 미리보기 디자인 */
-        .preview-wrapper {
-            width: 200px; height: 200px; margin: 0 auto 15px;
-            border: 2px dashed #a0c4ff; border-radius: 12px;
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
-            background-color: #f8f9ff; position: relative;
+        .comic-create-page {
+            padding-top: 3rem;
+            padding-bottom: 4rem;
         }
-        #imagePreview { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .preview-placeholder { color: #a0c4ff; text-align: center; font-size: 0.85rem; }
+
+        .page-hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-hero h2 {
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #1f2a44;
+        }
+
+        .page-hero p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .editor-card {
+            background: #ffffff;
+            border: 1px solid #eceff4;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .editor-card + .editor-card {
+            margin-top: 1.5rem;
+        }
+
+        .editor-card-body {
+            padding: 1.75rem;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #24304f;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.92rem;
+            color: #7a8494;
+            margin-bottom: 1rem;
+        }
+
+        .preview-wrapper {
+            width: 100%;
+            max-width: 260px;
+            height: 260px;
+            margin: 0 auto 15px;
+            border: 2px dashed #bdd2ff;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #f8fbff 0%, #f4f7ff 100%);
+            position: relative;
+        }
+
+        #imagePreview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .preview-placeholder {
+            color: #7fa6f8;
+            text-align: center;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .preview-placeholder i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
 
         .custom-file-container {
-            display: inline-flex; align-items: center; border: 2px solid #a0c4ff;
-            border-radius: 12px; padding: 5px; width: 100%; max-width: 500px; background-color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #dde4f0;
+            border-radius: 16px;
+            padding: 10px 12px;
+            width: 100%;
+            background-color: #fff;
         }
 
-        #thumbnailFile { display: none; }
+        #thumbnailFile {
+            display: none;
+        }
 
         .btn-file-select {
-            background-color: #fff; border: 1px solid #ced4da; border-radius: 8px;
-            padding: 8px 20px; cursor: pointer; margin-right: 15px;
+            background-color: #2f3e75;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
-        .file-name-display { color: #6c757d; }
-
-        /* 입력 */
-        .form-control-custom {
-            border: none; border-bottom: 2px solid #eee;
-            padding: 15px 0; text-align: center;
+        .btn-file-select:hover {
+            background-color: #26335f;
         }
 
-        .form-control-custom:focus { border-bottom-color: #2f3e75; }
+        #fileNameDisplay {
+            color: #6c757d;
+            font-size: 0.92rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .form-label-custom,
+        .settings-label {
+            display: block;
+            font-weight: 700;
+            color: #2a3554;
+            margin-bottom: 0.65rem;
+        }
+
+        .form-control-clean,
+        .form-select-clean {
+            border: 1px solid #dde4f0;
+            border-radius: 14px;
+            padding: 0.9rem 1rem;
+            box-shadow: none !important;
+            background-color: #fff;
+        }
+
+        .form-control-clean:focus,
+        .form-select-clean:focus {
+            border-color: #8aa6e8;
+        }
+
+        .title-input {
+            font-size: 1.6rem;
+            font-weight: 800;
+            text-align: center;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
 
         .description-box {
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-            border-radius: 15px;
-            padding: 20px;
+            background-color: #fbfcfe;
+            border: 1px solid #dde4f0;
+            border-radius: 18px;
+            padding: 1rem 1.1rem;
+            min-height: 180px;
+            box-shadow: none !important;
         }
 
-        /* 태그 */
+        .description-box:focus {
+            border-color: #8aa6e8;
+            background-color: #fff;
+        }
+
+        .tag-panel {
+            background: #f8faff;
+            border: 1px solid #e3eaf8;
+            border-radius: 20px;
+            padding: 1.25rem;
+        }
+
         .tag-badge {
             background-color: #eef2ff;
             color: #3b82f6;
             border: 1px solid #d1dbff;
             padding: 6px 14px;
-            border-radius: 20px;
+            border-radius: 999px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
         }
 
         .tag-badge i {
             cursor: pointer;
             margin-left: 8px;
             color: #ff5e3a;
+            font-style: normal;
         }
 
-        /* 설정 */
         .settings-group {
+            background: #fbfcff;
+            border-radius: 22px;
+            padding: 1.5rem;
+            border: 1px solid #e6ebf4;
+        }
+
+        .inline-check-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            min-height: 48px;
+        }
+
+        .inline-check-group label,
+        .inline-check-group span {
+            color: #4f5d75;
+            font-weight: 500;
+        }
+
+        .switch-line {
+            display: flex;
+            align-items: center;
+            min-height: 48px;
+        }
+
+        .hint-box {
+            background: #f6f8fc;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 1rem 1.1rem;
+        }
+
+        .hint-box .small {
+            color: #6c757d;
+        }
+
+        .submit-bar {
             background: #ffffff;
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid #ebebeb;
+            border: 1px solid #eceff4;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+            padding: 1rem;
         }
 
-        .settings-label {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        /* 버튼 */
         .btn-submit-action {
             background-color: #2f3e75;
             color: white;
-            border-radius: 10px;
-            padding: 16px 0;
+            border-radius: 14px;
+            padding: 14px 0;
             width: 48%;
             border: none;
+            font-weight: 700;
+        }
+
+        .btn-submit-action:hover {
+            background-color: #26335f;
         }
 
         .btn-cancel-action {
-            border: 1px solid #ccc;
-            padding: 16px 0;
+            border: 1px solid #d7dce5;
+            background-color: #fff;
+            border-radius: 14px;
+            padding: 14px 0;
             width: 48%;
             text-align: center;
             text-decoration: none;
             color: #666;
+            font-weight: 600;
+        }
+
+        .btn-cancel-action:hover {
+            background-color: #f8f9fb;
+            color: #444;
+        }
+
+        @media (max-width: 991.98px) {
+            .preview-wrapper {
+                max-width: 220px;
+                height: 220px;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .comic-create-page {
+                padding-top: 2rem;
+                padding-bottom: 3rem;
+            }
+
+            .editor-card-body,
+            .settings-group {
+                padding: 1.2rem;
+            }
+
+            .btn-submit-action,
+            .btn-cancel-action {
+                width: 100%;
+            }
+
+            .submit-actions {
+                flex-direction: column-reverse;
+                gap: 0.8rem !important;
+            }
+
+            .title-input {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
 
-<div class="container" layout:fragment="content">
-    <div class="container mt-5 mb-5 d-flex justify-content-center">
-        <div class="col-lg-9">
+<div class="container comic-create-page" layout:fragment="content">
+    <div class="container d-flex justify-content-center">
+        <div class="col-lg-10 col-xl-9">
 
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">새 만화 등록</h2>
-                <p class="text-muted">독자들에게 새로운 즐거움을 선사할 준비가 되셨나요?</p>
+            <div class="page-hero">
+                <h2>새 만화 등록</h2>
+                <p>독자들에게 새로운 즐거움을 선사할 준비가 되셨나요?</p>
             </div>
 
-            <!-- 핵심: DTO 바인딩 -->
             <form th:action="@{/content/comic/write}"
                   method="post"
                   enctype="multipart/form-data"
                   th:object="${createComicDTO}"
                   id="comicForm">
 
-                <!-- 제목 -->
-                <div class="mb-5">
-                    <input type="text"
-                           th:field="*{title}"
-                           class="form-control form-control-custom fs-2 fw-bold"
-                           placeholder="만화 제목을 입력하세요"
-                           required>
+                <div class="editor-card">
+                    <div class="editor-card-body">
+                        <div class="section-title">기본 정보</div>
 
-                    <div class="text-danger small mt-2 text-center"
-                         th:if="${#fields.hasErrors('title')}"
-                         th:errors="*{title}"></div>
-                </div>
+                        <div class="mb-4">
+                            <label class="form-label-custom">작품 제목</label>
+                            <input type="text"
+                                   th:field="*{title}"
+                                   class="form-control form-control-clean title-input"
+                                   placeholder="만화 제목을 입력하세요"
+                                   required>
 
-                <!-- 썸네일 -->
-                <div class="mb-5 text-center">
-                    <label class="settings-label text-muted">대표 썸네일</label>
-
-                    <div class="preview-wrapper shadow-sm">
-                        <div class="preview-placeholder" id="placeholder">
-                            이미지 미리보기
-                        </div>
-                        <img id="imagePreview">
-                    </div>
-
-                    <div class="d-flex justify-content-center">
-                        <div class="custom-file-container shadow-sm">
-                            <input type="file"
-                                   th:field="*{thumbnailFile}"
-                                   accept="image/*"
-                                   onchange="previewImage(this)">
-                            <label for="thumbnailFile" class="btn-file-select">파일 선택</label>
-                            <span id="fileNameDisplay">선택된 파일 없음</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 설명 -->
-                <div class="mb-5 text-center">
-                    <label class="settings-label">작품 시놉시스</label>
-                    <textarea th:field="*{description}"
-                              class="form-control description-box"
-                              rows="6"></textarea>
-                </div>
-
-                <!-- 태그 -->
-                <div class="mb-5 text-center">
-                    <label class="settings-label">태그 설정</label>
-
-                    <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
-
-                    <div class="input-group tag-input-group shadow-sm">
-                        <span class="input-group-text">#</span>
-                        <input type="text"
-                               id="tagInput"
-                               class="form-control"
-                               onkeypress="handleTagKey(event)">
-                        <button class="btn btn-dark" type="button" onclick="addTag()">추가</button>
-                    </div>
-
-                    <input type="hidden" th:field="*{tagString}" id="finalTagString">
-                </div>
-
-                <!-- 설정 FULL -->
-                <div class="settings-group mb-5 shadow-sm">
-                    <div class="row g-4">
-
-                        <div class="col-md-4">
-                            <span class="settings-label">연재 상태</span>
-                            <input type="radio" th:field="*{end}" value="false" checked> 연재 중
-                            <input type="radio" th:field="*{end}" value="true"> 완결
+                            <div class="text-danger small mt-2 text-center"
+                                 th:if="${#fields.hasErrors('title')}"
+                                 th:errors="*{title}"></div>
                         </div>
 
-                        <div class="col-md-4">
-                            <span class="settings-label">공개 설정</span>
-                            <select th:field="*{visibility}" class="form-select">
-                                <option th:each="v : ${T(com.creatival.content.Enum.Visibility).values()}"
-                                        th:value="${v}"
-                                        th:text="${v}">
-                                </option>
-                            </select>
-                        </div>
+                        <div class="row g-4 align-items-start">
+                            <div class="col-lg-5">
+                                <label class="form-label-custom text-center w-100">대표 썸네일</label>
 
-                        <div class="col-md-4">
-                            <span class="settings-label">작품 유형</span>
-                            <select th:field="*{ownerType}" class="form-select">
-                                <option th:each="o : ${T(com.creatival.content.Enum.OwnerType).values()}"
-                                        th:value="${o}"
-                                        th:text="${o}">
-                                </option>
-                            </select>
-                        </div>
+                                <div class="preview-wrapper shadow-sm">
+                                    <div class="preview-placeholder" id="placeholder">
+                                        <i class="bi bi-image"></i>
+                                        이미지 미리보기
+                                    </div>
+                                    <img id="imagePreview">
+                                </div>
 
-                        <div class="col-md-4">
-                            <span class="settings-label">댓글 허용</span>
-                            <input type="checkbox" th:field="*{allowComment}">
-                        </div>
+                                <div class="custom-file-container shadow-sm">
+                                    <input type="file"
+                                           th:field="*{thumbnailFile}"
+                                           accept="image/*"
+                                           onchange="previewImage(this)">
+                                    <label for="thumbnailFile" class="btn-file-select">파일 선택</label>
+                                    <span id="fileNameDisplay">선택된 파일 없음</span>
+                                </div>
+                            </div>
 
-                        <div class="col-md-4">
-                            <span class="settings-label">프로젝트 태그</span>
-                            <input type="text" th:field="*{projectTag}" class="form-control">
+                            <div class="col-lg-7">
+                                <label class="form-label-custom">작품 시놉시스</label>
+                                <textarea th:field="*{description}"
+                                          class="form-control description-box"
+                                          rows="8"
+                                          placeholder="독자에게 작품을 소개해 주세요."></textarea>
+                            </div>
                         </div>
-
-                        <div class="col-md-4">
-                            <span class="settings-label">2차 창작 여부</span>
-                            <input type="checkbox" th:field="*{fanWork}">
-                        </div>
-
-                        <div class="col-md-12">
-                            <span class="settings-label">원본 작품 ID</span>
-                            <input type="number" th:field="*{originalContentId}" class="form-control">
-                        </div>
-
                     </div>
                 </div>
 
-                <!-- 버튼 -->
-                <div class="d-flex justify-content-between">
-				<button type="submit" class="btn-submit-action">작품 등록 완료</button>
-                    <a th:href="@{/}" class="btn-cancel-action">취소</a>
+                <div class="editor-card">
+                    <div class="editor-card-body">
+                        <div class="section-title">태그 설정</div>
+                        <div class="section-subtitle">작품의 분위기나 장르를 태그로 정리해 보세요.</div>
+
+                        <div class="tag-panel text-center">
+                            <div id="tagContainer" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
+
+                            <div class="input-group tag-input-group shadow-sm">
+                                <span class="input-group-text">#</span>
+                                <input type="text"
+                                       id="tagInput"
+                                       class="form-control"
+                                       placeholder="태그를 입력하고 추가하거나 엔터를 누르세요"
+                                       onkeypress="handleTagKey(event)">
+                                <button class="btn btn-dark" type="button" onclick="addTag()">추가</button>
+                            </div>
+
+                            <input type="hidden" th:field="*{tagString}" id="finalTagString">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-card">
+                    <div class="editor-card-body">
+                        <div class="section-title">상세 설정</div>
+                        <div class="section-subtitle">작품 공개 방식과 연결 정보를 설정하세요.</div>
+
+                        <div class="settings-group">
+                            <div class="row g-4">
+
+                                <div class="col-md-4">
+                                    <span class="settings-label">연재 상태</span>
+                                    <div class="inline-check-group">
+                                        <label><input type="radio" th:field="*{end}" value="false" checked> 연재 중</label>
+                                        <label><input type="radio" th:field="*{end}" value="true"> 완결</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span class="settings-label">공개 설정</span>
+                                    <select th:field="*{visibility}" class="form-select form-select-clean">
+                                        <option th:each="v : ${T(com.creatival.content.Enum.Visibility).values()}"
+                                                th:value="${v}"
+                                                th:text="${v}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span class="settings-label">작품 유형</span>
+                                    <select th:field="*{ownerType}" class="form-select form-select-clean" id="ownerTypeSelect">
+                                        <option th:each="o : ${T(com.creatival.content.Enum.OwnerType).values()}"
+                                                th:value="${o}"
+                                                th:text="${o}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span class="settings-label">댓글 허용</span>
+                                    <div class="switch-line">
+                                        <label class="mb-0">
+                                            <input type="checkbox" th:field="*{allowComment}"> 댓글 허용
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span class="settings-label">프로젝트 태그</span>
+                                    <input type="text"
+                                           th:field="*{projectTag}"
+                                           class="form-control form-control-clean"
+                                           id="projectTagInput"
+                                           placeholder="projectTag 입력">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span class="settings-label">2차 창작 여부</span>
+                                    <div class="switch-line">
+                                        <label class="mb-0">
+                                            <input type="checkbox" th:field="*{fanWork}" id="fanWorkCheck"> 2차 창작
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12" id="originalContentWrapper">
+                                    <span class="settings-label">원본 작품 ID</span>
+                                    <input type="number"
+                                           th:field="*{originalContentId}"
+                                           class="form-control form-control-clean"
+                                           id="originalContentIdInput"
+                                           placeholder="원본 작품 ID 입력">
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="hint-box">
+                                        <div class="small">
+                                            프로젝트 태그와 원본 작품 ID는 동시에 입력할 수 없습니다.  
+                                            프로젝트 태그를 사용한다면 작품 유형은 팀(TEAM)으로 맞춰 주세요.
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-bar mt-4">
+                    <div class="d-flex justify-content-between gap-3 submit-actions">
+                        <a th:href="@{/}" class="btn-cancel-action">취소</a>
+                        <button type="submit" class="btn-submit-action">작품 등록 완료</button>
+                    </div>
                 </div>
 
             </form>
@@ -233,8 +491,18 @@
         </div>
     </div>
 
-    <!-- JS -->
     <script>
+        let tagArray = [];
+        let hasShownProjectTagGuide = false;
+        let hasShownFanWorkGuide = false;
+
+        const comicForm = document.getElementById('comicForm');
+        const projectTagInput = document.getElementById('projectTagInput');
+        const originalContentIdInput = document.getElementById('originalContentIdInput');
+        const ownerTypeSelect = document.getElementById('ownerTypeSelect');
+        const fanWorkCheck = document.getElementById('fanWorkCheck');
+        const originalContentWrapper = document.getElementById('originalContentWrapper');
+
         function previewImage(input) {
             const fileDisplay = document.getElementById('fileNameDisplay');
             const preview = document.getElementById('imagePreview');
@@ -249,7 +517,7 @@
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                     placeholder.style.display = 'none';
-                }
+                };
                 reader.readAsDataURL(file);
             } else {
                 fileDisplay.innerText = "선택된 파일 없음";
@@ -257,8 +525,6 @@
                 placeholder.style.display = 'block';
             }
         }
-
-        let tagArray = [];
 
         function handleTagKey(e) {
             if (e.key === 'Enter') {
@@ -269,9 +535,13 @@
 
         function addTag() {
             const input = document.getElementById('tagInput');
-            const value = input.value.trim();
+            const value = input.value.trim().replace(/#/g, '');
 
             if (value && !tagArray.includes(value)) {
+                if (tagArray.length >= 10) {
+                    alert("태그는 최대 10개까지 가능합니다.");
+                    return;
+                }
                 tagArray.push(value);
                 updateTags();
                 input.value = '';
@@ -292,6 +562,92 @@
             ).join('');
 
             hiddenInput.value = tagArray.join(',');
+        }
+
+        function showProjectTagGuide() {
+            Swal.fire({
+                icon: 'info',
+                title: '프로젝트 태그 안내',
+                text: '연결하려는 프로젝트가 있다면 해당 프로젝트의 프로젝트 태그를 입력해 프로젝트와 연결하세요.',
+                confirmButtonText: '확인'
+            });
+        }
+
+        function showOriginalContentGuide() {
+            if (!originalContentWrapper) return;
+
+            if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+                const guide = window.driver.js.driver({
+                    showProgress: false,
+                    allowClose: true,
+                    overlayClickBehavior: 'close',
+                    doneBtnText: '확인',
+                    steps: [
+                        {
+                            element: '#originalContentWrapper',
+                            popover: {
+                                title: '원본 작품 ID',
+                                description: '2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.',
+                                side: 'bottom',
+                                align: 'start'
+                            }
+                        }
+                    ]
+                });
+
+                guide.drive();
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: '원본 작품 ID 안내',
+                    text: '2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.',
+                    confirmButtonText: '확인'
+                }).then(() => {
+                    if (originalContentIdInput) {
+                        originalContentIdInput.focus();
+                    }
+                });
+            }
+        }
+
+        if (projectTagInput) {
+            projectTagInput.addEventListener('focus', function () {
+                if (!hasShownProjectTagGuide) {
+                    hasShownProjectTagGuide = true;
+                    showProjectTagGuide();
+                }
+            });
+        }
+
+        if (fanWorkCheck) {
+            fanWorkCheck.addEventListener('change', function () {
+                if (this.checked && !hasShownFanWorkGuide) {
+                    hasShownFanWorkGuide = true;
+                    setTimeout(() => {
+                        showOriginalContentGuide();
+                    }, 150);
+                }
+            });
+        }
+
+        if (comicForm) {
+            comicForm.addEventListener('submit', function (e) {
+                const projectTag = projectTagInput ? projectTagInput.value.trim() : '';
+                const originalId = originalContentIdInput ? originalContentIdInput.value.trim() : '';
+                const ownerType = ownerTypeSelect ? ownerTypeSelect.value : '';
+
+                if (projectTag !== '' && originalId !== '') {
+                    e.preventDefault();
+                    alert("프로젝트 태그와 원본 작품 ID는 동시에 입력할 수 없습니다.");
+                    return;
+                }
+
+                if (projectTag !== '' && ownerType !== 'TEAM') {
+                    e.preventDefault();
+                    alert("프로젝트 태그가 있는 콘텐츠는 작품 유형을 'TEAM'으로 선택해야 합니다.");
+                    return;
+                }
+            });
         }
     </script>
 </div>

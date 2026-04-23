@@ -128,8 +128,8 @@
         }
 		
 		.full-footer { background-color: #0b152d !important; color: white !important; width: 100%; margin-top: 150px; }
-		                .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
-		                .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+		.full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
+		.footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
     </style>
 </head>
 
@@ -198,14 +198,18 @@
 
             <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
 				<button type="button"
-				                        class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
-				                        data-bs-toggle="modal"
-				                        data-bs-target="#keyRegisterModal">
-				                    <i class="bi bi-key-fill me-2"></i>
-				                    <span class="fw-bold">코드 등록</span>
-				                </button>
+                        id="redeemCodeBtn"
+                        class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#keyRegisterModal">
+                    <i class="bi bi-key-fill me-2"></i>
+                    <span class="fw-bold">코드 등록</span>
+                </button>
 
-                <a onclick="return requireLoginAction(() => location.href='/content/art/create')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm" style="cursor:pointer;">
+                <a id="artCreateBtn"
+                   onclick="return requireLoginAction(() => location.href='/content/art/create')"
+                   class="btn btn-primary d-flex align-items-center px-3 shadow-sm"
+                   style="cursor:pointer;">
                     <i class="bi bi-plus-lg me-2"></i>
                     <span class="fw-bold">일러스트 등록</span>
                 </a>
@@ -272,7 +276,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <!-- 여기 action만 네가 이미 만들어둔 기존 리딤 코드 컨트롤러 경로로 맞춰 -->
                 <form th:action="@{/redeem/use}" method="post">
                     <div class="modal-body p-4 text-center">
                         <input type="hidden"
@@ -302,38 +305,45 @@
     </div>
 	
 	<footer class="full-footer">
-	        <div class="container py-5">
-	            <div class="row mb-4">
-	                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-	                    <h6 class="fw-bold mb-3">회사 정보</h6>
-	                    <ul class="list-unstyled small opacity-75">
-	                        <li>이용 안내</li>
-	                        <li>공지사항</li>
-	                        <li>고객센터</li>
-	                        <li>도움말</li>
-	                        <li>광고문의</li>
-	                    </ul>
-	                </div>
-	            </div>
-	            <hr class="footer-line">
-	            <div class="row align-items-center">
-	                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-	                    <span>이용 약관</span>
-	                    <span>개인 정보 보호 정책</span>
-	                </div>
-	                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-	                    © 2026 creatival All rights reserved.
-	                </div>
-	                <div class="col-md-4 text-end">
-	                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
-	                </div>
-	            </div>
-	        </div>
-	    </footer>
+        <div class="container py-5">
+            <div class="row mb-4">
+                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+                    <h6 class="fw-bold mb-3">회사 정보</h6>
+                    <ul class="list-unstyled small opacity-75">
+                        <li>이용 안내</li>
+                        <li>공지사항</li>
+                        <li>고객센터</li>
+                        <li>도움말</li>
+                        <li>광고문의</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-line">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+                    <span>이용 약관</span>
+                    <span>개인 정보 보호 정책</span>
+                </div>
+                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+                    © 2026 creatival All rights reserved.
+                </div>
+                <div class="col-md-4 text-end">
+                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const keyInput = document.getElementById('productKeyInput');
+            const redeemCodeBtn = document.getElementById('redeemCodeBtn');
+            const artCreateBtn = document.getElementById('artCreateBtn');
+            const redeemModal = document.getElementById('keyRegisterModal');
+
+            let hasShownArtCreateGuide = false;
+            let hasShownRedeemGuide = false;
+
             if (keyInput) {
                 keyInput.addEventListener('input', function (e) {
                     let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -343,6 +353,74 @@
                         result += val[i];
                     }
                     e.target.value = result;
+                });
+            }
+
+            function showArtCreateGuide() {
+                Swal.fire({
+                    icon: 'info',
+                    title: '일러스트 등록 안내',
+                    text: '이 버튼을 누르면 새로운 일러스트 작품을 등록할 수 있습니다.',
+                    confirmButtonText: '확인'
+                });
+            }
+
+            function showRedeemGuide() {
+                if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+                    const guide = window.driver.js.driver({
+                        showProgress: false,
+                        allowClose: true,
+                        overlayClickBehavior: 'close',
+                        doneBtnText: '확인',
+                        steps: [
+                            {
+                                element: '#productKeyInput',
+                                popover: {
+                                    title: '리딤 코드 입력',
+                                    description: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+                                    side: 'bottom',
+                                    align: 'center'
+                                }
+                            }
+                        ]
+                    });
+
+                    guide.drive();
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: '리딤 코드 안내',
+                        text: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+                        confirmButtonText: '확인'
+                    }).then(() => {
+                        if (keyInput) keyInput.focus();
+                    });
+                }
+            }
+
+            if (artCreateBtn) {
+                artCreateBtn.addEventListener('mouseenter', function () {
+                    if (!hasShownArtCreateGuide) {
+                        hasShownArtCreateGuide = true;
+                        showArtCreateGuide();
+                    }
+                }, { once: true });
+            }
+
+            if (redeemCodeBtn) {
+                redeemCodeBtn.addEventListener('click', function () {
+                    hasShownRedeemGuide = false;
+                });
+            }
+
+            if (redeemModal) {
+                redeemModal.addEventListener('shown.bs.modal', function () {
+                    if (!hasShownRedeemGuide) {
+                        hasShownRedeemGuide = true;
+                        setTimeout(() => {
+                            showRedeemGuide();
+                        }, 150);
+                    }
                 });
             }
         });
