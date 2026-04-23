@@ -4,21 +4,12 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-	
-	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-		    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
     <style>
-        /* ===== 추가된 후원하기 버튼 스타일 ===== */
-        .btn-boost {
-            background-color: #f05a28 !important;
-            border-color: #f05a28 !important;
-            color: #ffffff !important;
-        }
-
-        /* ===== 전체 레이아웃 ===== */
+        /* ===== 기존 스타일 유지 ===== */
+        .btn-boost { background-color: #f05a28 !important; border-color: #f05a28 !important; color: #ffffff !important; }
         .novel-container { max-width: 1100px; margin: 60px auto; }
-        
-        /* ===== 좌측 썸네일 카드 ===== */
         .novel-sidebar { text-align: center; }
         .novel-thumb-wrapper {
             width: 240px; height: 320px; margin: 0 auto 20px;
@@ -27,62 +18,34 @@
         }
         .novel-thumb-wrapper:hover { transform: translateY(-5px); }
         .novel-thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        
         .camera-icon {
             position: absolute; bottom: 10px; right: 10px;
             background: white; border-radius: 50%; width: 35px; height: 35px;
             display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;
         }
-
         .first-btn {
             background-color: #2f3e75; color: white; font-weight: bold;
             padding: 12px; border-radius: 6px; display: block;
             text-align: center; text-decoration: none; margin: 15px auto;
         }
-
-        /* ===== 우측 정보창 (이미지 스타일) ===== */
         .novel-desc-box {
             background: #f8f9fa; border-radius: 12px; padding: 30px;
             min-height: 200px; line-height: 1.8; position: relative;
         }
 
-        /* ===== 태그 스타일 (이미지 UI 최적화) ===== */
-        .tag-area { margin-top: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .tag-item { color: #3b82f6; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; }
-        .tag-delete-btn {
-            color: #ff5e3a; font-size: 12px; margin-left: 4px; 
-            cursor: pointer; text-decoration: none; font-weight: bold;
-        }
-        .tag-add-trigger {
-            width: 24px; height: 24px; border-radius: 50%; border: 1px solid #3b82f6;
-            color: #3b82f6; background: none; display: flex; align-items: center; 
-            justify-content: center; font-size: 16px; cursor: pointer; transition: 0.2s;
-        }
-        .tag-add-trigger:hover { background: #3b82f6; color: white; }
+        /* ===== 태그 영역 스타일 통합 ===== */
+        .tag-area { margin-top: 15px; }
+        .tag-delete-link { color: rgba(255,255,255,0.8); text-decoration: none; }
+        .tag-delete-link:hover { color: #fff; }
 
-        /* ===== 회차 리스트 (이미지 스타일) ===== */
         .episode-section-title { text-align: center; font-weight: bold; margin: 80px 0 40px; }
         .episode-list { max-width: 850px; margin: 0 auto; list-style: none; padding: 0; }
-        .episode-item {
-            padding: 20px 25px; position: relative; background: white; margin-bottom: 15px;
-        }
-        .episode-item::before {
-            content: ""; width: 5px; height: 60%; background: #2f3e75;
-            position: absolute; left: 0; top: 20%;
-        }
-        .episode-item::after {
-            content: ""; position: absolute; bottom: 0; left: 25px; right: 0;
-            height: 1.5px; background: linear-gradient(to right, #ffb199, #ff0844); opacity: 0.6;
-        }
+        .episode-item { padding: 20px 25px; position: relative; background: white; margin-bottom: 15px; }
+        .episode-item::before { content: ""; width: 5px; height: 60%; background: #2f3e75; position: absolute; left: 0; top: 20%; }
+        .episode-item::after { content: ""; position: absolute; bottom: 0; left: 25px; right: 0; height: 1.5px; background: linear-gradient(to right, #ffb199, #ff0844); opacity: 0.6; }
         .episode-link { color: #333; text-decoration: none; display: flex; flex-direction: column; }
         .episode-title { font-weight: bold; font-size: 1.1rem; }
 
-        /* ===== 페이징 ===== */
-        .custom-pagination .active .page-link { 
-            background: none !important; color: #ff5e3a !important; border-bottom: 3px solid #ff5e3a; 
-        }
-
-        /* ===== 버튼 액션 디자인 ===== */
         .action-buttons { display: flex; gap: 12px; margin-top: 25px; align-items: center; }
         .btn-action {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -90,77 +53,51 @@
             border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             transition: all 0.2s ease; cursor: pointer; padding: 10px;
         }
-        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); border-color: #adb5bd; }
         .btn-action i { font-size: 1.6rem; margin-bottom: 4px; line-height: 1; }
         .btn-action span { font-size: 12px; font-weight: bold; color: #555; }
-        
         .btn-like i { color: #ff4757; }
-        .btn-share i { color: #2f3e75; }
-		
-		.full-footer { 
-				            background-color: #0b152d !important; 
-				            color: white !important; 
-				            margin-top: 150px;
-				            
-				            /* 컨테이너를 뚫고 화면 전체 너비를 차지하게 함 */
-				            width: 100vw;
-				            position: relative;
-				            left: 50%;
-				            right: 50%;
-				            margin-left: -50vw;
-				            margin-right: -50vw;
-							margin-bottom: -50vw;
-				        }
-						.full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
-						.footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+        
+        .full-footer { background-color: #0b152d !important; color: white !important; margin-top: 150px; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; }
+        .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
+        .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
     </style>
 </head>
 
 <div class="container novel-container" layout:fragment="content">
-	
     <div class="row">
-		<div class="col-md-4 novel-sidebar">
-		    <div class="novel-thumb-wrapper shadow" 
-		         th:data-bs-toggle="${novel.username == loginUsername ? 'modal' : ''}" 
-		         th:data-bs-target="${novel.username == loginUsername ? '#thumbnailUpdateModal' : ''}">
-		        <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" alt="표지">
-		        <div class="camera-icon" th:if="${novel.username == loginUsername}"><i class="bi bi-camera-fill"></i></div>
-		    </div>
+        <div class="col-md-4 novel-sidebar">
+            <div class="novel-thumb-wrapper shadow" 
+                 th:data-bs-toggle="${novel.username == loginUsername ? 'modal' : ''}" 
+                 th:data-bs-target="${novel.username == loginUsername ? '#thumbnailUpdateModal' : ''}">
+                <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" alt="표지">
+                <div class="camera-icon" th:if="${novel.username == loginUsername}"><i class="bi bi-camera-fill"></i></div>
+            </div>
 
-		    <div class="position-relative mb-3 px-4 text-center">
-		        <h3 class="fw-bold mb-1" th:text="${novel.title}">소설 제목</h3>
-		        <p class="text-muted mb-3" th:text="${novel.displayname}">작가이름</p>				
-				
+            <div class="position-relative mb-3 px-4 text-center">
+                <h3 class="fw-bold mb-1" th:text="${novel.title}">소설 제목</h3>
+                <p class="text-muted mb-3" th:text="${novel.displayname}">작가이름</p>                
                 <div class="d-flex justify-content-center align-items-center gap-3">
                     <button class="btn btn-primary rounded-pill px-4"> 팔로우 </button>
                     <div class="text-center" style="cursor: pointer;" th:onclick="|toggleBookmark(${novel.id}, 'CONTENT')|" id="bookmarkBtn">
-                       	<i id="bookmarkIcon" class="bi" style="font-size: 1.5rem; display: block; line-height: 1;" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+                        <i id="bookmarkIcon" class="bi" style="font-size: 1.5rem; display: block; line-height: 1;" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                         <span style="font-size: 11px; font-weight: bold; color: #666;">북마크</span>
                     </div>
                 </div>
-		    </div>
+            </div>
 
-		    <div class="d-flex justify-content-center gap-3 text-muted small mb-3">
-		        <span>조회수 <strong th:text="${novel.viewCount}">0</strong></span>
-		        <span>추천 <strong th:text="${like.count}" id="likeCount">2,681</strong></span>
-		    </div>
+            <div class="d-flex justify-content-center gap-3 text-muted small mb-3">
+                <span>조회수 <strong th:text="${novel.viewCount}">0</strong></span>
+                <span>추천 <strong th:text="${like.count}" id="likeCount">0</strong></span>
+            </div>
 
-		    <a th:if="${firstEpisodeId != null}" 
-		       th:href="@{'/content/novel/episode/' + ${firstEpisodeId}}" 
-		       class="first-btn">
-		       첫 화 시청하기
-		    </a>
+            <a th:if="${firstEpisodeId != null}" th:href="@{'/content/novel/episode/' + ${firstEpisodeId}}" class="first-btn">첫 화 시청하기</a>
+            <button th:if="${firstEpisodeId == null}" class="first-btn" style="opacity: 0.5; cursor: default;" disabled>등록된 회차가 없습니다</button>
 
-		    <button th:if="${firstEpisodeId == null}" 
-		            class="first-btn" style="opacity: 0.5; cursor: default;" disabled>
-		        등록된 회차가 없습니다
-		    </button>
-
-		    <div class="d-flex justify-content-center gap-2 mt-2" th:if="${novel.username == #authentication.name}">
-		        <a th:href="@{/content/novel/update/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-primary">수정하기</a>
-		        <a th:href="@{/content/novel/delete/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('삭제하시겠습니까?');">삭제하기</a>
-		    </div>
-		</div>
+            <div class="d-flex justify-content-center gap-2 mt-2" th:if="${novel.username == loginUsername}">
+                <a th:href="@{/content/novel/update/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-primary">수정하기</a>
+                <a th:href="@{/content/novel/delete/{id}(id=${novel.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('삭제하시겠습니까?');">삭제하기</a>
+            </div>
+        </div>
 
         <div class="col-md-8">
             <div class="novel-desc-box shadow-sm">
@@ -172,56 +109,64 @@
             </div>
 
             <div class="tag-area">
-                <div th:each="tag : ${tagList}" class="tag-item">
-                    <span th:text="'#' + ${tag.tagText}">#태그</span>
-                    <a th:if="${novel.username == loginUsername}"
-                       th:href="@{/tag/novel/deleteContentTag(tagId=${tag.id},contentId=${novel.id})}"
-                       onclick="return confirm('태그를 삭제하시겠습니까?');" class="tag-delete-btn">×</a>
+                <div class="mb-2">
+                    <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal">
+                        <span th:text="'#' + ${tag.tagText}"></span>
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${novel.username == loginUsername}"
+                           th:href="@{/tag/novel/deleteContentTag(tagId=${tag.id},contentId=${novel.id})}"
+                           class="tag-delete-link ms-1"
+                           onclick="return confirm('삭제하시겠습니까?');">
+                            <i class="bi bi-x-circle-fill" style="font-size: 0.7rem;"></i>
+                        </a>
+                    </div>
+
+                    <button type="button"
+                            sec:authorize="isAuthenticated()"
+                            th:if="${novel.username == loginUsername}"
+                            class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-1"
+                            style="width:24px;height:24px; vertical-align: middle;"
+                            data-bs-toggle="modal"
+                            data-bs-target="#tagAddModal">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                    <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">#등록된_태그가_없습니다</span>
                 </div>
-                
-                <button th:if="${novel.username == loginUsername}" 
-                        class="tag-add-trigger shadow-sm"
-                        data-bs-toggle="modal" data-bs-target="#tagAddModal">+</button>
-                
-                <span th:if="${#lists.isEmpty(tagList)}" class="text-muted small">#등록된_태그가_없습니다</span>
             </div>
 
             <div class="action-buttons">
-                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${novel.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}"><i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span></button>
+                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${novel.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
+                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
+                    <span>좋아요</span>
+                </button>
                 <button type="button" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
-                
                 <div class="ms-auto">
                     <button class="btn btn-boost shadow-sm px-4 py-2 fw-bold rounded-pill">후원하기</button>
                 </div>
             </div>
 
-			<h5 class="fw-bold mb-4 mt-5">작품 계보</h5>
+            <h5 class="fw-bold mb-4 mt-5">작품 계보</h5>
             <div class="row g-4 mb-5 bg-light p-3 rounded">
                 <div class="col-md-6">
                     <div class="lineage-box h-100">
-                        <h6 class="text-muted fw-bold mb-3">
-                            <i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품
-                        </h6>
-                        <a href="#" class="lineage-card">
-                            <img src="https://dummyimage.com/60x60/ced4da/6c757d" class="lineage-img" alt="원본">
+                        <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품</h6>
+                        <a href="#" class="lineage-card d-flex align-items-center gap-2 text-decoration-none bg-white p-2 rounded shadow-sm">
+                            <img src="https://dummyimage.com/60x60/ced4da/6c757d" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
                             <div class="overflow-hidden">
-                                <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (Original)</div>
-                                <div class="small text-muted text-truncate">@OriginalArtist</div>
+                                <div class="fw-bold text-dark text-truncate small">여름날의 바다 (Original)</div>
+                                <div class="text-muted truncate small">@OriginalArtist</div>
                             </div>
                         </a>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="lineage-box h-100 d-flex flex-column">
-                        <h6 class="text-muted fw-bold mb-3">
-                            <i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품
-                        </h6>
-                        <div class="d-flex flex-column gap-2 mb-3" style="max-height: 200px; overflow-y: auto;">
-                            <a href="#" class="lineage-card" th:each="i : ${#numbers.sequence(1,5)}">
-                                <img src="https://dummyimage.com/60x60/adb5bd/495057" class="lineage-img" alt="파생">
+                    <div class="lineage-box h-100">
+                        <h6 class="text-muted fw-bold mb-3"><i class="bi bi-arrow-down-circle-fill text-primary me-1"></i> 연관 작품</h6>
+                        <div class="d-flex flex-column gap-2" style="max-height: 120px; overflow-y: auto;">
+                            <a href="#" class="lineage-card d-flex align-items-center gap-2 text-decoration-none bg-white p-2 rounded shadow-sm" th:each="i : ${#numbers.sequence(1,3)}">
+                                <img src="https://dummyimage.com/60x60/adb5bd/495057" style="width:40px; height:40px; object-fit:cover; border-radius:4px;">
                                 <div class="overflow-hidden">
-                                    <div class="fw-bold text-dark text-truncate mb-1">여름날의 바다 (리마스터)</div>
-                                    <div class="small text-muted text-truncate">@RemixCreator</div>
+                                    <div class="fw-bold text-dark text-truncate small">리마스터 버전 [[${i}]]</div>
                                 </div>
                             </a>
                         </div>
@@ -237,18 +182,17 @@
             <a th:href="@{'/content/novel/episode/write/' + ${novel.id}}" class="btn btn-outline-dark btn-sm">회차 추가</a>
         </div>
         <div class="col-12">
-            <ul class="episode-list shadow-sm rounded">
+            <ul class="episode-list shadow-sm rounded border">
                 <li class="episode-item" th:each="episode : ${paging}">
                     <div class="d-flex justify-content-between align-items-center">
                         <a th:href="@{/content/novel/episode/{id}(id=${episode.id})}" class="episode-link flex-grow-1">
-                            <span class="episode-title" th:text="${episode.episodeNum+'. '+episode.title}">회차 제목</span>
+                            <span class="episode-title" th:text="${episode.episodeNum + '. ' + episode.title}">회차 제목</span>
                             <div class="small text-muted">
                                 조회수 <span th:text="${episode.viewCount}">0</span> · 
                                 <span th:text="${#temporals.format(episode.createdAt, 'yyyy-MM-dd')}"></span>
                             </div>
                         </a>
-						
-                        <div th:if="${novel.username == #authentication.name}">
+                        <div th:if="${novel.username == loginUsername}">
                             <a th:href="@{/content/novel/episode/update/{id}(id=${episode.id})}" class="btn btn-sm btn-light text-primary">수정</a>
                             <a th:href="@{/content/novel/episode/delete/{id}(id=${episode.id})}" class="btn btn-sm btn-light text-danger" onclick="return confirm('삭제?');">삭제</a>
                         </div>
@@ -265,6 +209,25 @@
             <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'"><a class="page-link" th:href="@{|?page=${paging.number + 1}|}">&gt;</a></li>
         </ul>
     </nav>
+
+    <div class="modal fade" id="tagAddModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <form th:action="@{/tag/createContentNovelTag/{id}(id=${novel.id})}" method="post">
+                    <div class="modal-body p-4">
+                        <h6 class="fw-bold mb-3">새 태그 추가</h6>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">#</span>
+                            <input type="text" name="tagName" class="form-control" placeholder="태그 입력" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="submit" class="btn btn-primary btn-sm w-100 py-2 rounded-pill">추가하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 	<footer class="full-footer">
 	        <div class="container py-5">
 	            <div class="row mb-4">

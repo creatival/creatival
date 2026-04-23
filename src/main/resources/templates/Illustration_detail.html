@@ -110,18 +110,35 @@
                     · 조회수 <span th:text="${art.viewCount}"></span>
                     · 좋아요 <span id="likeCount" th:text="${like.count}">0</span>
                 </div>
-                <div>
-                    <span th:each="tag : ${tagList}" class="art-tag" th:text="'#' + ${tag.tagText}"></span>
-                    <button class="btn-tag-add ms-1" th:if="${art.username == #authentication.name}" data-bs-toggle="modal" data-bs-target="#tagAddModal">
-                        <i class="bi bi-plus-lg"></i> 태그 추가
-                    </button>
+                
+                <div class="tag-area">
+                    <div class="mb-2">
+                        <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal">
+                            <span th:text="'#' + ${tag.tagText}"></span>
+                            <a sec:authorize="isAuthenticated()"
+                               th:if="${art.username == #authentication.name}"
+                               th:href="@{/tag/art/deleteContentTag(tagId=${tag.id},contentId=${art.id})}"
+                               class="text-white ms-1"
+                               onclick="return confirm('삭제하시겠습니까?');">
+                                <i class="bi bi-x-circle-fill" style="font-size: 0.7rem;"></i>
+                            </a>
+                        </div>
+
+                        <button type="button"
+                                sec:authorize="isAuthenticated()"
+                                th:if="${art.username == #authentication.name}"
+                                class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-1"
+                                style="width:24px;height:24px; vertical-align: middle;"
+                                data-bs-toggle="modal"
+                                data-bs-target="#tagAddModal">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
+                </div>
             <div class="action-buttons">
                 <button class="btn-boost shadow-sm me-2">후원하기</button>
                 
-                
-
                 <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span>
                 </button>
@@ -133,12 +150,12 @@
                 <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
 				
 				<button class="btn-action" th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|" th:if="${art.username == #authentication.name}">
-				                    <i class="bi bi-pencil-square"></i><span>수정</span>
-				                </button>
-				                
-				                <button class="btn-action" th:onclick="|confirmDelete(${art.id})|" th:if="${art.username == #authentication.name}">
-				                    <i class="bi bi-trash3 text-danger"></i><span>삭제</span>
-				                </button>
+                    <i class="bi bi-pencil-square"></i><span>수정</span>
+                </button>
+                
+                <button class="btn-action" th:onclick="|confirmDelete(${art.id})|" th:if="${art.username == #authentication.name}">
+                    <i class="bi bi-trash3 text-danger"></i><span>삭제</span>
+                </button>
             </div>
         </div>
 
@@ -245,21 +262,26 @@
     </div>
 
     <div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal" tabindex="-1">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-light"><h6 class="modal-title fw-bold">태그 추가</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                 <form th:action="@{/tag/createContentArtTag/{id}(id=${art.id})}" method="post">
-                    <div class="modal-body p-3">
-                        <input type="text" name="tagName" class="form-control" placeholder="태그 입력" required>
+                    <div class="modal-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0">새 태그 추가</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">#</span>
+                            <input type="text" name="tagName" class="form-control" required>
+                        </div>
                     </div>
                     <div class="modal-footer border-0 p-2">
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill">추가하기</button>
+                        <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill">추가</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
     <footer class="full-footer">
 	    <div class="container">
 	        <div class="row mb-4">

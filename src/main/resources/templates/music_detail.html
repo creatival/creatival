@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div class="container-fluid p-0" layout:fragment="content">
     
     <style>
@@ -114,33 +114,32 @@
                                 </div>
 								
                                 <div th:if="${!music.paid}" class="mt-3"><span class="badge bg-secondary">무료 콘텐츠</span></div>
-								<div class="tag-area">
-								                                <div class="mb-2">
-								                                    <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal">
-								                                        <span th:text="'#' + ${tag.tagText}"></span>
-								                                        <a sec:authorize="isAuthenticated()"
-								                                           th:if="${music.username == #authentication.name}"
-								                                           th:href="@{/tag/music/deleteContentTag(tagId=${tag.id},contentId=${music.id})}"
-								                                           class="text-white ms-1"
-								                                           onclick="return confirm('삭제하시겠습니까?');">
-								                                            <i class="bi bi-x-circle-fill" style="font-size: 0.7rem;"></i>
-								                                        </a>
-								                                    </div>
-
-								                                    <button type="button"
-								                                            sec:authorize="isAuthenticated()"
-								                                            th:if="${music.username == #authentication.name}"
-								                                            class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-1"
-								                                            style="width:24px;height:24px; vertical-align: middle;"
-								                                            data-bs-toggle="modal"
-								                                            data-bs-target="#tagAddModal">
-								                                        <i class="bi bi-plus"></i>
-								                                    </button>
-								                                </div>
-								                            </div>
 								
-                            </div>
-							
+                                <div class="tag-area mt-3">
+                                    <div class="mb-2">
+                                        <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal">
+                                            <span th:text="'#' + ${tag.tagText}"></span>
+                                            <a sec:authorize="isAuthenticated()"
+                                               th:if="${music.username == #authentication.name}"
+                                               th:href="@{/tag/music/deleteContentTag(tagId=${tag.id},contentId=${music.id})}"
+                                               class="text-white ms-1"
+                                               onclick="return confirm('삭제하시겠습니까?');">
+                                                <i class="bi bi-x-circle-fill" style="font-size: 0.7rem;"></i>
+                                            </a>
+                                        </div>
+
+                                        <button type="button"
+                                                sec:authorize="isAuthenticated()"
+                                                th:if="${music.username == #authentication.name}"
+                                                class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-1"
+                                                style="width:24px;height:24px; vertical-align: middle;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#tagAddModal">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                </div>
                         </div>
 
                         <h5 class="fw-bold mb-4">작품 계보</h5>
@@ -212,8 +211,29 @@
     <form id="deleteForm" method="post" style="display:none;">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     </form>
-	
-	<footer class="full-footer">
+
+    <div class="modal fade" id="tagAddModal" tabindex="-1" aria-hidden="true" sec:authorize="isAuthenticated()">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <form th:action="@{/tag/createContentMusicTag/{id}(id=${music.id})}" method="post">
+                    <div class="modal-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0">새 태그 추가</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0">#</span>
+                            <input type="text" name="tagName" class="form-control border-start-0 ps-0" placeholder="태그 입력" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-3 pt-0">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">추가하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="full-footer">
 	    <div class="container">
 	        <div class="row mb-4">
 	            <div class="col-6 col-md" th:each="i : ${#numbers.sequence(1, 5)}">
