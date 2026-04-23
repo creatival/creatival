@@ -28,13 +28,19 @@
         .section-divider { border: none; border-top: 1px solid #eee; margin: 40px 0; }
         .content-area { font-size: 1.1rem; line-height: 1.8; color: #444; min-height: 150px; }
 
-        /* [2. 액션 버튼 그룹] */
-        .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap; }
-        .btn-action { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; }
+        /* [2. 액션 버튼 그룹 (button 태그 호환용 커서 추가)] */
+        .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap; align-items: center; }
+        .btn-action { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; cursor: pointer; }
         .btn-action:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn-action i { font-size: 1.8rem; margin-bottom: 5px; }
+        .btn-action i { font-size: 1.8rem; margin-bottom: 5px; transition: color 0.2s; }
         .btn-action span { font-size: 0.85rem; font-weight: 600; }
+        
+        /* 동적 좋아요/북마크 색상 */
         .btn-like i { color: #ff4757; }
+        .btn-like.active i { color: #ff4757; }
+        .btn-bookmark i { color: #adb5bd; }
+        .btn-bookmark i.bi-bookmark-check-fill { color: #333; }
+        
         .btn-follow i { color: #323b6d; }
         .btn-share i { color: #2D3278; }
 
@@ -44,15 +50,7 @@
         .file-preview-box:hover { background-color: #fff; border-color: #323b6d; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); color: #323b6d; }
         .btn-download-sm { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; margin-top: 8px; }
         
-        /* 커스텀 태그 디자인 추가 */
-        .tag-badge { 
-            padding: 6px 14px; 
-            margin: 4px; 
-            font-weight: 500; 
-            border: none; 
-            display: inline-flex; 
-            align-items: center;
-        }
+        .tag-badge { padding: 6px 14px; margin: 4px; font-weight: 500; border: none; display: inline-flex; align-items: center; }
 
         /* [4. 네이비 버튼 및 계보 디자인] */
         .btn-navy { background-color: #323b6d; color: white; height: 45px; display: inline-flex; align-items: center; padding: 0 30px; border-radius: 6px; font-weight: 600; text-decoration: none; }
@@ -124,11 +122,24 @@
                 </div>
             </div>
 
-            <div class="action-buttons-group">
-                <a href="#" class="btn-action btn-like"><i class="bi bi-heart-fill"></i><span>좋아요</span></a>
-                <a href="#" class="btn-action btn-follow"><i class="bi bi-person-plus-fill"></i><span>팔로우</span></a>
-                <a href="#" class="btn-action btn-bookmark"><i class="bi bi-bookmark-fill"></i><span>북마크</span></a>
-                <a href="#" class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></a>
+            <div class="action-buttons-group action-buttons">
+                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${fileDetail.id},'CONTENT')|" th:classappend="${like != null and like.liked ? ' active' : ''}">
+                    <i id="likeIcon" class="bi" th:classappend="${like != null and like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span>
+                </button>
+                
+                <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${fileDetail.id}, 'CONTENT')|">
+                    <i id="bookmarkIcon" class="bi" th:classappend="${bookmark != null and bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span>
+                </button>
+                
+                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
+                
+                <button class="btn-action" th:onclick="|location.href='@{/content/file/edit/{id}(id=${fileDetail.id})}'|" sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
+                    <i class="bi bi-pencil-square"></i><span>수정</span>
+                </button>
+                
+                <button class="btn-action" th:onclick="|confirmDelete(${fileDetail.id})|" sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
+                    <i class="bi bi-trash3 text-danger"></i><span>삭제</span>
+                </button>
             </div>
 
             <hr class="section-divider">
@@ -169,14 +180,9 @@
                         </button>
                     </div>
                 </div>
-                </div>
+            </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-5 mt-4">
-                <div sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
-                    <a th:href="@{|/content/file/edit/${fileDetail.id}|}" class="text-muted text-decoration-none small me-3">수정</a>
-                    <a th:href="@{|/content/file/delete/${fileDetail.id}|}" class="text-danger text-decoration-none small" onclick="return confirm('삭제?')">삭제</a>
-                </div>
-
+            <div class="d-flex justify-content-end align-items-center mb-5 mt-4">
                 <div class="ms-auto d-flex gap-2">
                     <a href="#" class="btn btn-boost shadow-sm px-4 rounded-pill">후원하기</a>
                     <a th:href="@{/content/file/list}" class="btn btn-navy px-5">목록보기</a>
@@ -262,6 +268,7 @@
             </div>
         </div>
     </div>
+    
     <footer class="full-footer">
         <div class="container py-5">
             <div class="row mb-4">
