@@ -376,7 +376,23 @@ public class ContentService {
 		} else {
 		    content.setPrice(null);
 		}
+		
 		contentRepository.save(content);
+		String tagString = createArtDTO.getTagString();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        // 쉼표로 구분된 문자열을 배열로 변환
+	        String[] tags = tagString.split(",");
+	        
+	        for (String tagName : tags) {
+	            String trimmedTag = tagName.trim();
+	            if (!trimmedTag.isEmpty()) {
+	                // 태그를 저장하고 소설과 연결하는 로직 호출
+	                // 예: tagService.addTagToContent(novel, trimmedTag);
+	            	tagService.createTagForContent(content, tagName, user.getUsername());
+	            }
+	        }
+	    }
+		
 		System.out.println(createArtDTO.getImages().size() + "개수");
 		contentFileService.createContentFileImageForContent(content, createArtDTO.getImages(), "art");
 	}
@@ -800,6 +816,12 @@ public class ContentService {
 		
 		return contents.map(content -> ResponseVideoListDTO.from(content)).toList();
 	}
+	public List<ResponseComicListDTO> getTopComic(int qty) {
+		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
+		Page<Content> contents = contentRepository.findByType(ContentType.COMIC,pageable);
+		
+		return contents.map(content -> ResponseComicListDTO.from(content, content.getSeries())).toList();
+	}
 	
 	public List<ResponseArtList> getArtByUser(Users user) {
 		List<Content> contents = contentRepository.findByUserAndTypeOrderByCreatedAtDesc(user, ContentType.ART);
@@ -1056,6 +1078,7 @@ public class ContentService {
 		contentRepository.delete(content);
 		likeRepository.deleteByTargetIdAndTargetType(content.getId(), TargetType.CONTENT);
 	}
+	
 	
 	
 	

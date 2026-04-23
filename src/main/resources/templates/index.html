@@ -118,7 +118,7 @@
 		.chat-bubble-left {
 		    justify-content: flex-start;
 		    padding-left: 10px;
-		    margin-bottom: 60px; /* 기존 40px에서 60px로 늘려 버튼을 아래로 밀어냄 */
+		    margin-bottom: 60px;
 		}
 		.btn-chatbot {
 		    background-color: #323673;
@@ -129,7 +129,7 @@
 		    text-decoration: none;
 		    transition: all 0.2s ease;
 		    display: inline-block;
-		    margin-top: 20px; /* 버튼 자체 상단 여백 추가 */
+		    margin-top: 20px;
 		}
         .btn-chatbot:hover {
             background-color: #2c3359;
@@ -141,7 +141,7 @@
 		.chatbot-container {
 		    background-color: #f4f5f7;
 		    border-radius: 24px;
-		    padding: 80px 50px 60px; /* 하단 패딩을 60px로 조절 */
+		    padding: 80px 50px 60px;
 		    max-width: 1000px;
 		    margin: 0 auto;
 		    position: relative;
@@ -154,12 +154,10 @@
 		    transition: none; 
 		}
         
-        /* 나타나는 순서를 다르게 하기 위한 딜레이 설정 */
-        .delay-1 { transition-delay: 0.1s; } /* 사용자 질문 */
-        .delay-2 { transition-delay: 0.5s; } /* 챗봇 답변 */
-        .delay-3 { transition-delay: 0.9s; } /* 이동 버튼 */
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.5s; }
+        .delay-3 { transition-delay: 0.9s; }
 
-        /* 화면에 보일 때 추가되는 클래스 */
 		.fade-up-item.is-visible {
 		    opacity: 1;
 		    transform: translateY(0);
@@ -168,14 +166,13 @@
 		}
 		
 		.chat-bubble-wrapper img {
-		    width: 45px;           /* 이전에 조정한 크기 */
+		    width: 45px;
 		    height: 45px;
 		    border-radius: 50%;
 		    border: 2px solid #1a1a1a;
-		    background-color: #9ac2e5; /* 캐릭터 배경색과 유사한 색상 */
-		    
-		    object-fit: cover;     /* 비율을 유지하며 영역을 꽉 채움 */
-		    object-position: center 15%; /* 얼굴이 위쪽에 있으니 위쪽으로 초점 이동 (값 조절 가능) */
+		    background-color: #9ac2e5;
+		    object-fit: cover;
+		    object-position: center 15%;
 		}
     </style>
 
@@ -497,23 +494,19 @@
 	        const observerOptions = {
 	            root: null,
 	            rootMargin: '0px',
-	            // 0.1 정도로 낮추면 요소가 아주 살짝만 보여도 바로 애니메이션이 시작됩니다.
 	            threshold: 0.1 
 	        };
 
 	        const observer = new IntersectionObserver((entries) => {
 	            entries.forEach(entry => {
 	                if (entry.isIntersecting) {
-	                    // 화면에 들어오면 클래스 추가 (애니메이션 시작)
 	                    entry.target.classList.add('is-visible');
 	                } else {
-	                    // 화면에서 완전히 벗어나면 클래스 제거 (초기화)
 	                    entry.target.classList.remove('is-visible');
 	                }
 	            });
 	        }, observerOptions);
 
-	        // 'fade-up-item' 클래스를 가진 요소들 감시
 	        const fadeItems = document.querySelectorAll('.fade-up-item');
 	        fadeItems.forEach(item => {
 	            observer.observe(item);

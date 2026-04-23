@@ -438,7 +438,7 @@ public class ContentController {
 		try {
 			contentService.createContentArt(createArtDTO, user);
 			// return "redirect:/content/art/list";
-			return "redirect:/";
+			return "redirect:/content/art/list";
 		} catch (IllegalArgumentException e) {
 			bindingResult.reject("updateNovelFailed", e.getMessage());
 			return "illustration_write";

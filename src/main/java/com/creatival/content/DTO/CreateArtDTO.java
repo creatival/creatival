@@ -41,6 +41,8 @@ public class CreateArtDTO {
 	private boolean fanWork;
 	private List<MultipartFile> images;
 	
+	private String tagString;
+	
 	private Long originalContentId;
 	
 	public Content toEntity(Users user,String thumbnailImgUrl, Content originalContent) {

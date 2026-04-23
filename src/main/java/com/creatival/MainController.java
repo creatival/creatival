@@ -32,6 +32,7 @@ public class MainController {
 		model.addAttribute("topNovel", contentService.getTopNovel(6));
 		model.addAttribute("topVideo", contentService.getTopVideo(6));
 		model.addAttribute("topMusic", contentService.getTopMusic(6));
+		model.addAttribute("topComic", contentService.getTopComic(6));
 		return "index";
 	}
 	
