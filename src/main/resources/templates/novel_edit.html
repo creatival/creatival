@@ -104,7 +104,7 @@
             <div class="col-lg-7 col-md-9">
 
 
-                <form th:action="@{/content/novel_update/{id}(id=${novelId})}" th:object="${novel}" method="post" id="editForm">
+                <form th:action="@{/content/novel/update/{id}(id=${novelId})}" th:object="${novel}" method="post" id="editForm">
                     
                     <div class="alert alert-danger shadow-sm rounded-3" role="alert" th:if="${#fields.hasAnyErrors()}">
                         <ul class="mb-0 list-unstyled text-center">

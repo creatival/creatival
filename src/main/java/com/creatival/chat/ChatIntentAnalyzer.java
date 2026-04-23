@@ -25,7 +25,12 @@ public class ChatIntentAnalyzer {
         if (containsAny(msg, "업로드", "작품", "콘텐츠", "글 등록", "게시")) {
             return ChatIntentType.CONTENT_GUIDE;
         }
-
+        if (containsAny(msg, "찾아줘", "검색해줘", "검색", "찾아")) {
+            if (containsAny(msg, "게시판", "게시글", "보드", "글")) {
+                return ChatIntentType.BOARD_SEARCH;
+            }
+            return ChatIntentType.CONTENT_SEARCH;
+        }
         if (containsAny(msg, "후원", "결제", "팀", "프로젝트", "로그인", "회원가입", "좋아요", "북마크")) {
             return ChatIntentType.GENERAL_GUIDE;
         }
@@ -35,6 +40,7 @@ public class ChatIntentAnalyzer {
         if (containsAny(msg, "저작권", "이용약관", "정책", "규정", "신고", "운영 원칙")) {
             return ChatIntentType.POLICY_QUESTION;
         }
+        
 
         return ChatIntentType.UNKNOWN;
     }

@@ -179,7 +179,7 @@
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
                 <div class="col" th:each="novel : ${paging}">
                     <div class="card novel-card h-100">
-                        <a th:href="@{|/content/novel_detail/${novel.id}|}" class="text-decoration-none text-dark">
+                        <a th:href="@{|/content/novel/detail/${novel.id}|}" class="text-decoration-none text-dark">
                             <div class="thumbnail-wrapper mb-2 shadow-sm">
                                 <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" 
                                      class="w-100 h-100" style="object-fit: cover;">

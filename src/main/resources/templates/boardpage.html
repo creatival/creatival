@@ -8,9 +8,8 @@
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	
-
-		<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-						<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+	<link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
 
 	<style>
 		:root {
@@ -28,25 +27,25 @@
 			color: #333;
 		}
 
+		/* 상단 마진을 80px로 늘려 헤더와의 공간 확보, 하단 마진을 100px로 늘려 푸터와의 공간 확보 */
 		.board-container {
 			max-width: 1200px;
-			margin: 0 auto;
+			margin: 80px auto 100px; 
 			padding: 0 15px;
 			overflow: hidden;
 		}
+
 		.table-board tbody tr:hover {
-		    background-color: #ccc; /* 마우스를 올리면 아주 연한 회색으로 변경 */
-		    transition: background-color 0.2s ease; /* 부드러운 전환 효과 */
+		    background-color: #f8f9fa; 
+		    transition: background-color 0.2s ease; 
 		}
 
-		/* 제목 td 영역 호버 시 커서 변경 및 강조 */
 		.table-board tbody td:nth-child(2):hover {
 		    cursor: pointer;
 		}
 
-		/* 제목 링크 전체 영역 클릭 가능하게 만들기 위한 설정 */
 		.table-board tbody td a {
-		    display: block; /* a 태그를 블록으로 만들어 td 전체를 채움 */
+		    display: block; 
 		    width: 100%;
 		    height: 100%;
 		    text-decoration: none;
@@ -54,55 +53,51 @@
 		}
 
 		/* 1. 상단 카테고리 아이콘 */
-			.category-item { 
-			        transition: all 0.3s ease; 
-			        text-decoration: none !important;
-			    }
-			    
-			    .icon-box {
-			        width: 80px; 
-			        height: 80px; 
-			        background-color: #F8F9FA; /* 기본 연회색 배경 */
-			        border-radius: 22px;
-			        margin: 0 auto 12px; 
-			        display: flex; 
-			        align-items: center; 
-			        justify-content: center;
-			        overflow: hidden;
-			        border: 1px solid #eee;
-			        transition: all 0.3s ease;
-			    }
-
-			    .category-icon-img {
-			        width: 100%;       
-			        height: 100%;      
-			        object-fit: contain; 
-			        padding: 18px; /* 아이콘 크기 통일 */
-			        transition: transform 0.3s ease;
-			    }
-
-			    /* 호버 시 디자인 변경: Creatival 오렌지색 적용 */
-			    .category-item:hover { 
-			        transform: translateY(-8px); 
-			    }
-			    
-			    .category-item:hover .category-icon-img {
-			        transform: scale(1.1); /* 아이콘 살짝 확대 */
-			    }
-
-			    .category-item .fw-bold {
-			        color: #3B4371; /* 브랜드 네이비 */
-			        font-size: 0.95rem;
-			        transition: color 0.3s ease;
-			    }
+		.category-item { 
+			transition: all 0.3s ease; 
+			text-decoration: none !important;
+		}
 		
+		.icon-box {
+			width: 80px; 
+			height: 80px; 
+			background-color: #F8F9FA; 
+			border-radius: 22px;
+			margin: 0 auto 12px; 
+			display: flex; 
+			align-items: center; 
+			justify-content: center;
+			overflow: hidden;
+			border: 1px solid #eee;
+			transition: all 0.3s ease;
+		}
+
+		.category-icon-img {
+			width: 100%;       
+			height: 100%;      
+			object-fit: contain; 
+			padding: 18px; 
+			transition: transform 0.3s ease;
+		}
+
+		.category-item:hover { 
+			transform: translateY(-8px); 
+		}
 		
-		
+		.category-item:hover .category-icon-img {
+			transform: scale(1.1); 
+		}
+
+		.category-item .fw-bold {
+			color: #3B4371; 
+			font-size: 0.95rem;
+			transition: color 0.3s ease;
+		}
 		
 		.board-main-title {
 			font-size: 2.2rem;
 			font-weight: 800;
-			margin: 30px 0;
+			margin: 40px 0;
 			text-align: center;
 		}
 
@@ -124,6 +119,7 @@
 			padding: 0 10px 15px 10px;
 			cursor: pointer;
 			transition: color 0.3s;
+			text-decoration: none;
 		}
 
 		.board-tab.active {
@@ -138,20 +134,9 @@
 			border-bottom: 2px solid var(--board-orange);
 		}
 
-		.tab-indicator {
-			position: absolute;
-			bottom: -1px;
-			height: 3px;
-			background-color: var(--board-orange);
-			border-radius: 3px 3px 0 0;
-			transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-			left: 0;
-			width: 0;
-		}
-
 		.board-search-container {
 			max-width: 600px;
-			margin: 0 auto 40px;
+			margin: 0 auto 50px; /* 검색창 아래 여백 추가 */
 			position: relative;
 		}
 
@@ -177,52 +162,6 @@
 			cursor: pointer;
 		}
 
-		.board-content-wrapper {
-			width: 100%;
-			position: relative;
-		}
-
-		.tab-content {
-			display: none;
-			width: 100%;
-		}
-
-		.tab-content.active {
-			display: block;
-		}
-
-		.slide-in-right {
-			animation: slideInRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-		}
-
-		.slide-in-left {
-			animation: slideInLeft 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-		}
-
-		@keyframes slideInRight {
-			from {
-				opacity: 0;
-				transform: translateX(30px);
-			}
-
-			to {
-				opacity: 1;
-				transform: translateX(0);
-			}
-		}
-
-		@keyframes slideInLeft {
-			from {
-				opacity: 0;
-				transform: translateX(-30px);
-			}
-
-			to {
-				opacity: 1;
-				transform: translateX(0);
-			}
-		}
-
 		.table-board {
 			width: 100%;
 			border-collapse: collapse;
@@ -232,8 +171,8 @@
 
 		.table-board th,
 		.table-board td {
-			font-size: 1.1rem;
-			padding: 15px 10px;
+			font-size: 1.05rem;
+			padding: 18px 10px; /* 행 높이 조절 */
 		}
 
 		.user-board-table thead {
@@ -242,7 +181,7 @@
 		}
 
 		.user-board-table td {
-			border-bottom: 2px solid var(--user-blue-line);
+			border-bottom: 1px solid #eee;
 		}
 
 		.creator-board-table {
@@ -258,7 +197,7 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			margin-bottom: 15px;
+			margin-bottom: 20px;
 		}
 
 		.btn-write {
@@ -273,23 +212,31 @@
 			font-size: 0.9rem;
 		}
 
-		/* 3. 시안과 동일한 빨간 밑줄 페이지네이션 */
-		       .custom-pagination .page-link {
-		           border: none; color: #333; font-weight: 700;
-		           background: none; padding: 2px 10px;
-		           font-size: 1.1rem;
-		       }
-		       .custom-pagination .page-item.active .page-link {
-		           background: none; color: #333; /* 글자는 검정 */
-		           border-bottom: 3px solid #f05a28; /* 주황-빨강 계열 밑줄 */
-		           border-radius: 0;
-		       }
-		       .custom-pagination .page-item.disabled .page-link { color: #ccc; }
-		       .custom-pagination .page-link:hover { color: #f05a28; }
-
-		.pagination-custom .active a {
-			color: var(--board-orange);
+		/* 3. 페이지네이션 스타일 */
+		.custom-pagination .page-link {
+			border: none; color: #333; font-weight: 700;
+			background: none; padding: 2px 10px;
+			font-size: 1.1rem;
 		}
+		.custom-pagination .page-item.active .page-link {
+			background: none; color: #333;
+			border-bottom: 3px solid #f05a28;
+			border-radius: 0;
+		}
+		.custom-pagination .page-item.disabled .page-link { color: #ccc; }
+		.custom-pagination .page-link:hover { color: #f05a28; }
+
+		/* 푸터 통합 디자인 */
+		.full-footer { 
+			background-color: #0b152d !important; 
+			color: white !important; 
+			width: 100%; 
+			margin-top: 0; 
+			padding: 80px 0 60px; /* 상단 여백을 80px로 넉넉히 설정 */
+		}
+		.full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
+		.footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 40px 0; }
+		.footer-link-item { cursor: pointer; list-style: none; }
 	</style>
 </head>
 
@@ -299,50 +246,48 @@
 
 		<div class="board-container">
 
-			<section class="py-5 bg-white">
-					    <div class="container">
-					        <div class="row text-center g-4 justify-content-center">
-					            
-								<div class="col-4 col-md-2">
-								                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
-								                        <div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
-								                        <div class="fw-bold">일러스트</div>
-								                    </a>
-								                </div>
-								                <div class="col-4 col-md-2">
-								                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
-								                        <div class="icon-box"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
-								                        <div class="fw-bold">만화</div>
-								                    </a>
-								                </div>
-								                <div class="col-4 col-md-2">
-								                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
-								                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
-								                        <div class="fw-bold">음악</div>
-								                    </a>
-								                </div>
-								                <div class="col-4 col-md-2">
-								                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
-								                        <div class="icon-box"><img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오"></div>
-								                        <div class="fw-bold">비디오</div>
-								                    </a>
-								                </div>
-								                <div class="col-4 col-md-2">
-								                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
-								                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
-								                        <div class="fw-bold">소설</div>
-								                    </a>
-								                </div>
-								                <div class="col-4 col-md-2">
-								                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
-								                        <div class="icon-box"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
-								                        <div class="fw-bold">파일</div>
-								                    </a>
-								                </div>
-
-					        </div>
-					    </div>
-					</section>
+			<section class="pb-5 bg-white">
+				<div class="container">
+					<div class="row text-center g-4 justify-content-center">
+						<div class="col-4 col-md-2">
+							<a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
+								<div class="icon-box"><img th:src="@{/images/paint.png}" class="category-icon-img" alt="일러스트"></div>
+								<div class="fw-bold">일러스트</div>
+							</a>
+						</div>
+						<div class="col-4 col-md-2">
+							<a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
+								<div class="icon-box"><img th:src="@{/images/comic.png}" class="category-icon-img" alt="만화"></div>
+								<div class="fw-bold">만화</div>
+							</a>
+						</div>
+						<div class="col-4 col-md-2">
+							<a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
+								<div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
+								<div class="fw-bold">음악</div>
+							</a>
+						</div>
+						<div class="col-4 col-md-2">
+							<a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
+								<div class="icon-box"><img th:src="@{/images/yutu.png}" class="category-icon-img" alt="비디오"></div>
+								<div class="fw-bold">비디오</div>
+							</a>
+						</div>
+						<div class="col-4 col-md-2">
+							<a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
+								<div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
+								<div class="fw-bold">소설</div>
+							</a>
+						</div>
+						<div class="col-4 col-md-2">
+							<a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
+								<div class="icon-box"><img th:src="@{/images/folder.png}" class="category-icon-img" alt="파일"></div>
+								<div class="fw-bold">파일</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</section>
 
 			<h1 class="board-main-title">게시판</h1>
 
@@ -354,8 +299,6 @@
 			    <a th:href="@{/board(type='CREATOR')}" 
 			       class="board-tab" 
 			       th:classappend="${type.name() == 'CREATOR'} ? 'active creator' : ''">창작자 게시판</a>
-			    
-			    <div id="tabIndicator" class="tab-indicator"></div>
 			</div>
 
 			<div class="board-search-container">
@@ -368,25 +311,9 @@
 			</div>
 
 			<div class="board-content-wrapper">
-
 				<div class="tab-content active" id="content-user">
-
 					<div class="board-top-actions">
 						<a onclick="return requireLoginAction(() => location.href='/board/write')" class="btn-write">글 작성</a>
-
-						<nav th:if="${!boardList.isEmpty()}">
-						    <ul class="pagination custom-pagination mb-0">
-						        <li class="page-item" th:classappend="${!boardList.hasPrevious} ? 'disabled'">
-						            <a class="page-link" th:href="@{|?page=${boardList.number - 1}|}">&lt;</a>
-						        </li>
-						        
-						        <li class="page-item active"><a class="page-link" href="#" th:text="${boardList.number + 1}">1</a></li>
-						        
-						        <li class="page-item" th:classappend="${!boardList.hasNext} ? 'disabled'">
-						            <a class="page-link" th:href="@{|?page=${boardList.number + 1}|}">&gt;</a>
-						        </li>
-						    </ul>
-						</nav>
 					</div>
 
 					<table class="table-board" 
@@ -405,8 +332,7 @@
 					            <td th:text="${boardStat.count}">1</td>
 					            <td style="text-align:left;padding-left:20px;">
 									<a th:href="@{/board/detail/{id}(id=${board.id})}" 
-								       th:text="${board.title}" 
-								       style="display: block; width: 100%; height: 100%; padding-left: 20px; text-decoration: none; color: inherit;">
+								       th:text="${board.title}">
 								       제목
 								    </a>
 								</td>
@@ -416,78 +342,60 @@
 					        </tr>
 					    </tbody>
 					</table>
-
 				</div>
 
 				<nav th:if="${!boardList.isEmpty()}">
-				    <ul class="pagination justify-content-center custom-pagination mt-4">
-				        
+				    <ul class="pagination justify-content-center custom-pagination mt-5">
 				        <li class="page-item" th:classappend="${!boardList.hasPrevious} ? 'disabled'">
-				            <a class="page-link" th:href="@{|?page=${boardList.number - 1}|}">&lt;</a>
+				            <a class="page-link" th:href="@{|?page=${boardList.number - 1}&type=${type}|}">&lt;</a>
 				        </li>
-				        
 				        <li class="page-item" 
-				            th:each="i : ${#numbers.sequence(
-				                (boardList.number - 2 < 0 ? 0 : boardList.number - 2), 
-				                (boardList.number + 2 >= boardList.totalPages ? boardList.totalPages - 1 : boardList.number + 2)
-				            )}"
+				            th:each="i : ${#numbers.sequence(0, boardList.totalPages - 1)}"
+							th:if="${i >= boardList.number - 2 and i <= boardList.number + 2}"
 				            th:classappend="${i == boardList.number} ? 'active'">
-				            <a class="page-link" th:href="@{|?page=${i}|}" th:text="${i + 1}">1</a>
+				            <a class="page-link" th:href="@{|?page=${i}&type=${type}|}" th:text="${i + 1}">1</a>
 				        </li>
-				        
 				        <li class="page-item" th:classappend="${!boardList.hasNext} ? 'disabled'">
-				            <a class="page-link" th:href="@{|?page=${boardList.number + 1}|}">&gt;</a>
+				            <a class="page-link" th:href="@{|?page=${boardList.number + 1}&type=${type}|}">&gt;</a>
 				        </li>
-				        
 				    </ul>
 				</nav>
-				<div class="tab-content" id="content-creator">
+			</div>
+		</div>
 
-					<div class="board-top-actions">
-
-						<a href="/write" class="btn-write" style="background-color:var(--board-orange);">창작물 등록</a>
-
-						<ul class="pagination-custom">
-							<li class="active"><a href="#">1</a></li>
+		<footer class="full-footer">
+			<div class="container">
+				<div class="row mb-4">
+					<div class="col-6 col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+						<h6 class="fw-bold mb-3" style="font-size: 0.95rem;">회사 정보</h6>
+						<ul class="list-unstyled small opacity-75" style="line-height: 1.8;">
+							<li class="footer-link-item">이용 안내</li>
+							<li class="footer-link-item">공지사항</li>
+							<li class="footer-link-item">고객센터</li>
+							<li class="footer-link-item">도움말</li>
+							<li class="footer-link-item">광고문의</li>
 						</ul>
-
 					</div>
-
-					<table class="table-board creator-board-table">
-
-						<thead>
-							<tr>
-								<th style="width:10%;">번호</th>
-								<th style="width:50%;">제목</th>
-								<th style="width:15%;">작성자</th>
-								<th style="width:15%;">날짜</th>
-								<th style="width:10%;">조회수</th>
-							</tr>
-						</thead>
-
-						<tbody>
-
-							<tr th:each="i : ${#numbers.sequence(1,10)}">
-								<td>[[${i}]]</td>
-								<td style="text-align:left;padding-left:20px;">창작 결과물 제목</td>
-								<td>닉네임</td>
-								<td>2026.03.12</td>
-								<td>1</td>
-							</tr>
-
-						</tbody>
-					</table>
-
 				</div>
 
-			</div>
+				<hr class="footer-line">
 
-		</div>
+				<div class="row align-items-center">
+					<div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+						<span class="fw-bold footer-link-item">이용 약관</span>
+						<span class="fw-bold footer-link-item">개인 정보 보호 정책</span>
+					</div>
+					<div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+						© 2026 creatival All rights reserved.
+					</div>
+					<div class="col-md-4 text-end">
+						<img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140" style="filter: brightness(0) invert(1);">
+					</div>
+				</div>
+			</div>
+		</footer>
 
 	</th:block>
 
-	
-
 </body>
-
 </html>

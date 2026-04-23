@@ -21,4 +21,14 @@ public interface TagToContentRepository extends JpaRepository<TagToContent, Long
     void deleteByContentIdAndTagId(@Param("contentId") Long contentId, @Param("tagId") Long tagId);
 	
 	void deleteByContent(Content content);
+	
+	@Query("""
+		    select distinct content
+		    from TagToContent ttc
+		    join ttc.tag t
+		    join ttc.content content
+		    where lower(t.tagText) = lower(:keyword)
+		    order by content.id desc
+		""")
+		List<Content> searchContentsByTag(@Param("keyword") String keyword);
 }

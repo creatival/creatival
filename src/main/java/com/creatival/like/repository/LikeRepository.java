@@ -18,4 +18,6 @@ public interface LikeRepository extends JpaRepository<Likes, Long>{
 	List<Likes> findTop6ByUserAndTargetTypeOrderByCreatedAt(Users user, TargetType targetType);
 
 	List<Likes> findByUserAndTargetType(Users user, TargetType content);
+	
+	void deleteByTargetIdAndTargetType(Long targetId, TargetType targetType);
 }

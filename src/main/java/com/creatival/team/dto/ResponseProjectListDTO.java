@@ -24,6 +24,8 @@ public class ResponseProjectListDTO {
 	
 	private String teamName;
 	
+	private Long teamId;
+	
 	private Long likeCount;
 	public static ResponseProjectListDTO from(Project project) {
 		return ResponseProjectListDTO.builder()
@@ -33,6 +35,7 @@ public class ResponseProjectListDTO {
 				.createdAt(project.getCreatedAt())
 				.teamName(project.getTeam().getName())
 				.likeCount(project.getLikeCount())
+				.teamId(project.getTeam().getId())
 				.build(); 
 	}
 }

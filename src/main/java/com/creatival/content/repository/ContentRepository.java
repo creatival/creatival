@@ -3,6 +3,8 @@ package com.creatival.content.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.creatival.content.Content;
 
@@ -41,4 +43,14 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 	List<Content> findTop4ByUserAndTypeOrderByCreatedAtDesc(Users user, ContentType type);
 
 	List<Content> findByVisibility(Visibility visibility);
+	
+	@Query("""
+		    select distinct c
+		    from Content c
+		    where lower(c.title) like lower(concat('%', :keyword, '%'))
+		       or lower(c.description) like lower(concat('%', :keyword, '%'))
+		    order by c.id desc
+		""")
+		List<Content> searchContents(@Param("keyword") String keyword);
+	
 }

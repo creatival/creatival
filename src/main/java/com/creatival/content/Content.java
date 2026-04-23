@@ -14,6 +14,7 @@ import org.hibernate.validator.constraints.UniqueElements;
 
 import com.creatival.content.Enum.OwnerType;
 import com.creatival.content.Enum.Visibility;
+import com.creatival.like.Likes;
 import com.creatival.tag.TagToContent;
 import com.creatival.tag.TagToUsers;
 import com.creatival.team.Project;
@@ -47,7 +48,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @SQLDelete(sql = "UPDATE content SET deleted = true, deleted_at = NOW() WHERE id = ?")
-@SQLRestriction("deleted = false")
+@SQLRestriction("deleted = false")	
 public class Content {
 	
 	protected Content() {
@@ -141,6 +142,7 @@ public class Content {
 	@OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<TagToContent> tagToContent = new ArrayList<>();
+	
 	
 	
 }

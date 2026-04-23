@@ -18,4 +18,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 	@Modifying
 	@Query("UPDATE Board b SET b.viewCount = b.viewCount + 1 WHERE b.id = :id")
 	void incrementViewCount(@Param("id") Long id);
+	
+	List<Board> findByTitleContaining(String keyword);
+	
+	@Query("""
+		    select distinct b
+		    from Board b
+		    where lower(b.title) like lower(concat('%', :keyword, '%'))
+		       or lower(b.boardText) like lower(concat('%', :keyword, '%'))
+		    order by b.id desc
+		""")
+		List<Board> searchBoards(@Param("keyword") String keyword);
 }

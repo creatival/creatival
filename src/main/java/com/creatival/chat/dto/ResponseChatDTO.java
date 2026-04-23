@@ -10,4 +10,5 @@ import lombok.Getter;
 public class ResponseChatDTO {
     private String reply;
     private List<RecommendedContentDTO> recommendations;
+    private List<BoardSearchDTO> boards;
 }

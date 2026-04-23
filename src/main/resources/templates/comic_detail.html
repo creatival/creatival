@@ -115,9 +115,16 @@
             
             <div class="col-md-8">
                 <div class="comic-info-card shadow-sm">
-                    <div class="mb-3">
-                        <h1 class="fw-bold mb-1" th:text="${comic.title}">만화 제목</h1>
-                        <p class="text-muted fs-5 mb-2">작가명 : <span class="text-dark" th:text="|${comic.username}(${comic.displayname})|">홍길동 / 임꺽정</span></p>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="fw-bold mb-1" th:text="${comic.title}">만화 제목</h1>
+                            <p class="text-muted fs-5 mb-2">작가명 : <span class="text-dark" th:text="|${comic.username}(${comic.displayname})|">홍길동 / 임꺽정</span></p>
+                        </div>
+                        
+                        <div sec:authorize="isAuthenticated()" th:if="${comic.username == #authentication.name}" class="d-flex gap-2">
+                            <a th:href="@{/content/comic/update/{id}(id=${comic.id})}" class="btn btn-sm btn-outline-secondary">수정하기</a>
+                            <a th:href="@{/content/comic/delete/{id}(id=${comic.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('이 만화를 정말 삭제하시겠습니까?');">삭제하기</a>
+                        </div>
                     </div>
 
                     <div class="d-flex gap-4 mb-3 text-secondary border-bottom pb-3">
@@ -157,13 +164,6 @@
                     </div>
 
                     <div class="action-buttons">
-						<button class="btn-action" 
-		                        th:onclick="|location.href='@{/content/comic/update/{id}(id=${comic.id})}'|"
-		                        th:if="${comic.username == #authentication.name}">
-		                    <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
-		                    <span>수정하기</span>
-		                </button>
-
 		                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${comic.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
 		                    <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
 		                    <span>좋아요</span>

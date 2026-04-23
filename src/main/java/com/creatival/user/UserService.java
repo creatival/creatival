@@ -70,15 +70,6 @@ public class UserService {
 		if(!signUpRequest.getPassword().equals(signUpRequest.getPassword2())) {
 			throw new IllegalStateException("비밀번호가 같지 않습니다.");
 		}
-		
-		String profileImgUrl = imgPath;
-		
-		if(signUpRequest.getProfileImg()!=null) {
-			profileImgUrl += fileUtil.saveImage(signUpRequest.getProfileImg(), "user");
-		}
-		
-		
-		
 		Users user = new Users(
 				signUpRequest.getUsername(),
 				signUpRequest.getDisplayName(),
@@ -86,7 +77,17 @@ public class UserService {
 				passwordEncoder.encode(signUpRequest.getPassword()),
 				signUpRequest.isCreator()
 		);
-		user.setProfileImgUrl(profileImgUrl);
+		String profileImgUrl = imgPath;
+		
+		if(signUpRequest.getProfileImg()!=null) {
+			profileImgUrl += fileUtil.saveImage(signUpRequest.getProfileImg(), "user");
+			user.setProfileImgUrl(profileImgUrl);
+		}
+		
+		
+		
+		
+		
 		user.setDescription(signUpRequest.getDescription());
 
 		

@@ -1,0 +1,378 @@
+<html layout:decorate="~{layout}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<div class="container py-4" layout:fragment="content">
+
+    <style>
+        .search-tabs-wrap {
+            margin-bottom: 1.25rem;
+        }
+
+        .search-result-card {
+            padding: 12px 14px;
+            border-radius: 12px;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
+            height: 100%;
+        }
+
+        .search-result-card:hover {
+            background-color: #fafafa;
+            box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,.08);
+        }
+
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .search-thumb {
+            width: 56px !important;
+            height: 56px !important;
+            min-width: 56px;
+            max-width: 56px;
+            min-height: 56px;
+            max-height: 56px;
+            object-fit: cover;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: block;
+            border: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+        }
+
+        .search-text {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .search-title {
+            font-size: 0.95rem;
+            line-height: 1.25;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #212529;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-desc {
+            font-size: 0.8rem;
+            line-height: 1.35;
+            color: #6c757d;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+            margin-bottom: 0;
+        }
+
+        .search-empty {
+            color: #6c757d;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+        }
+
+        .tab-pane {
+            padding-top: 1rem;
+        }
+    </style>
+
+    <div class="search-tabs-wrap">
+        <h3 class="fw-bold mb-2">검색 결과</h3>
+        <div class="text-muted mb-3">
+            "<span th:text="${keyword}">검색어</span>"
+            /
+            <span th:text="${type == 'tag' ? '태그 검색' : '일반 검색'}">일반 검색</span>
+        </div>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-all" type="button" role="tab">전체</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-user" type="button" role="tab">사용자</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-team" type="button" role="tab">팀</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-project" type="button" role="tab">프로젝트</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-content" type="button" role="tab">콘텐츠</button>
+            </li>
+            <li class="nav-item" role="presentation" th:if="${!isTagSearch}">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-board" type="button" role="tab">게시글</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content">
+
+        <!-- 전체 -->
+        <div class="tab-pane fade show active" id="tab-all" role="tabpanel">
+
+            <!-- 사용자 -->
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h5 class="fw-bold mb-0">사용자</h5>
+                </div>
+
+                <div th:if="${#lists.isEmpty(userPreviewResults)}" class="search-empty">결과 없음</div>
+
+                <div th:unless="${#lists.isEmpty(userPreviewResults)}" class="row g-3">
+                    <div class="col-md-6 col-lg-4" th:each="user : ${userPreviewResults}">
+                        <a th:href="@{/user/myPage/{id}(id=${user.id})}" class="text-decoration-none">
+                            <div class="card search-result-card">
+                                <div class="search-row">
+                                    <img class="search-thumb"
+                                         th:src="${user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/60x60/ced4da/6c757d&text=U'}"
+                                         alt="user image">
+                                    <div class="search-text">
+                                        <div class="search-title"
+                                             th:text="${user.displayName != null ? user.displayName : user.username}">사용자명</div>
+                                        <p class="search-desc" th:text="${user.username}">아이디</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 팀 -->
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h5 class="fw-bold mb-0">팀</h5>
+                </div>
+
+                <div th:if="${#lists.isEmpty(teamPreviewResults)}" class="search-empty">결과 없음</div>
+
+                <div th:unless="${#lists.isEmpty(teamPreviewResults)}" class="row g-3">
+                    <div class="col-md-6 col-lg-4" th:each="team : ${teamPreviewResults}">
+                        <a th:href="@{/team/{id}(id=${team.id})}" class="text-decoration-none">
+                            <div class="card search-result-card">
+                                <div class="search-row">
+                                    <img class="search-thumb"
+                                         th:src="${team.profileImgUrl != null ? team.profileImgUrl : 'https://dummyimage.com/60x60/adb5bd/ffffff&text=T'}"
+                                         alt="team image">
+                                    <div class="search-text">
+                                        <div class="search-title" th:text="${team.name}">팀명</div>
+                                        <p class="search-desc" th:text="${team.description}">팀 설명</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 프로젝트 -->
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h5 class="fw-bold mb-0">프로젝트</h5>
+                </div>
+
+                <div th:if="${#lists.isEmpty(projectPreviewResults)}" class="search-empty">결과 없음</div>
+
+                <div th:unless="${#lists.isEmpty(projectPreviewResults)}" class="row g-3">
+                    <div class="col-md-6 col-lg-4" th:each="project : ${projectPreviewResults}">
+                        <a th:href="@{/team/{tid}/project/{id}(id=${project.id},tid=${project.teamId})}" class="text-decoration-none">
+                            <div class="card search-result-card">
+                                <div class="search-row">
+                                    <img class="search-thumb"
+                                         th:src="${project.bannerImgUrl != null ? project.bannerImgUrl : 'https://dummyimage.com/60x60/6c757d/ffffff&text=P'}"
+                                         alt="project image">
+                                    <div class="search-text">
+                                        <div class="search-title" th:text="${project.title}">프로젝트명</div>
+                                        <p class="search-desc" th:text="|${project.teamName} 소속|">프로젝트 설명</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 콘텐츠 -->
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h5 class="fw-bold mb-0">콘텐츠</h5>
+                </div>
+
+                <div th:if="${#lists.isEmpty(contentPreviewResults)}" class="search-empty">결과 없음</div>
+
+                <div th:unless="${#lists.isEmpty(contentPreviewResults)}" class="row g-3">
+                    <div class="col-md-6 col-lg-4" th:each="content : ${contentPreviewResults}">
+                        <a th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}"
+                           class="text-decoration-none">
+                            <div class="card search-result-card">
+                                <div class="search-row">
+                                    <img class="search-thumb"
+                                         th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : 'https://dummyimage.com/60x60/343a40/ffffff&text=C'}"
+                                         alt="content image">
+                                    <div class="search-text">
+                                        <div class="search-title" th:text="${content.title}">콘텐츠명</div>
+                                        <p class="search-desc"
+                                           th:text="|소유자 : ${content.displayname} / 유형 : ${content.type}|">콘텐츠 설명</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 게시글 -->
+            <section class="mb-5" th:if="${!isTagSearch}">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h5 class="fw-bold mb-0">게시글</h5>
+                </div>
+
+                <div th:if="${#lists.isEmpty(boardPreviewResults)}" class="search-empty">결과 없음</div>
+
+                <div th:unless="${#lists.isEmpty(boardPreviewResults)}" class="row g-3">
+                    <div class="col-12" th:each="board : ${boardPreviewResults}">
+                        <a th:href="@{/board/detail/{id}(id=${board.id})}" class="text-decoration-none">
+                            <div class="card search-result-card">
+                                <div class="search-row">
+                                    <img class="search-thumb"
+                                         src="https://dummyimage.com/60x60/e9ecef/495057&text=B"
+                                         alt="board image">
+                                    <div class="search-text">
+                                        <div class="search-title" th:text="${board.title}">게시글 제목</div>
+                                        <p class="search-desc"
+                                           th:text="|작성자 : ${board.username}(${board.displayname}) / 작성일 : ${board.createdAt}|">게시글 설명</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- 사용자 -->
+        <div class="tab-pane fade" id="tab-user" role="tabpanel">
+            <div th:if="${#lists.isEmpty(userResults)}" class="search-empty">결과 없음</div>
+            <div th:unless="${#lists.isEmpty(userResults)}" class="row g-3">
+                <div class="col-md-6 col-lg-4" th:each="user : ${userResults}">
+                    <a th:href="@{/user/myPage/{id}(id=${user.id})}" class="text-decoration-none">
+                        <div class="card search-result-card">
+                            <div class="search-row">
+                                <img class="search-thumb"
+                                     th:src="${user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/60x60/ced4da/6c757d&text=U'}"
+                                     alt="user image">
+                                <div class="search-text">
+                                    <div class="search-title"
+                                         th:text="${user.displayName != null ? user.displayName : user.username}">사용자명</div>
+                                    <p class="search-desc" th:text="${user.username}">아이디</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 팀 -->
+        <div class="tab-pane fade" id="tab-team" role="tabpanel">
+            <div th:if="${#lists.isEmpty(teamResults)}" class="search-empty">결과 없음</div>
+            <div th:unless="${#lists.isEmpty(teamResults)}" class="row g-3">
+                <div class="col-md-6 col-lg-4" th:each="team : ${teamResults}">
+                    <a th:href="@{/team/{id}(id=${team.id})}" class="text-decoration-none">
+                        <div class="card search-result-card">
+                            <div class="search-row">
+                                <img class="search-thumb"
+                                     th:src="${team.profileImgUrl != null ? team.profileImgUrl : 'https://dummyimage.com/60x60/adb5bd/ffffff&text=T'}"
+                                     alt="team image">
+                                <div class="search-text">
+                                    <div class="search-title" th:text="${team.name}">팀명</div>
+                                    <p class="search-desc" th:text="${team.description}">팀 설명</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 프로젝트 -->
+        <div class="tab-pane fade" id="tab-project" role="tabpanel">
+            <div th:if="${#lists.isEmpty(projectResults)}" class="search-empty">결과 없음</div>
+            <div th:unless="${#lists.isEmpty(projectResults)}" class="row g-3">
+                <div class="col-md-6 col-lg-4" th:each="project : ${projectResults}">
+                    <a th:href="@{/team/{tid}/project/{id}(id=${project.id},tid=${project.teamId})}" class="text-decoration-none">
+                        <div class="card search-result-card">
+                            <div class="search-row">
+                                <img class="search-thumb"
+                                     th:src="${project.bannerImgUrl != null ? project.bannerImgUrl : 'https://dummyimage.com/60x60/6c757d/ffffff&text=P'}"
+                                     alt="project image">
+                                <div class="search-text">
+                                    <div class="search-title" th:text="${project.title}">프로젝트명</div>
+                                    <p class="search-desc" th:text="|${project.teamName} 소속|">프로젝트 설명</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 콘텐츠 -->
+        <div class="tab-pane fade" id="tab-content" role="tabpanel">
+            <div th:if="${#lists.isEmpty(contentResults)}" class="search-empty">결과 없음</div>
+            <div th:unless="${#lists.isEmpty(contentResults)}" class="row g-3">
+                <div class="col-md-6 col-lg-4" th:each="content : ${contentResults}">
+                    <a th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}"
+                       class="text-decoration-none">
+                        <div class="card search-result-card">
+                            <div class="search-row">
+                                <img class="search-thumb"
+                                     th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : 'https://dummyimage.com/60x60/343a40/ffffff&text=C'}"
+                                     alt="content image">
+                                <div class="search-text">
+                                    <div class="search-title" th:text="${content.title}">콘텐츠명</div>
+                                    <p class="search-desc"
+                                       th:text="|소유자 : ${content.displayname} / 유형 : ${content.type}|">콘텐츠 설명</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 게시글 -->
+        <div class="tab-pane fade" id="tab-board" role="tabpanel" th:if="${!isTagSearch}">
+            <div th:if="${#lists.isEmpty(boardResults)}" class="search-empty">결과 없음</div>
+            <div th:unless="${#lists.isEmpty(boardResults)}" class="row g-3">
+                <div class="col-12" th:each="board : ${boardResults}">
+                    <a th:href="@{/board/detail/{id}(id=${board.id})}" class="text-decoration-none">
+                        <div class="card search-result-card">
+                            <div class="search-row">
+                                <img class="search-thumb"
+                                     src="https://dummyimage.com/60x60/e9ecef/495057&text=B"
+                                     alt="board image">
+                                <div class="search-text">
+                                    <div class="search-title" th:text="${board.title}">게시글 제목</div>
+                                    <p class="search-desc"
+                                       th:text="|작성자 : ${board.username}(${board.displayname}) / 작성일 : ${board.createdAt}|">게시글 설명</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</html>

@@ -206,7 +206,7 @@ public class ContentController {
 	}
 
 	@GetMapping("/novel/delete/{id}")
-	public String novel_delete(@PathVariable("id") Long id, Principal principal) {
+	public String novel_delete(@PathVariable("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
 		Content content = contentService.getNovel(id);
 
 		if (content.getOwnerType() != OwnerType.TEAM && content.getUser().getUsername() != principal.getName()) {
@@ -215,12 +215,25 @@ public class ContentController {
 		}
 
 		if (content.getOwnerType() == OwnerType.TEAM) {
-			return "redirect:content/novel/detail/" + id + "?error=팀 컨텐츠를 함부로 지울 수는 없습니다.";
+			
+			return "redirect:content/novel/detail/" + id;
 		}
 		if (content.getUser().getUsername() != principal.getName()) {
-			return "redirect:content/novel/detail/" + id + "?error=콘텐츠의 소유자가 아닙니다.";
+			redirectAttributes.addFlashAttribute("message", "콘텐츠의 소유자가 아닙니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:content/novel/detail/" + id;
 		}
-		return "redirect:content/novel/detail/" + id + "?error=알 수 없는 오류가 발생했습니다.";
+		try {
+			contentService.delete(content);
+			redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
+			redirectAttributes.addFlashAttribute("icon", "success");
+			return "redirect:content/novel/list";
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다.");
+			redirectAttributes.addFlashAttribute("icon", "warning");
+			return "redirect:content/novel/detail/" + id;
+		}
+		
 	}
 
 	@GetMapping("/novel/update/{id}")

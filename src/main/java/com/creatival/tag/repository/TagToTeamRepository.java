@@ -19,4 +19,14 @@ public interface TagToTeamRepository extends JpaRepository<TagToTeam, Long> {
     @Transactional
     @Query("DELETE FROM TagToTeam tm WHERE tm.team.id = :teamId AND tm.tag.id = :tagId")
     void deleteByTeamIdAndTagId(@Param("teamId") Long teamId, @Param("tagId") Long tagId);
+	
+	@Query("""
+		    select distinct team
+		    from TagToTeam ttt
+		    join ttt.tag t
+		    join ttt.team team
+		    where lower(t.tagText) = lower(:keyword)
+		    order by team.id desc
+		""")
+		List<Team> searchTeamsByTag(@Param("keyword") String keyword);
 }

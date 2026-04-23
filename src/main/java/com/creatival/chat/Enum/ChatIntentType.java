@@ -7,5 +7,7 @@ public enum ChatIntentType {
     CONTENT_GUIDE,          // 작품/업로드 관련 안내
     CONTENT_RECOMMEND, 		// 작품 추천 관련
     POLICY_QUESTION, 		// 저작권 관련
+    CONTENT_SEARCH,			// 콘텐츠 검색 관련
+    BOARD_SEARCH,			// 보드 검색 관련
     UNKNOWN
 }

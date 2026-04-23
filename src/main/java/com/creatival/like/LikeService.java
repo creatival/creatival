@@ -228,5 +228,10 @@ public class LikeService {
 		return allLikeContentList;
 		
 	}
+
+	public void deleteLike(TargetType content, Long id) {
+		likeRepository.deleteByTargetIdAndTargetType(id, content);
+		
+	}
 	
 }

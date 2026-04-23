@@ -24,4 +24,14 @@ public interface TagToUsersRepository extends JpaRepository<TagToUsers, Long> {
     void deleteByUserIdAndTagId(@Param("userId") Long userId, @Param("tagId") Long tagId);
 	
 	void deleteByUser(Users user);
+	
+	@Query("""
+		    select distinct u
+		    from TagToUsers ttu
+		    join ttu.tag t
+		    join ttu.user u
+		    where lower(t.tagText) = lower(:keyword)
+		    order by u.id desc
+		""")
+		List<Users> searchUsersByTag(@Param("keyword") String keyword);
 }

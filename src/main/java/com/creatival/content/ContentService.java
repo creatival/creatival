@@ -59,6 +59,8 @@ import com.creatival.content.repository.EpisodeRepository;
 import com.creatival.content.repository.SeriesRepository;
 import com.creatival.like.LikeService;
 import com.creatival.like.Likes;
+import com.creatival.like.TargetType;
+import com.creatival.like.repository.LikeRepository;
 import com.creatival.tag.TagService;
 import com.creatival.team.Project;
 import com.creatival.team.TeamMember;
@@ -86,6 +88,7 @@ public class ContentService {
 	private final EpisodeRepository episodeRepository;
 	private final UserService userService;
 	private final FileUtil fileUtil;
+	private final LikeRepository likeRepository; // 포기 이거 해결 방법 모르겠음
 
 	
 	//공통 라인 //
@@ -203,6 +206,7 @@ public class ContentService {
 	
 	public void delete(Content content) {
 		contentRepository.delete(content);
+		likeRepository.deleteByTargetIdAndTargetType(content.getId(), TargetType.CONTENT);
 	}
 	
 	public void updateContentNovel(UpdateNovelDTO updateNovelDTO, Long id, String username) {
@@ -314,6 +318,7 @@ public class ContentService {
 	
 	public void deleteEpisode(Episode episode) {
 		episodeRepository.delete(episode);
+		likeRepository.deleteByTargetIdAndTargetType(episode.getId(), TargetType.CONTENT);
 	}
 	
 	@Transactional
@@ -1049,6 +1054,7 @@ public class ContentService {
 			throw new IllegalArgumentException("지울려는 콘텐츠가 없습니다.");
 		}
 		contentRepository.delete(content);
+		likeRepository.deleteByTargetIdAndTargetType(content.getId(), TargetType.CONTENT);
 	}
 	
 	

@@ -31,12 +31,60 @@
                 <a class="navbar-brand" th:href="@{/}">
                     <img th:src="@{/images/creatival_logoV5-Photoroom.png}" alt="Logo" style="width: 200px;">
                 </a>
+
                 <div class="container">
-                    <div class="input-group search-bar">
-                        <input type="text" class="form-control search-input" placeholder="search">
-                        <button class="btn search-btn" type="button"><i class="bi bi-search"></i></button>
+                    <div class="input-group search-bar" style="position: relative;">
+                        <input type="text"
+                               class="form-control search-input"
+                               id="searchInput"
+                               placeholder="search"
+                               autocomplete="off">
+                        <button class="btn search-btn" type="button" id="searchBtn">
+                            <i class="bi bi-search"></i>
+                        </button>
+
+                        <!-- 검색 선택 박스 -->
+                        <div id="searchOptions" style="
+                            position:absolute;
+                            top:110%;
+                            left:0;
+                            width:100%;
+                            background:#fff;
+                            border:1px solid #ddd;
+                            border-radius:8px;
+                            display:none;
+                            z-index:1000;
+                            overflow:hidden;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                        ">
+                            <div class="p-2 search-option" data-type="general" style="cursor:pointer;">
+                                🔍 일반 검색
+                            </div>
+                            <div class="p-2 search-option" data-type="tag" style="cursor:pointer;">
+                                # 태그 검색
+                            </div>
+                        </div>
+
+                        <!-- 실시간 추천 -->
+                        <div id="searchSuggestBox" style="
+                            position:absolute;
+                            top:110%;
+                            left:0;
+                            width:100%;
+                            background:#fff;
+                            border:1px solid #ddd;
+                            border-radius:8px;
+                            display:none;
+                            z-index:1001;
+                            overflow:hidden;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                            max-height:280px;
+                            overflow-y:auto;
+                        ">
+                        </div>
                     </div>
                 </div>
+
                 <div class="d-flex align-items-center gap-3">
                     <button class="btn position-relative"><i class="bi bi-bell fs-5"></i></button>
                     <div class="dropdown">
@@ -66,7 +114,7 @@
         /* 서버 메시지 처리 */
         const msg = /*[[${message}]]*/ null;
         const icon = /*[[${icon}]]*/ "info";
-        const isLogMessage = /*[[${isLogMsg}]]*/ false; // 로그인 권장 알림 여부
+        const isLogMessage = /*[[${isLogMsg}]]*/ false;
 
         if(msg){
             Swal.fire({ icon: icon, text: msg });
@@ -76,7 +124,6 @@
             showLoginAlert();
         }
 
-        /* 공통 로그인 권장 알림창 */
         function showLoginAlert() {
             Swal.fire({
                 icon: 'warning',
@@ -92,7 +139,6 @@
             });
         }
 
-        /* 로그인 체크 및 액션 실행 함수 */
         function requireLoginAction(actionCallback) {
             const isLoggedIn = [[${#authentication.principal != 'anonymousUser'}]];
             if (!isLoggedIn) {
@@ -103,7 +149,6 @@
             return true;
         }
 
-        /* 좋아요 토글 (엄지척) */
         function toggleLike(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
@@ -126,7 +171,6 @@
             });
         }
 
-        /* 좋아요 토글 (하트) */
         function toggleLikeHeart(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
@@ -149,7 +193,6 @@
             });
         }
 
-        /* 북마크 토글 */
         function toggleBookmark(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
@@ -170,7 +213,6 @@
             });
         }
 
-        /* 팔로우 토글 */
         function toggleFollow(targetId, type) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
@@ -190,19 +232,89 @@
                 });
             });
         }
-		function confirmDelete(id) {
-		    Swal.fire({
-		        title: '삭제하시겠습니까?',
-		        text: '삭제 후 복구할 수 없습니다.',
-		        icon: 'warning',
-		        showCancelButton: true,
-		        confirmButtonColor: '#dc3545',
-		        cancelButtonColor: '#6c757d',
-		        confirmButtonText: '삭제',
-		        cancelButtonText: '취소'
-		    }).then((result) => {
-		        if (result.isConfirmed) {
-		            location.href = `/content/delete/${id}`;
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '삭제하시겠습니까?',
+                text: '삭제 후 복구할 수 없습니다.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '삭제',
+                cancelButtonText: '취소'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.href = `/content/delete/${id}`;
+                }
+            });
+        }
+
+        /* =========================
+           검색 기능
+        ========================= */
+		/* 검색 기능 */
+		const searchInput = document.getElementById('searchInput');
+		const searchBtn = document.getElementById('searchBtn');
+		const searchOptions = document.getElementById('searchOptions');
+		const searchOptionItems = document.querySelectorAll('.search-option');
+
+		function showSearchOptions() {
+		    const keyword = searchInput.value.trim();
+		    if (keyword.length > 0) {
+		        searchOptions.style.display = 'block';
+		    } else {
+		        searchOptions.style.display = 'none';
+		    }
+		}
+
+		function hideSearchOptions() {
+		    searchOptions.style.display = 'none';
+		}
+
+		function goSearch(type) {
+		    const keyword = searchInput.value.trim();
+		    if (!keyword) return;
+		    location.href = `/search?keyword=${encodeURIComponent(keyword)}&type=${type}`;
+		}
+
+		if (searchInput && searchBtn && searchOptions) {
+		    searchInput.addEventListener('input', () => {
+		        showSearchOptions();
+		    });
+
+		    searchInput.addEventListener('focus', () => {
+		        showSearchOptions();
+		    });
+
+		    searchBtn.addEventListener('click', () => {
+		        showSearchOptions();
+		    });
+
+		    searchInput.addEventListener('keydown', (e) => {
+		        if (e.key === 'Enter') {
+		            e.preventDefault();
+		            showSearchOptions();
+		        }
+		    });
+
+		    searchOptionItems.forEach(item => {
+		        item.addEventListener('click', () => {
+		            goSearch(item.dataset.type);
+		        });
+
+		        item.addEventListener('mouseenter', () => {
+		            item.style.backgroundColor = '#f8f9fa';
+		        });
+
+		        item.addEventListener('mouseleave', () => {
+		            item.style.backgroundColor = '#fff';
+		        });
+		    });
+
+		    document.addEventListener('click', (e) => {
+		        if (!e.target.closest('.search-bar')) {
+		            hideSearchOptions();
 		        }
 		    });
 		}
