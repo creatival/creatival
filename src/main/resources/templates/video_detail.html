@@ -56,6 +56,8 @@
                     <span th:text="${follow.followed ? '팔로잉' : '팔로우'}">팔로우</span>
                 </button>
 				<button class="btn btn-boost shadow-sm">후원하기</button>
+
+				
                 <div class="d-flex gap-2">
                     <div class="btn-group shadow-sm" role="group">
                         <button th:onclick="|toggleLike(${video.id}, 'CONTENT')|" id="likeBtn" type="button" class="btn btn-light border-secondary-subtle d-flex align-items-center">
@@ -93,10 +95,15 @@
                 <p class="fw-bold small mb-2">
                     조회수 <span th:text="${video.viewCount != null ? #numbers.formatInteger(video.viewCount, 0, 'COMMA') : '0'}">0</span>회 • 
                     <span th:text="${#temporals.format(video.createdAt, 'yyyy년 MM월 dd일')}">2026년 01월 01일</span>
+					
                 </p>
                 <p class="mb-3 text-break text-muted" style="white-space: pre-wrap;" th:text="${video.description}">
                     영상 설명이 들어가는 곳입니다.
                 </p>
+				<form th:if="${video.username == #authentication.name}" th:action="@{/redeem/create/content/{id}(id=${video.id})}" method="post" class="d-flex justify-content-end mb-3">
+								            <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3"><i class="bi bi-key-fill me-1"></i> 리딤 코드 발급</button>
+								        </form>
+				
 				<div th:if="${video.paid}">
 					    <div th:if="${hasAccess}">
 					        <span class="badge bg-success">구매 완료</span>
@@ -126,12 +133,15 @@
                             <i class="bi bi-x-circle-fill ms-1"></i>
                         </a>
                     </div>
+					
                     <button type="button" sec:authorize="isAuthenticated()" th:if="${video.username == #authentication.name}"
                             class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2" style="width:24px;height:24px;"
                             data-bs-toggle="modal" data-bs-target="#tagAddModal">
                         <i class="bi bi-plus"></i>
                     </button>
+					
                 </div>
+				
             </div>
 
             <div th:if="${video.isAllowComment}">
@@ -188,23 +198,6 @@
 			                    </div>
 			                </a>
 			            </div>
-						<BR>
-			<h6 class="fw-bold mb-3">다음 동영상</h6>
-									            <div class="d-flex flex-column gap-3">
-									                <a href="#" class="text-decoration-none text-dark">
-									                    <div class="d-flex gap-2 align-items-start">
-									                        <div class="position-relative bg-dark rounded-2 overflow-hidden flex-shrink-0" style="width: 160px; height: 90px;">
-									                            <img src="https://dummyimage.com/160x90/444/fff" class="object-fit-cover w-100 h-100" alt="추천 영상">
-									                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-1 z-1" style="font-size: 0.7rem;">12:05</span>
-									                        </div>
-									                        <div class="overflow-hidden">
-									                            <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.95rem;">유니티로 2D 플랫포머 게임 만들기 2편</h6>
-									                            <p class="text-muted small mb-0 text-truncate">Creatival_Official</p>
-									                            <p class="text-muted small mb-0">조회수 1.1만회 • 1일 전</p>
-									                        </div>
-									                    </div>
-									                </a>
-									            </div>
         </div>
     </div>
 

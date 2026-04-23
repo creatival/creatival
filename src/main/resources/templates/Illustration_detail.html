@@ -137,7 +137,7 @@
                 </div>
                 </div>
             <div class="action-buttons">
-                <button class="btn-boost shadow-sm me-2">후원하기</button>
+                <button class="btn-boost shadow-sm me-2" th:if="${art.username != #authentication.name}">후원하기</button>
                 
                 <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|" th:classappend="${like.liked ? ' active' : ''}">
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span>

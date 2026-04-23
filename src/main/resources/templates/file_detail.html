@@ -31,10 +31,14 @@
         /* [2. 액션 버튼 그룹 (button 태그 호환용 커서 추가)] */
         .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap; align-items: center; }
         .btn-action { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; cursor: pointer; }
+		
         .btn-action:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .btn-action i { font-size: 1.8rem; margin-bottom: 5px; transition: color 0.2s; }
         .btn-action span { font-size: 0.85rem; font-weight: 600; }
-        
+
+		/* 댓글 수정,답글,삭제 버튼
+		.btn-dat { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 50; height: 50px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; cursor: pointer; }
+		
         /* 동적 좋아요/북마크 색상 */
         .btn-like i { color: #ff4757; }
         .btn-like.active i { color: #ff4757; }
@@ -94,6 +98,9 @@
                     <a href="#" class="user-id" th:text="${fileDetail.displayname}">작가명</a> · 
                     <span th:text="${#temporals.format(fileDetail.createdAt, 'yyyy.MM.dd')}">날짜</span>
                 </div>
+				<form th:if="${fileDetail.username == #authentication.name}" th:action="@{/redeem/create/content/{id}(id=${fileDetail.id})}" method="post" class="d-flex justify-content-end mb-3">
+				    <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3"><i class="bi bi-key-fill me-1"></i> 리딤 코드 발급</button>
+				</form>
                 <div th:if="${fileDetail.paid}">
                     <div th:if="${hasAccess}">
                         <span class="badge bg-success">구매 완료</span>
@@ -146,6 +153,7 @@
 
             <div class="text-center">
                 <p class="small fw-bold mb-3 text-muted">ATTACHMENTS</p>
+				
                 <div class="file-box-wrapper">
                     <div class="file-item text-center" th:if="${fileDetail.file != null}">
                         <a th:href="${fileDetail.file.fileUrl}" class="file-preview-box shadow-sm" target="_blank">
@@ -153,9 +161,11 @@
                             <span class="small fw-bold text-truncate px-2 w-100" th:text="${fileDetail.file.originalFileName}">파일.zip</span>
                         </a>
                         <a th:href="${fileDetail.file.fileUrl}" class="btn btn-outline-dark btn-download-sm" download>다운로드</a>
+						
                     </div>
+					
                 </div>
-
+				
                 <div class="tag-area mt-4 mb-4">
                     <div class="mb-2 d-flex justify-content-center align-items-center flex-wrap">
                         <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal tag-badge">
@@ -168,7 +178,7 @@
                                 <i class="bi bi-x-circle-fill" style="font-size: 0.8rem;"></i>
                             </a>
                         </div>
-
+						
                         <button type="button"
                                 sec:authorize="isAuthenticated()"
                                 th:if="${fileDetail.username == #authentication.name}"
@@ -181,14 +191,15 @@
                     </div>
                 </div>
             </div>
-
+	
             <div class="d-flex justify-content-end align-items-center mb-5 mt-4">
                 <div class="ms-auto d-flex gap-2">
                     <a href="#" class="btn btn-boost shadow-sm px-4 rounded-pill">후원하기</a>
                     <a th:href="@{/content/file/list}" class="btn btn-navy px-5">목록보기</a>
                 </div>
+				
             </div>
-
+	
             <hr class="section-divider">
             
             <div th:if="${fileDetail.allowComment}" class="comment-section mb-5">

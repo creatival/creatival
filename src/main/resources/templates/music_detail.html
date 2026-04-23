@@ -114,7 +114,9 @@
                                 </div>
 								
                                 <div th:if="${!music.paid}" class="mt-3"><span class="badge bg-secondary">무료 콘텐츠</span></div>
-								
+								<form th:if="${music.username == #authentication.name}" th:action="@{/redeem/create/content/{id}(id=${music.id})}" method="post" class="d-flex justify-content-end mb-3">
+								            <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3"><i class="bi bi-key-fill me-1"></i> 리딤 코드 발급</button>
+								        </form>
                                 <div class="tag-area mt-3">
                                     <div class="mb-2">
                                         <div th:each="tag : ${tagList}" class="badge rounded-pill bg-secondary me-1 fw-normal">
