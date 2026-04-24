@@ -559,7 +559,7 @@ public class ContentController {
 
 	@GetMapping("/video/list")
 	public String videoList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		List<ResponseVideoListDTO> list = contentService.getVideoList(page);
+		Page<ResponseVideoListDTO> list = contentService.getVideoList(page);
 		model.addAttribute("list", list);
 		return "video_list";
 	}
@@ -738,7 +738,7 @@ public class ContentController {
 
 	@GetMapping("/music/list")
 	public String musicList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		List<ResponseMusicListDTO> list = contentService.getMusicList(page);
+		Page<ResponseMusicListDTO> list = contentService.getMusicList(page);
 		model.addAttribute("musicList", list);
 		return "music_list";
 	}

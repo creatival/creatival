@@ -16,33 +16,31 @@
         .category-item:hover { transform: translateY(-8px); }
         .category-item:hover .category-icon-img { transform: scale(1.1); }
         .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; transition: color 0.3s ease; }
-		
-		
-		/* 1. 세 번째 칸(일러스트) 강조 스타일 고정 */
-						.row > .col-4:nth-child(3) .icon-box {
-						    transform: scale(1.1);               /* 항상 커진 상태 */
-						    border: 2px solid #ff5e3a !important;  /* 진한 외곽선 */
-						    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-						    background-color: #ffffff;
-						}
 
-						.row > .col-4:nth-child(3) .category-icon-img {
-						    transform: scale(1.1);               /* 이미지도 항상 커진 상태 */
-						}
+        /* 현재 페이지 음악 강조 */
+        .row > .col-4:nth-child(3) .icon-box {
+            transform: scale(1.1);
+            border: 2px solid #ff5e3a !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+        }
 
-						/* 2. 첫 번째 칸(일러스트)은 호버 효과가 작동하지 않도록 강제 고정 */
-						.row > .col-4:nth-child(3) .category-item:hover {
-						    transform: none !important;          /* 위로 튕겨 올라가는 효과 제거 */
-						}
+        .row > .col-4:nth-child(3) .category-icon-img {
+            transform: scale(1.1);
+        }
 
-						.row > .col-4:nth-child(3) .category-item:hover .category-icon-img {
-						    transform: scale(1.1) !important;    /* 호버해도 1.1배 크기 유지 (더 커지지 않음) */
-						}
+        .row > .col-4:nth-child(3) .category-item:hover {
+            transform: none !important;
+        }
 
-						.row > .col-4:nth-child(3) .category-item .fw-bold {
-						    color: #3B4371 !important;           /* 글자색 고정 */
-						}
-        
+        .row > .col-4:nth-child(3) .category-item:hover .category-icon-img {
+            transform: scale(1.1) !important;
+        }
+
+        .row > .col-4:nth-child(3) .category-item .fw-bold {
+            color: #3B4371 !important;
+        }
+
         /* 2. 음악 카드 전용 스타일 */
         .card:hover .hover-overlay { opacity: 1 !important; }
         .object-fit-cover { object-fit: cover; width: 100%; height: 100%; }
@@ -79,84 +77,118 @@
             padding: 3px 8px;
             margin-bottom: 6px;
         }
-        
+		/* 3. 밑줄 페이지네이션 */
+		        .custom-pagination .page-link {
+		            border: none; color: #333; font-weight: 700;
+		            background: none; padding: 2px 10px; font-size: 1.1rem;
+		        }
+		        .custom-pagination .page-item.active .page-link {
+		            background: none; color: #333;
+		            border-bottom: 3px solid #f05a28;
+		            border-radius: 0;
+		        }
+		        .custom-pagination .page-link:hover { color: #f05a28; }
+
         /* 리딤 코드 입력 전용 폰트 스타일 */
         #productKeyInput {
             letter-spacing: 2px;
             font-weight: bold;
         }
-		
-		.full-footer { 
-		    background-color: #0b152d !important; 
-		    color: white !important; 
-		    margin-top: 150px;
 
-		    /* 🔥 핵심: 화면 전체 width 강제 */
-		    width: 100vw;
-		    position: relative;
-		    left: 50%;
-		    right: 50%;
-		    margin-left: -50vw;
-		    margin-right: -50vw;
-		}
-		.full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
-		.footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+        /* 스크롤바 이슈가 해결된 깔끔한 전체 화면 푸터 */
+        .full-footer {
+            background-color: #0b152d !important;
+            color: white !important;
+            margin-top: 150px;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
+        .full-footer span,
+        .full-footer h6,
+        .full-footer li {
+            color: #ffffff !important;
+        }
+
+        .footer-line {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 30px 0;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+        }
     </style>
-    
+
     <section class="py-5 bg-white">
         <div class="container">
             <div class="row text-center g-4 justify-content-center">
-				<div class="col-4 col-md-2">
-				                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
-				                        <div class="icon-box">
-				                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
-				                        </div>
-				                        <div class="fw-bold">일러스트</div>
-				                    </a>
-				                </div>
-				                <div class="col-4 col-md-2">
-				                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
-				                        <div class="icon-box">
-				                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
-				                        </div>
-				                        <div class="fw-bold">만화</div>
-				                    </a>
-				                </div>
-				                <div class="col-4 col-md-2">
-				                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
-				                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
-				                        <div class="fw-bold">음악</div>
-				                    </a>
-				                </div>
-				                <div class="col-4 col-md-2">
-				                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
-				                        <div class="icon-box">
-				                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
-				                        </div>
-				                        <div class="fw-bold">비디오</div>
-				                    </a>
-				                </div>
-				                <div class="col-4 col-md-2">
-				                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
-				                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
-				                        <div class="fw-bold">소설</div>
-				                    </a>
-				                </div>
-				                <div class="col-4 col-md-2">
-				                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
-				                        <div class="icon-box">
-				                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
-				                        </div>
-				                        <div class="fw-bold">파일</div>
-				                    </a>
-				                </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
+                        </div>
+                        <div class="fw-bold">일러스트</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
+                        </div>
+                        <div class="fw-bold">만화</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
+                        </div>
+                        <div class="fw-bold">음악</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
+                        </div>
+                        <div class="fw-bold">비디오</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
+                        </div>
+                        <div class="fw-bold">소설</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
+                        </div>
+                        <div class="fw-bold">파일</div>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
-    
+
     <div class="container mb-4">
         <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-            
+
             <div style="flex: 1;">
                 <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
                     <i class="bi bi-house-door-fill me-2"></i>
@@ -214,18 +246,18 @@
                                     썸네일은 구매 후 확인할 수 있습니다
                                 </div>
                             </div>
-                            
+
                             <div th:if="${!music.paid}"
                                  class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25 opacity-0 hover-overlay"
                                  style="transition: opacity 0.2s;">
                                 <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem;"></i>
                             </div>
-                            
+
                             <span th:if="${music.projectName != null}"
                                   class="badge bg-primary position-absolute top-0 start-0 m-2 z-1"
                                   th:text="${music.projectName}">프로젝트</span>
                         </div>
-                        
+
                         <div class="card-body p-3 text-center">
                             <div th:if="${music.paid}" class="paid-badge-inline">
                                 <i class="bi bi-lock-fill"></i>
@@ -238,6 +270,25 @@
                 </a>
             </div>
         </div>
+
+        <nav class="mt-5" th:if="${musicList != null and !musicList.isEmpty()}">
+            <ul class="pagination justify-content-center custom-pagination">
+                <li class="page-item" th:classappend="${!musicList.hasPrevious} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${musicList.number - 1}|}">&lt;</a>
+                </li>
+
+                <li th:each="page: ${#numbers.sequence(0, musicList.totalPages - 1)}"
+                    th:if="${page >= musicList.number - 2 and page <= musicList.number + 2}"
+                    th:classappend="${page == musicList.number} ? 'active'"
+                    class="page-item">
+                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+                </li>
+
+                <li class="page-item" th:classappend="${!musicList.hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${musicList.number + 1}|}">&gt;</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
     <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
@@ -259,6 +310,7 @@
                             보유하고 계신 리딤 코드를 입력해 주세요.<br>
                             (예: ABCD-EFGH-IJKL-MNOP)
                         </p>
+
                         <input type="text"
                                id="productKeyInput"
                                name="code"
@@ -267,6 +319,7 @@
                                maxlength="19"
                                required>
                     </div>
+
                     <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                         <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
                         <button type="submit" class="btn text-white px-4" style="background-color: #f05a28;">코드 사용</button>
@@ -275,39 +328,43 @@
             </div>
         </div>
     </div>
-	
-	<footer class="full-footer">
-		        <div class="container py-5">
-		            <div class="row mb-4">
-		                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-							<h6 class="fw-bold mb-3">
-							        <a th:href="@{/about_us}" class="text-white text-decoration-none">Creatival</a>
-							    </h6>
-		                    <ul class="list-unstyled small opacity-75">
-		                        <li>이용 안내</li>
-		                        <li>공지사항</li>
-		                        <li>고객센터</li>
-		                        <li>도움말</li>
-		                        <li>광고문의</li>
-		                    </ul>
-		                </div>
-		            </div>
-		            <hr class="footer-line">
-		            <div class="row align-items-center">
-		                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-		                    <span>이용 약관</span>
-		                    <span>개인 정보 보호 정책</span>
-		                </div>
-		                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-		                    © 2026 creatival All rights reserved.
-		                </div>
-		                <div class="col-md-4 text-end">
-		                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
-		                </div>
-		            </div>
-		        </div>
-		    </footer>
-	
+
+    <footer class="full-footer">
+        <div class="container py-5">
+            <div class="row mb-4">
+                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+                    <h6 class="fw-bold mb-3">
+                        <a th:href="@{/about_us}" class="text-white text-decoration-none">Creatival</a>
+                    </h6>
+                    <ul class="list-unstyled small opacity-75">
+                        <li>이용 안내</li>
+                        <li>공지사항</li>
+                        <li>고객센터</li>
+                        <li>도움말</li>
+                        <li>광고문의</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="footer-line">
+
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+                    <span>이용 약관</span>
+                    <span>개인 정보 보호 정책</span>
+                </div>
+
+                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+                    © 2026 creatival All rights reserved.
+                </div>
+
+                <div class="col-md-4 text-end">
+                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const keyInput = document.getElementById('productKeyInput');
@@ -322,10 +379,12 @@
                 keyInput.addEventListener('input', function (e) {
                     let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                     let result = '';
+
                     for (let i = 0; i < val.length; i++) {
                         if (i > 0 && i % 4 === 0) result += '-';
                         result += val[i];
                     }
+
                     e.target.value = result;
                 });
             }

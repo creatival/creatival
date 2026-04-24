@@ -194,7 +194,7 @@ public class ContentService {
 	}
 	
 	public Page<ResponseNovelList> getNovelList(int page) {
-		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Pageable pageable = PageRequest.of(page, 15, Sort.by("createdAt").descending());
 		Page<Content> contents = contentRepository.findByType(ContentType.NOVEL,pageable);
 		
 		return contents.map(content -> ResponseNovelList.from(content, content.getSeries()));
@@ -501,11 +501,11 @@ public class ContentService {
 		
 		contentFileService.createContentFileVideoForContent(content, createVideoDTO.getVideoFile(), "video");
 	}
-	public List<ResponseVideoListDTO> getVideoList(int page) {
+	public Page<ResponseVideoListDTO> getVideoList(int page) {
 		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
 		Page<Content> contents = contentRepository.findByType(ContentType.VIDEO,pageable);
 		
-		return contents.map(content -> ResponseVideoListDTO.from(content)).toList();
+		return contents.map(content -> ResponseVideoListDTO.from(content));
 	}
 	public ResponseVideoDetailDTO getVideoDetailById(Long id) {
 		Optional<Content> optional = contentRepository.findById(id);
@@ -620,11 +620,11 @@ public class ContentService {
 		
 		contentFileService.createContentFileMusicForContent(content, createMusicDTO.getMusicFile(), "music");
 	}
-	public List<ResponseMusicListDTO> getMusicList(int page) {
+	public Page<ResponseMusicListDTO> getMusicList(int page) {
 		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
 		Page<Content> contents = contentRepository.findByType(ContentType.MUSIC,pageable);
 		
-		return contents.map(content -> ResponseMusicListDTO.from(content)).toList();
+		return contents.map(content -> ResponseMusicListDTO.from(content));
 	}
 	public ResponseMusicDetailDTO getMusicDetailById(Long id) {
 		Optional<Content> optional = contentRepository.findById(id);

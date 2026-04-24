@@ -8,62 +8,76 @@
     <style>
         body { overflow-x: hidden; }
 
-        .category-item { transition: all 0.3s ease; text-decoration: none !important; }
+        .category-item {
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+        }
 
         .icon-box {
-            width: 80px; height: 80px; background-color: #F8F9FA;
-            border-radius: 22px; margin: 0 auto 12px;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; border: 1px solid #eee; transition: all 0.3s ease;
+            width: 80px;
+            height: 80px;
+            background-color: #F8F9FA;
+            border-radius: 22px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
         }
 
         .category-icon-img {
-            width: 100%; height: 100%; object-fit: contain;
-            padding: 18px; transition: transform 0.3s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 18px;
+            transition: transform 0.3s ease;
         }
 
-        .category-item:hover { transform: translateY(-8px); }
-        .category-item:hover .category-icon-img { transform: scale(1.1); }
-        .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; }
+        .category-item:hover {
+            transform: translateY(-8px);
+        }
+
+        .category-item:hover .category-icon-img {
+            transform: scale(1.1);
+        }
+
+        .category-item .fw-bold {
+            color: #3B4371;
+            font-size: 0.95rem;
+        }
 
         .row > .col-4:nth-child(4) .icon-box {
-            transform: scale(1.1);
+            transform: scale(1.05);
             border: 2px solid #ff5e3a !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .row > .col-4:nth-child(4) .category-item:hover {
             transform: none !important;
         }
 
-        .video-card { transition: transform 0.2s ease; cursor: pointer; }
-        .video-card:hover { transform: scale(1.02); }
-
-        /* footer 그대로 유지 */
-        .full-footer {
-            background-color: #0b152d !important;
-            color: white !important;
-            margin-top: 150px;
-
-            width: 100vw;
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            margin-bottom: -50vw;
+        .video-card {
+            transition: transform 0.2s ease;
+            cursor: pointer;
         }
 
-        .footer-line {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            margin: 30px 0;
+        .video-card:hover {
+            transform: scale(1.02);
+        }
+
+        .object-fit-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .locked-thumb-box {
             width: 100%;
             height: 100%;
-            background: rgba(248, 249, 250, 0.7);
+            background: rgba(248, 249, 250, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -71,6 +85,10 @@
             color: #666;
             text-align: center;
             padding: 16px;
+        }
+
+        .locked-thumb-box i {
+            color: #f05a28;
         }
 
         .paid-badge-inline {
@@ -91,146 +109,208 @@
             letter-spacing: 2px;
             font-weight: bold;
         }
+		/* 3. 밑줄 페이지네이션 */
+		        .custom-pagination .page-link {
+		            border: none; color: #333; font-weight: 700;
+		            background: none; padding: 2px 10px; font-size: 1.1rem;
+		        }
+		        .custom-pagination .page-item.active .page-link {
+		            background: none; color: #333;
+		            border-bottom: 3px solid #f05a28;
+		            border-radius: 0;
+		        }
+		        .custom-pagination .page-link:hover { color: #f05a28; }
+
+        .full-footer {
+            background-color: #0b152d !important;
+            color: white !important;
+            margin-top: 150px;
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding-bottom: 50px;
+        }
+
+        .footer-line {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 30px 0;
+        }
+
+        .footer-link-group a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.75;
+            transition: opacity 0.2s;
+        }
+
+        .footer-link-group a:hover {
+            opacity: 1;
+        }
     </style>
 
-	<section class="py-5 bg-white">
-	        <div class="container">
-	            <div class="row text-center g-4 justify-content-center">
-					<div class="col-4 col-md-2">
-					                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
-					                        </div>
-					                        <div class="fw-bold">일러스트</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
-					                        </div>
-					                        <div class="fw-bold">만화</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
-					                        <div class="fw-bold">음악</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
-					                        </div>
-					                        <div class="fw-bold">비디오</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
-					                        <div class="fw-bold">소설</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
-					                        </div>
-					                        <div class="fw-bold">파일</div>
-					                    </a>
-					                </div>
-	            </div>
-	        </div>
-	    </section>
-		<div class="container ">
-    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-		<div style="flex: 1;">
-            <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
-                <i class="bi bi-house-door-fill me-2"></i>
-                <span class="fw-bold">홈으로 가기</span>
-            </a>
-        </div>
-
-	    <div class="text-center" style="flex: 2;">
-	        <h2 class="fw-bold mb-0">비디오</h2>
-	        <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
-	    </div>
-        
-        <div class="d-flex gap-2 align-items-center">
-            <button type="button"
-                    id="redeemCodeBtn"
-                    class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#keyRegisterModal">
-                <i class="bi bi-key-fill me-2"></i>
-                <span class="fw-bold">코드등록</span>
-            </button>
-
-            <a href="javascript:void(0);"
-               id="videoCreateBtn"
-               onclick="return requireLoginAction(() => location.href='/content/video/create')"
-               class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
-                <i class="bi bi-plus-lg me-2"></i>
-                <span class="fw-bold">비디오 등록</span>
-            </a>
-
-            
-        </div>
-    </div>
-
-    <div class="row g-4 mb-5">
-        <div class="col-12 text-center py-5" th:if="${list.isEmpty()}">
-            <p class="text-muted">등록된 비디오가 없습니다.</p>
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="video : ${list}">
-            <a th:href="@{/content/video/detail/{id}(id=${video.id})}" class="text-decoration-none text-dark">
-                <div class="card h-100 border-0 shadow-sm video-card">
-                    <div class="ratio ratio-16x9 bg-dark rounded-top overflow-hidden">
-                        <img 
-                             th:src="${video.thumbnailUrl != null ? video.thumbnailUrl : '/images/yutu.png'}"
-                             class="object-fit-cover"
-                             alt="썸네일">
-
-                        <div th:if="${video.paid}" class="locked-thumb-box">
-                            <i class="bi bi-lock-fill"></i>
-                            <div class="fw-bold">유료 비디오</div>
-                            <div class="small text-muted mt-1">
-                                해당 콘텐츠는 구매후 확인할 수 있습니다.
-                            </div>
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row text-center g-4 justify-content-center">
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
                         </div>
-                    </div>
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start">
-                            <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}"
-                                 class="rounded-circle me-2" alt="프로필" style="width: 32px; height: 32px; object-fit: cover;">
-                            <div class="overflow-hidden">
-                                <div th:if="${video.paid}" class="paid-badge-inline">
-                                    <i class="bi bi-lock-fill"></i>
-                                    유료
-                                </div>
-                                <h6 class="card-title fw-bold text-truncate mb-1" th:text="${video.title}">비디오 제목</h6>
-                                <p class="text-muted small mb-0 text-truncate" th:text="${video.displayname}">작성자</p>
-                                <p class="text-muted small mb-0">
-                                    조회수 <span th:text="${video.viewCount}">0</span>회 • <span th:text="${video.formattedDate}">방금 전</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                        <div class="fw-bold">일러스트</div>
+                    </a>
                 </div>
-            </a>
-        </div>
-    </div>
 
-    <nav aria-label="Page navigation" th:if="${!list.isEmpty()}">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">다음</a></li>
-        </ul>
-		
-    </nav>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
+                        </div>
+                        <div class="fw-bold">만화</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
+                        </div>
+                        <div class="fw-bold">음악</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
+                        </div>
+                        <div class="fw-bold">비디오</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
+                        </div>
+                        <div class="fw-bold">소설</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
+                        </div>
+                        <div class="fw-bold">파일</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+            <div style="flex: 1;">
+                <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
+                    <i class="bi bi-house-door-fill me-2"></i>
+                    <span class="fw-bold">홈으로 가기</span>
+                </a>
+            </div>
+
+            <div class="text-center" style="flex: 2;">
+                <h2 class="fw-bold mb-0">비디오</h2>
+                <p class="text-muted mb-0 mt-2">다양한 크리에이터의 영상을 만나보세요.</p>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
+                <button type="button"
+                        id="redeemCodeBtn"
+                        class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#keyRegisterModal">
+                    <i class="bi bi-key-fill me-2"></i>
+                    <span class="fw-bold">코드 등록</span>
+                </button>
+
+                <a href="javascript:void(0);"
+                   id="videoCreateBtn"
+                   onclick="return requireLoginAction(() => location.href='/content/video/create')"
+                   class="btn btn-primary d-flex align-items-center px-3 shadow-sm">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    <span class="fw-bold">비디오 등록</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(list)}">
+                <p class="text-muted">등록된 비디오가 없습니다.</p>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="video : ${list}">
+                <a th:href="@{/content/video/detail/{id}(id=${video.id})}" class="text-decoration-none text-dark">
+                    <div class="card h-100 border-0 shadow-sm video-card">
+                        <div class="ratio ratio-16x9 bg-dark rounded-top overflow-hidden">
+
+                            <img th:if="${!video.paid}"
+                                 th:src="${video.thumbnailUrl != null ? video.thumbnailUrl : '/images/yutu.png'}"
+                                 class="object-fit-cover"
+                                 alt="썸네일">
+
+                            <div th:if="${video.paid}" class="locked-thumb-box">
+                                <i class="bi bi-lock-fill mb-2" style="font-size: 1.5rem;"></i>
+                                <div class="fw-bold">유료 비디오</div>
+                                <div class="small text-muted mt-1">구매 후 확인할 수 있습니다</div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-start">
+                                <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/40x40/ced4da/6c757d'}"
+                                     class="rounded-circle me-2"
+                                     alt="프로필"
+                                     style="width: 32px; height: 32px; object-fit: cover;">
+
+                                <div class="overflow-hidden">
+                                    <div th:if="${video.paid}" class="paid-badge-inline">
+                                        <i class="bi bi-lock-fill"></i> 유료
+                                    </div>
+
+                                    <h6 class="card-title fw-bold text-truncate mb-1" th:text="${video.title}">비디오 제목</h6>
+
+                                    <p class="text-muted small mb-0 text-truncate" th:text="${video.displayname}">작성자</p>
+
+                                    <p class="text-muted small mb-0">
+                                        조회수 <span th:text="${video.viewCount}">0</span>회 •
+                                        <span th:text="${video.formattedDate}">방금 전</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+		<nav class="mt-5" th:if="${list != null and !list.isEmpty()}">
+		            <ul class="pagination justify-content-center custom-pagination">
+		                <li class="page-item" th:classappend="${!list.hasPrevious} ? 'disabled'">
+		                    <a class="page-link" th:href="@{|?page=${list.number - 1}|}">&lt;</a>
+		                </li>
+		                <li th:each="page: ${#numbers.sequence(0, list.totalPages - 1)}"
+		                    th:if="${page >= list.number - 2 and page <= list.number + 2}"
+		                    th:classappend="${page == list.number} ? 'active'" class="page-item">
+		                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+		                </li>
+		                <li class="page-item" th:classappend="${!list.hasNext} ? 'disabled'">
+		                    <a class="page-link" th:href="@{|?page=${list.number + 1}|}">&gt;</a>
+		                </li>
+		            </ul>
+		        </nav>
+    </div>
 
     <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -242,18 +322,24 @@
 
                 <form th:action="@{/redeem/use}" method="post">
                     <div class="modal-body p-4 text-center">
-                        <input type="hidden"
-                               th:name="${_csrf.parameterName}"
-                               th:value="${_csrf.token}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                         <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+
                         <p class="mt-3 mb-4 text-muted small">
                             보유하고 계신 리딤 코드를 입력해 주세요.<br>
                             (예: ABCD-EFGH-IJKL-MNOP)
                         </p>
-                        <input type="text" id="productKeyInput" name="code" class="form-control form-control-lg text-center font-monospace"
-                               placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" required>
+
+                        <input type="text"
+                               id="productKeyInput"
+                               name="code"
+                               class="form-control form-control-lg text-center font-monospace"
+                               placeholder="XXXX-XXXX-XXXX-XXXX"
+                               maxlength="19"
+                               required>
                     </div>
+
                     <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                         <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
                         <button type="submit" class="btn text-white px-4" style="background-color: #f05a28;">코드 사용</button>
@@ -262,45 +348,49 @@
             </div>
         </div>
     </div>
-</div>
-<footer class="full-footer">
-	        <div class="container py-5">
-	            <div class="row mb-4">
-	                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-						<h6 class="fw-bold mb-3">
-						        <a th:href="@{/about_us}" class="text-white text-decoration-none">Creatival</a>
-						    </h6>
-	                    <ul class="list-unstyled small opacity-75">
-	                        <li>이용 안내</li>
-	                        <li>공지사항</li>
-	                        <li>고객센터</li>
-	                        <li>도움말</li>
-	                        <li>광고문의</li>
-	                    </ul>
-	                </div>
-	            </div>
-	            <hr class="footer-line">
-	            <div class="row align-items-center">
-	                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-	                    <span>이용 약관</span>
-	                    <span>개인 정보 보호 정책</span>
-	                </div>
-	                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-	                    © 2026 creatival All rights reserved.
-	                </div>
-	                <div class="col-md-4 text-end">
-	                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
-	                </div>
-	            </div>
-	        </div>
-	    </footer>
 
-    <script>
+    <footer class="full-footer">
+        <div class="container py-5">
+            <div class="row mb-4">
+                <div class="col-md col-6 mb-4 mb-md-0" th:each="i : ${#numbers.sequence(1, 5)}">
+                    <h6 class="fw-bold mb-3">
+                        <a th:href="@{/about_us}" class="text-white text-decoration-none">Creatival</a>
+                    </h6>
+
+                    <ul class="list-unstyled small opacity-75 footer-link-group">
+                        <li><a href="#">이용 안내</a></li>
+                        <li><a href="#">공지사항</a></li>
+                        <li><a href="#">고객센터</a></li>
+                        <li><a href="#">도움말</a></li>
+                        <li><a href="#">광고문의</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="footer-line">
+
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+                    <span>이용 약관</span>
+                    <span>개인 정보 보호 정책</span>
+                </div>
+
+                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+                    © 2026 creatival All rights reserved.
+                </div>
+
+                <div class="col-md-4 text-end">
+                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
             const keyInput = document.getElementById('productKeyInput');
-            const redeemCodeBtn = document.getElementById('redeemCodeBtn');
-            const videoCreateBtn = document.getElementById('videoCreateBtn');
             const redeemModal = document.getElementById('keyRegisterModal');
+            const videoCreateBtn = document.getElementById('videoCreateBtn');
 
             let hasShownVideoCreateGuide = false;
             let hasShownRedeemGuide = false;
@@ -309,26 +399,31 @@
                 keyInput.addEventListener('input', function (e) {
                     let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                     let result = '';
+
                     for (let i = 0; i < val.length; i++) {
                         if (i > 0 && i % 4 === 0) result += '-';
                         result += val[i];
                     }
+
                     e.target.value = result;
                 });
             }
 
             function showVideoCreateGuide() {
-                Swal.fire({
-                    icon: 'info',
-                    title: '비디오 등록 안내',
-                    text: '이 버튼을 누르면 새로운 비디오 작품을 등록할 수 있습니다.',
-                    confirmButtonText: '확인'
-                });
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: '비디오 등록 안내',
+                        text: '이 버튼을 누르면 새로운 비디오 작품을 등록할 수 있습니다.',
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#3B4371'
+                    });
+                }
             }
 
             function showRedeemGuide() {
                 if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
-                    const guide = window.driver.js.driver({
+                    const driverObj = window.driver.js.driver({
                         showProgress: false,
                         allowClose: true,
                         overlayClickBehavior: 'close',
@@ -346,8 +441,8 @@
                         ]
                     });
 
-                    guide.drive();
-                } else {
+                    driverObj.drive();
+                } else if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'info',
                         title: '리딤 코드 안내',
@@ -368,24 +463,18 @@
                 }, { once: true });
             }
 
-            if (redeemCodeBtn) {
-                redeemCodeBtn.addEventListener('click', function () {
-                    hasShownRedeemGuide = false;
-                });
-            }
-
             if (redeemModal) {
                 redeemModal.addEventListener('shown.bs.modal', function () {
                     if (!hasShownRedeemGuide) {
                         hasShownRedeemGuide = true;
+
                         setTimeout(() => {
                             showRedeemGuide();
-                        }, 150);
+                        }, 200);
                     }
                 });
             }
         });
     </script>
-
 </div>
 </html>
