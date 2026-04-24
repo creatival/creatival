@@ -27,11 +27,11 @@ public class CreateArtDTO {
 	
 	private String description;
 	
-	private OwnerType ownerType;
+	private OwnerType ownerType= OwnerType.USER;
 	
 	private String thumbnailImgUrl;
 	
-	private Visibility visibility;
+	private Visibility visibility=Visibility.PUBLIC;
 	
 	private String projectTag;
 	private boolean paid;

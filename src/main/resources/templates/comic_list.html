@@ -173,7 +173,7 @@
             <div class="col" th:each="comic : ${paging}">
                 <div class="card h-100 shadow-sm border-0 hover-shadow">
                     <a th:href="@{/content/comic/detail/{id}(id=${comic.id})}">
-                        <img th:src="${comic.thumbnailUrl}" class="card-img-top comic-card-img">
+                        <img th:src="${comic.thumbnailUrl!=null ? comic.thumbnailUrl : '/images/comic.png'}" class="card-img-top comic-card-img">
                     </a>
                     <div class="card-body p-2">
                         <h6 class="fw-bold text-truncate" th:text="${comic.title}"></h6>

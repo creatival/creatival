@@ -7,6 +7,7 @@ import com.creatival.content.Enum.Visibility;
 import com.creatival.team.Project;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,9 +23,11 @@ public class CreateNovelDTO {
 
 	private String description;
 
-	private Visibility visibility;
-
-	private OwnerType ownerType;
+	@NotNull(message = "공개 범위를 꼭 선택해주십시오")
+	private Visibility visibility = Visibility.PUBLIC;
+	
+	@NotNull(message = "소유자 유형을 반드시 선택해주십시오")
+	private OwnerType ownerType = OwnerType.USER;
 
 	private MultipartFile thumbnailFile;
 

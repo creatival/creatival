@@ -398,7 +398,7 @@ public class ContentService {
 	}
 	
 	public Page<ResponseArtList> getArtList(int page) {
-		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Pageable pageable = PageRequest.of(page, 15, Sort.by("createdAt").descending());
 		Page<Content> contents = contentRepository.findByType(ContentType.ART,pageable);
 		
 		return contents.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content)));
@@ -441,11 +441,7 @@ public class ContentService {
 	    }
 	}
 	public void createContentVideo(@Valid CreateVideoDTO createVideoDTO, Users user) throws IOException {
-		String imgurl = "/upload/images/thumbnail/";
 		
-		if(createVideoDTO.getThumbnailFile() != null) {
-			imgurl += fileUtil.saveImage(createVideoDTO.getThumbnailFile(), "thumbnail");
-		}
 		Content content = Content.builder()
 				.title(createVideoDTO.getTitle())
 				.description(createVideoDTO.getDescription())
@@ -455,8 +451,13 @@ public class ContentService {
 				.type(ContentType.VIDEO)
 				.isAllowComment(createVideoDTO.isAllowComment())
 				.isFanWork(createVideoDTO.isFanWork())
-				.ThumbnailImgUrl(imgurl)
 				.build();
+		String imgurl = "/upload/images/thumbnail/";
+		
+		if(createVideoDTO.getThumbnailFile() != null  && !createVideoDTO.getThumbnailFile().isEmpty()) {
+			imgurl += fileUtil.saveImage(createVideoDTO.getThumbnailFile(), "thumbnail");
+			content.setThumbnailImgUrl(imgurl);
+		}
 		if(content.isFanWork() && createVideoDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createVideoDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
 		}
@@ -558,11 +559,7 @@ public class ContentService {
 		}
 	}
 	public void createContentMusic(@Valid CreateMusicDTO createMusicDTO, Users user) throws IOException {
-		String imgurl = "/upload/images/thumbnail/";
 		
-		if(createMusicDTO.getThumbnailFile() != null) {
-			imgurl += fileUtil.saveImage(createMusicDTO.getThumbnailFile(), "thumbnail");
-		}
 		Content content = Content.builder()
 				.title(createMusicDTO.getTitle())
 				.description(createMusicDTO.getDescription())
@@ -572,8 +569,14 @@ public class ContentService {
 				.type(ContentType.MUSIC)
 				.isAllowComment(createMusicDTO.isAllowComment())
 				.isFanWork(createMusicDTO.isFanWork())
-				.ThumbnailImgUrl(imgurl)
 				.build();
+		
+		String imgurl = "/upload/images/thumbnail/";
+		
+		if(createMusicDTO.getThumbnailFile() != null && !createMusicDTO.getThumbnailFile().isEmpty()) {
+			imgurl += fileUtil.saveImage(createMusicDTO.getThumbnailFile(), "thumbnail");
+			content.setThumbnailImgUrl(imgurl);
+		}
 		if(content.isFanWork() && createMusicDTO.getOriginalContentId() != null) {
 			content.setOriginalContent(contentRepository.findById(createMusicDTO.getOriginalContentId()).orElseThrow(() -> new IllegalArgumentException("원본 없음")));
 		}

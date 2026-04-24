@@ -21,9 +21,9 @@ public class CreateComicDTO {
 
 	private String description;
 
-	private Visibility visibility;
+	private Visibility visibility=Visibility.PUBLIC;
 
-	private OwnerType ownerType;
+	private OwnerType ownerType=OwnerType.USER;
 
 	private MultipartFile thumbnailFile;
 

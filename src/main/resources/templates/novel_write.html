@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{layout}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <head>
     <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
@@ -142,8 +144,7 @@
             background-color: #fff;
         }
 
-        .form-control-clean:focus,
-        .form-select-clean:focus {
+        .form-control-clean:focus {
             border-color: #8aa6e8;
         }
 
@@ -168,6 +169,13 @@
         .description-box:focus {
             border-color: #8aa6e8;
             background-color: #fff;
+        }
+
+        .field-error {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 600;
         }
 
         .tag-panel {
@@ -318,6 +326,7 @@
     </style>
 </head>
 
+<body>
 <div class="container novel-create-page" layout:fragment="content">
     <div class="container d-flex justify-content-center">
         <div class="col-lg-10 col-xl-9">
@@ -333,32 +342,32 @@
                   th:object="${createNovelDTO}"
                   id="novelForm">
 
+                <div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">
+                    <div th:each="err : ${#fields.allErrors()}" th:text="${err}">에러 문구</div>
+                </div>
+
                 <div class="editor-card">
                     <div class="editor-card-body">
                         <div class="section-title">기본 정보</div>
 
                         <div class="mb-4">
-                            <label class="form-label-custom">작품 제목</label>
+                            <label class="form-label-custom" for="title">작품 제목</label>
                             <input type="text"
                                    th:field="*{title}"
                                    class="form-control form-control-clean title-input"
-                                   placeholder="작품 제목을 입력하세요"
-                                   required>
-                        </div>
-
-                        <div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">
-                            <div th:each="err : ${#fields.allErrors()}" th:text="${err}">에러 문구</div>
+                                   placeholder="작품 제목을 입력하세요">
+                            <div class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                         </div>
 
                         <div class="row g-4 align-items-start">
                             <div class="col-lg-5">
-                                <label class="form-label-custom text-center w-100">커버 업로드</label>
+                                <label class="form-label-custom text-center w-100" for="thumbnailFile">커버 업로드</label>
 
                                 <div class="preview-wrapper shadow-sm">
                                     <div class="preview-placeholder" id="placeholder">
                                         <i class="bi bi-image fs-1"></i><br>미리보기
                                     </div>
-                                    <img id="imagePreview">
+                                    <img id="imagePreview" alt="커버 미리보기">
                                 </div>
 
                                 <div class="custom-file-container shadow-sm">
@@ -372,7 +381,9 @@
                             </div>
 
                             <div class="col-lg-7">
-                                <label class="form-label-custom"><i class="bi bi-pencil-fill"></i> 작품 설명</label>
+                                <label class="form-label-custom" for="description">
+                                    <i class="bi bi-pencil-fill"></i> 작품 설명
+                                </label>
                                 <textarea th:field="*{description}"
                                           class="form-control description-box"
                                           rows="8"
@@ -395,12 +406,11 @@
                                 <input type="text"
                                        id="tagInput"
                                        class="form-control border-start-0"
-                                       placeholder="태그를 입력하고 엔터를 누르세요"
-                                       onkeypress="handleTagKey(event)">
+                                       placeholder="태그를 입력하고 엔터를 누르세요">
                                 <button class="btn btn-outline-primary" type="button" onclick="addTag()">추가</button>
                             </div>
 
-                            <input type="hidden" name="tagString" id="finalTagString">
+                            <input type="hidden" th:field="*{tagString}" id="finalTagString">
                         </div>
                     </div>
                 </div>
@@ -416,11 +426,11 @@
                                     <span class="settings-label">연재 상태</span>
                                     <div class="inline-check-group">
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{end}" value="false" checked id="status-ing">
+                                            <input class="form-check-input" type="radio" th:field="*{end}" value="false">
                                             연재 중
                                         </label>
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{end}" value="true" id="status-end">
+                                            <input class="form-check-input" type="radio" th:field="*{end}" value="true">
                                             완결
                                         </label>
                                     </div>
@@ -430,25 +440,26 @@
                                     <span class="settings-label">공개 범위</span>
                                     <div class="inline-check-group">
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{visibility}" value="PUBLIC" checked id="vis-public">
+                                            <input class="form-check-input" type="radio" th:field="*{visibility}" value="PUBLIC" checked>
                                             공개
                                         </label>
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{visibility}" value="PRIVATE" id="vis-private">
+                                            <input class="form-check-input" type="radio" th:field="*{visibility}" value="PRIVATE">
                                             비공개
                                         </label>
                                     </div>
+                                    <div class="field-error" th:if="${#fields.hasErrors('visibility')}" th:errors="*{visibility}"></div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <span class="settings-label">댓글 설정</span>
                                     <div class="inline-check-group">
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{allowComment}" value="true" checked id="comment-ok">
+                                            <input class="form-check-input" type="radio" th:field="*{allowComment}" value="true" checked>
                                             허용
                                         </label>
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{allowComment}" value="false" id="comment-no">
+                                            <input class="form-check-input" type="radio" th:field="*{allowComment}" value="false">
                                             금지
                                         </label>
                                     </div>
@@ -458,20 +469,24 @@
                                     <span class="settings-label">소유 유형</span>
                                     <div class="inline-check-group">
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{ownerType}" value="USER" checked id="user">
+                                            <input class="form-check-input owner-type-radio" type="radio" th:field="*{ownerType}" value="USER" checked>
                                             본인
                                         </label>
                                         <label>
-                                            <input class="form-check-input" type="radio" th:field="*{ownerType}" value="TEAM" id="team">
+                                            <input class="form-check-input owner-type-radio" type="radio" th:field="*{ownerType}" value="TEAM">
                                             팀
                                         </label>
                                     </div>
+                                    <div class="field-error" th:if="${#fields.hasErrors('ownerType')}" th:errors="*{ownerType}"></div>
                                 </div>
 
                                 <div class="col-12">
                                     <div class="switch-line">
-                                        <label class="mb-0 fw-bold">
-                                            <input class="form-check-input me-2" type="checkbox" th:field="*{fanWork}" id="fanWorkCheck">
+                                        <label class="mb-0 fw-bold" for="fanWorkCheck">
+                                            <input class="form-check-input me-2"
+                                                   type="checkbox"
+                                                   th:field="*{fanWork}"
+                                                   id="fanWorkCheck">
                                             2차 창작물(팬워크)인 경우 체크
                                         </label>
                                     </div>
@@ -483,23 +498,26 @@
                                            th:field="*{projectTag}"
                                            class="form-control form-control-clean"
                                            id="projectTagInput"
-                                           placeholder="projectTag 입력">
+                                           placeholder="연결할 프로젝트 태그 입력">
                                 </div>
 
                                 <div class="col-md-6" id="originalContentWrapper">
-                                    <span class="settings-label">원본 작품 ID (선택)</span>
+                                    <span class="settings-label">원본 작품 ID (2차 창작일 때 선택)</span>
                                     <input type="number"
                                            th:field="*{originalContentId}"
                                            class="form-control form-control-clean"
                                            id="originalContentIdInput"
-                                           placeholder="ID 입력">
+                                           placeholder="원본 콘텐츠 ID 입력"
+                                           min="1">
                                 </div>
 
                                 <div class="col-12">
                                     <div class="hint-box">
                                         <div class="small">
-                                            프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.  
-                                            프로젝트 태그를 사용하는 경우 소유 유형은 팀(TEAM)으로 맞춰 주세요.
+                                            프로젝트 태그를 입력하면 해당 프로젝트와 작품이 연결됩니다.
+                                            2차 창작물인 경우에는 팬워크를 체크한 뒤 원본 작품 ID를 입력하세요.
+                                            프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.
+                                            프로젝트 태그를 사용하는 경우 소유 유형은 팀(TEAM)으로 선택해야 합니다.
                                         </div>
                                     </div>
                                 </div>
@@ -529,103 +547,161 @@
         const originalContentIdInput = document.getElementById("originalContentIdInput");
         const fanWorkCheck = document.getElementById("fanWorkCheck");
         const originalContentWrapper = document.getElementById("originalContentWrapper");
+        const tagInput = document.getElementById("tagInput");
+        const finalTagString = document.getElementById("finalTagString");
+
+        function alertMessage(message) {
+            if (window.Swal) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "확인 필요",
+                    text: message,
+                    confirmButtonText: "확인"
+                });
+            } else {
+                alert(message);
+            }
+        }
+
+        function infoMessage(title, message, callback) {
+            if (window.Swal) {
+                Swal.fire({
+                    icon: "info",
+                    title: title,
+                    text: message,
+                    confirmButtonText: "확인"
+                }).then(() => {
+                    if (callback) callback();
+                });
+            } else {
+                alert(message);
+                if (callback) callback();
+            }
+        }
 
         function getSelectedOwnerType() {
             const checked = document.querySelector("input[name='ownerType']:checked");
             return checked ? checked.value : "";
         }
 
-        // 1. 이미지 미리보기
         function previewImage(input) {
-            const fileDisplay = document.getElementById('fileNameDisplay');
-            const preview = document.getElementById('imagePreview');
-            const placeholder = document.getElementById('placeholder');
+            const fileDisplay = document.getElementById("fileNameDisplay");
+            const preview = document.getElementById("imagePreview");
+            const placeholder = document.getElementById("placeholder");
 
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 fileDisplay.innerText = input.files[0].name;
-                reader.onload = (e) => {
+
+                reader.onload = function (e) {
                     preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    placeholder.style.display = 'none';
+                    preview.style.display = "block";
+                    placeholder.style.display = "none";
                 };
+
                 reader.readAsDataURL(input.files[0]);
             } else {
-                fileDisplay.innerText = '선택된 파일 없음';
-                preview.style.display = 'none';
-                placeholder.style.display = 'block';
-            }
-        }
-
-        // 2. 태그 관리
-        function handleTagKey(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addTag();
+                fileDisplay.innerText = "선택된 파일 없음";
+                preview.removeAttribute("src");
+                preview.style.display = "none";
+                placeholder.style.display = "block";
             }
         }
 
         function addTag() {
-            const input = document.getElementById('tagInput');
-            const value = input.value.trim().replace(/#/g, '');
+            const value = tagInput.value.trim().replaceAll("#", "");
 
-            if (value && !tagArray.includes(value)) {
-                if (tagArray.length >= 10) {
-                    alert("태그는 최대 10개까지 등록 가능합니다.");
-                    return;
-                }
-                tagArray.push(value);
-                updateTags();
-                input.value = '';
+            if (!value) return;
+
+            if (value.includes(",")) {
+                alertMessage("태그에는 쉼표를 사용할 수 없습니다.");
+                return;
             }
+
+            if (tagArray.includes(value)) {
+                tagInput.value = "";
+                return;
+            }
+
+            if (tagArray.length >= 10) {
+                alertMessage("태그는 최대 10개까지 등록 가능합니다.");
+                return;
+            }
+
+            tagArray.push(value);
+            tagInput.value = "";
+            updateTags();
         }
 
         function removeTag(tag) {
-            tagArray = tagArray.filter(t => t !== tag);
+            tagArray = tagArray.filter(function (t) {
+                return t !== tag;
+            });
             updateTags();
         }
 
         function updateTags() {
-            const container = document.getElementById('tagContainer');
-            const hiddenInput = document.getElementById('finalTagString');
+            const container = document.getElementById("tagContainer");
+            container.innerHTML = "";
 
-            container.innerHTML = tagArray.map(t => `
-                <span class="tag-badge shadow-sm">
-                    #${t} <i class="bi bi-x-circle-fill" onclick="removeTag('${t}')"></i>
-                </span>
-            `).join('');
+            tagArray.forEach(function (tag) {
+                const badge = document.createElement("span");
+                badge.className = "tag-badge shadow-sm";
+                badge.appendChild(document.createTextNode("#" + tag + " "));
 
-            hiddenInput.value = tagArray.join(',');
-        }
+                const icon = document.createElement("i");
+                icon.className = "bi bi-x-circle-fill";
+                icon.addEventListener("click", function () {
+                    removeTag(tag);
+                });
 
-        // 3. 프로젝트 태그 안내
-        function showProjectTagGuide() {
-            Swal.fire({
-                icon: 'info',
-                title: '프로젝트 태그 안내',
-                text: '연결하려는 프로젝트가 있다면 해당 프로젝트의 프로젝트 태그를 입력해 프로젝트와 연결하세요.',
-                confirmButtonText: '확인'
+                badge.appendChild(icon);
+                container.appendChild(badge);
             });
+
+            finalTagString.value = tagArray.join(",");
         }
 
-        // 4. 원본 작품 ID 안내
-        function showOriginalContentGuide() {
-            if (!originalContentWrapper) return;
+        function initTagsFromServerValue() {
+            const savedValue = finalTagString ? finalTagString.value : "";
 
-            if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+            if (!savedValue.trim()) return;
+
+            tagArray = savedValue
+                .split(",")
+                .map(function (tag) {
+                    return tag.trim().replaceAll("#", "");
+                })
+                .filter(function (tag) {
+                    return tag.length > 0;
+                });
+
+            tagArray = Array.from(new Set(tagArray)).slice(0, 10);
+            updateTags();
+        }
+
+        function showProjectTagGuide() {
+            infoMessage(
+                "프로젝트 태그 안내",
+                "연결하려는 프로젝트가 있다면 해당 프로젝트의 프로젝트 태그를 입력해 프로젝트와 연결하세요."
+            );
+        }
+
+        function showOriginalContentGuide() {
+            if (window.driver && window.driver.js && typeof window.driver.js.driver === "function") {
                 const guide = window.driver.js.driver({
                     showProgress: false,
                     allowClose: true,
-                    overlayClickBehavior: 'close',
-                    doneBtnText: '확인',
+                    overlayClickBehavior: "close",
+                    doneBtnText: "확인",
                     steps: [
                         {
-                            element: '#originalContentWrapper',
+                            element: "#originalContentWrapper",
                             popover: {
-                                title: '원본 작품 ID',
-                                description: '2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.',
-                                side: 'bottom',
-                                align: 'start'
+                                title: "원본 작품 ID",
+                                description: "2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.",
+                                side: "bottom",
+                                align: "start"
                             }
                         }
                     ]
@@ -633,17 +709,49 @@
 
                 guide.drive();
             } else {
-                Swal.fire({
-                    icon: 'info',
-                    title: '원본 작품 ID 안내',
-                    text: '2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.',
-                    confirmButtonText: '확인'
-                }).then(() => {
-                    if (originalContentIdInput) {
-                        originalContentIdInput.focus();
+                infoMessage(
+                    "원본 작품 ID 안내",
+                    "2차 창작인 경우 원본이 되는 콘텐츠의 ID를 입력해 연결하세요.",
+                    function () {
+                        if (originalContentIdInput) {
+                            originalContentIdInput.focus();
+                        }
                     }
-                });
+                );
             }
+        }
+
+        function syncOriginalContentState() {
+            if (!fanWorkCheck || !originalContentIdInput) return;
+
+            if (fanWorkCheck.checked) {
+                originalContentIdInput.disabled = false;
+                originalContentWrapper.style.opacity = "1";
+            } else {
+                originalContentIdInput.value = "";
+                originalContentIdInput.disabled = true;
+                originalContentWrapper.style.opacity = "0.55";
+            }
+        }
+
+        function syncOwnerTypeByProjectTag() {
+            const projectTag = projectTagInput ? projectTagInput.value.trim() : "";
+
+            if (projectTag === "") return;
+
+            const teamRadio = document.querySelector("input[name='ownerType'][value='TEAM']");
+            if (teamRadio) {
+                teamRadio.checked = true;
+            }
+        }
+
+        if (tagInput) {
+            tagInput.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag();
+                }
+            });
         }
 
         if (projectTagInput) {
@@ -653,38 +761,58 @@
                     showProjectTagGuide();
                 }
             });
+
+            projectTagInput.addEventListener("input", function () {
+                syncOwnerTypeByProjectTag();
+            });
         }
 
         if (fanWorkCheck) {
             fanWorkCheck.addEventListener("change", function () {
+                syncOriginalContentState();
+
                 if (this.checked && !hasShownFanWorkGuide) {
                     hasShownFanWorkGuide = true;
-                    setTimeout(() => {
+                    setTimeout(function () {
                         showOriginalContentGuide();
                     }, 150);
                 }
             });
         }
 
-        // 5. 유효성 검사
         if (novelForm) {
-            novelForm.addEventListener("submit", function(e) {
+            novelForm.addEventListener("submit", function (e) {
+                updateTags();
+
                 const projectTag = projectTagInput ? projectTagInput.value.trim() : "";
-                const originalContentId = originalContentIdInput ? originalContentIdInput.value.trim() : "";
+                const originalContentId = originalContentIdInput && !originalContentIdInput.disabled
+                    ? originalContentIdInput.value.trim()
+                    : "";
                 const ownerType = getSelectedOwnerType();
 
                 if (projectTag !== "" && originalContentId !== "") {
-                    alert("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
                     e.preventDefault();
+                    alertMessage("프로젝트 연결과 원본 작품 ID는 동시에 입력할 수 없습니다.");
                     return;
                 }
 
                 if (projectTag !== "" && ownerType !== "TEAM") {
-                    alert("프로젝트 태그가 있는 콘텐츠는 소유 유형을 'TEAM'으로 선택해야 합니다.");
                     e.preventDefault();
+                    alertMessage("프로젝트 태그가 있는 콘텐츠는 소유 유형을 '팀'으로 선택해야 합니다.");
+                    return;
+                }
+
+                if (originalContentId !== "" && !fanWorkCheck.checked) {
+                    e.preventDefault();
+                    alertMessage("원본 작품 ID를 입력하려면 2차 창작물 체크가 필요합니다.");
+                    return;
                 }
             });
         }
+
+        initTagsFromServerValue();
+        syncOriginalContentState();
     </script>
 </div>
+</body>
 </html>

@@ -22,8 +22,8 @@ public class CreateFileDTO {
 	private MultipartFile extraImg;
 	private String tagList;
 	private boolean allowComment;
-	private Visibility visibility;
-	private OwnerType ownerType;
+	private Visibility visibility=Visibility.PUBLIC;
+	private OwnerType ownerType=OwnerType.USER;
 	private boolean fanWork;
 
 	private Long originalContentId;
