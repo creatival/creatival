@@ -424,7 +424,8 @@
             </div>
 
             <div class="action-buttons">
-                <button class="btn-boost shadow-sm me-2" th:onclick="|location.href='@{/user/{id}/boost(id=${art.userId})}'|"
+                <button class="btn-boost shadow-sm me-2"
+                        th:onclick="|location.href='@{/user/{id}/boost(id=${art.userId})}'|"
                         th:if="${art.username != #authentication.name}">
                     후원하기
                 </button>
