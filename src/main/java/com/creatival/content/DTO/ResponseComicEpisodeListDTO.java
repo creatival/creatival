@@ -43,6 +43,8 @@ public class ResponseComicEpisodeListDTO {
 	
 	private Long likeCount;
 	
+	private boolean paid;
+	
 	public static ResponseComicEpisodeListDTO from(Episode episode, ContentFile contentFile) {
 		ResponseComicEpisodeListDTO dto = ResponseComicEpisodeListDTO.builder()
 				.id(episode.getId())
@@ -55,6 +57,7 @@ public class ResponseComicEpisodeListDTO {
 				.updatedAt(episode.getUpdatedAt())
 				.username(episode.getSeries().getContent().getUser().getUsername())
 				.likeCount(episode.getLikeCount())
+				.paid(episode.isPaid())
 				.build();
 		if(contentFile!=null) {
 			dto.setThumbnailUrl(contentFile.getFileUrl());

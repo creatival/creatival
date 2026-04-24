@@ -1239,12 +1239,12 @@ public class ContentController {
 		if(episode==null) {
 			redirectAttributes.addFlashAttribute("message", "해당하는 에피소드가 없습니다.");
 			redirectAttributes.addFlashAttribute("icon", "error");
-			return "redirect:/content/comic/detail/"+id;
+			return "redirect:/";
 		}
 		if(!episode.isFree) {
 			if(principal==null) {
 				redirectAttributes.addFlashAttribute("isLogMsg", true);
-				return "redirect:/content/comic/detail/"+id;
+				return "redirect:/content/comic/detail/"+episode.getSeries().getContent().getId();
 			}
 		}
 		Users loginUser = null;

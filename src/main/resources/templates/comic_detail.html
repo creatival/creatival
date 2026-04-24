@@ -118,7 +118,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <h1 class="fw-bold mb-1" th:text="${comic.title}">만화 제목</h1>
-                            <p class="text-muted fs-5 mb-2">작가명 : <span class="text-dark" th:text="|${comic.username}(${comic.displayname})|">홍길동 / 임꺽정</span></p>
+                            <p class="text-muted fs-5 mb-2">작가명 : <span class="text-dark" th:text="|${comic.username}(${comic.displayname})|" th:onclick="|location.href='@{/user/myPage/{id}(id=${comic.userId})}'|" style="cursor: pointer;">홍길동 / 임꺽정</span></p>
                         </div>
                         
                         <div sec:authorize="isAuthenticated()" th:if="${comic.username == #authentication.name}" class="d-flex gap-2">
@@ -216,8 +216,16 @@
 	                                 class="episode-img me-3 shadow-sm">
 
 	                            <div class="flex-grow-1">
-	                                <h6 class="mb-1 fw-bold"
-	                                    th:text="|${episode.episodeNum}. ${episode.title}|">제목</h6>
+									<h6 class="mb-1 fw-bold">
+
+									    <span th:text="|${episode.episodeNum}. ${episode.title}|">제목</span>
+
+									    <span th:if="${episode.paid}" class="paid-badge">
+									        <i class="bi bi-lock-fill"></i>
+									        유료
+									    </span>
+
+									</h6>
 
 	                                <span class="text-muted small"
 	                                      th:text="${#temporals.format(episode.createdAt, 'yyyy.MM.dd')}">

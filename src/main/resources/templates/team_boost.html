@@ -514,7 +514,7 @@
 
             <div class="sponsor-layout">
                 <div class="left-area">
-					
+
                     <div class="s-card">
                         <div class="s-card-title"
                              th:text="${project != null ? '✨ 프로젝트 설명' : '✨ 팀 스토리'}">
@@ -529,8 +529,8 @@
                         <div class="mini-stat-grid">
                             <div class="mini-stat">
                                 <div class="mini-stat-label">누적 후원 금액</div>
-								<div class="mini-stat-value"
-								     th:text="${goalAmount != null ? #numbers.formatInteger(goalAmount, 3, 'COMMA') + '원' : '미설정'}">
+                                <div class="mini-stat-value"
+                                     th:text="${totalSupportAmount != null ? #numbers.formatInteger(totalSupportAmount, 3, 'COMMA') + '원' : '0원'}">
                                     0원
                                 </div>
                             </div>
@@ -577,48 +577,48 @@
                         </div>
                     </div>
 
-					<div class="s-card mt-4">
-					    <div class="s-card-title">💌 최근 후원</div>
+                    <div class="s-card mt-4">
+                        <div class="s-card-title">💌 최근 후원</div>
 
-					    <div id="supportHistoryList">
-					        <div th:if="${recentSupports == null or #lists.isEmpty(recentSupports)}" class="text-muted" id="emptySupportMessage">
-					            아직 등록된 후원이 없습니다. 첫 번째 후원자가 되어보세요.
-					        </div>
+                        <div id="supportHistoryList">
+                            <div th:if="${recentSupports == null or #lists.isEmpty(recentSupports)}" class="text-muted" id="emptySupportMessage">
+                                아직 등록된 후원이 없습니다. 첫 번째 후원자가 되어보세요.
+                            </div>
 
-					        <div th:if="${recentSupports != null and !#lists.isEmpty(recentSupports)}">
-					            <div th:each="support : ${recentSupports}"
-					                 class="support-history-item"
-					                 style="padding:16px 0; border-bottom:1px solid #f0f0f0;">
-					                <div class="d-flex justify-content-between align-items-center mb-1">
-					                    <strong th:text="${support.displayName}">후원자</strong>
-					                    <span class="text-muted small"
-					                          th:text="${#numbers.formatInteger(support.amount, 3, 'COMMA') + '원'}">10,000원</span>
-					                </div>
+                            <div th:if="${recentSupports != null and !#lists.isEmpty(recentSupports)}">
+                                <div th:each="support : ${recentSupports}"
+                                     class="support-history-item"
+                                     style="padding:16px 0; border-bottom:1px solid #f0f0f0;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong th:text="${support.displayName}">후원자</strong>
+                                        <span class="text-muted small"
+                                              th:text="${#numbers.formatInteger(support.amount, 3, 'COMMA') + '원'}">10,000원</span>
+                                    </div>
 
-					                <div class="text-muted small mb-2"
-					                     th:text="${#temporals.format(support.paidAt, 'yyyy.MM.dd HH:mm')}">
-					                    2026.04.17 18:00
-					                </div>
+                                    <div class="text-muted small mb-2"
+                                         th:text="${#temporals.format(support.paidAt, 'yyyy.MM.dd HH:mm')}">
+                                        2026.04.17 18:00
+                                    </div>
 
-					                <div th:if="${support.message != null and !#strings.isEmpty(support.message)}"
-					                     style="white-space: pre-line; color:#555;"
-					                     th:text="${support.message}">
-					                    응원 메시지
-					                </div>
-					            </div>
-					        </div>
-					    </div>
+                                    <div th:if="${support.message != null and !#strings.isEmpty(support.message)}"
+                                         style="white-space: pre-line; color:#555;"
+                                         th:text="${support.message}">
+                                        응원 메시지
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-					    <div class="text-center mt-3" th:if="${hasMoreSupports}">
-					        <button type="button" id="loadMoreSupportBtn" class="btn-submit-support" style="padding:12px 16px; font-size:0.95rem;">
-					            더보기
-					        </button>
-					    </div>
-					</div>
+                        <div class="text-center mt-3" th:if="${hasMoreSupports}">
+                            <button type="button" id="loadMoreSupportBtn" class="btn-submit-support" style="padding:12px 16px; font-size:0.95rem;">
+                                더보기
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="right-area">
-					
+
                     <div class="s-card support-card">
                         <div class="s-card-title"
                              th:text="${project != null ? '💝 프로젝트 후원하기' : '💝 팀 후원하기'}">
@@ -630,43 +630,75 @@
                             원하는 금액으로 자유롭게 팀을 응원할 수 있어요.
                         </div>
 
-						<form method="post" th:if="${project != null}" th:action="@{/team/project/{id}/support-setting(id=${project.id})}">
-						    <label>
-						        <input type="checkbox" name="supportEnabled" th:checked="${project.supportEnabled}">
-						        후원 받기
-						    </label>
+                        <!-- 관리자/팀장/프로젝트 관리 권한자 전용 후원 설정 -->
+                        <div th:if="${canManageSupport}"
+                             style="margin-bottom: 20px; padding: 16px; border: 1px dashed #ddd; border-radius: 14px; background: #fcfcfc;">
 
-							<input type="number" name="goalAmount"
-						           th:value="${project.goalAmount!=null ? project.goalAmount : '자유후원' }"
-						           min="0" step="1000"
-						           placeholder="목표 후원 금액">
+                            <div class="s-card-title" style="margin-bottom: 12px;">
+                                ⚙ 후원 설정
+                            </div>
 
-						    <button type="submit">저장</button>
-						</form>
+                            <form method="post"
+                                  th:if="${project != null}"
+                                  th:action="@{/team/project/{id}/support-setting(id=${project.id})}"
+                                  class="boost-form">
 
-						<form method="post" th:if="${project == null}" th:action="@{/team/{id}/support-setting(id=${team.id})}" class="mb-4">
-						    <label>
-						        <input type="checkbox" name="supportEnabled" th:checked="${team.supportEnabled}">
-						        후원 받기
-						    </label>
+                                <label class="check-row">
+                                    <input type="checkbox"
+                                           name="supportEnabled"
+                                           th:checked="${project.supportEnabled}">
+                                    후원 받기
+                                </label>
 
-						    <input type="number" name="goalAmount"
-						           th:value="${team.goalAmount!=null ? team.goalAmount : '자유후원' }"
-						           min="0" step="1000"
-						           placeholder="목표 후원 금액">
+                                <input type="number"
+                                       name="goalAmount"
+                                       class="input-amount-custom"
+                                       th:value="${project.goalAmount != null ? project.goalAmount : ''}"
+                                       min="0"
+                                       step="1000"
+                                       placeholder="목표 후원 금액">
 
-						    <button type="submit">저장</button>
-						</form>
+                                <button type="submit" class="btn-submit-support" style="padding:12px 16px; font-size:0.95rem;">
+                                    후원 설정 저장
+                                </button>
+                            </form>
 
-						<div th:if="${supportEnabled == false}" class="s-card support-card">
-						    <div class="s-card-title">후원 안내</div>
-						    <div class="text-muted" style="line-height:1.8;">
-						        현재 이 <span th:text="${project != null ? '프로젝트' : '팀'}">팀</span>은
-						        후원을 받고 있지 않습니다.
-						    </div>
-						</div>
+                            <form method="post"
+                                  th:if="${project == null and team != null}"
+                                  th:action="@{/team/{id}/support-setting(id=${team.id})}"
+                                  class="boost-form">
 
-                        <form th:if="${supportEnabled != false}" th:action="${project != null} ? @{/team/project/{id}/boost(id=${project.id})} : @{/team/{id}/boost(id=${team.id})}"
+                                <label class="check-row">
+                                    <input type="checkbox"
+                                           name="supportEnabled"
+                                           th:checked="${team.supportEnabled}">
+                                    후원 받기
+                                </label>
+
+                                <input type="number"
+                                       name="goalAmount"
+                                       class="input-amount-custom"
+                                       th:value="${team.goalAmount != null ? team.goalAmount : ''}"
+                                       min="0"
+                                       step="1000"
+                                       placeholder="목표 후원 금액">
+
+                                <button type="submit" class="btn-submit-support" style="padding:12px 16px; font-size:0.95rem;">
+                                    후원 설정 저장
+                                </button>
+                            </form>
+                        </div>
+
+                        <div th:if="${supportEnabled == false}" class="s-card support-card">
+                            <div class="s-card-title">후원 안내</div>
+                            <div class="text-muted" style="line-height:1.8;">
+                                현재 이 <span th:text="${project != null ? '프로젝트' : '팀'}">팀</span>은
+                                후원을 받고 있지 않습니다.
+                            </div>
+                        </div>
+
+                        <form th:if="${supportEnabled != false}"
+                              th:action="${project != null} ? @{/team/project/{id}/boost(id=${project.id})} : @{/team/{id}/boost(id=${team.id})}"
                               method="post"
                               class="boost-form">
 
@@ -685,10 +717,10 @@
                                    placeholder="후원 금액을 입력해 주세요"
                                    required>
 
-							<input type="text"
-							       name="supporterName"
-							       class="support-name"
-							       placeholder="표시할 이름 (미입력 시 계정 이름 또는 익명 사용자)">	
+                            <input type="text"
+                                   name="supporterName"
+                                   class="support-name"
+                                   placeholder="표시할 이름 (미입력 시 계정 이름 또는 익명 사용자)">
 
                             <textarea name="message"
                                       class="support-message"
@@ -787,8 +819,8 @@
         </div>
     </div>
 
-	<input type="hidden" id="supportTargetType" th:value="${supportTargetType}">
-	<input type="hidden" id="supportTargetId" th:value="${supportTargetId}">
+    <input type="hidden" id="supportTargetType" th:value="${supportTargetType}">
+    <input type="hidden" id="supportTargetId" th:value="${supportTargetId}">
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

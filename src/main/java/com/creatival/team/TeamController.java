@@ -103,7 +103,11 @@ public class TeamController {
 	}
 	
 	@GetMapping("/create")
-	public String createTeam(CreateTeamDTO createTeamDTO) {
+	public String createTeam(CreateTeamDTO createTeamDTO, Principal principal,RedirectAttributes redirectAttributes) {
+		if(principal==null) {
+			redirectAttributes.addFlashAttribute("isLogMsg", true);
+			return "redirect:/team/list";
+		}
 		return "team_write";
 	}
 	
@@ -1175,7 +1179,7 @@ public class TeamController {
 		return "redirect:/team/"+project.getTeam().getId()+"/project/"+pid+"/teamBoard";
 	}
 	@GetMapping("/{id}/boost")
-    public String supportPage(@PathVariable("id") Long id, Model model) {
+    public String supportPage(@PathVariable("id") Long id, Model model, Principal principal) {
         Team team = teamService.getTeamById(id);
 
         BigDecimal totalSupportAmount = sponsorshipService.getsumPaidAmountByTarget(TargetType.TEAM,id);
@@ -1187,6 +1191,12 @@ public class TeamController {
         
         List<ResponseSupportHistoryListDTO> recentSupports = sponsorshipService.getRecentSupportHistory(TargetType.TEAM, id, PageRequest.of(0, 5));
         model.addAttribute("recentSupports", recentSupports);
+        
+        if(principal!=null) {
+        	boolean canManageSupport = team.getUser().getUsername().equals(principal.getName());
+        	model.addAttribute("canManageSupport", canManageSupport);
+        }
+        
 
         boolean supportEnabled = team.isSupportEnabled();
         model.addAttribute("supportEnabled", supportEnabled);
@@ -1198,6 +1208,7 @@ public class TeamController {
         model.addAttribute("hasMoreSupports", recentSupports.size() == 5);
         model.addAttribute("supportTargetType", "TEAM");
         model.addAttribute("supportTargetId", team.getId());
+        
         return "team_boost";
     }
 	 @PostMapping("/{id}/boost")
@@ -1240,7 +1251,7 @@ public class TeamController {
 	  }
 	 
 	 @GetMapping("/project/{id}/boost")
-	 public String projectBoostPage(@PathVariable("id") Long projectId, Model model) {
+	 public String projectBoostPage(@PathVariable("id") Long projectId, Model model, Principal principal) {
 	     Project project = teamService.getProjectById(projectId);
 
 	     BigDecimal totalSupportAmount = sponsorshipService.getsumPaidAmountByTarget(TargetType.PROJECT,projectId);
@@ -1255,6 +1266,12 @@ public class TeamController {
 	     model.addAttribute("supportEnabled", supportEnabled);
 
 	     int progressPercent = sponsorshipService.calculateProgressPercent(totalSupportAmount, goalAmount);
+	     
+	     if(principal!=null) {
+	        	boolean canManageSupport = project.getTeam().getUser().getUsername().equals(principal.getName());
+	        	model.addAttribute("canManageSupport", canManageSupport);
+	        }
+	        
 
 	     model.addAttribute("team", null);
 	     model.addAttribute("project", ResponseProjectDeatilDTO.from(project));

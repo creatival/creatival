@@ -35,6 +35,8 @@ public class ResponseNovelEpisodeList {
 	
 	private LocalDateTime updatedAt;
 	
+	private boolean paid;
+	
 	public static ResponseNovelEpisodeList from(Episode episode) {
 		return ResponseNovelEpisodeList.builder()
 				.id(episode.getId())
@@ -46,6 +48,7 @@ public class ResponseNovelEpisodeList {
 				.createdAt(episode.getCreatedAt())
 				.updatedAt(episode.getUpdatedAt())
 				.username(episode.getSeries().getContent().getUser().getUsername())
+				.paid(episode.isPaid())
 				.build();
 	}
 }

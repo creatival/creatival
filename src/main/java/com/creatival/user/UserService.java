@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -122,7 +126,7 @@ public class UserService {
 		user.setDeletedAt(null);
 		userRepository.save(user);
 	}
-	
+	@CacheEvict(value = "profileImage", key = "#username")
 	public void updateProfileImg(Users user, MultipartFile file) throws IOException {
 		String profileImgUrl=null;
 		profileImgUrl = imgPath+fileUtil.saveImage(file, "user");
@@ -169,5 +173,12 @@ public class UserService {
 	            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
 	    user.setSupportEnabled(supportEnabled);
+	}
+	public String getProfileImageUrl(String username) {
+		Users user = getUserByUsername(username);
+		if(user==null) {
+			return null;
+		}
+		return user.getProfileImgUrl();
 	}
 }

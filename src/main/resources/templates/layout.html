@@ -114,8 +114,10 @@
 
                     <div class="dropdown">
                         <button class="btn d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img th:src="${#authentication.principal != 'anonymousUser' and user != null and user.profileImgUrl != null ? user.profileImgUrl : 'https://dummyimage.com/32x32/ced4da/6c757d'}" 
-                                 class="rounded-circle" width="32" height="32">
+							<img th:src="${profileImageUrl}"
+							     class="rounded-circle"
+							     width="32"
+							     height="32">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li sec:authorize="isAnonymous()"><a class="dropdown-item" th:href="@{/user/signUp}">회원가입</a></li>
