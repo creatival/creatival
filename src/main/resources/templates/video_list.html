@@ -113,54 +113,56 @@
 		}
     </style>
 
-    <section class="py-4 bg-white mb-4 border-bottom">
-        <div class="row text-center g-4 justify-content-center">
-			<div class="col-4 col-md-2">
-			                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
-			                        <div class="icon-box">
-			                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
-			                        </div>
-			                        <div class="fw-bold">일러스트</div>
-			                    </a>
-			                </div>
-			                <div class="col-4 col-md-2">
-			                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
-			                        <div class="icon-box">
-			                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
-			                        </div>
-			                        <div class="fw-bold">만화</div>
-			                    </a>
-			                </div>
-			                <div class="col-4 col-md-2">
-			                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
-			                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
-			                        <div class="fw-bold">음악</div>
-			                    </a>
-			                </div>
-			                <div class="col-4 col-md-2">
-			                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
-			                        <div class="icon-box">
-			                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
-			                        </div>
-			                        <div class="fw-bold">비디오</div>
-			                    </a>
-			                </div>
-			                <div class="col-4 col-md-2">
-			                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
-			                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
-			                        <div class="fw-bold">소설</div>
-			                    </a>
-			                </div>
-			                <div class="col-4 col-md-2">
-			                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
-			                        <div class="icon-box">
-			                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
-			                        </div>
-			                        <div class="fw-bold">파일</div>
-			                    </a>
-			                </div>
-        </div>
-    </section>
+	<section class="py-5 bg-white">
+	        <div class="container">
+	            <div class="row text-center g-4 justify-content-center">
+					<div class="col-4 col-md-2">
+					                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
+					                        <div class="icon-box">
+					                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
+					                        </div>
+					                        <div class="fw-bold">일러스트</div>
+					                    </a>
+					                </div>
+					                <div class="col-4 col-md-2">
+					                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
+					                        <div class="icon-box">
+					                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
+					                        </div>
+					                        <div class="fw-bold">만화</div>
+					                    </a>
+					                </div>
+					                <div class="col-4 col-md-2">
+					                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
+					                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
+					                        <div class="fw-bold">음악</div>
+					                    </a>
+					                </div>
+					                <div class="col-4 col-md-2">
+					                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
+					                        <div class="icon-box">
+					                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
+					                        </div>
+					                        <div class="fw-bold">비디오</div>
+					                    </a>
+					                </div>
+					                <div class="col-4 col-md-2">
+					                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
+					                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
+					                        <div class="fw-bold">소설</div>
+					                    </a>
+					                </div>
+					                <div class="col-4 col-md-2">
+					                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
+					                        <div class="icon-box">
+					                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
+					                        </div>
+					                        <div class="fw-bold">파일</div>
+					                    </a>
+					                </div>
+	            </div>
+	        </div>
+	    </section>
 
     <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
 		<div style="flex: 1;">
