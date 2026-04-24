@@ -81,16 +81,24 @@
 		    color: white !important; 
 		    margin-top: 150px;
 
-		    /* 🔥 핵심: 화면 전체 width 강제 */
+		    /* ✅ 핵심: 정확한 중앙 기준 풀폭 */
 		    width: 100vw;
 		    position: relative;
 		    left: 50%;
-		    right: 50%;
-		    margin-left: -50vw;
-		    margin-right: -50vw;
+		    transform: translateX(-50%);
+
+		    /* ❌ 기존 문제 코드 제거 */
+		    margin-left: 0;
+		    margin-right: 0;
+
+		    padding: 100px 0;
 		}
         .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
         .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+		
+		html, body {
+		    overflow-x: hidden;
+		}
     </style>
 
     <section class="py-5 bg-white">

@@ -62,24 +62,29 @@
         }
 		
         /* 🔥 푸터 스타일 수정: 화면 전체 너비 확장 */
-        .full-footer { 
-            background-color: #0b152d !important; 
-            color: white !important; 
-            margin-top: 150px;
-            
-            /* 컨테이너 밖으로 배경을 확장시키는 핵심 코드 */
-            width: 100vw;
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-			
-			padding-top: 100px;
-			padding-bottom: 100px;
-        }
+		.full-footer {
+		    background-color: #0b152d !important;
+		    color: white !important;
+		    margin-top: 150px;
+
+		    /* 🔥 핵심 */
+		    width: 100vw;
+		    position: relative;
+		    left: 50%;
+		    transform: translateX(-50%);
+
+		    /* 스크롤 방지 */
+		    overflow-x: hidden;
+
+		    padding-top: 100px;
+		    padding-bottom: 100px;
+		}
         .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
         .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+		body {
+		    overflow-x: hidden;
+		}
+		
     </style>
 </head>
 
