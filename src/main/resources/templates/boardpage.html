@@ -97,8 +97,8 @@
 		.board-main-title {
 			font-size: 2.2rem;
 			font-weight: 800;
-			margin: 40px 0;
-			text-align: center;
+			margin: 40px 0 10px;
+			
 		}
 
 		.nav-tabs-board {
@@ -289,7 +289,19 @@
 				</div>
 			</section>
 
-			<h1 class="board-main-title">게시판</h1>
+			<h1 class="board-main-title, text-center">게시판</h1>
+			
+			<div class="text-center mb-4">
+				<p class="text-muted" th:if="${type.name() == 'NORMAL'}" style="line-height: 1.6;">
+				    우리들의 소소한 일상부터 궁금한 질문까지, <br>
+				    <span style="color: var(--board-blue); font-weight: 600;">Creati<span style="color: var(--board-orange);">val</span></span>의 모든 사용자가 자유롭게 소통하는 커뮤니티 공간입니다.
+				</p>
+
+				<p class="text-muted" th:if="${type.name() == 'CREATOR'}" style="line-height: 1.6;">
+				    새로운 영감을 나누고 함께 성장할 사람들을 찾아보세요. <br>
+				    창작자들만을 위한 <span style="color: var(--board-orange); font-weight: 600;">깊이 있는 대화와 협업</span>의 장입니다.
+				</p>
+			</div>
 
 			<div class="nav-tabs-board">
 			    <a th:href="@{/board(type='NORMAL')}" 
