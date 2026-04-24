@@ -1078,6 +1078,10 @@ public class ContentService {
 		contentRepository.delete(content);
 		likeRepository.deleteByTargetIdAndTargetType(content.getId(), TargetType.CONTENT);
 	}
+	public List<ResponseComicListDTO> getComicByUserOnlyPublic(Users user) {
+		List<Content> contents = contentRepository.findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(user, ContentType.COMIC,Visibility.PUBLIC);
+		return contents.stream().map(content -> ResponseComicListDTO.from(content, content.getSeries())).toList();
+	}
 	
 	
 	

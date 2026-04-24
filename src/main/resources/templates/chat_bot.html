@@ -235,6 +235,17 @@
             padding: 4px 10px;
             font-size: 0.8rem;
         }
+		.paid-badge {
+		    display: inline-block;
+		    margin-left: 6px;
+		    padding: 2px 7px;
+		    border-radius: 999px;
+		    background: #ff7a36;
+		    color: white;
+		    font-size: 0.72rem;
+		    font-weight: 700;
+		    vertical-align: middle;
+		}
     </style>
 </head>
 
@@ -447,7 +458,10 @@
 
                 return `
                     <div class="recommend-card">
-                        <a class="recommend-title" href="${escapeHtml(item.url)}">${escapeHtml(item.title)}</a>
+						<a class="recommend-title" href="${escapeHtml(item.url)}">
+						    ${escapeHtml(item.title)}
+						    ${item.paid ? '<span class="paid-badge">유료</span>' : ''}
+						</a>
                         <div class="recommend-meta">
                             타입: ${escapeHtml(item.type)} · 좋아요 ${item.likeCount ?? 0} · 조회수 ${item.viewCount ?? 0}
                         </div>

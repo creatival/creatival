@@ -70,7 +70,8 @@ public class ContentRecommendationService {
                 buildContentUrl(content),
                 safeLikeCount(content),
                 safeViewCount(content),
-                tags
+                tags,
+                content.isPaid()
         );
     }
 

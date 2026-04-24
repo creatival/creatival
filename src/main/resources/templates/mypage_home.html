@@ -304,6 +304,49 @@
             color: #ccc;
         }
 
+        .paid-blur-wrap img {
+            filter: blur(6px);
+            transform: scale(1.05);
+        }
+
+        .paid-blur-wrap::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.28);
+            z-index: 2;
+        }
+
+        .paid-blur-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            font-weight: 800;
+            pointer-events: none;
+        }
+
+        .paid-blur-overlay i {
+            position: static !important;
+            transform: none !important;
+            color: #fff !important;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .paid-blur-overlay span {
+            background: rgba(255, 122, 54, 0.95);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+        }
+
         .card-label {
             padding: 10px;
             font-size: 0.85rem;
@@ -492,9 +535,14 @@
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
                         <div class="col" th:each="art : ${arts}">
                             <div class="content-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
-                                <div class="card-img-placeholder illu-img">
+                                <div class="card-img-placeholder illu-img"
+                                     th:classappend="${user.username != #authentication.name and art.paid} ? ' paid-blur-wrap'">
                                     <img th:src="${art.thumbnailUrl}" alt="" />
                                     <i class="bi bi-image fs-4"></i>
+                                    <div class="paid-blur-overlay" th:if="${user.username != #authentication.name and art.paid}">
+                                        <i class="bi bi-lock-fill"></i>
+                                        <span>유료 콘텐츠</span>
+                                    </div>
                                 </div>
                                 <div class="card-label text-truncate" th:text="${art.title}">일러스트 명</div>
                             </div>
@@ -525,7 +573,7 @@
                 <div class="content-box-gray px-3">
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
                         <div class="col" th:each="novel : ${novels}">
-                            <div class="content-card" th:onclick="|location.href='@{/content/novel_detail/{id}(id=${novel.id})}'|">
+                            <div class="content-card" th:onclick="|location.href='@{/content/novel/detail/{id}(id=${novel.id})}'|">
                                 <div class="card-img-placeholder novel-img">
                                     <img th:if="${novel.thumbnailUrl != null}" th:src="${novel.thumbnailUrl}" alt="" />
                                     <i class="bi bi-book fs-4"></i>
@@ -543,9 +591,14 @@
                     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
                         <div class="col" th:each="music : ${musics}">
                             <div class="content-card" th:onclick="|location.href='@{/content/music/detail/{id}(id=${music.id})}'|">
-                                <div class="card-img-placeholder music-img">
+                                <div class="card-img-placeholder music-img"
+                                     th:classappend="${user.username != #authentication.name and music.paid} ? ' paid-blur-wrap'">
                                     <img th:if="${music.thumbnailUrl != null}" th:src="${music.thumbnailUrl}" alt="" />
                                     <i class="bi bi-music-note-beamed fs-4"></i>
+                                    <div class="paid-blur-overlay" th:if="${user.username != #authentication.name and music.paid}">
+                                        <i class="bi bi-lock-fill"></i>
+                                        <span>유료 콘텐츠</span>
+                                    </div>
                                 </div>
                                 <div class="card-label text-truncate" th:text="${music.title}">음악 명</div>
                             </div>
@@ -560,9 +613,14 @@
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                         <div class="col" th:each="video : ${videos}">
                             <div class="content-card" th:onclick="|location.href='@{/content/video/detail/{id}(id=${video.id})}'|">
-                                <div class="card-img-placeholder video-img">
+                                <div class="card-img-placeholder video-img"
+                                     th:classappend="${user.username != #authentication.name and video.paid} ? ' paid-blur-wrap'">
                                     <img th:if="${video.thumbnailUrl != null}" th:src="${video.thumbnailUrl}" alt="" />
                                     <i class="bi bi-play-btn fs-4"></i>
+                                    <div class="paid-blur-overlay" th:if="${user.username != #authentication.name and video.paid}">
+                                        <i class="bi bi-lock-fill"></i>
+                                        <span>유료 콘텐츠</span>
+                                    </div>
                                 </div>
                                 <div class="card-label text-truncate" th:text="${video.title}">동영상 명</div>
                             </div>
@@ -619,8 +677,13 @@
                         <div class="col" th:each="content : ${likeContentPreview}">
                             <a class="content-card"
                                th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}">
-                                <div class="card-img-placeholder illu-img">
+                                <div class="card-img-placeholder illu-img"
+                                     th:classappend="${user.username != #authentication.name and content.paid} ? ' paid-blur-wrap'">
                                     <img th:src="${content.thumbnailUrl}" alt="" />
+                                    <div class="paid-blur-overlay" th:if="${user.username != #authentication.name and content.paid}">
+                                        <i class="bi bi-lock-fill"></i>
+                                        <span>유료 콘텐츠</span>
+                                    </div>
                                 </div>
                                 <div class="card-label text-truncate" th:text="${content.title}">작품명</div>
                             </a>
@@ -642,8 +705,13 @@
                         <div class="col" th:each="content : ${bookmarkContentPreview}">
                             <a class="content-card"
                                th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(content.type)}, id=${content.id})}">
-                                <div class="card-img-placeholder video-img">
+                                <div class="card-img-placeholder video-img"
+                                     th:classappend="${user.username != #authentication.name and content.paid} ? ' paid-blur-wrap'">
                                     <img th:src="${content.thumbnailUrl}" alt="" />
+                                    <div class="paid-blur-overlay" th:if="${user.username != #authentication.name and content.paid}">
+                                        <i class="bi bi-lock-fill"></i>
+                                        <span>유료 콘텐츠</span>
+                                    </div>
                                 </div>
                                 <div class="card-label text-truncate" th:text="${content.title}">작품명</div>
                             </a>
@@ -740,6 +808,7 @@
 
     <script th:inline="javascript">
         let currentIndex = 0;
+        const otherUser = [[${user.username != #authentication.name}]];
 
         document.addEventListener("DOMContentLoaded", () => {
             const activeTab = document.querySelector('.tab-menu-item.active');
@@ -784,16 +853,32 @@
             location.reload();
         }
 
+        function createPaidOverlay(content) {
+            if (!(otherUser && content.paid)) {
+                return '';
+            }
+
+            return `
+                <div class="paid-blur-overlay">
+                    <i class="bi bi-lock-fill"></i>
+                    <span>유료 콘텐츠</span>
+                </div>
+            `;
+        }
+
         function createContentCard(content) {
             const typePath = content.type ? content.type.toLowerCase() : 'art';
             const detailPath = `/content/${typePath}/detail/${content.id}`;
+            const paidClass = (otherUser && content.paid) ? ' paid-blur-wrap' : '';
+
             return `
                 <div class="col">
                     <a href="${detailPath}" class="content-card" style="text-decoration:none;">
-                        <div class="card-img-placeholder illu-img">
+                        <div class="card-img-placeholder illu-img${paidClass}">
                             <img src="${content.thumbnailUrl || 'https://dummyimage.com/150x200'}"
                                  style="width:100%; height:100%; object-fit:cover;"
                                  alt="${content.title}">
+                            ${createPaidOverlay(content)}
                         </div>
                         <div class="card-info mt-2 text-center">
                             <div class="card-label text-truncate px-2" title="${content.title}" style="font-weight: bold; color:#333;">

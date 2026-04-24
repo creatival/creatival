@@ -25,6 +25,7 @@ public class ResponseContentListForProject {
 	private ContentType type;
 	private Long viewCount;
 	private Long likeCount;
+	private boolean paid;
 	
 	public static ResponseContentListForProject fromNovel(Content content) {
 		return ResponseContentListForProject.builder()
@@ -37,7 +38,8 @@ public class ResponseContentListForProject {
 				.profileImgUrl(content.getUser().getProfileImgUrl())
 				.viewCount(content.getViewCount())
 				.type(content.getType())
-				.likeCount(content.getLikeCount()) // 나중에 수정할 것
+				.likeCount(content.getLikeCount())
+				.paid(content.isPaid())
 				.build();
 	}
 	public static ResponseContentListForProject fromArt(Content content, String thumbnailUrl) {
@@ -51,7 +53,8 @@ public class ResponseContentListForProject {
 				.profileImgUrl(content.getUser().getProfileImgUrl())
 				.viewCount(content.getViewCount())
 				.type(content.getType())
-				.likeCount(content.getLikeCount()) // 나중에 수정할 것
+				.likeCount(content.getLikeCount())
+				.paid(content.isPaid())
 				.build();
 	}
 	

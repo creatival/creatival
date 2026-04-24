@@ -32,7 +32,8 @@ public class ContentSearchService {
                 "/content/" + content.getType().toString().toLowerCase() + "/detail/" + content.getId(),
                 content.getLikeCount(),
                 content.getViewCount(),
-                List.of()
+                List.of(),
+                content.isPaid()
         );
     }
 }

@@ -200,7 +200,8 @@ public class ContentQueryService {
                 buildContentUrl(content),
                 safeLikeCount(content),
                 safeViewCount(content),
-                tags
+                tags,
+                content.isPaid()
         );
     }
 

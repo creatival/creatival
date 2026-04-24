@@ -24,6 +24,54 @@
         .hover-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
         .rounded-5 { border-radius: 2rem !important; }
 
+        .paid-blur-wrap {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .paid-blur-wrap img {
+            filter: blur(6px);
+            transform: scale(1.05);
+        }
+
+        .paid-blur-wrap::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.28);
+            z-index: 2;
+        }
+
+        .paid-blur-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            font-weight: 800;
+            pointer-events: none;
+        }
+
+        .paid-blur-overlay i {
+            position: static !important;
+            transform: none !important;
+            color: #fff !important;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .paid-blur-overlay span {
+            background: rgba(255, 122, 54, 0.95);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+        }
+
         /* 섹션별 배경 디자인 */
         .recommend-section { background-color: white; padding-top: 80px; }
         .carousel-bg-gray { background-color: #f4f4f4; padding: 60px 0 80px; margin-top: 40px; }
@@ -39,7 +87,7 @@
         }
         .novel-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        .novel-card-img-wrapper { aspect-ratio: 3 / 4; overflow: hidden; background-color: #eee; }
+        .novel-card-img-wrapper { aspect-ratio: 3 / 4; overflow: hidden; background-color: #eee; position: relative; }
         .novel-card-info { padding: 15px 10px; background-color: white; }
 
         /* 슬라이드 컨트롤러 */
@@ -59,7 +107,7 @@
         .carousel-control-next.novel-carousel-control { right: -60px; }
 		
 		.carousel-indicators {
-		    bottom: 30px; /* 원하는 만큼 위로 */
+		    bottom: 30px;
 		}
 
         /* 푸터 스타일 */
@@ -327,7 +375,13 @@
             <div class="row row-cols-2 row-cols-md-4 g-4">
                 <div class="col" th:each="art : ${topArt}">
                     <div class="card border-0 shadow-sm h-100 hover-card" th:onclick="|location.href='@{/content/art/detail/{id}(id=${art.id})}'|">
-                        <img th:src="${art.thumbnailUrl}" class="card-img-top" alt="일러스트" />
+                        <div th:class="${art.paid} ? 'paid-blur-wrap' : ''">
+                            <img th:src="${art.thumbnailUrl}" class="card-img-top" alt="일러스트" />
+                            <div class="paid-blur-overlay" th:if="${art.paid}">
+                                <i class="bi bi-lock-fill"></i>
+                                <span>유료 콘텐츠</span>
+                            </div>
+                        </div>
                         <div class="card-body p-3 text-start">
                             <h6 class="fw-bold mb-2 text-truncate" th:text="${art.title}">일러스트 명</h6>
                             <span class="small text-muted" th:text="|${art.username}(${art.displayname})|">작가이름</span>
@@ -410,7 +464,13 @@
                 <div class="row row-cols-2 row-cols-md-4 g-4">
                     <div class="col" th:each="video : ${topVideo}">
                         <div class="card border-0 shadow-sm h-100 hover-card bg-white" th:onclick="|location.href='@{/content/video/detail/{id}(id=${video.id})}'|">
-                            <img th:src="${video.thumbnailUrl}" class="card-img-top" alt="비디오 썸네일" />
+                            <div th:class="${video.paid} ? 'paid-blur-wrap' : ''">
+                                <img th:src="${video.thumbnailUrl}" class="card-img-top" alt="비디오 썸네일" />
+                                <div class="paid-blur-overlay" th:if="${video.paid}">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>유료 콘텐츠</span>
+                                </div>
+                            </div>
                             <div class="card-body p-3 text-start">
                                 <h6 class="fw-bold mb-2 text-truncate" th:text="${video.title}">영상 이름</h6>
                                 <div class="d-flex align-items-center">
@@ -435,7 +495,13 @@
                 <div class="row row-cols-2 row-cols-md-4 g-4">
                     <div class="col" th:each="music : ${topMusic}">
                         <div class="card border-0 shadow-sm h-100 hover-card bg-white" th:onclick="|location.href='@{/content/music/detail/{id}(id=${music.id})}'|">
-                            <img th:src="${music.thumbnailUrl}" class="card-img-top" alt="음악 썸네일" />
+                            <div th:class="${music.paid} ? 'paid-blur-wrap' : ''">
+                                <img th:src="${music.thumbnailUrl}" class="card-img-top" alt="음악 썸네일" />
+                                <div class="paid-blur-overlay" th:if="${music.paid}">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>유료 콘텐츠</span>
+                                </div>
+                            </div>
                             <div class="card-body p-3 text-start">
                                 <h6 class="fw-bold mb-2 text-truncate" th:text="${music.title}">음악 명</h6>
                                 <div class="d-flex align-items-center">

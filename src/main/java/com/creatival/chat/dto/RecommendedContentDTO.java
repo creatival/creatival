@@ -15,4 +15,5 @@ public class RecommendedContentDTO {
     private Long likeCount;
     private Long viewCount;
     private List<String> tags;
+    private boolean paid;
 }
