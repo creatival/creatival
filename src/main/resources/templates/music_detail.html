@@ -34,10 +34,6 @@
         .comment-input { border: none !important; border-bottom: 1px solid #dee2e6 !important; background-color: transparent !important; border-radius: 0 !important; }
         .comment-input:focus { border-bottom: 2px solid #2D3278 !important; box-shadow: none !important; }
 
-        /* 5. 푸터 전용 */
-        .full-footer { background-color: #0b152d !important; color: white !important; width: 100%; margin-top: 100px; padding-top: 100px;}
-        .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
-        .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
     </style>
 
     <div class="container my-5">
@@ -279,38 +275,6 @@
         </div>
     </div>
 
-    <footer class="full-footer">
-	    <div class="container">
-	        <div class="row mb-4">
-	            <div class="col-6 col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-	                <h6 class="fw-bold mb-3" style="font-size: 0.95rem;">회사 정보</h6>
-	                <ul class="list-unstyled small opacity-75" style="line-height: 1.8;">
-	                    <li class="footer-link-item">이용 안내</li>
-	                    <li class="footer-link-item">공지사항</li>
-	                    <li class="footer-link-item">고객센터</li>
-	                    <li class="footer-link-item">도움말</li>
-	                    <li class="footer-link-item">광고문의</li>
-	                </ul>
-	            </div>
-	        </div>
-
-	        <hr class="footer-line">
-
-	        <div class="row align-items-center">
-	            <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-	                <span class="fw-bold footer-link-item">이용 약관</span>
-	                <span class="fw-bold footer-link-item">개인 정보 보호 정책</span>
-	            </div>
-
-	            <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-	                © 2026 creatival All rights reserved.
-	            </div>
-
-	            <div class="col-md-4 text-end">
-	                <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140" style="filter: brightness(0) invert(1);">
-	            </div>
-	        </div>
-	    </div>
-	</footer>
+    
 </div>
 </html>
