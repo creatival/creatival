@@ -325,13 +325,16 @@
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>
                 </button>
-                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>    
+                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>   
+				<button class="btn-action"
+	                    th:onclick="|location.href='@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}'|"
+	                    >
+	                <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
+	                <span>수정하기</span>
+	            </button>
             </div>
 
             <div class="d-flex justify-content-lg-end gap-2 mt-3">
-                <button sec:authorize="isAuthenticated()" class="btn btn-outline-secondary btn-sm px-3 rounded-pill fw-medium">
-                    대표 게시물로 고정
-                </button>
                 <a th:href="@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}"
                    sec:authorize="isAuthenticated()"
                    class="btn btn-dark btn-sm px-3 rounded-pill fw-medium">
@@ -415,29 +418,6 @@
 			    </div>
 			</section>
 
-            <section class="mb-5">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-                    <h4 class="fw-bold mb-0">프로젝트 콘텐츠</h4>
-                    <a th:href="@{/}" class="text-decoration-none small text-primary fw-medium">전체 보기 <i class="bi bi-chevron-right"></i></a>
-                </div>
-                
-                <div class="row row-cols-2 row-cols-md-3 g-4">
-                    <div class="col" th:each="content : ${contentList}">
-                        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-card">
-                            <a th:href="${content.contentUrl}">
-                                <img th:src="${content.thumbnailUrl != null ? content.thumbnailUrl : '/images/pic.png'}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="콘텐츠 썸네일">
-                            </a>
-                            <div class="card-body p-3">
-                                <h6 class="card-title fw-bold text-truncate mb-2" th:text="${content.title}">제목</h6>
-                                <div class="d-flex align-items-center">
-                                    <img th:src="${content.profileImgUrl != null ? content.profileImgUrl : 'https://dummyimage.com/20x20/ced4da/6c757d'}" class="rounded-circle me-2 object-fit-cover" style="width:24px;height:24px;" alt="프로필">
-                                    <span class="small text-muted fw-medium" th:text="${content.username}">닉네임</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
 
         <div class="col-lg-4">
