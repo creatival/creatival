@@ -89,20 +89,7 @@
         .art-grid-item:hover .art-grid-img { transform: scale(1.08); }
         .art-grid-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%); padding: 25px 12px 10px; display: flex; flex-direction: column; }
 		
-		.full-footer { 
-		            background-color: #0b152d !important; 
-		            color: white !important; 
-		            margin-top: 150px;
-		            width: 100vw;
-		            position: relative;
-		            left: 50%;
-		            right: 50%;
-		            margin-left: -50vw;
-		            margin-right: -50vw;
-		            padding: 50px 0; /* 상하 패딩 추가 */
-		        }
-		        .full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
-		        .footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+		
     </style>
 </head>
 
@@ -302,35 +289,7 @@
 		            </div>
 		        </div>
 		    </div>
-			<footer class="full-footer">
-			        <div class="container py-5">
-			            <div class="row mb-4">
-			                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-			                    <h6 class="fw-bold mb-3">회사 정보</h6>
-			                    <ul class="list-unstyled small opacity-75">
-			                        <li>이용 안내</li>
-			                        <li>공지사항</li>
-			                        <li>고객센터</li>
-			                        <li>도움말</li>
-			                        <li>광고문의</li>
-			                    </ul>
-			                </div>
-			            </div>
-			            <hr class="footer-line">
-			            <div class="row align-items-center">
-			                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-			                    <span>이용 약관</span>
-			                    <span>개인 정보 보호 정책</span>
-			                </div>
-			                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-			                    © 2026 creatival All rights reserved.
-			                </div>
-			                <div class="col-md-4 text-end">
-			                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
-			                </div>
-			            </div>
-			        </div>
-			    </footer>
+			
 </div>
 	
 </html>

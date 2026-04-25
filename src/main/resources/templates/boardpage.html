@@ -226,17 +226,7 @@
 		.custom-pagination .page-item.disabled .page-link { color: #ccc; }
 		.custom-pagination .page-link:hover { color: #f05a28; }
 
-		/* 푸터 통합 디자인 */
-		.full-footer { 
-			background-color: #0b152d !important; 
-			color: white !important; 
-			width: 100%; 
-			margin-top: 0; 
-			padding: 80px 0 60px; /* 상단 여백을 80px로 넉넉히 설정 */
-		}
-		.full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
-		.footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 40px 0; }
-		.footer-link-item { cursor: pointer; list-style: none; }
+		
 	</style>
 </head>
 
@@ -375,37 +365,7 @@
 			</div>
 		</div>
 
-		<footer class="full-footer">
-			<div class="container">
-				<div class="row mb-4">
-					<div class="col-6 col-md" th:each="i : ${#numbers.sequence(1, 5)}">
-						<h6 class="fw-bold mb-3" style="font-size: 0.95rem;">회사 정보</h6>
-						<ul class="list-unstyled small opacity-75" style="line-height: 1.8;">
-							<li class="footer-link-item">이용 안내</li>
-							<li class="footer-link-item">공지사항</li>
-							<li class="footer-link-item">고객센터</li>
-							<li class="footer-link-item">도움말</li>
-							<li class="footer-link-item">광고문의</li>
-						</ul>
-					</div>
-				</div>
-
-				<hr class="footer-line">
-
-				<div class="row align-items-center">
-					<div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-						<span class="fw-bold footer-link-item">이용 약관</span>
-						<span class="fw-bold footer-link-item">개인 정보 보호 정책</span>
-					</div>
-					<div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-						© 2026 creatival All rights reserved.
-					</div>
-					<div class="col-md-4 text-end">
-						<img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140" style="filter: brightness(0) invert(1);">
-					</div>
-				</div>
-			</div>
-		</footer>
+		
 
 	</th:block>
 
