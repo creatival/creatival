@@ -588,13 +588,22 @@
                         align: 'center'
                     }
                 },
+                document.querySelector('[data-guide="main-aboutUs"]') && {
+                    element: '[data-guide="main-aboutUs"]',
+                    popover: {
+                        title: 'about Us',
+                        description: 'about Us를 클릭하면 저희에 대해 알 수 있습니다.',
+                        side: 'top',
+                        align: 'center'
+                    }
+                },
 				{
 				    popover: {
 				        title: 'Creatival을 즐기세요!',
 				        description: `
 				            <div style="text-align:center;">
 				                <p style="margin-bottom:10px;">
-				                    그 외에도 하단의 여러 인기 콘텐츠들을 확인하시고<br>
+				                    그 외에도 인기 콘텐츠들을 확인하시고<br>
 				                    콘텐츠들의 축제를 즐기세요!
 				                </p>
 				                <img src="/images/mascot.png" 

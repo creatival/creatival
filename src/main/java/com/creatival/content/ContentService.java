@@ -121,7 +121,7 @@ public class ContentService {
 	}
 	
 	public List<ResponseContentListForProject> getContentByProject(Project project) {
-		List<Content> list = contentRepository.findByProject(project);
+		List<Content> list = contentRepository.findByProjectAndVisibility(project, Visibility.PUBLIC);
 		List<ResponseContentListForProject> contents = new ArrayList<>();
 		for(Content content : list) {
 			if(content.getType() == ContentType.NOVEL) {
@@ -196,6 +196,12 @@ public class ContentService {
 	public Page<ResponseNovelList> getNovelList(int page) {
 		Pageable pageable = PageRequest.of(page, 15, Sort.by("createdAt").descending());
 		Page<Content> contents = contentRepository.findByType(ContentType.NOVEL,pageable);
+		
+		return contents.map(content -> ResponseNovelList.from(content, content.getSeries()));
+	}
+	public Page<ResponseNovelList> getNovelListOnlyPublic(int page) {
+		Pageable pageable = PageRequest.of(page, 15, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.NOVEL,pageable, Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseNovelList.from(content, content.getSeries()));
 	}
@@ -403,6 +409,12 @@ public class ContentService {
 		
 		return contents.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content)));
 	}
+	public Page<ResponseArtList> getArtListOnlyPublic(int page) {
+		Pageable pageable = PageRequest.of(page, 15, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.ART,pageable, Visibility.PUBLIC);
+		
+		return contents.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content)));
+	}
 	
 	
 	public Content getArt(Long id) {
@@ -504,6 +516,12 @@ public class ContentService {
 	public Page<ResponseVideoListDTO> getVideoList(int page) {
 		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
 		Page<Content> contents = contentRepository.findByType(ContentType.VIDEO,pageable);
+		
+		return contents.map(content -> ResponseVideoListDTO.from(content));
+	}
+	public Page<ResponseVideoListDTO> getVideoListOnlyPublic(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.VIDEO,pageable, Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseVideoListDTO.from(content));
 	}
@@ -626,6 +644,12 @@ public class ContentService {
 		
 		return contents.map(content -> ResponseMusicListDTO.from(content));
 	}
+	public Page<ResponseMusicListDTO> getMusicListOnlyPublic(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.MUSIC,pageable, Visibility.PUBLIC);
+		
+		return contents.map(content -> ResponseMusicListDTO.from(content));
+	}
 	public ResponseMusicDetailDTO getMusicDetailById(Long id) {
 		Optional<Content> optional = contentRepository.findById(id);
 		if(optional.isEmpty()) {
@@ -731,6 +755,11 @@ public class ContentService {
 		Page<Content> fileList = contentRepository.findByType(ContentType.FILE, pageable);
 		return fileList.map(file -> ResponseFileListDTO.from(file));
 	}
+	public Page<ResponseFileListDTO> getFileListOnlyPublic(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> fileList = contentRepository.findByTypeAndVisibility(ContentType.FILE, pageable, Visibility.PUBLIC);
+		return fileList.map(file -> ResponseFileListDTO.from(file));
+	}
 	public ResponseFileDetailDTO getfIleDetail(Long id) {
 		Optional<Content> optional = contentRepository.findById(id);
 		if(optional.isEmpty()) {
@@ -797,31 +826,31 @@ public class ContentService {
 	
 	public List<ResponseArtList> getTopArt(int qty) {
 		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
-		Page<Content> contents = contentRepository.findByType(ContentType.ART,pageable);
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.ART,pageable,Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseArtList.from(content, contentFileService.getContentFileThumbnail(content))).toList();
 	}
 	public List<ResponseNovelList> getTopNovel(int qty) {
 		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
-		Page<Content> contents = contentRepository.findByType(ContentType.NOVEL,pageable);
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.NOVEL,pageable,Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseNovelList.from(content, content.getSeries())).toList();
 	}
 	public List<ResponseVideoListDTO> getTopVideo(int qty) {
 		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
-		Page<Content> contents = contentRepository.findByType(ContentType.VIDEO,pageable);
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.VIDEO,pageable,Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseVideoListDTO.from(content)).toList();
 	}
 	public List<ResponseVideoListDTO> getTopMusic(int qty) {
 		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
-		Page<Content> contents = contentRepository.findByType(ContentType.MUSIC,pageable);
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.MUSIC,pageable,Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseVideoListDTO.from(content)).toList();
 	}
 	public List<ResponseComicListDTO> getTopComic(int qty) {
 		Pageable pageable = PageRequest.of(0, qty, Sort.by("likeCount").descending());
-		Page<Content> contents = contentRepository.findByType(ContentType.COMIC,pageable);
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.COMIC,pageable,Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseComicListDTO.from(content, content.getSeries())).toList();
 	}
@@ -952,6 +981,12 @@ public class ContentService {
 	public Page<ResponseComicListDTO> getComicList(int page) {
 		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
 		Page<Content> contents = contentRepository.findByType(ContentType.COMIC,pageable);
+		
+		return contents.map(content -> ResponseComicListDTO.from(content, content.getSeries()));
+	}
+	public Page<ResponseComicListDTO> getComicListOnlyPublic(int page) {
+		Pageable pageable = PageRequest.of(page, 12, Sort.by("createdAt").descending());
+		Page<Content> contents = contentRepository.findByTypeAndVisibility(ContentType.COMIC,pageable,Visibility.PUBLIC);
 		
 		return contents.map(content -> ResponseComicListDTO.from(content, content.getSeries()));
 	}

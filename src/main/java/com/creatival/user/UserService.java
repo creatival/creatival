@@ -83,7 +83,7 @@ public class UserService {
 		);
 		String profileImgUrl = imgPath;
 		
-		if(signUpRequest.getProfileImg()!=null) {
+		if(signUpRequest.getProfileImg()!=null && !signUpRequest.getProfileImg().isEmpty()) {
 			profileImgUrl += fileUtil.saveImage(signUpRequest.getProfileImg(), "user");
 			user.setProfileImgUrl(profileImgUrl);
 		}
