@@ -325,13 +325,16 @@
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>
                 </button>
-                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>    
+                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>   
+				<button class="btn-action"
+	                    th:onclick="|location.href='@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}'|"
+	                    >
+	                <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
+	                <span>수정하기</span>
+	            </button>
             </div>
 
             <div class="d-flex justify-content-lg-end gap-2 mt-3">
-                <button sec:authorize="isAuthenticated()" class="btn btn-outline-secondary btn-sm px-3 rounded-pill fw-medium">
-                    대표 게시물로 고정
-                </button>
                 <a th:href="@{/team/{tid}/project/{id}/edit(tid=${dto.teamId},id=${dto.id})}"
                    sec:authorize="isAuthenticated()"
                    class="btn btn-dark btn-sm px-3 rounded-pill fw-medium">
