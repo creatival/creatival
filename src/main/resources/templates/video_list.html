@@ -48,16 +48,29 @@
             font-size: 0.95rem;
         }
 
-        .row > .col-4:nth-child(4) .icon-box {
-            transform: scale(1.05);
-            border: 2px solid #ff5e3a !important;
-            background-color: #ffffff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
+		.row > .col-4:nth-child(4) .icon-box {
+								    transform: scale(1.1);               /* 항상 커진 상태 */
+								    border: 2px solid #ff5e3a !important;  /* 진한 외곽선 */
+								    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+								    background-color: #ffffff;
+								}
 
-        .row > .col-4:nth-child(4) .category-item:hover {
-            transform: none !important;
-        }
+								.row > .col-4:nth-child(4) .category-icon-img {
+								    transform: scale(1.1);               /* 이미지도 항상 커진 상태 */
+								}
+
+								/* 2. 첫 번째 칸(일러스트)은 호버 효과가 작동하지 않도록 강제 고정 */
+								.row > .col-4:nth-child(4) .category-item:hover {
+								    transform: none !important;          /* 위로 튕겨 올라가는 효과 제거 */
+								}
+
+								.row > .col-4:nth-child(4) .category-item:hover .category-icon-img {
+								    transform: scale(1.1) !important;    /* 호버해도 1.1배 크기 유지 (더 커지지 않음) */
+								}
+
+								.row > .col-4:nth-child(4) .category-item .fw-bold {
+								    color: #3B4371 !important;           /* 글자색 고정 */
+								}
 
         .video-card {
             transition: transform 0.2s ease;
@@ -121,34 +134,30 @@
 		        }
 		        .custom-pagination .page-link:hover { color: #f05a28; }
 
-        .full-footer {
-            background-color: #0b152d !important;
-            color: white !important;
-            margin-top: 150px;
-            width: 100vw;
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            padding-bottom: 50px;
-        }
+				.full-footer { 
+						    background-color: #0b152d !important; 
+						    color: white !important; 
+						    margin-top: 150px;
 
-        .footer-line {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            margin: 30px 0;
-        }
+						    /* 핵심: 정확한 풀폭 정렬 */
+						    width: 100vw;
+						    position: relative;
+						    left: 50%;
+						    transform: translateX(-50%);
 
-        .footer-link-group a {
-            color: white;
-            text-decoration: none;
-            opacity: 0.75;
-            transition: opacity 0.2s;
-        }
+						    /* 문제였던 것들 제거 */
+						    margin-left: 0;
+						    margin-right: 0;
+						    margin-bottom: 0;
 
-        .footer-link-group a:hover {
-            opacity: 1;
-        }
+						    padding-top: 100px;
+						    padding-bottom: 100px;
+						}
+								.full-footer span, .full-footer h6, .full-footer li { color: #ffffff !important; }
+								.footer-line { border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0; }
+								html, body {
+								    overflow-x: hidden;
+								}
     </style>
 
     <section class="py-5 bg-white">
@@ -349,42 +358,37 @@
         </div>
     </div>
 
-    <footer class="full-footer">
-        <div class="container py-5">
-            <div class="row mb-4">
-                <div class="col-md col-6 mb-4 mb-md-0" th:each="i : ${#numbers.sequence(1, 5)}">
-                    <h6 class="fw-bold mb-3">
-                        <a th:href="@{/about_us}" class="text-white text-decoration-none">Creatival</a>
-                    </h6>
-
-                    <ul class="list-unstyled small opacity-75 footer-link-group">
-                        <li><a href="#">이용 안내</a></li>
-                        <li><a href="#">공지사항</a></li>
-                        <li><a href="#">고객센터</a></li>
-                        <li><a href="#">도움말</a></li>
-                        <li><a href="#">광고문의</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <hr class="footer-line">
-
-            <div class="row align-items-center">
-                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
-                    <span>이용 약관</span>
-                    <span>개인 정보 보호 정책</span>
-                </div>
-
-                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
-                    © 2026 creatival All rights reserved.
-                </div>
-
-                <div class="col-md-4 text-end">
-                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
-                </div>
-            </div>
-        </div>
-    </footer>
+	<footer class="full-footer">
+				        <div class="container py-5">
+				            <div class="row mb-4">
+				                <div class="col-md" th:each="i : ${#numbers.sequence(1, 5)}">
+									<h6 class="fw-bold mb-3">
+									        <a th:href="@{/about_us}" class="text-white text-decoration-none">Creatival</a>
+									    </h6>
+				                    <ul class="list-unstyled small opacity-75">
+				                        <li>이용 안내</li>
+				                        <li>공지사항</li>
+				                        <li>고객센터</li>
+				                        <li>도움말</li>
+				                        <li>광고문의</li>
+				                    </ul>
+				                </div>
+				            </div>
+				            <hr class="footer-line">
+				            <div class="row align-items-center">
+				                <div class="col-md-4 d-flex gap-4 small mb-3 mb-md-0">
+				                    <span>이용 약관</span>
+				                    <span>개인 정보 보호 정책</span>
+				                </div>
+				                <div class="col-md-4 text-center small opacity-50 mb-3 mb-md-0">
+				                    © 2026 creatival All rights reserved.
+				                </div>
+				                <div class="col-md-4 text-end">
+				                    <img th:src="@{/images/creatival_logo(White).png}" alt="logo" width="140">
+				                </div>
+				            </div>
+				        </div>
+				    </footer>
 
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
