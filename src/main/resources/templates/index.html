@@ -109,6 +109,19 @@
 		.carousel-indicators {
 		    bottom: 30px;
 		}
+		
+		/* 캐러셀 내부 이미지 스타일 설정 */
+		.carousel-item img {
+		    width: 100%;            /* 가로 길이를 컨테이너에 맞춤 */
+		    height: 400px;          /* HTML에서 설정한 div 높이와 동일하게 설정 */
+		    object-fit: cover;      /* 비율을 유지하며 영역을 꽉 채움 (가장 자연스러움) */
+		    object-position: center; /* 이미지의 중심을 기준으로 맞춤 */
+		}
+
+		/* (선택 사항) 슬라이드 전환 애니메이션을 더 부드럽게 */
+		.carousel-item {
+		    transition: transform 0.8s ease-in-out;
+		}
 
         
         /* 챗봇 섹션 스타일 */
