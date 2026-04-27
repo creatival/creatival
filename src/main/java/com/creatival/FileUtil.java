@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileUtil {
-	private final String rootPath = "C:/creatival_file";
+	private final String rootPath = "/home/ubuntu/creatival/creatival_file";
 	// 카테고리를 Enum으로 바꿀까 고민 중 나중에 고려할 것
 	public String saveImage(MultipartFile img, String category) throws IOException {
 		String imgUrl=null;

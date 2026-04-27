@@ -21,7 +21,7 @@
 						        class="btn-action btn-delete"
 						        th:data-id="${comment.id}"
 						        th:data-category="${category}"
-						        onclick="confirmDelete(this)">
+						        onclick="confirmDeleteComment(this)">
 						    삭제
 						</button>
                     </th:block>
@@ -132,7 +132,7 @@
 			 * 댓글 삭제 확인 및 요청
 			 * Thymeleaf Exception 방지를 위해 data-attribute를 사용합니다.
 			 */
-			 function confirmDelete(button) {
+			 function confirmDeleteComment(button) {
 			     const id = button.dataset.id;
 			     const category = button.dataset.category;
 

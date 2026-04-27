@@ -35,8 +35,11 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 	List<Content> findByTitleContaining(String title); //제목 키워드로 가져오기
 	
 	List<Content> findByProject(Project project);
+	List<Content> findByProjectAndVisibility(Project project, Visibility visibility);
 	
 	Page<Content> findByType(ContentType type, Pageable pageable);
+	
+	Page<Content> findByTypeAndVisibility(ContentType type,Pageable pageable, Visibility visibility);
 	
 	List<Content> findByUserAndTypeOrderByCreatedAtDesc(Users user, ContentType contentType);
 	List<Content> findByUserAndTypeAndVisibilityOrderByCreatedAtDesc(Users user,ContentType contentType, Visibility visibility );

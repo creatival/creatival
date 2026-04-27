@@ -165,47 +165,98 @@
                 </div>
             </section>
 
-            <section class="mb-5" th:if="${teamBoard != null}">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
-                    <h4 class="fw-bold mb-0">최신 팀 소식</h4>
-                    <a th:href="${teamBoard.teamId != null} ? |/team/${teamBoard.teamId}/teamBoard| : |/team/${dto.teamId}/project/${teamBoard.projectId}/teamBoard|"
-                       class="text-decoration-none small text-muted">전체 보기 ></a>
-                </div>
+			<section class="mb-5">
+			    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+			        <h4 class="fw-bold mb-0">최신 팀 소식</h4>
 
-                <div class="team-board-highlight" th:classappend="${teamBoard.notice} ? ' notice' : ''">
-                    <div class="team-board-head">
-                        <div class="team-board-type" th:classappend="${teamBoard.notice} ? ' notice' : ' update'">
-                            <i class="bi" th:classappend="${teamBoard.notice} ? ' bi-megaphone-fill' : ' bi-pencil-square'"></i>
-                            <span th:text="${teamBoard.notice} ? '공지사항' : '업데이트'">공지사항</span>
-                        </div>
-                        <span class="badge bg-light text-dark border ms-2 fw-bold" style="font-size: 0.75rem;">
-                            <i class="bi bi-diagram-3-fill me-1"></i><span th:text="${team.name}">팀명</span>
-                        </span>
-                        <div>
-                            <a th:href="${teamBoard.teamId != null} ? |/team/${teamBoard.teamId}/teamBoard#board-${teamBoard.id}| : |/team/${dto.teamId}/project/${teamBoard.projectId}/teamBoard#board-${teamBoard.id}|"
-                               class="team-board-title" th:text="${teamBoard.title}">게시글 제목</a>
-                        </div>
-                        <div class="team-board-meta">
-                            <div class="team-board-author">
-                                <img th:src="${teamBoard.profileImgUrl != null ? teamBoard.profileImgUrl : '/images/default-profile.png'}" alt="작성자">
-                                <div>
-                                    <div class="fw-bold small" th:text="${teamBoard.displayname}">작성자</div>
-                                    <div class="text-muted small">
-                                        <span th:text="${teamBoard.username}">@username</span> ·
-                                        <span th:text="${#temporals.format(teamBoard.createdAt, 'yyyy.MM.dd HH:mm')}">시간</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="team-board-body">
-                        <div class="team-board-text" th:text="${teamBoard.text}">내용</div>
-                        <img th:if="${teamBoard.imgUrl != null}" th:src="${teamBoard.imgUrl}" class="team-board-image">
-                        <a th:href="${teamBoard.teamId != null} ? |/team/${teamBoard.teamId}/teamBoard#board-${teamBoard.id}| : |/team/${dto.teamId}/project/${teamBoard.projectId}/teamBoard#board-${teamBoard.id}|"
-                           class="btn btn-sm btn-outline-secondary fw-bold">자세히 보기 <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </section>
+			        <a th:href="@{/team/{id}/teamBoard(id=${team.id})}"
+			           class="text-decoration-none small text-muted">
+			            전체 보기 >
+			        </a>
+			    </div>
+
+			    <!-- 팀 보드가 없을 때 -->
+			    <div th:if="${teamBoard == null}"
+			         class="team-board-highlight">
+			        <div class="team-board-body text-center py-5">
+			            <i class="bi bi-clipboard-x fs-1 text-muted d-block mb-3"></i>
+
+			            <h5 class="fw-bold mb-2">등록된 팀 보드가 없습니다.</h5>
+
+			            <p class="text-muted small mb-4">
+			                아직 팀 소식이나 공지사항이 등록되지 않았습니다.
+			            </p>
+
+			            <a th:href="@{/team/{id}/teamBoard(id=${team.id})}"
+			               class="btn btn-outline-primary rounded-pill fw-bold px-4">
+			                <i class="bi bi-arrow-right-circle me-1"></i>
+			                팀 보드로 이동
+			            </a>
+			        </div>
+			    </div>
+
+			    <!-- 팀 보드가 있을 때 -->
+			    <div th:if="${teamBoard != null}"
+			         class="team-board-highlight"
+			         th:classappend="${teamBoard.notice} ? ' notice' : ''">
+
+			        <div class="team-board-head">
+			            <div class="team-board-type"
+			                 th:classappend="${teamBoard.notice} ? ' notice' : ' update'">
+			                <i class="bi"
+			                   th:classappend="${teamBoard.notice} ? ' bi-megaphone-fill' : ' bi-pencil-square'"></i>
+			                <span th:text="${teamBoard.notice} ? '공지사항' : '업데이트'">공지사항</span>
+			            </div>
+
+			            <span class="badge bg-light text-dark border ms-2 fw-bold" style="font-size: 0.75rem;">
+			                <i class="bi bi-diagram-3-fill me-1"></i>
+			                <span th:text="${team.name}">팀명</span>
+			            </span>
+
+			            <div>
+			                <a th:href="${teamBoard.teamId != null}
+			                    ? |/team/${teamBoard.teamId}/teamBoard#board-${teamBoard.id}|
+			                    : |/team/${team.id}/project/${teamBoard.projectId}/teamBoard#board-${teamBoard.id}|"
+			                   class="team-board-title"
+			                   th:text="${teamBoard.title}">
+			                    게시글 제목
+			                </a>
+			            </div>
+
+			            <div class="team-board-meta">
+			                <div class="team-board-author">
+			                    <img th:src="${teamBoard.profileImgUrl != null ? teamBoard.profileImgUrl : '/images/default-profile.png'}"
+			                         alt="작성자">
+
+			                    <div>
+			                        <div class="fw-bold small" th:text="${teamBoard.displayname}">작성자</div>
+
+			                        <div class="text-muted small">
+			                            <span th:text="${teamBoard.username}">@username</span>
+			                            ·
+			                            <span th:text="${#temporals.format(teamBoard.createdAt, 'yyyy.MM.dd HH:mm')}">시간</span>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+
+			        <div class="team-board-body">
+			            <div class="team-board-text" th:text="${teamBoard.text}">내용</div>
+
+			            <img th:if="${teamBoard.imgUrl != null}"
+			                 th:src="${teamBoard.imgUrl}"
+			                 class="team-board-image">
+
+			            <a th:href="${teamBoard.teamId != null}
+			                ? |/team/${teamBoard.teamId}/teamBoard#board-${teamBoard.id}|
+			                : |/team/${team.id}/project/${teamBoard.projectId}/teamBoard#board-${teamBoard.id}|"
+			               class="btn btn-sm btn-outline-secondary fw-bold">
+			                자세히 보기 <i class="bi bi-arrow-right"></i>
+			            </a>
+			        </div>
+			    </div>
+			</section>
 
             <section class="mb-5">
                 <h4 class="fw-bold mb-4 border-bottom pb-2">팀 의견 나누기</h4>
@@ -220,7 +271,7 @@
                     </form>
                     <div class="chat-list mt-4">
                         <div class="d-flex mb-3" th:each="comment : ${comments}">
-                            <img src="https://dummyimage.com/40x40/adb5bd/495057" class="rounded-circle me-3" width="40" height="40">
+                            <img th:src="${comment.profileImgUrl!=null ? comment.profileImgUrl : 'https://dummyimage.com/40x40/adb5bd/495057'}" class="rounded-circle me-3" width="40" height="40">
                             <div class="w-100">
                                 <div class="d-flex justify-content-between mb-1 small">
                                     <span class="fw-bold" th:text="${comment.username}">사용자</span>
@@ -285,6 +336,7 @@
                 <a th:href="@{/team/{id}/boost(id=${team.id})}" class="btn btn-sponsor py-3 text-start px-3 shadow-sm fw-bold">
                     <i class="bi bi-coin me-2"></i> 팀 후원하기
                 </a>
+				<a th:href="@{/team_notice}" class="btn btn-light border py-3 text-start px-3 shadow-sm"><i class="bi bi-megaphone me-2"></i> 팀 공지 페이지 이동</a>
             </div>
         </div>
     </div>

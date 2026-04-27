@@ -34,6 +34,8 @@ public class ResponseCommentDTO {
 	
 	private Long likeCount;
 	
+	private String profileImgUrl;
+	
 	@Builder.Default
 	private List<ResponseCommentDTO> children = new ArrayList<>();
 	
@@ -47,6 +49,7 @@ public class ResponseCommentDTO {
 				.updatedAt(comment.getUpdatedAt())
 				.likeCount(comment.getLikeCount())
 				.children(new ArrayList<>())
+				.profileImgUrl(comment.getUser().getProfileImgUrl())
 				.build();
 	}
 	

@@ -95,7 +95,7 @@ public class ContentController {
 
 	@GetMapping("/novel/list")
 	public String novel_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		Page<ResponseNovelList> paging = contentService.getNovelList(page);
+		Page<ResponseNovelList> paging = contentService.getNovelListOnlyPublic(page);
 		model.addAttribute("paging", paging);
 		return "novel_list";
 	}
@@ -401,7 +401,7 @@ public class ContentController {
 
 	@GetMapping("/art/list")
 	public String artList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		Page<ResponseArtList> paging = contentService.getArtList(page);
+		Page<ResponseArtList> paging = contentService.getArtListOnlyPublic(page);
 		model.addAttribute("paging", paging);
 		return "illustration_list";
 	}
@@ -559,7 +559,7 @@ public class ContentController {
 
 	@GetMapping("/video/list")
 	public String videoList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		Page<ResponseVideoListDTO> list = contentService.getVideoList(page);
+		Page<ResponseVideoListDTO> list = contentService.getVideoListOnlyPublic(page);
 		model.addAttribute("list", list);
 		return "video_list";
 	}
@@ -738,7 +738,7 @@ public class ContentController {
 
 	@GetMapping("/music/list")
 	public String musicList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		Page<ResponseMusicListDTO> list = contentService.getMusicList(page);
+		Page<ResponseMusicListDTO> list = contentService.getMusicListOnlyPublic(page);
 		model.addAttribute("musicList", list);
 		return "music_list";
 	}
@@ -926,7 +926,7 @@ public class ContentController {
 
 	@GetMapping("/file/list")
 	public String fileList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		Page<ResponseFileListDTO> list = contentService.getFileList(page);
+		Page<ResponseFileListDTO> list = contentService.getFileListOnlyPublic(page);
 		model.addAttribute("fileList", list);
 		return "file_list";
 	}
@@ -1118,7 +1118,7 @@ public class ContentController {
 
 	@GetMapping("/comic/list")
 	public String comicList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		Page<ResponseComicListDTO> paging = contentService.getComicList(page);
+		Page<ResponseComicListDTO> paging = contentService.getComicListOnlyPublic(page);
 		model.addAttribute("paging", paging);
 		return "comic_list";
 	}

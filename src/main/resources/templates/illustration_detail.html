@@ -89,6 +89,20 @@
             color: #2D3278;
             font-size: 1.3rem;
         }
+		
+		.btn-action {
+		            background: white;
+		            border: 1px solid #dee2e6;
+		            border-radius: 10px;
+		            padding: 8px 12px;
+		            display: flex;
+		            flex-direction: column;
+		            align-items: center;
+		            min-width: 65px;
+		            transition: all 0.2s ease;
+		            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+		            cursor: pointer;
+		        }
 
 		
 		.btn_action span {
@@ -405,7 +419,7 @@
                 </button>
 
                 <button id="likeBtn"
-                        class="btn_action btn-like"
+                        class="btn-action btn-like"
                         th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|"
                         th:classappend="${like.liked ? ' active' : ''}">
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
@@ -413,25 +427,25 @@
                 </button>
 
                 <button id="bookmarkBtn"
-                        class="btn_action btn-bookmark"
+                        class="btn-action btn-bookmark"
                         th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>
                 </button>
 
-                <button class="btn_action btn-share">
+                <button class="btn-action btn-share">
                     <i class="bi bi-share-fill"></i>
                     <span>공유</span>
                 </button>
 
-                <button class="btn_action"
+                <button class="btn-action"
                         th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"
                         th:if="${art.username == #authentication.name}">
                     <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
                     <span>수정하기</span>
                 </button>
 
-                <button class="btn_action"
+                <button class="btn-action"
                         th:onclick="|confirmDelete(${art.id})|"
                         th:if="${art.username == #authentication.name}">
                     <i class="bi bi-trash3" style="color: #dc3545; font-size: 1.3rem;"></i>

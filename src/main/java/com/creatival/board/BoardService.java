@@ -22,6 +22,7 @@ import com.creatival.content.Content;
 import com.creatival.content.ContentFile;
 import com.creatival.content.ContentFileService;
 import com.creatival.content.ContentService;
+import com.creatival.content.Enum.ContentType;
 import com.creatival.team.Project;
 import com.creatival.team.Team;
 import com.creatival.team.TeamService;
@@ -96,7 +97,7 @@ public class BoardService {
 		if(optional.isPresent()) {
 			Board board = optional.get();
 			if(board.getContent()!=null) { // 콘텐츠가 있는가
-				if(board.getContent().getType().equals("ART")) {
+				if(board.getContent().getType()==ContentType.ART) {
 					ContentFile contentFile = contentFileService.getContentFileThumbnail(board.getContent());
 					return ResponseBoardDetailDTO.fromArt(board, contentFile.getFileUrl());
 				} else {

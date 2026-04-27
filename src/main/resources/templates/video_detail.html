@@ -1,154 +1,364 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" >
+<html layout:decorate="~{layout}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<div class="container my-5" layout:fragment="content">
-	<style>
-		.btn-boost{
-			background-color: #f05a28 !important;
-			border-color: #f05a28 !important;
-			color: #ffffff !important;
-		}
-		
-		
-	</style>
+<div class="container my-5 video-detail-page" layout:fragment="content">
+
+    <style>
+        .video-detail-page {
+            max-width: 1320px;
+        }
+
+        .btn-boost {
+            background-color: #f05a28 !important;
+            border-color: #f05a28 !important;
+            color: #ffffff !important;
+        }
+
+        .section-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 18px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+        }
+
+        .video-meta-box {
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+            border: 1px solid #edf0f2;
+            border-radius: 18px;
+        }
+
+        .creator-box {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .action-bar {
+            flex-wrap: wrap;
+        }
+
+        .purchase-box {
+            background: #fff8f5;
+            border: 1px solid #ffd8c9;
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .free-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+
+        .tag-area .badge {
+            font-size: .85rem;
+            padding: .55rem .75rem;
+        }
+
+        .side-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+        }
+
+        .content-mini-card {
+            padding: 10px;
+            border-radius: 14px;
+            transition: .15s ease;
+        }
+
+        .content-mini-card:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        .content-thumb {
+            width: 150px;
+            height: 84px;
+            background: #212529;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .empty-box {
+            background: #f8f9fa;
+            border: 1px dashed #ced4da;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            color: #868e96;
+            font-size: .9rem;
+        }
+
+        .comment-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+        }
+
+        @media (max-width: 991px) {
+            .content-thumb {
+                width: 130px;
+                height: 74px;
+            }
+        }
+    </style>
 
     <div class="row g-4" th:if="${video != null}">
-		
+
+        <!-- 메인 영역 -->
         <div class="col-12 col-lg-8">
-			
-            <div class="ratio ratio-16x9 bg-dark rounded-3 overflow-hidden shadow-sm mb-3">
-                <video controls class="object-fit-cover">
+
+            <!-- 영상 -->
+            <div class="ratio ratio-16x9 bg-dark rounded-4 overflow-hidden shadow-sm mb-4">
+                <video controls class="object-fit-cover w-100 h-100">
                     <source th:src="${video.video?.fileUrl}" type="video/mp4">
                     브라우저가 비디오 태그를 지원하지 않습니다.
                 </video>
             </div>
 
-            <h4 class="fw-bold mb-3" th:text="${video.title}">비디오 제목</h4>
-
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-bottom pb-3 mb-4 gap-3">
-                <div class="d-flex align-items-center" th:onclick="|location.href='@{/user/myPage/{id}(id=${video.userId})}'|" style="cursor: pointer;">
-                    <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/48x48/ced4da/6c757d'}" 
-                         class="rounded-circle me-3" alt="채널 로고" style="width: 48px; height: 48px; object-fit: cover;">
-                    <div>
-                        <h6 class="fw-bold mb-0" th:text="${video.displayname}">디스플레이네임</h6>
-                        <span class="text-muted small" th:text="'@' + ${video.username}">@username</span>
-                    </div>
+            <!-- 제목 -->
+            <div class="mb-3">
+                <h3 class="fw-bold mb-2" th:text="${video.title}">비디오 제목</h3>
+                <div class="text-muted small">
+                    조회수
+                    <span th:text="${video.viewCount != null ? #numbers.formatInteger(video.viewCount, 0, 'COMMA') : '0'}">0</span>회
+                    ·
+                    <span th:text="${#temporals.format(video.createdAt, 'yyyy년 MM월 dd일')}">2026년 01월 01일</span>
                 </div>
+            </div>
 
-				<button th:onclick="|toggleFollow(${video.userId}, 'USER')|" 
-                        id="followBtn" 
-                        type="button" 
-                        class="btn btn-dark btn-sm rounded-pill px-3 fw-bold">
-                    <i id="followIcon" class="bi me-1" th:classappend="${follow.followed ? ' bi-person-check' : ' bi-person-add'}"></i>
-                    <span th:text="${follow.followed ? '팔로잉' : '팔로우'}">팔로우</span>
-                </button>
+            <!-- 작성자 / 버튼 영역 -->
+            <div class="section-card p-3 p-md-4 mb-4">
+                <div class="d-flex flex-column flex-xl-row justify-content-between align-items-start gap-3">
 
-				<button class="btn btn-boost shadow-sm" th:onclick="|location.href='@{/user/{id}/boost(id=${video.userId})}'|">후원하기</button>
+                    <div class="creator-box d-flex align-items-center w-100"
+                         th:onclick="|location.href='@{/user/myPage/{id}(id=${video.userId})}'|"
+                         style="cursor: pointer;">
 
-                <div class="d-flex gap-2">
-                    <div class="btn-group shadow-sm" role="group">
-                        <button th:onclick="|toggleLike(${video.id}, 'CONTENT')|" id="likeBtn" type="button" class="btn btn-light border-secondary-subtle d-flex align-items-center">
-                            <i id="likeIcon" class="bi me-2" th:classappend="${like.liked ? ' bi-hand-thumbs-up-fill' : ' bi-hand-thumbs-up'}"></i>
+                        <img th:src="${video.profileImgUrl != null ? video.profileImgUrl : 'https://dummyimage.com/52x52/ced4da/6c757d'}"
+                             class="rounded-circle me-3"
+                             alt="채널 로고"
+                             style="width: 52px; height: 52px; object-fit: cover;">
+
+                        <div class="overflow-hidden">
+                            <h6 class="fw-bold mb-1 text-truncate" th:text="${video.displayname}">디스플레이네임</h6>
+                            <span class="text-muted small text-truncate d-block" th:text="'@' + ${video.username}">@username</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 action-bar justify-content-start justify-content-xl-end w-100">
+
+                        <button th:onclick="|toggleFollow(${video.userId}, 'USER')|"
+                                id="followBtn"
+                                type="button"
+                                class="btn btn-dark rounded-pill px-3 fw-bold">
+                            <i id="followIcon" class="bi me-1"
+                               th:classappend="${follow.followed ? ' bi-person-check' : ' bi-person-add'}"></i>
+                            <span th:text="${follow.followed ? '팔로잉' : '팔로우'}">팔로우</span>
+                        </button>
+
+                        <button class="btn btn-boost rounded-pill px-3 fw-bold shadow-sm"
+                                th:onclick="|location.href='@{/user/{id}/boost(id=${video.userId})}'|">
+                            <i class="bi bi-heart-fill me-1"></i> 후원하기
+                        </button>
+
+                        <button th:onclick="|toggleLike(${video.id}, 'CONTENT')|"
+                                id="likeBtn"
+                                type="button"
+                                class="btn btn-light border rounded-pill px-3 d-flex align-items-center">
+                            <i id="likeIcon" class="bi me-2"
+                               th:classappend="${like.liked ? ' bi-hand-thumbs-up-fill' : ' bi-hand-thumbs-up'}"></i>
                             <span id="likeCount" th:text="${like.count}">0</span>
                         </button>
-                        <button th:onclick="|toggleBookmark(${video.id}, 'CONTENT')|" id="bookmarkBtn" type="button" class="btn btn-light border-secondary-subtle d-flex align-items-center">
-                            <i id="bookmarkIcon" class="bi me-2" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
+
+                        <button th:onclick="|toggleBookmark(${video.id}, 'CONTENT')|"
+                                id="bookmarkBtn"
+                                type="button"
+                                class="btn btn-light border rounded-pill px-3 d-flex align-items-center">
+                            <i id="bookmarkIcon" class="bi me-2"
+                               th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                             <span>북마크</span>
                         </button>
-                    </div>
 
-                    <button class="btn btn-light border-secondary-subtle shadow-sm d-flex align-items-center rounded-pill px-3">
-                        <i class="bi bi-share me-2"></i>공유
-                    </button>
+                        <button class="btn btn-light border rounded-pill px-3 d-flex align-items-center">
+                            <i class="bi bi-share me-2"></i>공유
+                        </button>
 
-                    <div class="ms-2 d-flex gap-2" th:if="${video.username == #authentication.name}">
-                        <a th:href="@{/content/video/edit/{id}(id=${video.id})}" 
+                        <a th:if="${video.username == #authentication.name}"
+                           th:href="@{/content/video/edit/{id}(id=${video.id})}"
                            class="btn btn-outline-secondary rounded-pill px-3">
-                           <i class="bi bi-pencil-square me-1"></i> 수정
+                            <i class="bi bi-pencil-square me-1"></i> 수정
                         </a>
-                        <button type="button" class="btn btn-outline-danger rounded-pill px-3" 
+
+                        <button th:if="${video.username == #authentication.name}"
+                                type="button"
+                                class="btn btn-outline-danger rounded-pill px-3"
                                 th:onclick="|confirmDelete(${video.id})|">
                             <i class="bi bi-trash3 me-1"></i> 삭제
                         </button>
                     </div>
-
-                    <form id="deleteForm" method="post" style="display:none;">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    </form>
                 </div>
+
+                <form id="deleteForm" method="post" style="display:none;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                </form>
             </div>
 
-            <div class="bg-light p-3 rounded-3 mb-5 shadow-sm">
-                <p class="fw-bold small mb-2">
-                    조회수 <span th:text="${video.viewCount != null ? #numbers.formatInteger(video.viewCount, 0, 'COMMA') : '0'}">0</span>회 • 
-                    <span th:text="${#temporals.format(video.createdAt, 'yyyy년 MM월 dd일')}">2026년 01월 01일</span>
-                </p>
-                <p class="mb-3 text-break text-muted" style="white-space: pre-wrap;" th:text="${video.description}">
-                    영상 설명이 들어가는 곳입니다.
-                </p>
+            <!-- 설명 / 구매 / 태그 -->
+            <div class="section-card p-3 p-md-4 mb-4">
 
-				<form th:if="${video.username == #authentication.name and video.paid}"
-				      th:action="@{/redeem/create/content/{id}(id=${video.id})}"
-				      method="post"
-				      class="d-flex justify-content-end mb-3">
+                <div class="section-title">
+                    <i class="bi bi-card-text"></i>
+                    작품 설명
+                </div>
+
+                <div class="video-meta-box p-3 mb-4">
+                    <p class="mb-0 text-break text-muted"
+                       style="white-space: pre-wrap;"
+                       th:text="${video.description != null and !#strings.isEmpty(video.description) ? video.description : '등록된 설명이 없습니다.'}">
+                        영상 설명이 들어가는 곳입니다.
+                    </p>
+                </div>
+
+                <!-- 리딤 코드 -->
+                <form th:if="${video.username == #authentication.name and video.paid}"
+                      th:action="@{/redeem/create/content/{id}(id=${video.id})}"
+                      method="post"
+                      class="d-flex justify-content-end mb-3">
+
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-				    <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3">
+
+                    <button type="submit" class="btn btn-outline-dark rounded-pill fw-bold px-3">
                         <i class="bi bi-key-fill me-1"></i> 리딤 코드 발급
                     </button>
-				</form>
-				
-				<div th:if="${video.paid}">
-					<div th:if="${hasAccess}">
-						<span class="badge bg-success">구매 완료</span>
-					</div>
+                </form>
 
-					<div th:if="${!hasAccess}">
-						<p class="fw-bold"
-						   th:text="${#numbers.formatInteger(video.price, 3, 'COMMA') + '원'}">10,000원</p>
+                <!-- 유료 콘텐츠 -->
+                <div th:if="${video.paid}" class="purchase-box mb-4">
 
-						<form th:action="@{/content/{id}/purchase(id=${video.id})}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-							<button type="submit" class="btn btn-primary">구매하기</button>
-						</form>
-					</div>
-				</div>
+                    <div th:if="${hasAccess}" class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-bold mb-1">
+                                <i class="bi bi-unlock-fill me-1"></i> 접근 가능
+                            </div>
+                            <div class="text-muted small">이미 구매했거나 접근 권한이 있는 콘텐츠입니다.</div>
+                        </div>
+                        <span class="badge bg-success rounded-pill px-3 py-2">구매 완료</span>
+                    </div>
 
-				<div th:if="${!video.paid}">
-					<span class="badge bg-secondary">무료 콘텐츠</span>
-				</div>
+                    <div th:if="${!hasAccess}">
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+                            <div>
+                                <div class="text-muted small mb-1">유료 콘텐츠</div>
+                                <div class="fw-bold fs-5 mb-0"
+                                     th:text="${#numbers.formatInteger(video.price, 0, 'COMMA') + '원'}">
+                                    10,000원
+                                </div>
+                            </div>
 
-                <div class="tag-area mt-4">
-                    <div th:each="tag : ${tagList}" class="badge rounded-pill bg-white text-dark border me-1 mb-1 shadow-sm">
+                            <form th:action="@{/content/{id}/purchase(id=${video.id})}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit" class="btn btn-primary rounded-pill fw-bold px-4">
+                                    <i class="bi bi-bag-check me-1"></i> 구매하기
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 무료 콘텐츠 -->
+                <div th:if="${!video.paid}" class="free-box mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-bold mb-1">
+                                <i class="bi bi-unlock me-1"></i> 무료 콘텐츠
+                            </div>
+                            <div class="text-muted small">누구나 자유롭게 감상할 수 있습니다.</div>
+                        </div>
+                        <span class="badge bg-secondary rounded-pill px-3 py-2">무료</span>
+                    </div>
+                </div>
+
+                <!-- 태그 -->
+                <div class="section-title mb-2">
+                    <i class="bi bi-tags"></i>
+                    태그
+                </div>
+
+                <div class="tag-area">
+                    <div th:if="${#lists.isEmpty(tagList)}" class="text-muted small">
+                        등록된 태그가 없습니다.
+                    </div>
+
+                    <span th:each="tag : ${tagList}"
+                          class="badge rounded-pill bg-white text-dark border me-1 mb-1 shadow-sm">
                         <span th:text="'#' + ${tag.tagText}">#태그</span>
+
                         <a sec:authorize="isAuthenticated()"
                            th:if="${video.username == #authentication.name}"
                            th:href="@{/tag/video/deleteContentTag(tagId=${tag.id},contentId=${video.id})}"
-                           class="text-danger"
+                           class="text-danger text-decoration-none"
                            onclick="return confirm('삭제하시겠습니까?');">
                             <i class="bi bi-x-circle-fill ms-1"></i>
                         </a>
-                    </div>
-					
-                    <button type="button" sec:authorize="isAuthenticated()" th:if="${video.username == #authentication.name}"
-                            class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2" style="width:24px;height:24px;"
-                            data-bs-toggle="modal" data-bs-target="#tagAddModal">
+                    </span>
+
+                    <button type="button"
+                            sec:authorize="isAuthenticated()"
+                            th:if="${video.username == #authentication.name}"
+                            class="btn btn-outline-primary btn-sm rounded-circle p-0 ms-2"
+                            style="width:26px;height:26px;"
+                            data-bs-toggle="modal"
+                            data-bs-target="#tagAddModal">
                         <i class="bi bi-plus"></i>
                     </button>
-					
                 </div>
-				
             </div>
 
-            <div th:if="${video.isAllowComment}">
-                <h5 class="fw-bold mb-4" th:text="${'댓글 ' + commentCount + '개'}"></h5>
-                
+            <!-- 댓글 -->
+            <div th:if="${video.isAllowComment}" class="comment-card">
+                <h5 class="fw-bold mb-4" th:text="${'댓글 ' + commentCount + '개'}">댓글 0개</h5>
+
                 <div class="d-flex align-items-start mb-4">
-                    <img src="https://dummyimage.com/40x40/adb5bd/fff" class="rounded-circle me-3 mt-1" alt="내 프로필" style="width: 40px; height: 40px;">
+                    <img src="https://dummyimage.com/40x40/adb5bd/fff"
+                         class="rounded-circle me-3 mt-1"
+                         alt="내 프로필"
+                         style="width: 40px; height: 40px;">
+
                     <form th:action="@{/comment/content/write/{id}(id=${video.id})}" method="post" class="w-100">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <div class="d-flex gap-2">
-                            <input type="text" name="text" class="form-control border-0 border-bottom rounded-0 px-0" placeholder="댓글을 입력하세요..." required>
-                            <button type="submit" class="btn btn-primary rounded-pill px-4">작성</button>
-                        </div>
+
+						<div class="d-flex align-items-center gap-2">
+						    <input type="text"
+						           name="text"
+						           class="form-control border-0 border-bottom rounded-0 px-0 flex-grow-1"
+						           placeholder="댓글을 입력하세요..."
+						           required>
+
+						    <button type="submit"
+						            class="btn btn-primary rounded-pill px-4 flex-shrink-0">
+						        작성
+						    </button>
+						</div>
                     </form>
                 </div>
 
@@ -160,73 +370,121 @@
             </div>
         </div>
 
+        <!-- 사이드바 -->
         <div class="col-12 col-lg-4">
-            <h6 class="fw-bold mb-3">원본 콘텐츠</h6>
-            <div class="d-flex flex-column gap-3">
+
+            <!-- 원본 콘텐츠 -->
+            <div class="side-card mb-4">
+                <div class="section-title">
+                    <i class="bi bi-diagram-3"></i>
+                    원본 콘텐츠
+                </div>
+
                 <a th:if="${parentContent != null}"
                    th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(parentContent.type)},id=${parentContent.id})}"
                    class="text-decoration-none text-dark">
-                    <div class="d-flex gap-2 align-items-start">
-                        <div class="position-relative bg-dark rounded-2 overflow-hidden flex-shrink-0" style="width: 160px; height: 90px;">
-                            <img th:src="${parentContent.thumbnailUrl}" class="object-fit-cover w-100 h-100" alt="원본 콘텐츠">
+
+                    <div class="content-mini-card d-flex gap-3 align-items-start">
+                        <div class="content-thumb">
+                            <img th:src="${parentContent.thumbnailUrl != null ? parentContent.thumbnailUrl : 'https://dummyimage.com/300x170/ced4da/6c757d'}"
+                                 class="object-fit-cover w-100 h-100"
+                                 alt="원본 콘텐츠">
                         </div>
+
                         <div class="overflow-hidden">
-                            <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.95rem;" th:text="${parentContent.title}">원본 제목</h6>
-                            <p class="text-muted small mb-0 text-truncate" th:text="${parentContent.username}">작성자</p>
+                            <h6 class="fw-bold text-truncate mb-1"
+                                th:text="${parentContent.title}">
+                                원본 제목
+                            </h6>
+
+                            <p class="text-muted small mb-1 text-truncate"
+                               th:text="${parentContent.username}">
+                                작성자
+                            </p>
+
+                            <span class="badge bg-light text-dark border rounded-pill">Original</span>
                         </div>
                     </div>
                 </a>
 
-                <div th:if="${parentContent == null}" class="text-muted small">
-                    원본 컨텐츠입니다.
+                <div th:if="${parentContent == null}" class="empty-box">
+                    <i class="bi bi-stars d-block fs-4 mb-2"></i>
+                    이 작품은 원본 콘텐츠입니다.
                 </div>
             </div>
 
-            <br>
-
-			<h6 class="fw-bold mb-3">연관 콘텐츠</h6>
-			<div class="d-flex flex-column gap-3">
-                <a th:each="childContent : ${childContents}"
-                   th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(childContent.type)},id=${childContent.id})}"
-                   class="text-decoration-none text-dark">
-                    <div class="d-flex gap-2 align-items-start">
-                        <div class="position-relative bg-dark rounded-2 overflow-hidden flex-shrink-0" style="width: 160px; height: 90px;">
-                            <img th:src="${childContent.thumbnailUrl}" class="object-fit-cover w-100 h-100" alt="연관 콘텐츠">
-                        </div>
-                        <div class="overflow-hidden">
-                            <h6 class="fw-bold text-truncate mb-1" style="font-size: 0.95rem;" th:text="${childContent.title}">연관 제목</h6>
-                            <p class="text-muted small mb-0 text-truncate" th:text="${childContent.username}">작성자</p>
-                        </div>
-                    </div>
-                </a>
-
-                <div th:if="${#lists.isEmpty(childContents)}" class="text-muted small">
-                    연관 작품이 없습니다.
+            <!-- 연관 콘텐츠 -->
+            <div class="side-card">
+                <div class="section-title">
+                    <i class="bi bi-collection-play"></i>
+                    연관 콘텐츠
                 </div>
-			</div>
+
+                <div class="d-flex flex-column gap-2">
+                    <a th:each="childContent : ${childContents}"
+                       th:href="@{/content/{type}/detail/{id}(type=${#strings.toLowerCase(childContent.type)},id=${childContent.id})}"
+                       class="text-decoration-none text-dark">
+
+                        <div class="content-mini-card d-flex gap-3 align-items-start">
+                            <div class="content-thumb">
+                                <img th:src="${childContent.thumbnailUrl != null ? childContent.thumbnailUrl : 'https://dummyimage.com/300x170/ced4da/6c757d'}"
+                                     class="object-fit-cover w-100 h-100"
+                                     alt="연관 콘텐츠">
+                            </div>
+
+                            <div class="overflow-hidden">
+                                <h6 class="fw-bold text-truncate mb-1"
+                                    th:text="${childContent.title}">
+                                    연관 제목
+                                </h6>
+
+                                <p class="text-muted small mb-1 text-truncate"
+                                   th:text="${childContent.username}">
+                                    작성자
+                                </p>
+
+                                <span class="badge bg-light text-dark border rounded-pill"
+                                      th:text="${childContent.type}">
+                                    VIDEO
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <div th:if="${#lists.isEmpty(childContents)}" class="empty-box">
+                        <i class="bi bi-inboxes d-block fs-4 mb-2"></i>
+                        연관 작품이 없습니다.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- 태그 추가 모달 -->
     <div sec:authorize="isAuthenticated()" class="modal fade" id="tagAddModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content">
+            <div class="modal-content rounded-4 border-0 shadow">
                 <form th:action="@{/tag/createContentVideoTag/{id}(id=${video.id})}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <div class="modal-body">
+
+                    <div class="modal-body p-4">
                         <h6 class="fw-bold mb-3">새 태그 추가</h6>
+
                         <div class="input-group">
                             <span class="input-group-text">#</span>
                             <input type="text" name="tagName" class="form-control" required>
                         </div>
                     </div>
-                    <div class="modal-footer border-0">
-                        <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
+
+                    <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                        <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill fw-bold">
+                            추가
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-	
 </div>
 </html>

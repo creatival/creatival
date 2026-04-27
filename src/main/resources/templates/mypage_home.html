@@ -509,7 +509,7 @@
                 <div id="tab-home" class="tab-menu-item active" onclick="switchTab('home', 0)">홈</div>
                 <div id="tab-posts" class="tab-menu-item" onclick="switchTab('posts', 1)">게시물</div>
                 <div id="tab-team" class="tab-menu-item" onclick="switchTab('team', 2)">팀</div>
-                <div id="tab-project" class="tab-menu-item" onclick="switchTab('project', 3)">프로젝트</div>
+				
                 <div id="tab-interests" class="tab-menu-item" onclick="switchTab('interests', 4)">관심목록</div>
                 <div class="tab-indicator" id="tabIndicator"></div>
             </div>
@@ -658,10 +658,6 @@
             <div th:if="${#lists.isEmpty(myTeams)}" class="text-center py-5 text-muted">가입된 팀이 없습니다.</div>
         </section>
 
-        <section id="content-project" class="tab-content container">
-            <div class="section-header"><h3 class="section-title">진행 중인 프로젝트</h3></div>
-            <div class="container text-center py-5 text-muted">준비 중인 기능입니다.</div>
-        </section>
 
         <section id="content-interests" class="tab-content">
             <div class="section-header d-flex justify-content-between align-items-center container">
