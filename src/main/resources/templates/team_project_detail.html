@@ -355,21 +355,45 @@
             </section>
 
 			<!-- 프로젝트 팀 보드 하이라이트 -->
-			<section class="mb-5" th:if="${teamBoard != null}">
+			<section class="mb-5">
 			    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
 			        <h4 class="fw-bold mb-0">프로젝트 최신 소식</h4>
 
-			        <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard#board-${teamBoard.id}|"
+			        <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard|"
 			           class="text-decoration-none small text-muted">
 			            전체 보기 >
 			        </a>
 			    </div>
 
-			    <div class="team-board-highlight" th:classappend="${teamBoard.notice} ? ' notice' : ''">
+			    <!-- 프로젝트 보드가 없을 때 -->
+			    <div th:if="${teamBoard == null}" class="team-board-highlight">
+			        <div class="team-board-body text-center py-5">
+			            <i class="bi bi-clipboard-x fs-1 text-muted d-block mb-3"></i>
+
+			            <h5 class="fw-bold mb-2">등록된 프로젝트 보드가 없습니다.</h5>
+
+			            <p class="text-muted small mb-4">
+			                아직 이 프로젝트에 등록된 소식이나 공지사항이 없습니다.
+			            </p>
+
+			            <a th:href="|/team/${dto.teamId}/project/${dto.id}/teamBoard|"
+			               class="btn btn-outline-primary rounded-pill fw-bold px-4">
+			                <i class="bi bi-arrow-right-circle me-1"></i>
+			                프로젝트 보드로 이동
+			            </a>
+			        </div>
+			    </div>
+
+			    <!-- 프로젝트 보드가 있을 때 -->
+			    <div th:if="${teamBoard != null}"
+			         class="team-board-highlight"
+			         th:classappend="${teamBoard.notice} ? ' notice' : ''">
+
 			        <div class="team-board-head">
 			            <div class="team-board-type"
 			                 th:classappend="${teamBoard.notice} ? ' notice' : ' update'">
-			                <i class="bi" th:classappend="${teamBoard.notice} ? ' bi-megaphone-fill' : ' bi-pencil-square'"></i>
+			                <i class="bi"
+			                   th:classappend="${teamBoard.notice} ? ' bi-megaphone-fill' : ' bi-pencil-square'"></i>
 			                <span th:text="${teamBoard.notice} ? '공지사항' : '업데이트'">공지사항</span>
 			            </div>
 
@@ -383,13 +407,18 @@
 
 			            <div class="team-board-meta">
 			                <div class="team-board-author">
-			                    <img th:src="${teamBoard.profileImgUrl != null ? teamBoard.profileImgUrl : '/images/default-profile.png'}" alt="작성자">
+			                    <img th:src="${teamBoard.profileImgUrl != null ? teamBoard.profileImgUrl : '/images/default-profile.png'}"
+			                         alt="작성자">
+
 			                    <div>
 			                        <div class="fw-bold small" th:text="${teamBoard.displayname}">작성자</div>
+
 			                        <div class="team-board-meta-text">
 			                            <span th:text="${teamBoard.username}">@username</span>
 			                            <span class="mx-1">·</span>
-			                            <span th:text="${#temporals.format(teamBoard.createdAt, 'yyyy.MM.dd HH:mm')}">2026.04.16 12:00</span>
+			                            <span th:text="${#temporals.format(teamBoard.createdAt, 'yyyy.MM.dd HH:mm')}">
+			                                2026.04.16 12:00
+			                            </span>
 			                        </div>
 			                    </div>
 			                </div>
@@ -397,13 +426,17 @@
 			                <div class="team-board-meta-text"
 			                     th:if="${teamBoard.updatedAt != null and !teamBoard.updatedAt.equals(teamBoard.createdAt)}">
 			                    수정됨 ·
-			                    <span th:text="${#temporals.format(teamBoard.updatedAt, 'yyyy.MM.dd HH:mm')}">2026.04.16 13:00</span>
+			                    <span th:text="${#temporals.format(teamBoard.updatedAt, 'yyyy.MM.dd HH:mm')}">
+			                        2026.04.16 13:00
+			                    </span>
 			                </div>
 			            </div>
 			        </div>
 
 			        <div class="team-board-body">
-			            <div class="team-board-text" th:text="${teamBoard.text}">게시글 내용</div>
+			            <div class="team-board-text" th:text="${teamBoard.text}">
+			                게시글 내용
+			            </div>
 
 			            <img th:if="${teamBoard.imgUrl != null}"
 			                 th:src="${teamBoard.imgUrl}"

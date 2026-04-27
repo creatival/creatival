@@ -32,7 +32,7 @@ public class ResponseContentListForProject {
 				.id(content.getId())
 				.title(content.getTitle())
 				.thumbnailUrl(content.getThumbnailImgUrl())
-				.contentUrl("/content/novel_detail/"+content.getId())
+				.contentUrl("/content/" + content.getType().toString().toLowerCase()+ "/detail/"+content.getId())
 				.username(content.getUser().getUsername())
 				.displayname(content.getUser().getDisplayName())
 				.profileImgUrl(content.getUser().getProfileImgUrl())

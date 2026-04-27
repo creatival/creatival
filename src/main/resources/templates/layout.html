@@ -91,6 +91,54 @@
 			    color: #fe8e3e !important;
 			    transform: translateY(-2px);
 			}
+			/* 댓글 전체 아이템 */
+							.comment-item {
+							    margin-bottom: 1rem;
+							    position: relative;
+							}
+
+							/* 대댓글을 감싸는 컨테이너: 왼쪽 실선 */
+							.reply-wrapper {
+							    margin-left: 12px; /* 들여쓰기 */
+							    border-left: 2px solid #edeff1; /* 레딧 특유의 연회색 선 */
+							    padding-left: 20px; /* 선과 내용 사이 간격 */
+							    margin-top: 5px;
+							}
+					.comment-section {
+							            background-color: #f8f9fa;
+							            border-radius: 15px;
+							            padding: 40px 20px;
+							        }
+
+							        .comment-input {
+							            border: none !important;
+							            border-bottom: 1px solid #dee2e6 !important;
+							            background-color: transparent !important;
+							            border-radius: 0 !important;
+							            box-shadow: none !important;
+							        }
+
+							        .comment-input:focus {
+							            border-bottom: 2px solid #2D3278 !important;
+							        }
+									.btn-action {
+											    background: none;
+											    border: none;
+											    padding: 0;
+											    font-size: 0.8rem;
+											    font-weight: 700;
+											    color: #878a8c;
+											    cursor: pointer;
+											}
+
+											.btn-action:hover {
+											    text-decoration: underline;
+											    color: #1a1a1b;
+											}
+
+											.btn-delete {
+											    color: #ff585b;
+											}
     </style>
 </head>
 <body class="d-flex flex-column h-100">

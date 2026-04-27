@@ -152,7 +152,7 @@ public class ContentService {
 		String imgurl = null;
 		
 		if(createNovelDTO.getThumbnailFile() != null && !createNovelDTO.getThumbnailFile().isEmpty()) {
-			imgurl += "/upload/images/thumbnail/"+ fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
+			imgurl = "/upload/images/thumbnail/"+ fileUtil.saveImage(createNovelDTO.getThumbnailFile(), "thumbnail");
 			content.setThumbnailImgUrl(imgurl);
 		}
 		if(content.isFanWork() && createNovelDTO.getOriginalContentId() != null) {
