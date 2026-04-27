@@ -66,6 +66,137 @@
 				    overflow-x: hidden;
 				}
 	
+				
+				/* =========================================
+						           댓글 섹션 (Comment & Reply Style)
+						        ========================================= */
+						        .comment-section {
+						            background-color: #f8f9fa;
+						            border: 1px solid #eceef5;
+						            border-radius: 18px;
+						            padding: 40px 30px;
+						            box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+						        }
+
+						        .comment-input {
+						            border: none !important;
+						            border-bottom: 2px solid #dee2e6 !important;
+						            background-color: transparent !important;
+						            border-radius: 0;
+						            padding: 10px 15px;
+						            font-size: 0.95rem;
+						            transition: all 0.3s ease;
+						        }
+
+						        .comment-input:focus {
+						            border-bottom: 2px solid #2D3278 !important;
+						            box-shadow: none !important;
+						            outline: none;
+						        }
+
+						        .btn-navy-custom {
+						            background-color: #2D3278;
+						            border: 1px solid #2D3278;
+						            color: white;
+						            border-radius: 30px;
+						            font-weight: bold;
+						            transition: all 0.2s ease;
+						        }
+
+						        .btn-navy-custom:hover {
+						            background-color: #1a1e4d;
+						            transform: translateY(-2px);
+						        }
+
+						        /* 댓글 리스트 레이아웃 */
+						        .comment-list {
+						            margin-top: 30px;
+						        }
+
+						        /* 모든 댓글 아이템 공통 (fragment 내부 클래스가 comment-item이라고 가정) */
+						        .comment-item {
+						            padding: 15px 0;
+						            border-bottom: 1px solid #f8f9fa;
+						            position: relative;
+						        }
+
+						        /* 대댓글(답글) 들여쓰기 로직: 
+						           HTML 구조가 중첩(nested)되어 있을 경우 자동으로 왼쪽 여백 부여 */
+						        .comment-list .comment-item .comment-item {
+						            margin-left: 2.5rem; /* 답글 들여쓰기 정도 */
+						            border-left: 2px solid #eee; /* 세로 가이드 라인 */
+						            padding-left: 1.5rem;
+						            border-bottom: none; /* 중첩된 댓글은 하단선 제거 */
+						            margin-top: 5px;
+						        }
+
+						        /* 답글 표시 "ㄴ" 아이콘 (가상 요소) */
+						        .comment-list .comment-item .comment-item::before {
+						            content: "ㄴ";
+						            position: absolute;
+						            left: 0.5rem;
+						            top: 15px;
+						            color: #adb5bd;
+						            font-weight: bold;
+						            font-size: 0.8rem;
+						        }
+
+						        /* 작성자 정보 등 세부 스타일 */
+						        .comment-author {
+						            font-weight: 700;
+						            font-size: 0.9rem;
+						            color: #333;
+						        }
+
+						        .comment-date {
+						            font-size: 0.75rem;
+						            color: #adb5bd;
+						            margin-left: 8px;
+						        }
+
+						        .comment-text {
+						            font-size: 0.95rem;
+						            color: #495057;
+						            margin: 8px 0;
+						            line-height: 1.5;
+						        }
+
+						        /* 답글/수정/삭제 버튼 스타일 */
+						        .comment-btn {
+						            font-size: 0.8rem;
+						            color: #6c757d;
+						            text-decoration: none;
+						            margin-right: 12px;
+						            transition: color 0.2s;
+						            cursor: pointer;
+						            background: none;
+						            border: none;
+						            padding: 0;
+						        }
+
+						        .comment-btn:hover {
+						            color: #2D3278;
+						        }
+								
+								.btn-action {
+								            background: none;
+								            border: none;
+								            padding: 0;
+								            font-size: 0.8rem;
+								            font-weight: 700;
+								            color: #878a8c;
+								            cursor: pointer;
+								        }
+
+								        .btn-action:hover {
+								            text-decoration: underline;
+								            color: #1a1a1b;
+								        }
+
+								        .btn-delete {
+								            color: #dc3545;
+								        }
+						
     </style>
 </head>
 <body class="d-flex flex-column h-100">

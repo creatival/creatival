@@ -90,12 +90,13 @@
             font-size: 1.3rem;
         }
 
-        .btn-action span {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #555;
-            margin-top: 4px;
-        }
+		
+		.btn_action span {
+		            font-size: 0.75rem;
+		            font-weight: 600;
+		            color: #555;
+		            margin-top: 4px;
+		        }
 
         .lock-box {
             width: 100%;
@@ -207,22 +208,7 @@
             background: #f8f9fa;
         }
 
-        .comment-section {
-            background-color: #f8f9fa;
-            border-radius: 15px;
-            padding: 40px 20px;
-        }
-
-        .comment-input {
-            border: none !important;
-            border-bottom: 1px solid #dee2e6 !important;
-            background-color: transparent !important;
-        }
-
-        .comment-input:focus {
-            border-bottom: 2px solid #2D3278 !important;
-            box-shadow: none !important;
-        }
+        
 
         .btn-navy-custom {
             background-color: #2D3278;
@@ -305,6 +291,11 @@
             letter-spacing: 2px;
             font-weight: bold;
         }
+		
+		
+		
+		
+		
     </style>
 
     <div class="container text-center mt-5 mb-4">
@@ -414,7 +405,7 @@
                 </button>
 
                 <button id="likeBtn"
-                        class="btn-action btn-like"
+                        class="btn_action btn-like"
                         th:onclick="|toggleLikeHeart(${art.id},'CONTENT')|"
                         th:classappend="${like.liked ? ' active' : ''}">
                     <i id="likeIcon" class="bi" th:classappend="${like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i>
@@ -422,25 +413,25 @@
                 </button>
 
                 <button id="bookmarkBtn"
-                        class="btn-action btn-bookmark"
+                        class="btn_action btn-bookmark"
                         th:onclick="|toggleBookmark(${art.id}, 'CONTENT')|">
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i>
                     <span>북마크</span>
                 </button>
 
-                <button class="btn-action btn-share">
+                <button class="btn_action btn-share">
                     <i class="bi bi-share-fill"></i>
                     <span>공유</span>
                 </button>
 
-                <button class="btn-action"
+                <button class="btn_action"
                         th:onclick="|location.href='@{/content/art/update/{id}(id=${art.id})}'|"
                         th:if="${art.username == #authentication.name}">
                     <i class="bi bi-pencil-square" style="color: #6c757d; font-size: 1.3rem;"></i>
                     <span>수정하기</span>
                 </button>
 
-                <button class="btn-action"
+                <button class="btn_action"
                         th:onclick="|confirmDelete(${art.id})|"
                         th:if="${art.username == #authentication.name}">
                     <i class="bi bi-trash3" style="color: #dc3545; font-size: 1.3rem;"></i>
@@ -486,7 +477,7 @@
                 <th:block th:each="comment : ${comments}">
                     <div th:replace="~{comment-line :: commentItem(comment=${comment}, depth=0, category='content', targetId=${art.id})}"></div>
                 </th:block>
-            </div>
+            </div>					
         </div>
 
         <h5 class="fw-bold mb-4">작품 계보</h5>

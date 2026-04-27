@@ -30,11 +30,11 @@
 
         /* [2. 액션 버튼 그룹 (button 태그 호환용 커서 추가)] */
         .action-buttons-group { display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap; align-items: center; }
-        .btn-action { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; cursor: pointer; }
+        .btn-actiona { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 85px; height: 90px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; cursor: pointer; }
 		
-        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn-action i { font-size: 1.8rem; margin-bottom: 5px; transition: color 0.2s; }
-        .btn-action span { font-size: 0.85rem; font-weight: 600; }
+        .btn-actiona:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn-actiona i { font-size: 1.8rem; margin-bottom: 5px; transition: color 0.2s; }
+        .btn-actiona span { font-size: 0.85rem; font-weight: 600; }
 
 		/* 댓글 수정,답글,삭제 버튼
 		.btn-dat { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 50; height: 50px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 15px; text-decoration: none !important; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; cursor: pointer; }
@@ -114,21 +114,21 @@
             </div>
 
             <div class="action-buttons-group action-buttons">
-                <button id="likeBtn" class="btn-action btn-like" th:onclick="|toggleLikeHeart(${fileDetail.id},'CONTENT')|" th:classappend="${like != null and like.liked ? ' active' : ''}">
+                <button id="likeBtn" class="btn-actiona btn-like" th:onclick="|toggleLikeHeart(${fileDetail.id},'CONTENT')|" th:classappend="${like != null and like.liked ? ' active' : ''}">
                     <i id="likeIcon" class="bi" th:classappend="${like != null and like.liked ? ' bi-heart-fill' : ' bi-heart'}"></i><span>좋아요</span>
                 </button>
                 
-                <button id="bookmarkBtn" class="btn-action btn-bookmark" th:onclick="|toggleBookmark(${fileDetail.id}, 'CONTENT')|">
+                <button id="bookmarkBtn" class="btn-actiona btn-bookmark" th:onclick="|toggleBookmark(${fileDetail.id}, 'CONTENT')|">
                     <i id="bookmarkIcon" class="bi" th:classappend="${bookmark != null and bookmark.bookmarked ? ' bi-bookmark-check-fill' : ' bi-bookmark-check'}"></i><span>북마크</span>
                 </button>
                 
-                <button class="btn-action btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
+                <button class="btn-actiona btn-share"><i class="bi bi-share-fill"></i><span>공유</span></button>
                 
-                <button class="btn-action" th:onclick="|location.href='@{/content/file/edit/{id}(id=${fileDetail.id})}'|" sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
+                <button class="btn-actiona" th:onclick="|location.href='@{/content/file/edit/{id}(id=${fileDetail.id})}'|" sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
                     <i class="bi bi-pencil-square"></i><span>수정</span>
                 </button>
                 
-                <button class="btn-action" th:onclick="|confirmDelete(${fileDetail.id})|" sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
+                <button class="btn-actiona" th:onclick="|confirmDelete(${fileDetail.id})|" sec:authorize="isAuthenticated()" th:if="${fileDetail.username == #authentication.name}">
                     <i class="bi bi-trash3 text-danger"></i><span>삭제</span>
                 </button>
             </div>
