@@ -60,7 +60,7 @@ public class Project {
 	
 	private String bannerImgUrl;
 	
-	@Column(nullable = false, unique = true)
+	@Column(name = "project_tag", nullable = false, unique = true)
 	private String projectTag;
 	
 	@CreationTimestamp
