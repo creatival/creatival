@@ -112,6 +112,12 @@
             letter-spacing: 2px;
             font-weight: bold;
         }
+		.empty-page-fix {
+		    min-height: 45vh;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
 		
 		
     </style>
@@ -198,6 +204,13 @@
         </div>
 
         <div class="container pb-5">
+			<div th:if="${paging == null or paging.isEmpty()}" class="empty-page-fix">
+			    <div class="text-center text-muted">
+			        <i class="bi bi-journal-text" style="font-size: 3rem;"></i>
+			        <p class="mt-3 mb-0 fw-bold">등록된 소설이 없습니다.</p>
+			        <p class="small mt-1 mb-0">첫 번째 소설을 등록해 보세요.</p>
+			    </div>
+			</div>
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
                 <div class="col" th:each="novel : ${paging}">
                     <div class="card novel-card h-100">
