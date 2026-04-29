@@ -751,7 +751,7 @@ public class ContentController {
 		}
 		CreateMusicDTO dto = new CreateMusicDTO();
 		model.addAttribute("createMusicDTO", dto);
-		return "/music_write";
+		return "music_write";
 	}
 
 	@PostMapping("/music/write")
