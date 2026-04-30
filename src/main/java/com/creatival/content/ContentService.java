@@ -209,10 +209,11 @@ public class ContentService {
 	public Content getNovel(Long id) {
 		return contentRepository.findById(id).get();
 	}
-	
+	@Transactional
 	public void delete(Content content) {
-		contentRepository.delete(content);
 		likeRepository.deleteByTargetIdAndTargetType(content.getId(), TargetType.CONTENT);
+		contentRepository.delete(content);
+		
 	}
 	
 	public void updateContentNovel(UpdateNovelDTO updateNovelDTO, Long id, String username) {
