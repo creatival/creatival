@@ -130,7 +130,7 @@ public class Content {
 	private List<Content> childContents;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "projectTag")
+	@JoinColumn(name = "project_tag", referencedColumnName = "project_tag")
 	private Project project;
 	
 	@OneToOne(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)

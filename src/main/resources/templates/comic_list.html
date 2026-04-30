@@ -17,6 +17,12 @@
         .category-item:hover { transform: translateY(-8px); }
         .category-item:hover .category-icon-img { transform: scale(1.1); }
         .category-item .fw-bold { color: #3B4371; font-size: 0.95rem; }
+		.empty-page-fix {
+		    min-height: 45vh;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
 		
 		/* 1. 두 번째 칸(일러스트) 강조 스타일 고정 */
 				.row > .col-4:nth-child(2) .icon-box {
@@ -155,7 +161,14 @@
     </div>
 
     <div class="container pb-5 px-0">
-        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+		<div th:if="${paging == null or paging.isEmpty()}" class="empty-page-fix">
+		        <div class="text-center text-muted">
+		            <i class="bi bi-book" style="font-size: 3rem;"></i>
+		            <p class="mt-3 mb-0 fw-bold">등록된 만화가 없습니다.</p>
+		            <p class="small mt-1 mb-0">첫 번째 만화를 등록해 보세요.</p>
+		        </div>
+		    </div>
+        <div th:if="${paging != null and !paging.isEmpty()}" class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
             <div class="col" th:each="comic : ${paging}">
                 <div class="card h-100 shadow-sm border-0 hover-shadow">
                     <a th:href="@{/content/comic/detail/{id}(id=${comic.id})}">

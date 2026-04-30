@@ -240,22 +240,22 @@ public class ContentController {
 
 		if (content.getOwnerType() == OwnerType.TEAM) {
 			
-			return "redirect:content/novel/detail/" + id;
+			return "redirect:/content/novel/detail/" + id;
 		}
 		if (content.getUser().getUsername() != principal.getName()) {
 			redirectAttributes.addFlashAttribute("message", "콘텐츠의 소유자가 아닙니다.");
 			redirectAttributes.addFlashAttribute("icon", "warning");
-			return "redirect:content/novel/detail/" + id;
+			return "redirect:/content/novel/detail/" + id;
 		}
 		try {
 			contentService.delete(content);
 			redirectAttributes.addFlashAttribute("message", "성공적으로 삭제되었습니다.");
 			redirectAttributes.addFlashAttribute("icon", "success");
-			return "redirect:content/novel/list";
+			return "redirect:/content/novel/list";
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", "알 수 없는 오류가 발생했습니다.");
 			redirectAttributes.addFlashAttribute("icon", "warning");
-			return "redirect:content/novel/detail/" + id;
+			return "redirect:/content/novel/detail/" + id;
 		}
 		
 	}
@@ -751,7 +751,7 @@ public class ContentController {
 		}
 		CreateMusicDTO dto = new CreateMusicDTO();
 		model.addAttribute("createMusicDTO", dto);
-		return "/music_write";
+		return "music_write";
 	}
 
 	@PostMapping("/music/write")
