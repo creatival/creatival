@@ -214,11 +214,6 @@
                         조회수
                         <span th:text="${episodeDetail.viewCount != null ? #numbers.formatInteger(episodeDetail.viewCount, 0, 'COMMA') : 0}">0</span>
                     </span>
-                    <span class="stat-chip">
-                        <i class="bi bi-heart"></i>
-                        좋아요
-                        <span th:text="${episodeDetail.likeCount != null ? #numbers.formatInteger(episodeDetail.likeCount, 0, 'COMMA') : 0}">0</span>
-                    </span>
                 </div>
             </div>
 
@@ -303,13 +298,6 @@
 				<div class="d-flex justify-content-center gap-2 mt-2"
 				     sec:authorize="isAuthenticated()">
 
-				    <!-- 좋아요 -->
-				    <button type="button"
-				            class="btn btn-outline-danger btn-sm rounded-pill px-4">
-				        <i class="bi bi-heart-fill"></i>
-				        좋아요
-				        <span th:text="${episodeDetail.likeCount != null ? #numbers.formatInteger(episodeDetail.likeCount, 0, 'COMMA') : 0}">0</span>
-				    </button>
 
 				    <!-- 🔥 리딤 코드 발급 (작성자만) -->
 				    <form th:if="${episodeDetail.username != null and episodeDetail.username == #authentication.name}"

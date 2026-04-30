@@ -170,7 +170,7 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-read-first shadow-sm">첫 회 시청하기</button>
+                    <a th:if="${firstEpisodeId != null}" th:href="@{'/content/novel/episode/' + ${firstEpisodeId}}" class="btn btn-read-first shadow-sm">첫 회 시청하기</a>
 					<button class="btn btn-boost shadow-sm" th:onclick="|location.href='@{/user/{id}/boost(id=${comic.userId})}'|">후원하기</button>
                 </div>
             </div>
