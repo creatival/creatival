@@ -3,37 +3,105 @@
     
     <style>
         /* 1. 작품 계보 스타일 */
-        .lineage-box { background: #ffffff; padding: 1.5rem; border-radius: 1rem; border: 1px solid #e9ecef; }
-        .lineage-card { 
-            display: flex; align-items: center; gap: 12px; padding: 10px; 
-            background: white; border-radius: 12px; text-decoration: none;
-            border: 1px solid #eee; transition: all 0.2s;
-        }
-        .lineage-card:hover { border-color: #2D3278; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .lineage-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+		/* 5. ⭐ 대댓글 계층 구조 및 버튼 디자인 커스텀 ⭐ */
 
-        /* 2. 작품 그리드 스타일 */
-        .art-grid-item { 
-            position: relative; display: block; border-radius: 12px; overflow: hidden; 
-            aspect-ratio: 1/1; background: #eee; 
-        }
-        .art-grid-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .art-grid-overlay { 
-            position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 10px 10px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-            display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s;
-        }
-        .art-grid-item:hover .art-grid-overlay { opacity: 1; }
-        .art-grid-item:hover .art-grid-img { transform: scale(1.05); }
+		.comment-list { margin-top: 30px; }
+
+		/* 댓글 전체 아이템 레이아웃 */
+		.comment-item { 
+		    padding: 15px 0; 
+		    position: relative; 
+		    border-bottom: 1px solid #f1f3f5;
+		    display: flex;
+		    flex-direction: column;
+		}
+
+		/* 마지막 댓글은 구분선 제거 */
+		.comment-list > .comment-item:last-child { border-bottom: none; }
+
+		/* [핵심] 대댓글 들여쓰기 및 가이드 라인 */
+		.comment-item .comment-item {
+		    margin-left: 2.8rem; /* 왼쪽으로 밀기 */
+		    padding-left: 5.2rem;
+		    border-bottom: none;
+		    border-left: 2px solid #edeff2; /* 세로 연결선 */
+		    margin-top: 10px;
+		}
+
+		/* 대댓글 'ㄴ' 아이콘 대신 세련된 연결 꺽쇠 */
+		.comment-item .comment-item::before {
+		    content: "";
+		    position: absolute;
+		    left: 0;
+		    top: 25px;
+		    width: 12px;
+		    height: 2px;
+		    background-color: #edeff2;
+		}
+
+		/* 작성자 정보 영역 */
+		.comment-item .fw-bold, 
+		.comment-item span[th\:text*="Displayname"] {
+		    font-size: 0.95rem;
+		    color: #333;
+		    margin-bottom: 4px;
+		}
+
+		/* 댓글 본문 */
+		.comment-item p, 
+		.comment-item div[th\:text*="text"] {
+		    font-size: 0.95rem;
+		    color: #444;
+		    margin-bottom: 8px !important;
+		    line-height: 1.5;
+		}
+
+		/* ⭐ 버튼 스타일 전면 수정 (박스 -> 텍스트 링크) ⭐ */
+		.comment-item button, 
+		.comment-item .btn-outline-secondary, 
+		.comment-item .btn {
+		    background: none !important; /* 배경 제거 */
+		    border: none !important;     /* 테두리 제거 */
+		    box-shadow: none !important; /* 그림자 제거 */
+		    padding: 0 10px 0 0 !important; /* 간격 조정 */
+		    font-size: 0.82rem !important;
+		    font-weight: 600 !important;
+		    color: #868e96 !important;   /* 기본 회색 */
+		    transition: color 0.2s;
+		    min-width: auto !important;
+		}
+
+		/* 버튼에 마우스 올렸을 때 */
+		.comment-item button:hover {
+		    color: #2D3278 !important;   /* 메인 네이비 색상으로 변경 */
+		    text-decoration: underline;  /* 밑줄 효과 */
+		}
+
+		/* 삭제 버튼은 강조를 위해 빨간색 계열 */
+		.comment-item button[onclick*="delete"]:hover,
+		.comment-item button:contains("삭제"):hover {
+		    color: #fa5252 !important;
+		}
+
 		
-        /* 3. 버튼 및 공통 스타일 */
-        .btn-boost { background-color: #f05a28 !important; border-color: #f05a28 !important; color: #ffffff !important; }
-        .btn-navy-custom { background-color: #2D3278; color: white; border-radius: 30px; }
-        
-        /* 4. 복구된 옛날 댓글 스타일 (밑줄형) */
-        .comment-input { border: none !important; border-bottom: 1px solid #dee2e6 !important; background-color: transparent !important; border-radius: 0 !important; }
-        .comment-input:focus { border-bottom: 2px solid #2D3278 !important; box-shadow: none !important; }
+		.comment-item .btn-delete-link:hover {
+		    color: #fa5252 !important;
+		}
+		/* 좋아요/답글/수정/삭제 버튼들이 가로로 배치되도록 설정 */
+		.comment-item > div:last-child, 
+		.comment-actions-container {
+		    display: flex;
+		    align-items: center;
+		    gap: 5px;
+		}
 
+		/* 날짜 스타일 */
+		.comment-item .text-muted {
+		    font-size: 0.8rem;
+		    margin-left: 8px;
+		}
+		
+		
     </style>
 
     <div class="container my-5">
