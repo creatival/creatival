@@ -465,8 +465,8 @@ public class ContentController {
 		if (content.getOriginalContent() != null) {
 			Content parentContent = content.getOriginalContent();
 			if (parentContent.getType() == ContentType.ART) {
-				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(content,
-						contentFileService.getContentFileThumbnail(content).getFileUrl()));
+				model.addAttribute("parentContent", ResponseContentListForProject.fromArt(parentContent,
+						contentFileService.getContentFileThumbnail(parentContent).getFileUrl()));
 			} else {
 				model.addAttribute("parentContent", ResponseContentListForProject.fromNovel(parentContent));
 			}
