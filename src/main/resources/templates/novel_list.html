@@ -7,24 +7,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="css/styles.css" rel="stylesheet" />
 
-	    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
-	    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.ico}">
 
     <style>
-        /* 1. 상단 카테고리 아이콘 */
-        .category-item { 
-            transition: all 0.3s ease; 
+        .category-item {
+            transition: all 0.3s ease;
             text-decoration: none !important;
         }
-        
+
         .icon-box {
-            width: 80px; 
-            height: 80px; 
-            background-color: #F8F9FA; 
+            width: 80px;
+            height: 80px;
+            background-color: #F8F9FA;
             border-radius: 22px;
-            margin: 0 auto 12px; 
-            display: flex; 
-            align-items: center; 
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
             justify-content: center;
             overflow: hidden;
             border: 1px solid #eee;
@@ -32,56 +31,61 @@
         }
 
         .category-icon-img {
-            width: 100%;       
-            height: 100%;      
-            object-fit: contain; 
-            padding: 18px; 
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 18px;
             transition: transform 0.3s ease;
         }
 
-        .category-item:hover { 
-            transform: translateY(-8px); 
+        .category-item:hover {
+            transform: translateY(-8px);
         }
-        
+
         .category-item:hover .category-icon-img {
             transform: scale(1.1);
         }
 
         .category-item .fw-bold {
-            color: #3B4371; 
+            color: #3B4371;
             font-size: 0.95rem;
             transition: color 0.3s ease;
         }
-		
-		
-		/* 1. 다섯 번째 칸(일러스트) 강조 스타일 고정 */
-						.row > .col-4:nth-child(5) .icon-box {
-						    transform: scale(1.1);               /* 항상 커진 상태 */
-						    border: 2px solid #ff5e3a !important;  /* 진한 외곽선 */
-						    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-						    background-color: #ffffff;
-						}
 
-						.row > .col-4:nth-child(5) .category-icon-img {
-						    transform: scale(1.1);               /* 이미지도 항상 커진 상태 */
-						}
+        /* 현재 페이지 소설 강조 */
+        .row > .col-4:nth-child(5) .icon-box {
+            transform: scale(1.1);
+            border: 2px solid #ff5e3a !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+        }
 
-						/* 2. 첫 번째 칸(일러스트)은 호버 효과가 작동하지 않도록 강제 고정 */
-						.row > .col-4:nth-child(5) .category-item:hover {
-						    transform: none !important;          /* 위로 튕겨 올라가는 효과 제거 */
-						}
+        .row > .col-4:nth-child(5) .category-icon-img {
+            transform: scale(1.1);
+        }
 
-						.row > .col-4:nth-child(5) .category-item:hover .category-icon-img {
-						    transform: scale(1.1) !important;    /* 호버해도 1.1배 크기 유지 (더 커지지 않음) */
-						}
+        .row > .col-4:nth-child(5) .category-item:hover {
+            transform: none !important;
+        }
 
-						.row > .col-4:nth-child(5) .category-item .fw-bold {
-						    color: #3B4371 !important;           /* 글자색 고정 */
-						}
+        .row > .col-4:nth-child(5) .category-item:hover .category-icon-img {
+            transform: scale(1.1) !important;
+        }
 
-        /* 2. 썸네일 카드 (3:4 비율) */
-        .novel-card { transition: transform 0.2s; border: none; background: none; }
-        .novel-card:hover { transform: translateY(-5px); }
+        .row > .col-4:nth-child(5) .category-item .fw-bold {
+            color: #3B4371 !important;
+        }
+
+        .novel-card {
+            transition: transform 0.2s;
+            border: none;
+            background: none;
+        }
+
+        .novel-card:hover {
+            transform: translateY(-5px);
+        }
+
         .thumbnail-wrapper {
             aspect-ratio: 3 / 4;
             overflow: hidden;
@@ -90,317 +94,349 @@
             position: relative;
         }
 
-        /* 3. 빨간 밑줄 페이지네이션 */
         .custom-pagination .page-link {
-            border: none; color: #333; font-weight: 700;
-            background: none; padding: 2px 10px;
+            border: none;
+            color: #333;
+            font-weight: 700;
+            background: none;
+            padding: 2px 10px;
             font-size: 1.1rem;
         }
+
         .custom-pagination .page-item.active .page-link {
-            background: none; color: #333; 
-            border-bottom: 3px solid #f05a28; 
+            background: none;
+            color: #333;
+            border-bottom: 3px solid #f05a28;
             border-radius: 0;
         }
-        .custom-pagination .page-item.disabled .page-link { color: #ccc; }
-        .custom-pagination .page-link:hover { color: #f05a28; }
 
-        /* 4. 푸터 및 기타 소형 텍스트 */
-        .tag-text { color: #4dabf7; font-size: 0.8rem; }
-        
-        /* 제품 코드 전용 폰트 스타일 (선택 사항) */
+        .custom-pagination .page-item.disabled .page-link {
+            color: #ccc;
+        }
+
+        .custom-pagination .page-link:hover {
+            color: #f05a28;
+        }
+
+        .tag-text {
+            color: #4dabf7;
+            font-size: 0.8rem;
+        }
+
         #productKeyInput {
             letter-spacing: 2px;
             font-weight: bold;
         }
-		.empty-page-fix {
-		    min-height: 45vh;
-		    display: flex;
-		    align-items: center;
-		    justify-content: center;
-		}
-		
-		
+
+        .empty-page-fix {
+            min-height: 45vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 
 <body class="d-flex flex-column h-100">
-    <div layout:fragment="content">
-        
-        <section class="py-5 bg-white">
-            <div class="container">
-                <div class="row text-center g-4 justify-content-center">
-					<div class="col-4 col-md-2">
-					                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
-					                        </div>
-					                        <div class="fw-bold">일러스트</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
-					                        </div>
-					                        <div class="fw-bold">만화</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box"><img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악"></div>
-					                        <div class="fw-bold">음악</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
-					                        </div>
-					                        <div class="fw-bold">비디오</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box"><img th:src="@{/images/git.png}" class="category-icon-img" alt="소설"></div>
-					                        <div class="fw-bold">소설</div>
-					                    </a>
-					                </div>
-					                <div class="col-4 col-md-2">
-					                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
-					                        <div class="icon-box">
-					                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
-					                        </div>
-					                        <div class="fw-bold">파일</div>
-					                    </a>
-					                </div>
-                </div>
-            </div>
-        </section>
+<div layout:fragment="content">
 
-        <div class="container mb-4">
-            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-                
-                <div style="flex: 1;">
-                    <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
-						<i class="bi bi-house-door-fill me-2"></i>
-                        <span class="fw-bold">홈으로 가기</span>
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row text-center g-4 justify-content-center">
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/art/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${artIconUrl != null ? artIconUrl : '/images/paint.png'}" class="category-icon-img" alt="일러스트">
+                        </div>
+                        <div class="fw-bold">일러스트</div>
                     </a>
                 </div>
 
-                <div class="text-center" style="flex: 2;">
-                    <h2 class="fw-bold mb-0">추천 소설</h2>
-                    <p class="text-muted mb-0 mt-1 small">다양한 크리에이터의 소설을 만나보세요.</p>
-                </div>
-
-                <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
-
-                    <a onclick="return requireLoginAction(() => location.href='/content/novel/write')" class="btn btn-primary d-flex align-items-center px-3 shadow-sm" style="cursor:pointer;">
-                        <i class="bi bi-plus-lg me-2"></i>
-                        <span class="fw-bold">소설 등록</span>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/comic/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${comicIconUrl != null ? comicIconUrl : '/images/comic.png'}" class="category-icon-img" alt="만화">
+                        </div>
+                        <div class="fw-bold">만화</div>
                     </a>
                 </div>
 
-            </div>
-        </div>
-
-        <div class="container pb-5">
-			<div th:if="${paging == null or paging.isEmpty()}" class="empty-page-fix">
-			    <div class="text-center text-muted">
-			        <i class="bi bi-journal-text" style="font-size: 3rem;"></i>
-			        <p class="mt-3 mb-0 fw-bold">등록된 소설이 없습니다.</p>
-			        <p class="small mt-1 mb-0">첫 번째 소설을 등록해 보세요.</p>
-			    </div>
-			</div>
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
-                <div class="col" th:each="novel : ${paging}">
-                    <div class="card novel-card h-100">
-                        <a th:href="@{|/content/novel/detail/${novel.id}|}" class="text-decoration-none text-dark">
-                            <div class="thumbnail-wrapper mb-2 shadow-sm">
-                                <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}" 
-                                     class="w-100 h-100" style="object-fit: cover;">
-                            </div>
-                            <div class="px-1 text-start">
-                                <h6 class="fw-bold mb-1 text-truncate" th:text="${novel.title}">웹툰명</h6>
-                                <p class="text-muted small mb-0" th:text="${novel.displayname}">작가이름</p>
-                            </div>
-                        </a>
-                    </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/music/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="@{/images/sing.png}" class="category-icon-img" alt="음악">
+                        </div>
+                        <div class="fw-bold">음악</div>
+                    </a>
                 </div>
-            </div>
 
-            <div class="d-flex justify-content-center align-items-center mt-5 gap-3" th:if="${!paging.isEmpty()}">
-                <nav>
-                    <ul class="pagination custom-pagination mb-0">
-                        <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-                            <a class="page-link" th:href="@{|?page=${paging.number - 1}|}">&lt;</a>
-                        </li>
-                        <li th:each="page: ${#numbers.sequence(0, paging.totalPages - 1)}"
-                            th:if="${page >= paging.number - 2 and page <= paging.number + 2}"
-                            th:classappend="${page == paging.number} ? 'active'" class="page-item">
-                            <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
-                        </li>
-                        <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-                            <a class="page-link" th:href="@{|?page=${paging.number + 1}|}">&gt;</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/video/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${videoIconUrl != null ? videoIconUrl : '/images/yutu.png'}" class="category-icon-img" alt="비디오">
+                        </div>
+                        <div class="fw-bold">비디오</div>
+                    </a>
+                </div>
 
-        <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-light border-0">
-                        <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">제품 코드 등록</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4 text-center">
-                        <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
-                        <p class="mt-3 mb-4 text-muted small">
-                            보유하고 계신 제품 코드(16자리)를 입력해 주세요.<br>
-                            (예: ABCD-EFGH-IJKL-MNOP)
-                        </p>
-                        <input type="text" id="productKeyInput" class="form-control form-control-lg text-center font-monospace" 
-                               placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
-                    </div>
-                    <div class="modal-footer border-0 d-flex justify-content-center pb-4">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
-                        <button type="button" class="btn text-white px-4" style="background-color: #f05a28;" onclick="submitProductKey()">코드 활성화</button>
-                    </div>
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/novel/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="@{/images/git.png}" class="category-icon-img" alt="소설">
+                        </div>
+                        <div class="fw-bold">소설</div>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <a th:href="@{/content/file/list}" class="text-dark category-item d-block text-decoration-none">
+                        <div class="icon-box">
+                            <img th:src="${fileIconUrl != null ? fileIconUrl : '/images/folder.png'}" class="category-icon-img" alt="파일">
+                        </div>
+                        <div class="fw-bold">파일</div>
+                    </a>
                 </div>
             </div>
         </div>
-		
-        <script>
+    </section>
+
+    <div class="container mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+
+            <div style="flex: 1;">
+                <a href="/" class="btn btn-link text-decoration-none text-dark p-0 d-flex align-items-center">
+                    <i class="bi bi-house-door-fill me-2"></i>
+                    <span class="fw-bold">홈으로 가기</span>
+                </a>
+            </div>
+
+            <div class="text-center" style="flex: 2;">
+                <h2 class="fw-bold mb-0">추천 소설</h2>
+                <p class="text-muted mb-0 mt-1 small">다양한 크리에이터의 소설을 만나보세요.</p>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center justify-content-end" style="flex: 1;">
+                <button type="button"
+                        class="btn btn-outline-dark d-flex align-items-center px-3 shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#keyRegisterModal">
+                    <i class="bi bi-key-fill me-2"></i>
+                    <span class="fw-bold">코드 등록</span>
+                </button>
+
+                <a onclick="return requireLoginAction(() => location.href='/content/novel/write')"
+                   class="btn btn-primary d-flex align-items-center px-3 shadow-sm"
+                   style="cursor:pointer;">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    <span class="fw-bold">소설 등록</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container pb-5">
+        <div th:if="${paging == null or paging.isEmpty()}" class="empty-page-fix">
+            <div class="text-center text-muted">
+                <i class="bi bi-journal-text" style="font-size: 3rem;"></i>
+                <p class="mt-3 mb-0 fw-bold">등록된 소설이 없습니다.</p>
+                <p class="small mt-1 mb-0">첫 번째 소설을 등록해 보세요.</p>
+            </div>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4" th:if="${paging != null and !paging.isEmpty()}">
+            <div class="col" th:each="novel : ${paging}">
+                <div class="card novel-card h-100">
+                    <a th:href="@{|/content/novel/detail/${novel.id}|}" class="text-decoration-none text-dark">
+                        <div class="thumbnail-wrapper mb-2 shadow-sm">
+                            <img th:src="${novel.thumbnailUrl != null ? novel.thumbnailUrl : '/images/pic.png'}"
+                                 class="w-100 h-100"
+                                 style="object-fit: cover;"
+                                 th:alt="${novel.title}">
+                        </div>
+                        <div class="px-1 text-start">
+                            <h6 class="fw-bold mb-1 text-truncate" th:text="${novel.title}">웹툰명</h6>
+                            <p class="text-muted small mb-0" th:text="${novel.displayname}">작가이름</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center mt-5 gap-3"
+             th:if="${paging != null and !paging.isEmpty() and paging.totalPages > 1}">
+            <nav>
+                <ul class="pagination custom-pagination mb-0">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{|?page=${paging.number > 0 ? paging.number - 1 : 0}|}">&lt;</a>
+                    </li>
+
+                    <li th:each="page: ${#numbers.sequence(0, paging.totalPages - 1)}"
+                        th:if="${page >= paging.number - 2 and page <= paging.number + 2}"
+                        th:classappend="${page == paging.number} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page + 1}"
+                           class="page-link"
+                           th:href="@{|?page=${page}|}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{|?page=${paging.hasNext ? paging.number + 1 : paging.number}|}">&gt;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="modal fade" id="keyRegisterModal" tabindex="-1" aria-labelledby="keyRegisterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="keyRegisterModalLabel" style="color: #3B4371;">제품 코드 등록</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-controller text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-3 mb-4 text-muted small">
+                        보유하고 계신 제품 코드(16자리)를 입력해 주세요.<br>
+                        (예: ABCD-EFGH-IJKL-MNOP)
+                    </p>
+                    <input type="text"
+                           id="productKeyInput"
+                           class="form-control form-control-lg text-center font-monospace"
+                           placeholder="XXXX-XXXX-XXXX-XXXX"
+                           maxlength="19">
+                </div>
+
+                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn text-white px-4" style="background-color: #f05a28;" onclick="submitProductKey()">코드 활성화</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function submitProductKey() {
             const keyInput = document.getElementById('productKeyInput');
 
-            keyInput.addEventListener('input', function (e) {
-                // 영문/숫자만 남기고 대문자 변환
-                let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-                let result = '';
-                
-                // 4자리마다 하이픈 추가
-                for (let i = 0; i < val.length; i++) {
-                    if (i > 0 && i % 4 === 0) result += '-';
-                    result += val[i];
-                }
-                e.target.value = result;
-            });
+            if (!keyInput) return;
 
-            function submitProductKey() {
-                const val = keyInput.value;
-                if(val.length < 19) {
-                    alert('코드를 정확히 입력해 주세요 (16자리).');
-                    return;
-                }
-                
-                // 실제 연동 시 API 호출 로직이 들어갈 자리입니다.
-                alert('코드 [' + val + '] 등록이 요청되었습니다.');
-                
-                // 모달 닫기 및 초기화
-                const modalInstance = bootstrap.Modal.getInstance(document.getElementById('keyRegisterModal'));
-                modalInstance.hide();
-                keyInput.value = '';
+            const val = keyInput.value;
+
+            if (val.length < 19) {
+                alert('코드를 정확히 입력해 주세요 (16자리).');
+                return;
             }
-			document.addEventListener('DOMContentLoaded', function() {
 
-			    const keyInput = document.getElementById('productKeyInput');
-			    const redeemBtn = document.querySelector('[data-bs-target="#keyRegisterModal"]');
-			    const novelCreateBtn = document.querySelector('[onclick*="novel/write"]');
-			    const modal = document.getElementById('keyRegisterModal');
+            alert('코드 [' + val + '] 등록이 요청되었습니다.');
 
-			    let hasShownNovelGuide = false;
-			    let hasShownRedeemGuide = false;
+            const modalElement = document.getElementById('keyRegisterModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
 
-			    // 코드 자동 포맷
-			    if (keyInput) {
-			        keyInput.addEventListener('input', function (e) {
-			            let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-			            let result = '';
-			            for (let i = 0; i < val.length; i++) {
-			                if (i > 0 && i % 4 === 0) result += '-';
-			                result += val[i];
-			            }
-			            e.target.value = result;
-			        });
-			    }
+            if (modalInstance) {
+                modalInstance.hide();
+            }
 
-			    // 소설 등록 설명
-			    function showNovelGuide() {
-			        Swal.fire({
-			            icon: 'info',
-			            title: '소설 등록 안내',
-			            text: '이 버튼을 누르면 새로운 소설 작품을 등록할 수 있습니다.',
-			            confirmButtonText: '확인'
-			        });
-			    }
+            keyInput.value = '';
+        }
 
-			    // 리딤 코드 설명 (핵심)
-			    function showRedeemGuide() {
-			        if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
-			            const guide = window.driver.js.driver({
-			                showProgress: false,
-			                allowClose: true,
-			                overlayClickBehavior: 'close',
-			                doneBtnText: '확인',
-			                steps: [
-			                    {
-			                        element: '#productKeyInput',
-			                        popover: {
-			                            title: '리딤 코드 입력',
-			                            description: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
-			                            side: 'bottom',
-			                            align: 'center'
-			                        }
-			                    }
-			                ]
-			            });
+        document.addEventListener('DOMContentLoaded', function () {
+            const keyInput = document.getElementById('productKeyInput');
+            const redeemBtn = document.querySelector('[data-bs-target="#keyRegisterModal"]');
+            const novelCreateBtn = document.querySelector('[onclick*="novel/write"]');
+            const modal = document.getElementById('keyRegisterModal');
 
-			            guide.drive();
-			        } else {
-			            Swal.fire({
-			                icon: 'info',
-			                title: '리딤 코드 안내',
-			                text: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
-			                confirmButtonText: '확인'
-			            }).then(() => {
-			                if (keyInput) keyInput.focus();
-			            });
-			        }
-			    }
+            let hasShownNovelGuide = false;
+            let hasShownRedeemGuide = false;
 
-			    // 소설 등록 버튼 hover 시 1회 안내
-			    if (novelCreateBtn) {
-			        novelCreateBtn.addEventListener('mouseenter', function () {
-			            if (!hasShownNovelGuide) {
-			                hasShownNovelGuide = true;
-			                showNovelGuide();
-			            }
-			        }, { once: true });
-			    }
+            if (keyInput) {
+                keyInput.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    let result = '';
 
-			    // 코드 버튼 클릭 시 초기화
-			    if (redeemBtn) {
-			        redeemBtn.addEventListener('click', function () {
-			            hasShownRedeemGuide = false;
-			        });
-			    }
+                    for (let i = 0; i < val.length; i++) {
+                        if (i > 0 && i % 4 === 0) result += '-';
+                        result += val[i];
+                    }
 
-			    // 모달 열리면 강조
-			    if (modal) {
-			        modal.addEventListener('shown.bs.modal', function () {
-			            if (!hasShownRedeemGuide) {
-			                hasShownRedeemGuide = true;
-			                setTimeout(() => {
-			                    showRedeemGuide();
-			                }, 150);
-			            }
-			        });
-			    }
+                    e.target.value = result;
+                });
+            }
 
-			});
-        </script>
+            function showNovelGuide() {
+                Swal.fire({
+                    icon: 'info',
+                    title: '소설 등록 안내',
+                    text: '이 버튼을 누르면 새로운 소설 작품을 등록할 수 있습니다.',
+                    confirmButtonText: '확인'
+                });
+            }
 
-    </div>
+            function showRedeemGuide() {
+                if (window.driver && window.driver.js && typeof window.driver.js.driver === 'function') {
+                    const guide = window.driver.js.driver({
+                        showProgress: false,
+                        allowClose: true,
+                        overlayClickBehavior: 'close',
+                        doneBtnText: '확인',
+                        steps: [
+                            {
+                                element: '#productKeyInput',
+                                popover: {
+                                    title: '리딤 코드 입력',
+                                    description: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+                                    side: 'bottom',
+                                    align: 'center'
+                                }
+                            }
+                        ]
+                    });
+
+                    guide.drive();
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: '리딤 코드 안내',
+                        text: '리딤 코드를 입력하면 해당하는 유료 작품의 접근 권한을 얻을 수 있습니다.',
+                        confirmButtonText: '확인'
+                    }).then(() => {
+                        if (keyInput) keyInput.focus();
+                    });
+                }
+            }
+
+            if (novelCreateBtn) {
+                novelCreateBtn.addEventListener('mouseenter', function () {
+                    if (!hasShownNovelGuide) {
+                        hasShownNovelGuide = true;
+                        showNovelGuide();
+                    }
+                }, { once: true });
+            }
+
+            if (redeemBtn) {
+                redeemBtn.addEventListener('click', function () {
+                    hasShownRedeemGuide = false;
+                });
+            }
+
+            if (modal) {
+                modal.addEventListener('shown.bs.modal', function () {
+                    if (!hasShownRedeemGuide) {
+                        hasShownRedeemGuide = true;
+                        setTimeout(function () {
+                            showRedeemGuide();
+                        }, 150);
+                    }
+                });
+            }
+        });
+    </script>
+
+</div>
 </body>
 </html>
