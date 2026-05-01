@@ -501,9 +501,12 @@
                     <h6 class="text-muted fw-bold mb-3">
                         <i class="bi bi-arrow-up-circle-fill text-secondary me-1"></i> 원본 작품
                     </h6>
-                    <a class="lineage-card"
-                       th:if="${parentContent!=null}"
-                       th:href="@{/content/detail/{id}(id=${parentContent.id})}">
+					<a class="lineage-card"
+		               th:if="${parentContent != null}"
+		               th:href="@{/content/{type}/detail/{id}(
+		                    type=${#strings.toLowerCase(parentContent.type)},
+		                    id=${parentContent.id}
+		               )}">
                         <img th:src="${parentContent.thumbnailUrl}" class="lineage-img" alt="원본">
                         <div class="overflow-hidden">
                             <div class="fw-bold text-dark text-truncate mb-1" th:text="${parentContent.title}"></div>
